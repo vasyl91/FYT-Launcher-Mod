@@ -80,7 +80,7 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
     private final RectangleTouchHelper touchHelper = new RectangleTouchHelper();
     // Rectangles the user dragged, resized or stepped with the arrows since the last save. Only
     // those get a new user rectangle (Helpers.putUserRect): the others show a layout the bars may
-    // have cut back (the bottom bar on every page cuts these screens too), which must not replace
+    // have cut back (the horizontal bar on every page cuts these screens too), which must not replace
     // what the user drew.
     private final Set<String> touchedKeys = new HashSet<>();
     private static final int NO_POINTER = -1;
@@ -268,11 +268,11 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
             rectangleName = rootView.findViewById(R.id.rectangle_name);
             View creatorBar = rootView.findViewById(R.id.creator_bar); 
             View creatorView = rootView.findViewById(R.id.creator_other_screens);   
-            // 'Bottom bar on every page' without auto-hide: the real bar takes this strip of every
+            // 'Horizontal bar on every page' without auto-hide: the real bar takes this strip of every
             // page, as on the first one, where the strip cannot be hidden either.
             final boolean barOnThisPage = !CreatorBarToggle.canToggle(false,
-                    sharedPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false),
-                    sharedPrefs.getBoolean(Keys.BOTTOM_BAR_EVERY_PAGE, false));
+                    sharedPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false),
+                    sharedPrefs.getBoolean(Keys.HORIZONTAL_BAR_EVERY_PAGE, false));
             if (barOnThisPage && creatorBar != null) {
                 creatorBar.setVisibility(View.VISIBLE);
             }
@@ -406,8 +406,8 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
         hint.setTextAlign(Paint.Align.CENTER);
         hint.setShadowLayer(2, 1, 1, Color.WHITE);
         float centerX = getWidth() / 2f;
-        if (!CreatorBarToggle.canToggle(false, sharedPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false),
-                sharedPrefs.getBoolean(Keys.BOTTOM_BAR_EVERY_PAGE, false))) {
+        if (!CreatorBarToggle.canToggle(false, sharedPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false),
+                sharedPrefs.getBoolean(Keys.HORIZONTAL_BAR_EVERY_PAGE, false))) {
             // A double tap hides nothing here, so the hint only names the page.
             canvas.drawText(getSafeContext().getString(R.string.screen_number,
                     String.valueOf(mSelectedScreen + 1)), centerX, getHeight() / 2f, hint);
@@ -948,7 +948,7 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
             e.putInt(cfg.key + "BottomRightY", point[ids[2]].y);
             e.putInt(cfg.key + "BottomLeftX", point[ids[3]].x);
             e.putInt(cfg.key + "BottomLeftY", point[ids[3]].y);
-            // The bottom bar on every page cuts these screens back too, so only what the user
+            // The horizontal bar on every page cuts these screens back too, so only what the user
             // touched replaces the rectangle the user drew.
             if (touchedKeys.contains(cfg.key) && !"stats".equals(cfg.key)) {
                 Helpers.putUserRect(e, cfg.key, point[ids[0]].x, point[ids[0]].y,

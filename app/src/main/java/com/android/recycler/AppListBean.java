@@ -10,7 +10,7 @@ public class AppListBean {
 
     /**
      * Primary key of the AppMultiple row this bean was built from, or -1 when the bean
-     * has no database backing (defaults built in memory, left-bar beans, ...).
+     * has no database backing (defaults built in memory, vertical-bar beans, ...).
      *
      * This is what makes "adapter position -> database index" arithmetic unnecessary:
      * the bean already knows which row it came from, even when the visible list is

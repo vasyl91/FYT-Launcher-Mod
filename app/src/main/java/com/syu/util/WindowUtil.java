@@ -271,7 +271,7 @@ public class WindowUtil {
                       .append(',').append(prefs.getInt(pipKey + "BottomLeftY", Integer.MIN_VALUE));
                 }
                 sb.append('|').append(prefs.getString(Keys.LAYOUT_MARGIN, "5"));
-                sb.append('|').append(prefs.getBoolean(Keys.LEFT_BAR, false));
+                sb.append('|').append(prefs.getBoolean(Keys.VERTICAL_BAR, false));
             }
             return sb.toString();
         } catch (Throwable t) {
@@ -2557,7 +2557,7 @@ public class WindowUtil {
     }
 
     /**
-     * The PiP positions or sizes saved in the preferences changed (creator, bottom bar, left bar).
+     * The PiP positions or sizes saved in the preferences changed (creator, horizontal bar, vertical bar).
      * Does not touch the running panes: it only makes the next openPip() rebuild them through the
      * regular path - a new host takes over the existing tasks and the old host's ActivityViews are
      * retired once that happened - with the new bounds read from the preferences. Without the
@@ -2651,7 +2651,7 @@ public class WindowUtil {
     private static void setPinnedPipBounds(String pipKey, String screenKey) {
         final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
-        boolean leftBar = prefs.getBoolean(Keys.LEFT_BAR, false);
+        boolean verticalBar = prefs.getBoolean(Keys.VERTICAL_BAR, false);
         int pipScreen = prefs.getInt(screenKey, 1) - 1;
         int mapTopLeftX, mapBottomRightX; 
 
@@ -2663,9 +2663,9 @@ public class WindowUtil {
 
         int[] def = defaultPipRect();
 
-        if (leftBar && pipScreen == 0) {
-            mapTopLeftX = prefs.getInt(topLeftXKey, def[0]) + Launcher.calculatedLeftBarWidth;
-            mapBottomRightX = prefs.getInt(bottomRightXKey, def[2]) + Launcher.calculatedLeftBarWidth;
+        if (verticalBar && pipScreen == 0) {
+            mapTopLeftX = prefs.getInt(topLeftXKey, def[0]) + Launcher.calculatedVerticalBarWidth;
+            mapBottomRightX = prefs.getInt(bottomRightXKey, def[2]) + Launcher.calculatedVerticalBarWidth;
         } else {
             mapTopLeftX = prefs.getInt(topLeftXKey, def[0]);
             mapBottomRightX = prefs.getInt(bottomRightXKey, def[2]);
@@ -2679,7 +2679,7 @@ public class WindowUtil {
     }
 
     /**
-     * Default PiP rectangle {left, top, right, bottom} in widget-area coordinates (no left bar, no
+     * Default PiP rectangle {left, top, right, bottom} in widget-area coordinates (no vertical bar, no
      * status bar), used when no bounds were saved yet. Derived from the minimums so it follows the
      * screen size; setPinnedPipBounds() and the pinned-PiP change detection must share it.
      */

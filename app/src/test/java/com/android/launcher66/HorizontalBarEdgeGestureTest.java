@@ -1,18 +1,18 @@
 package com.android.launcher66;
 
-import static com.android.launcher66.BottomBarEdgeGesture.Decision.OPEN_BAR;
-import static com.android.launcher66.BottomBarEdgeGesture.Decision.PASS;
-import static com.android.launcher66.BottomBarEdgeGesture.Decision.UNDECIDED;
+import static com.android.launcher66.HorizontalBarEdgeGesture.Decision.OPEN_BAR;
+import static com.android.launcher66.HorizontalBarEdgeGesture.Decision.PASS;
+import static com.android.launcher66.HorizontalBarEdgeGesture.Decision.UNDECIDED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-class BottomBarEdgeGestureTest {
+class HorizontalBarEdgeGestureTest {
 
     private static final float SLOP = 8f;
     private static final long TAP = 100L;
 
-    private final BottomBarEdgeGesture gesture = new BottomBarEdgeGesture(SLOP, TAP);
+    private final HorizontalBarEdgeGesture gesture = new HorizontalBarEdgeGesture(SLOP, TAP);
 
     private void down(boolean onStrip) {
         gesture.onDown(10f, 100f, 0L, onStrip);

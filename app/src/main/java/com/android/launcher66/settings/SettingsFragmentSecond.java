@@ -128,7 +128,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private CustomSwitchPreference widgetBarButtonsOneLinePreference;
     private CustomSwitchPreference widgetBarButtonsBesidePreference;
     private SwitchPreferenceCompat resizableBarPreference;
-    private BottomBarHeightSeekBarPreference barHeightSeekBar;
+    private HorizontalBarHeightSeekBarPreference barHeightSeekBar;
     private Preference margin;
     private EditText marginEditText;
     private SwitchPreferenceCompat userStats;
@@ -359,13 +359,13 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         String startPageStr = sharedPrefs.getString(Keys.START_PAGE, "1");
         startPage.setSummary(startPageStr);
 
-        everyPagePreference = findPreference(Keys.BOTTOM_BAR_EVERY_PAGE);
-        autoHidePreference = findPreference(Keys.AUTO_HIDE_BOTTOM_BAR);
+        everyPagePreference = findPreference(Keys.HORIZONTAL_BAR_EVERY_PAGE);
+        autoHidePreference = findPreference(Keys.AUTO_HIDE_HORIZONTAL_BAR);
         autoHideSeekBar = findPreference(Keys.AUTO_HIDE_TIMEOUT);
-        resizableBarPreference = findPreference(Keys.RESIZABLE_BOTTOM_BAR);
-        barHeightSeekBar = findPreference(Keys.BOTTOM_BAR_HEIGHT);
+        resizableBarPreference = findPreference(Keys.RESIZABLE_HORIZONTAL_BAR);
+        barHeightSeekBar = findPreference(Keys.HORIZONTAL_BAR_HEIGHT);
 
-        Preference leftBar = findPreference(Keys.LEFT_BAR);
+        Preference verticalBar = findPreference(Keys.VERTICAL_BAR);
         Preference widgetBar = findPreference(Keys.WIDGET_BAR);
         widgetBarNoCoverPreference = findPreference(Keys.WIDGET_BAR_NO_COVER);
         widgetBarNoDatePreference = findPreference(Keys.WIDGET_BAR_NO_DATE);
@@ -532,7 +532,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             everyPagePreference.setOnPreferenceClickListener(this);
             updateEveryPageSummary();
         }
-        autoHideBool = sharedPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
+        autoHideBool = sharedPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false);
         if (autoHidePreference != null) {
             autoHidePreference.setOnPreferenceClickListener(this);
             if (autoHideBool) {
@@ -545,7 +545,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             autoHideSeekBar.setVisible(autoHideBool);
             autoHideSeekBarProgress(autoHideSeekBar);
         }
-        resizableBarBool = sharedPrefs.getBoolean(Keys.RESIZABLE_BOTTOM_BAR, false);
+        resizableBarBool = sharedPrefs.getBoolean(Keys.RESIZABLE_HORIZONTAL_BAR, false);
         if (resizableBarPreference != null) {
             resizableBarPreference.setOnPreferenceClickListener(this);
             // Formatted right away (there is no list yet), even while the switch is off: summaryOn
@@ -559,8 +559,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             barHeightSeekBar.setVisible(resizableBarBool);
             barHeightSeekBarProgress(barHeightSeekBar);
         }
-        if (leftBar != null) {
-            leftBar.setOnPreferenceClickListener(this);
+        if (verticalBar != null) {
+            verticalBar.setOnPreferenceClickListener(this);
         }
         if (widgetBar != null) {
             widgetBar.setOnPreferenceClickListener(this);
@@ -754,12 +754,12 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
                 alertStartPageDialog.show();
                 break;
-            case Keys.BOTTOM_BAR_EVERY_PAGE:
+            case Keys.HORIZONTAL_BAR_EVERY_PAGE:
                 updateEveryPageSummary();
                 helpers.setBarSettingsChanged(true);
                 break;
-            case Keys.AUTO_HIDE_BOTTOM_BAR:
-                autoHideBool = sharedPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
+            case Keys.AUTO_HIDE_HORIZONTAL_BAR:
+                autoHideBool = sharedPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false);
                 if (autoHideBool) {
                     handler.post(updateSummary);
                 } else {
@@ -768,9 +768,9 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 autoHideSeekBar.setVisible(autoHideBool);
                 helpers.setBarSettingsChanged(true);
                 break;
-            case Keys.RESIZABLE_BOTTOM_BAR:
+            case Keys.RESIZABLE_HORIZONTAL_BAR:
                 // Click listeners run after the switch persisted its new state.
-                resizableBarBool = sharedPrefs.getBoolean(Keys.RESIZABLE_BOTTOM_BAR, false);
+                resizableBarBool = sharedPrefs.getBoolean(Keys.RESIZABLE_HORIZONTAL_BAR, false);
                 if (resizableBarBool) {
                     handler.post(updateBarHeightSummary);
                 } else {
@@ -782,7 +782,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 // On or off, the launcher has to rebuild the bar (dynamic height <-> XML height).
                 helpers.setBarSettingsChanged(true);
                 break;
-            case Keys.LEFT_BAR:
+            case Keys.VERTICAL_BAR:
                 helpers.setBarSettingsChanged(true);
                 break;
             case Keys.WIDGET_BAR:
@@ -1167,12 +1167,12 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }
         TwoStatePreference every = (TwoStatePreference) everyPagePreference;
         boolean missing = every.isChecked() && !android.provider.Settings.canDrawOverlays(requireContext());
-        every.setSummaryOn(getString(missing ? R.string.bottom_bar_every_page_no_overlay
-                : R.string.bottom_bar_every_page_on));
+        every.setSummaryOn(getString(missing ? R.string.horizontal_bar_every_page_no_overlay
+                : R.string.horizontal_bar_every_page_on));
     }
 
     /**
-     * The rows under "Widget bottom bar" are shown only while it is on. The date is hidden in
+     * The rows under "Widget horizontal bar" are shown only while it is on. The date is hidden in
      * landscape only: the portrait bar has no date. "Buttons beside the title" is shown only
      * while something (the cover, the date or the weather) is hidden (that is when the music widget has room to put them there), and
      * "Buttons in one line" only while the buttons are beside. "Title and artist arrangement"
@@ -1375,10 +1375,10 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }
     };
 
-    private void barHeightSeekBarProgress(BottomBarHeightSeekBarPreference heightPreference) {
+    private void barHeightSeekBarProgress(HorizontalBarHeightSeekBarPreference heightPreference) {
         // Called by the preference only when the user really moves the slider to a new value
-        // (never when the row is bound); the value is then stored under Keys.BOTTOM_BAR_HEIGHT_PORT
-        // or Keys.BOTTOM_BAR_HEIGHT_LAND, whichever matches the current orientation.
+        // (never when the row is bound); the value is then stored under Keys.HORIZONTAL_BAR_HEIGHT_PORT
+        // or Keys.HORIZONTAL_BAR_HEIGHT_LAND, whichever matches the current orientation.
         heightPreference.setOnPreferenceChangeListener((preference, newValue) -> {
             helpers.setBarSettingsChanged(true);
             handler.post(updateBarHeightSummary);
@@ -1397,13 +1397,13 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         private String barHeightSummary() {
             // Straight from the preferences, for the current orientation - the same value the
             // launcher will use.
-            boolean portrait = BottomBarDimensions.isPortrait(requireContext());
-            float multiplier = BottomBarDimensions.getConfiguredMultiplier(sharedPrefs, portrait);
-            return getString(R.string.resizable_bottom_bar_summary,
-                    BottomBarHeightSeekBarPreference.formatPercent(multiplier),
+            boolean portrait = HorizontalBarDimensions.isPortrait(requireContext());
+            float multiplier = HorizontalBarDimensions.getConfiguredMultiplier(sharedPrefs, portrait);
+            return getString(R.string.resizable_horizontal_bar_summary,
+                    HorizontalBarHeightSeekBarPreference.formatPercent(multiplier),
                     getString(portrait
-                            ? R.string.bottom_bar_height_portrait
-                            : R.string.bottom_bar_height_landscape));
+                            ? R.string.horizontal_bar_height_portrait
+                            : R.string.horizontal_bar_height_landscape));
         }
     };
 

@@ -35,8 +35,8 @@ class CustomLayoutResolverTest {
         return new Element(key, 0, 0, 0, 0, 100, 100, false, false, true);
     }
 
-    /** Bottom bar from y=1000 with a margin of 5. */
-    private static Env bottomBar(boolean withGrid) {
+    /** Horizontal bar from y=1000 with a margin of 5. */
+    private static Env horizontalBar(boolean withGrid) {
         Env env = new Env();
         env.margin = 5;
         env.maxBottom = PipEdgeTrim.maxBottom(1000, 5); // 995
@@ -56,7 +56,7 @@ class CustomLayoutResolverTest {
 
     @Test
     void freeSpaceAboveMovesTheElementByTheWholeOverlapWithoutResizingIt() {
-        Result r = resolve(bottomBar(true), pip("pipFirst", 100, 700, 400, 1040, 200, 200));
+        Result r = resolve(horizontalBar(true), pip("pipFirst", 100, 700, 400, 1040, 200, 200));
         assertFalse(r.reset[0]);
         assertArrayEquals(new int[] {100, 655, 400, 995}, r.rects[0]);
     }
@@ -64,7 +64,7 @@ class CustomLayoutResolverTest {
     @Test
     void partlyFreeSpaceMovesAsFarAsItGoesAndCutsTheRest() {
         // the stats window above stops the move at its bottom edge + the gap
-        Result r = resolve(bottomBar(true),
+        Result r = resolve(horizontalBar(true),
                 pip("pipFirst", 100, 700, 400, 1040, 200, 200),
                 stats(100, 300, 400, 680));
         assertFalse(r.reset[0]);
@@ -74,19 +74,19 @@ class CustomLayoutResolverTest {
 
     @Test
     void withoutAKnownGridNothingMovesAndTheBottomEdgeIsCut() {
-        Result r = resolve(bottomBar(false), pip("pipFirst", 100, 700, 400, 1040, 200, 200));
+        Result r = resolve(horizontalBar(false), pip("pipFirst", 100, 700, 400, 1040, 200, 200));
         assertArrayEquals(new int[] {100, 700, 400, 995}, r.rects[0]);
     }
 
     @Test
     void anElementBelowTheBarComesBackAboveIt() {
-        Result r = resolve(bottomBar(true), widget("date", 100, 1010, 400, 1200, 300, 150));
+        Result r = resolve(horizontalBar(true), widget("date", 100, 1010, 400, 1200, 300, 150));
         assertArrayEquals(new int[] {100, 805, 400, 995}, r.rects[0]);
     }
 
     @Test
     void anElementThatIsNotUnderTheBarIsLeftAlone() {
-        Result r = resolve(bottomBar(true), widget("date", 100, 700, 400, 990, 300, 150));
+        Result r = resolve(horizontalBar(true), widget("date", 100, 700, 400, 990, 300, 150));
         assertArrayEquals(new int[] {100, 700, 400, 990}, r.rects[0]);
     }
 
@@ -94,7 +94,7 @@ class CustomLayoutResolverTest {
 
     @Test
     void anOccupiedCellInTheColumnsStopsTheMoveAtTheRowBoundary() {
-        Env env = bottomBar(true);
+        Env env = horizontalBar(true);
         // pitch 100: columns 1..3, an icon in column 2 on row 5 -> the top may not go above row 6
         env.occupied[2][5] = true;
         Result r = resolve(env, pip("pipFirst", 100, 800, 400, 1240, 200, 100));
@@ -104,7 +104,7 @@ class CustomLayoutResolverTest {
 
     @Test
     void theBoundaryFollowsThePaddingAndTheGapBetweenTheCells() {
-        Env env = bottomBar(true);
+        Env env = horizontalBar(true);
         env.grid = new GridGeometry(10, 20, 108, 86, 20, 10);
         env.occupied = new boolean[20][10];
         env.occupied[2][5] = true;
@@ -114,7 +114,7 @@ class CustomLayoutResolverTest {
 
     @Test
     void cellsUnderTheStartingPositionAreNotAnObstacle() {
-        Env env = bottomBar(true);
+        Env env = horizontalBar(true);
         env.occupied[2][8] = true; // under the element as the user drew it: the launcher moves it
         env.occupied[2][5] = true;
         Result r = resolve(env, pip("pipFirst", 100, 800, 400, 1240, 200, 100));
@@ -123,7 +123,7 @@ class CustomLayoutResolverTest {
 
     @Test
     void anOccupiedCellOutsideTheColumnsIsNotAnObstacle() {
-        Env env = bottomBar(true);
+        Env env = horizontalBar(true);
         env.occupied[7][5] = true;
         Result r = resolve(env, pip("pipFirst", 100, 700, 400, 1040, 200, 100));
         assertEquals(655, r.rects[0][1]);
@@ -133,7 +133,7 @@ class CustomLayoutResolverTest {
 
     @Test
     void theElementAboveIsPushedUpToo() {
-        Result r = resolve(bottomBar(true),
+        Result r = resolve(horizontalBar(true),
                 widget("date", 100, 400, 400, 690, 200, 100),
                 widget("music", 100, 700, 400, 1040, 200, 200));
         assertArrayEquals(new int[] {100, 360, 400, 650}, r.rects[0]);
@@ -142,7 +142,7 @@ class CustomLayoutResolverTest {
 
     @Test
     void whenTheOneAboveHasNoRoomLeftTheLowerOneIsCut() {
-        Result r = resolve(bottomBar(true),
+        Result r = resolve(horizontalBar(true),
                 widget("date", 100, 5, 400, 600, 200, 100),
                 widget("music", 100, 640, 400, 1040, 200, 200));
         assertArrayEquals(new int[] {100, 5, 400, 600}, r.rects[0]);
@@ -151,7 +151,7 @@ class CustomLayoutResolverTest {
 
     @Test
     void atItsMinimumTheLowerOneMakesTheOneAboveGiveWay() {
-        Result r = resolve(bottomBar(true),
+        Result r = resolve(horizontalBar(true),
                 widget("date", 100, 5, 400, 780, 200, 100),
                 widget("music", 100, 790, 400, 1100, 200, 250));
         assertFalse(r.reset[0] || r.reset[1]);
@@ -161,7 +161,7 @@ class CustomLayoutResolverTest {
 
     @Test
     void anElementThatCannotFitEvenThenIsResetAndTheOneAboveIsLeftAlone() {
-        Result r = resolve(bottomBar(true),
+        Result r = resolve(horizontalBar(true),
                 widget("date", 100, 5, 400, 600, 200, 100),
                 widget("music", 100, 640, 400, 1640, 200, 900));
         assertFalse(r.reset[0]);
@@ -171,7 +171,7 @@ class CustomLayoutResolverTest {
 
     @Test
     void ofSeveralThatCannotFitTheLowestIsResetFirstAndTheRestIsRecalculated() {
-        Result r = resolve(bottomBar(true),
+        Result r = resolve(horizontalBar(true),
                 pip("pipFirst", 100, 100, 400, 1300, 200, 1000),   // cannot fit
                 widget("music", 600, 700, 900, 1050, 200, 400));    // can, once it is alone
         assertTrue(r.reset[0]);
@@ -179,14 +179,14 @@ class CustomLayoutResolverTest {
         assertArrayEquals(new int[] {600, 645, 900, 995}, r.rects[1]);
     }
 
-    // ------------------------------------------------------------ left bar
+    // ------------------------------------------------------------ vertical bar
 
-    private static Env leftBar(boolean withGrid, int offset) {
+    private static Env verticalBar(boolean withGrid, int offset) {
         Env env = new Env();
         env.margin = 5;
         env.maxRight = 1200;
         env.rightTrigger = 1200;
-        env.leftBarOffset = offset;
+        env.verticalBarOffset = offset;
         if (withGrid) {
             env.grid = new GridGeometry(0, 0, 100, 100, 20, 10);
             env.occupied = new boolean[20][10];
@@ -195,14 +195,14 @@ class CustomLayoutResolverTest {
     }
 
     @Test
-    void thePushOfTheLeftBarMovesTheElementLeftInTheBox() {
-        Result r = resolve(leftBar(true, 142), widget("radio", 800, 100, 1300, 300, 300, 100));
+    void thePushOfTheVerticalBarMovesTheElementLeftInTheBox() {
+        Result r = resolve(verticalBar(true, 142), widget("radio", 800, 100, 1300, 300, 300, 100));
         assertArrayEquals(new int[] {700, 100, 1200, 300}, r.rects[0]);
     }
 
     @Test
     void anObstacleOnTheLeftStopsTheMoveAndTheRestIsCut() {
-        Result r = resolve(leftBar(true, 0),
+        Result r = resolve(verticalBar(true, 0),
                 widget("radio", 800, 100, 1300, 300, 300, 100),
                 stats(100, 100, 720, 300));
         assertArrayEquals(new int[] {725, 100, 1200, 300}, r.rects[0]);
@@ -210,7 +210,7 @@ class CustomLayoutResolverTest {
 
     @Test
     void anIconOnTheLeftStopsTheMoveAtTheColumnBoundaryOfTheScreen() {
-        Env env = leftBar(true, 142);
+        Env env = verticalBar(true, 142);
         env.occupied[5][1] = true;
         Result r = resolve(env, widget("radio", 800, 100, 1900, 300, 300, 100));
         // the column after the icon starts at x=600 on the screen, 142 less in the box
@@ -220,7 +220,7 @@ class CustomLayoutResolverTest {
 
     @Test
     void bothBarsAreAppliedHorizontalFirst() {
-        Env env = bottomBar(true);
+        Env env = horizontalBar(true);
         env.maxRight = 1200;
         env.rightTrigger = 1200;
         Result r = resolve(env, pip("pipDual", 800, 700, 1300, 1040, 300, 200));
@@ -231,14 +231,14 @@ class CustomLayoutResolverTest {
 
     @Test
     void statsIsNeverMovedOrCutEvenUnderTheBar() {
-        Result r = resolve(bottomBar(true), stats(100, 900, 400, 1100));
+        Result r = resolve(horizontalBar(true), stats(100, 900, 400, 1100));
         assertFalse(r.reset[0]);
         assertArrayEquals(new int[] {100, 900, 400, 1100}, r.rects[0]);
     }
 
     @Test
     void statsBlocksTheMoveOfWhatIsBelowIt() {
-        Result r = resolve(bottomBar(true),
+        Result r = resolve(horizontalBar(true),
                 stats(100, 600, 400, 690),
                 widget("music", 100, 700, 400, 1040, 200, 200));
         assertArrayEquals(new int[] {100, 695, 400, 995}, r.rects[1]);
@@ -363,14 +363,14 @@ class CustomLayoutResolverTest {
         Element[] user = {
                 widget("date", 100, 400, 400, 690, 200, 100),
                 widget("music", 100, 700, 400, 1040, 200, 200)};
-        Result tall = resolve(bottomBar(true), user);
+        Result tall = resolve(horizontalBar(true), user);
         assertFalse(Arrays.equals(new int[] {100, 700, 400, 1040}, tall.rects[1]));
 
         Env low = new Env();
         low.margin = 5;
         low.maxBottom = PipEdgeTrim.maxBottom(1300, 5);
         low.bottomTrigger = 1299;
-        low.grid = bottomBar(true).grid;
+        low.grid = horizontalBar(true).grid;
         low.occupied = new boolean[20][10];
         Result small = resolve(low, user);
         assertArrayEquals(new int[] {100, 400, 400, 690}, small.rects[0]);
@@ -386,15 +386,15 @@ class CustomLayoutResolverTest {
                 widget("date", 100, 5, 400, 780, 200, 100),
                 widget("music", 100, 790, 400, 1100, 200, 250),
                 pip("pipFirst", 600, 700, 1000, 1100, 200, 200)};
-        Result a = resolve(bottomBar(true), user);
-        Result b = resolve(bottomBar(true), user);
+        Result a = resolve(horizontalBar(true), user);
+        Result b = resolve(horizontalBar(true), user);
         assertTrue(Arrays.deepEquals(a.rects, b.rects));
         assertArrayEquals(a.reset, b.reset);
     }
 
     @Test
     void withAZeroMarginElementsNeverTouch() {
-        Env env = bottomBar(true);
+        Env env = horizontalBar(true);
         env.margin = 0;
         env.maxBottom = PipEdgeTrim.maxBottom(1000, 0); // 999
         Result r = resolve(env,

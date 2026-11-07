@@ -81,7 +81,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.launcher66.FolderIcon.FolderRingAnimator;
 import com.android.launcher66.Launcher.CustomContentCallbacks;
 import com.android.launcher66.LauncherSettings.Favorites;
-import com.android.launcher66.settings.BottomBarDimensions;
+import com.android.launcher66.settings.HorizontalBarDimensions;
 import com.android.launcher66.settings.CanbusAsyncTask;
 import com.android.launcher66.settings.CanbusService;
 import com.android.launcher66.settings.Helpers;
@@ -334,30 +334,30 @@ public class Workspace extends SmoothPagedView
     private View workspaceView;
     private final boolean isDebug;
     public boolean backPressed = false;
-    private View overlayBottomBar;
+    private View overlayHorizontalBar;
     private WindowManager.LayoutParams overlayWindowParams;
     private WindowManager overlayWindowManager;
     private View mBarMusicWidget;
     private View mBarDateWidget;
     private View mBarWeatherWidget;
     private ImageView showBarIcon;
-    private ImageView bottomBarAllApps;
-    private RecyclerView bottomBarRecycler;
-    private ImageView bottomBarBg;
+    private ImageView horizontalBarAllApps;
+    private RecyclerView horizontalBarRecycler;
+    private ImageView horizontalBarBg;
     private String selectedBackground;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> autoHideFuture;
     private boolean blackTintBar = false;
     private boolean widgetBar = false;
-    private boolean autoHideBottomBar = false;
+    private boolean autoHideHorizontalBar = false;
     private boolean isOverlayShowing = false;
     private boolean isOverlayAnimating = false;
     boolean pipInitialized = false;
     private final Object overlayLock = new Object();
 
     // Auto-hide bar transitions. The overlay slides in and out while whatever stands for the
-    // hidden bar - the collapsed button with the left bar, the edge handle without it - fades the
+    // hidden bar - the collapsed button with the vertical bar, the edge handle without it - fades the
     // other way, so no frame shows both of them or neither.
     private static final long BAR_SHOW_DURATION_MS = 220;
     private static final long BAR_HIDE_DURATION_MS = 180;
@@ -414,7 +414,7 @@ public class Workspace extends SmoothPagedView
         }
     };
     /**
-     * 'Bottom bar on every page' (BottomBarPlacement), read when the first page is built. Without
+     * 'Horizontal bar on every page' (HorizontalBarPlacement), read when the first page is built. Without
      * auto-hide the bar of the other pages is a persistent overlay (the bar's overlay window with
      * no timer); with it every page has the edge handle.
      */
@@ -433,15 +433,15 @@ public class Workspace extends SmoothPagedView
     private int mPersistentGen = 0;
     /** The window being built is a standby one: invisible, not touchable, widgets left to the page's bar. */
     private boolean mBuildStandby = false;
-    /** The left bar setting of the page that was built last. */
-    private boolean mLeftBar = false;
+    /** The vertical bar setting of the page that was built last. */
+    private boolean mVerticalBar = false;
     /** Adding the persistent overlay failed (no permission): not tried again until the page is rebuilt. */
     private boolean mPersistentFailed = false;
-    /** Auto-hide without the left bar, or with 'every page': the edge handle replaces the collapsed button. */
+    /** Auto-hide without the vertical bar, or with 'every page': the edge handle replaces the collapsed button. */
     private boolean mEdgeHandleMode = false;
     /** The launcher is resumed; set by Launcher.onPause() and onResume(). */
     private boolean mEdgeHandleHostVisible = false;
-    private BottomBarEdgeHandle mEdgeHandle;
+    private HorizontalBarEdgeHandle mEdgeHandle;
 
     private TextView titleText;
     private TextView artistText;
@@ -868,8 +868,8 @@ public class Workspace extends SmoothPagedView
         helpers.setInWidgets(false);
         helpers.setInOverviewMode(false);
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this.getContext());
-        boolean leftBar = mPrefs.getBoolean(Keys.LEFT_BAR, false);
-        mLeftBar = leftBar;
+        boolean verticalBar = mPrefs.getBoolean(Keys.VERTICAL_BAR, false);
+        mVerticalBar = verticalBar;
         widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
         blackTintBar = mPrefs.getBoolean(Keys.BLACK_BAR, false);
         boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
@@ -886,12 +886,12 @@ public class Workspace extends SmoothPagedView
         CellLayout workspaceLayout = this.mLauncher.findViewById(R.id.workspace_custom);
 
         if (userLayout) {
-            if (leftBar) {
+            if (verticalBar) {
                 if (widgetBar) {
-                    workspaceView = this.mLauncher.getLayoutInflater().inflate(R.layout.custom_layout_two_user_left, workspaceLayout, false);
+                    workspaceView = this.mLauncher.getLayoutInflater().inflate(R.layout.custom_layout_two_user_vertical, workspaceLayout, false);
                     customScreen[0].addView(workspaceView);
                 } else {
-                    workspaceView = this.mLauncher.getLayoutInflater().inflate(R.layout.custom_layout_one_user_left, workspaceLayout, false);
+                    workspaceView = this.mLauncher.getLayoutInflater().inflate(R.layout.custom_layout_one_user_vertical, workspaceLayout, false);
                     customScreen[0].addView(workspaceView);
                 }
             } else {
@@ -916,34 +916,34 @@ public class Workspace extends SmoothPagedView
                 mBarWeatherWidget = workspaceView.findViewById(R.id.bar_widget_weather);
             }
             
-            bottomBarAllApps = workspaceView.findViewById(R.id.rl_allapps);
+            horizontalBarAllApps = workspaceView.findViewById(R.id.rl_allapps);
             if (blackTintBar) {
-                Helpers.applyColorFilterToImageView(bottomBarAllApps);
+                Helpers.applyColorFilterToImageView(horizontalBarAllApps);
             }
 
-            bottomBarRecycler = workspaceView.findViewById(R.id.recycler_view);
+            horizontalBarRecycler = workspaceView.findViewById(R.id.recycler_view);
             
-            bottomBarBg = workspaceView.findViewById(R.id.iv_list_bg);
+            horizontalBarBg = workspaceView.findViewById(R.id.iv_list_bg);
             selectedBackground = mPrefs.getString(Keys.BAR_SELECTED_BACKGROUND, "app_list_bg");
             if (!selectedBackground.equals("app_list_bg")) {
-                bottomBarBg.setImageResource(getResId(selectedBackground));
+                horizontalBarBg.setImageResource(getResId(selectedBackground));
             }
 
-            // Resizable bottom bar (no-op when Keys.RESIZABLE_BOTTOM_BAR is off). Has to run before
-            // toggleBottomBar(): hideNormalBottomBar() collapses iv_list_bg, and the XML size of
+            // Resizable horizontal bar (no-op when Keys.RESIZABLE_HORIZONTAL_BAR is off). Has to run before
+            // toggleHorizontalBar(): hideNormalHorizontalBar() collapses iv_list_bg, and the XML size of
             // every bar view must be captured before anything overrides it.
-            applyResizableBottomBar("createUserPage");
+            applyResizableHorizontalBar("createUserPage");
 
-            autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
-            // Without the left bar there is no collapsed button: the bar is revealed through the
-            // edge handle (BottomBarEdgeHandle), which updateEdgeHandle() shows and hides.
-            mEveryPage = mPrefs.getBoolean(Keys.BOTTOM_BAR_EVERY_PAGE, false);
+            autoHideHorizontalBar = mPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false);
+            // Without the vertical bar there is no collapsed button: the bar is revealed through the
+            // edge handle (HorizontalBarEdgeHandle), which updateEdgeHandle() shows and hides.
+            mEveryPage = mPrefs.getBoolean(Keys.HORIZONTAL_BAR_EVERY_PAGE, false);
             mPersistentFailed = false;
-            // With the left bar the first page has the collapsed button; the other pages, if the bar
+            // With the vertical bar the first page has the collapsed button; the other pages, if the bar
             // is on every page, have the handle.
-            mEdgeHandleMode = autoHideBottomBar && (!leftBar || mEveryPage);
-            if (autoHideBottomBar) {
-                toggleBottomBar();              
+            mEdgeHandleMode = autoHideHorizontalBar && (!verticalBar || mEveryPage);
+            if (autoHideHorizontalBar) {
+                toggleHorizontalBar();              
             }
         } else {
             mEdgeHandleMode = false;
@@ -983,7 +983,7 @@ public class Workspace extends SmoothPagedView
         }
 
         if (userLayout) {
-            if (leftBar) {
+            if (verticalBar) {
                 absoluteLayout = this.findViewById(R.id.user_layout_left);
             } else {
                 absoluteLayout = this.findViewById(R.id.user_layout);
@@ -1242,7 +1242,7 @@ public class Workspace extends SmoothPagedView
             return;
         }
 
-        int expectedBarHeight = getExpectedBottomBarHeight();
+        int expectedBarHeight = getExpectedHorizontalBarHeight();
         if (expectedBarHeight > 0 && parentHeight < expectedBarHeight * BAR_TEXT_MIN_PARENT_FRACTION) {
             Log.w(TAG, "Bar text fit skipped: parent " + parentHeight + "px, bar " + expectedBarHeight
                     + "px - transient layout, waiting for a real one");
@@ -1308,21 +1308,21 @@ public class Workspace extends SmoothPagedView
     }
 
     /**
-     * Same bar height as hideNormalBottomBar() / showOverlayBottomBar(). Must follow the resizable
+     * Same bar height as hideNormalHorizontalBar() / showOverlayHorizontalBar(). Must follow the resizable
      * height: fitBarText() treats a parent below a quarter of this value as a transient layout and
      * skips it, so a stale (larger) value would leave the texts of a shrunken bar unfitted.
      */
-    private int getExpectedBottomBarHeight() {
+    private int getExpectedHorizontalBarHeight() {
         int screenWidth = Launcher.screenWidth;
         int screenHeight = Launcher.screenHeight;
         if (screenWidth <= 0 || screenHeight <= 0) {
             return 0;
         }
-        return getBottomBarHeight(screenWidth, screenHeight);
+        return getHorizontalBarHeight(screenWidth, screenHeight);
     }
 
     /**
-     * Keeps BottomBarDimensions' copy of the bar root's size current, so the overlap checks in
+     * Keeps HorizontalBarDimensions' copy of the bar root's size current, so the overlap checks in
      * Helpers use the bar that is really on screen instead of deriving it from the screen size
      * (which is larger by the system bars). Re-published on every layout, so a rotation or an
      * inset change updates it as well.
@@ -1331,27 +1331,27 @@ public class Workspace extends SmoothPagedView
         if (barRoot == null) {
             return;
         }
-        BottomBarDimensions.publishBarRootSize(barRoot.getWidth(), barRoot.getHeight());
+        HorizontalBarDimensions.publishBarRootSize(barRoot.getWidth(), barRoot.getHeight());
         barRoot.addOnLayoutChangeListener((view, left, top, right, bottom,
                                            oldLeft, oldTop, oldRight, oldBottom) ->
-                BottomBarDimensions.publishBarRootSize(right - left, bottom - top));
+                HorizontalBarDimensions.publishBarRootSize(right - left, bottom - top));
     }
 
     /**
-     * Height of the bottom bar for the current orientation, shared by the regular bar (inline in
+     * Height of the horizontal bar for the current orientation, shared by the regular bar (inline in
      * workspaceView) and the auto-hide overlay.
      *
      * Shortest-edge rule, exactly as originally implemented: portrait uses the screen width,
-     * landscape the screen height minus the status bar. Keys.RESIZABLE_BOTTOM_BAR switches the
+     * landscape the screen height minus the status bar. Keys.RESIZABLE_HORIZONTAL_BAR switches the
      * multiplier from the hardcoded 0.142 / 0.1638 to the user value.
      */
-    private int getBottomBarHeight(int screenWidth, int screenHeight) {
+    private int getHorizontalBarHeight(int screenWidth, int screenHeight) {
         if (mPrefs == null) {
             mPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         }
         boolean portrait = orientation == Configuration.ORIENTATION_PORTRAIT;
-        boolean resizableBottomBar = mPrefs.getBoolean(Keys.RESIZABLE_BOTTOM_BAR, false);
-        if (!resizableBottomBar) {
+        boolean resizableHorizontalBar = mPrefs.getBoolean(Keys.RESIZABLE_HORIZONTAL_BAR, false);
+        if (!resizableHorizontalBar) {
             // Fallback: the original formula, unchanged.
             if (portrait) {
                 return (int) (screenWidth * 0.142);
@@ -1359,37 +1359,37 @@ public class Workspace extends SmoothPagedView
             return (int) ((screenHeight - (mLauncher != null ? mLauncher.getStatusBarHeight() : 0)) * 0.1638);
         }
         int statusBarHeight = portrait ? 0 : (mLauncher != null ? mLauncher.getStatusBarHeight() : 0);
-        return BottomBarDimensions.computeBarHeight(mPrefs, portrait, screenWidth, screenHeight, statusBarHeight);
+        return HorizontalBarDimensions.computeBarHeight(mPrefs, portrait, screenWidth, screenHeight, statusBarHeight);
     }
 
     /**
-     * bottomBarHeight relative to the bar the hardcoded multipliers would give. Exactly 1f when
-     * Keys.RESIZABLE_BOTTOM_BAR is off or still at its default value.
+     * horizontalBarHeight relative to the bar the hardcoded multipliers would give. Exactly 1f when
+     * Keys.RESIZABLE_HORIZONTAL_BAR is off or still at its default value.
      */
-    private float getBottomBarScale(int screenWidth, int screenHeight, int bottomBarHeight) {
+    private float getHorizontalBarScale(int screenWidth, int screenHeight, int horizontalBarHeight) {
         boolean portrait = orientation == Configuration.ORIENTATION_PORTRAIT;
         int statusBarHeight = portrait ? 0 : (mLauncher != null ? mLauncher.getStatusBarHeight() : 0);
-        int legacyHeight = BottomBarDimensions.computeLegacyBarHeight(portrait, screenWidth, screenHeight, statusBarHeight);
-        return legacyHeight > 0 ? (float) bottomBarHeight / legacyHeight : 1f;
+        int legacyHeight = HorizontalBarDimensions.computeLegacyBarHeight(portrait, screenWidth, screenHeight, statusBarHeight);
+        return legacyHeight > 0 ? (float) horizontalBarHeight / legacyHeight : 1f;
     }
 
     /**
-     * Resizable bottom bar for the regular (inline) bar of the user layout.
+     * Resizable horizontal bar for the regular (inline) bar of the user layout.
      *
-     * Keys.RESIZABLE_BOTTOM_BAR off: no-op, custom_layout_*_user*.xml keeps sizing the bar
+     * Keys.RESIZABLE_HORIZONTAL_BAR off: no-op, custom_layout_*_user*.xml keeps sizing the bar
      * (layout_constraintHeight_percent in landscape, layout_constraintDimensionRatio in portrait).
      *
      * On: every view living in the bar gets an exact pixel height derived from
-     * getBottomBarHeight(), after the XML ratio / percent that would fight it is cleared:
+     * getHorizontalBarHeight(), after the XML ratio / percent that would fight it is cleared:
      *  - iv_list_bg: the bar height itself;
      *  - recycler_view, rl_music_two, bar_widget_date, bar_widget_weather: their XML height scaled
      *    by bar / XML bar, so each keeps its share of the bar (landscape: the full bar; portrait:
      *    the "H,0.295"-style ratios of their own width);
      *  - rl_allapps, show_bar: the visible (fitCenter) icon scales, the box width stays.
      * Widths are never changed: the horizontal budget of the bar, AppListAdapter's tile maths and
-     * the collapsed width set by hideNormalBottomBar() all stay valid.
+     * the collapsed width set by hideNormalHorizontalBar() all stay valid.
      *
-     * Left bar: rl_left_bar is constrained to the top of iv_list_bg in the XML, so its height
+     * Vertical bar: rl_vertical_bar is constrained to the top of iv_list_bg in the XML, so its height
      * follows automatically and needs no update here.
      *
      * Idempotent (each view's XML spec is captured once), so Launcher can call it on every
@@ -1397,7 +1397,7 @@ public class Workspace extends SmoothPagedView
      *
      * @return true if any LayoutParams changed.
      */
-    public boolean applyResizableBottomBar(String source) {
+    public boolean applyResizableHorizontalBar(String source) {
         final View barRoot = workspaceView;
         if (barRoot == null || mLauncher == null) {
             return false;
@@ -1405,20 +1405,20 @@ public class Workspace extends SmoothPagedView
         if (mPrefs == null) {
             mPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         }
-        boolean resizableBottomBar = mPrefs.getBoolean(Keys.RESIZABLE_BOTTOM_BAR, false);
-        if (!resizableBottomBar || !mPrefs.getBoolean(Keys.USER_LAYOUT, false)) {
+        boolean resizableHorizontalBar = mPrefs.getBoolean(Keys.RESIZABLE_HORIZONTAL_BAR, false);
+        if (!resizableHorizontalBar || !mPrefs.getBoolean(Keys.USER_LAYOUT, false)) {
             return false;
         }
 
         ImageView barBackground = barRoot.findViewById(R.id.iv_list_bg);
-        BottomBarDimensions.XmlSizeSpec barSpec = BottomBarDimensions.getXmlSpec(barBackground);
+        HorizontalBarDimensions.XmlSizeSpec barSpec = HorizontalBarDimensions.getXmlSpec(barBackground);
         if (barSpec == null) {
             return false;
         }
         int currentOrientation = getResources().getConfiguration().orientation;
         if (barSpec.orientation != currentOrientation || orientation != currentOrientation) {
             // Inflated for the other orientation; createUserPage() rebuilds it, don't mix the two.
-            Log.w(TAG, "Resizable bottom bar skipped (" + source + "): bar inflated for another orientation");
+            Log.w(TAG, "Resizable horizontal bar skipped (" + source + "): bar inflated for another orientation");
             return false;
         }
 
@@ -1427,11 +1427,11 @@ public class Workspace extends SmoothPagedView
         if (screenWidth <= 0 || screenHeight <= 0) {
             return false;
         }
-        // Parent of the bar views as the legacy maths sees it (see getBottomBarHeight()).
+        // Parent of the bar views as the legacy maths sees it (see getHorizontalBarHeight()).
         int rootWidth = screenWidth;
         int rootHeight = screenHeight - mLauncher.getStatusBarHeight();
 
-        int barHeight = getBottomBarHeight(screenWidth, screenHeight);
+        int barHeight = getHorizontalBarHeight(screenWidth, screenHeight);
         float xmlBarHeight = barSpec.resolveHeight(rootWidth, rootHeight);
         if (barHeight <= 0 || !(xmlBarHeight > 0f)) {
             return false;
@@ -1440,22 +1440,22 @@ public class Workspace extends SmoothPagedView
 
         RecyclerView recycler = barRoot.findViewById(R.id.recycler_view);
 
-        boolean changed = BottomBarDimensions.applyExactHeight(barBackground, barHeight);
-        changed |= BottomBarDimensions.applyScaledHeight(recycler, factor, rootWidth, rootHeight, barHeight);
-        changed |= BottomBarDimensions.applyScaledHeight(barRoot.findViewById(R.id.rl_music_two),
+        boolean changed = HorizontalBarDimensions.applyExactHeight(barBackground, barHeight);
+        changed |= HorizontalBarDimensions.applyScaledHeight(recycler, factor, rootWidth, rootHeight, barHeight);
+        changed |= HorizontalBarDimensions.applyScaledHeight(barRoot.findViewById(R.id.rl_music_two),
                 factor, rootWidth, rootHeight, barHeight);
         // Only present in the landscape widget bar; findViewById() returns null otherwise.
-        changed |= BottomBarDimensions.applyScaledHeight(barRoot.findViewById(R.id.bar_widget_date),
+        changed |= HorizontalBarDimensions.applyScaledHeight(barRoot.findViewById(R.id.bar_widget_date),
                 factor, rootWidth, rootHeight, barHeight);
-        changed |= BottomBarDimensions.applyScaledHeight(barRoot.findViewById(R.id.bar_widget_weather),
+        changed |= HorizontalBarDimensions.applyScaledHeight(barRoot.findViewById(R.id.bar_widget_weather),
                 factor, rootWidth, rootHeight, barHeight);
-        changed |= BottomBarDimensions.applyScaledIconHeight(barRoot.findViewById(R.id.rl_allapps),
+        changed |= HorizontalBarDimensions.applyScaledIconHeight(barRoot.findViewById(R.id.rl_allapps),
                 factor, rootWidth, rootHeight, barHeight);
-        changed |= BottomBarDimensions.applyScaledIconHeight(barRoot.findViewById(R.id.show_bar),
+        changed |= HorizontalBarDimensions.applyScaledIconHeight(barRoot.findViewById(R.id.show_bar),
                 factor, rootWidth, rootHeight, barHeight);
 
         if (changed) {
-            Log.d(TAG, "Resizable bottom bar applied (" + source + "): " + barHeight
+            Log.d(TAG, "Resizable horizontal bar applied (" + source + "): " + barHeight
                     + "px, x" + factor + " of the XML bar");
             if (recycler != null) {
                 recycler.invalidateItemDecorations();
@@ -1520,7 +1520,7 @@ public class Workspace extends SmoothPagedView
         // With auto-hide the texts live in the overlay window; setupOverlayWidgetBar() owns them.
         // (isOverlayShowing is no longer the test: it means "a window exists", and the persistent
         // window in standby has nothing bound to it.)
-        if (mPersistentShown || mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false)) {
+        if (mPersistentShown || mPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false)) {
             return;
         }
 
@@ -1554,21 +1554,21 @@ public class Workspace extends SmoothPagedView
         }
     }
 
-    public void toggleBottomBar() {
+    public void toggleHorizontalBar() {
         synchronized (overlayLock) {
             // Prevent multiple simultaneous calls
             if (isOverlayAnimating) {
                 return;
             }
-            if (workspaceView == null || bottomBarAllApps == null) {
+            if (workspaceView == null || horizontalBarAllApps == null) {
                 return;
             }
 
             showBarIcon = workspaceView.findViewById(R.id.show_bar);
 
-            if (bottomBarAllApps.getVisibility() == View.VISIBLE) {
-                // Hide the normal bottom bar
-                hideNormalBottomBar(getCollapsedBarWidth());
+            if (horizontalBarAllApps.getVisibility() == View.VISIBLE) {
+                // Hide the normal horizontal bar
+                hideNormalHorizontalBar(getCollapsedBarWidth());
             } else {
                 // Prevent showing if already showing
                 if (isOverlayShowing) {
@@ -1581,22 +1581,22 @@ public class Workspace extends SmoothPagedView
                 // Hiding it here left a gap while the overlay was being built.
                 hideInlineBarWidgets();
                 // Show using overlay
-                showOverlayBottomBar();
+                showOverlayHorizontalBar();
             }
         }
     }
 
-    public void hideBottomBar() {
-        hideNormalBottomBar(getCollapsedBarWidth());
-        hideOverlayBottomBar();
+    public void hideHorizontalBar() {
+        hideNormalHorizontalBar(getCollapsedBarWidth());
+        hideOverlayHorizontalBar();
     }
 
-    /** Width of the collapsed button (left bar only): 7.1 % of the width in landscape. */
+    /** Width of the collapsed button (vertical bar only): 7.1 % of the width in landscape. */
     private int getCollapsedBarWidth() {
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             return (int) (0.071 * Launcher.screenWidth);
         }
-        return Launcher.calculatedLeftBarWidth;
+        return Launcher.calculatedVerticalBarWidth;
     }
 
     private void hideInlineBarWidgets() {
@@ -1620,38 +1620,38 @@ public class Workspace extends SmoothPagedView
         }
     }
 
-    private void hideNormalBottomBar(int collapsedWidth) {
-        if (workspaceView == null || bottomBarRecycler == null || bottomBarAllApps == null
-                || bottomBarBg == null) {
+    private void hideNormalHorizontalBar(int collapsedWidth) {
+        if (workspaceView == null || horizontalBarRecycler == null || horizontalBarAllApps == null
+                || horizontalBarBg == null) {
             return;
         }
         if (showBarIcon == null) {
             showBarIcon = workspaceView.findViewById(R.id.show_bar);
         }
 
-        bottomBarRecycler.animate()
+        horizontalBarRecycler.animate()
                 .alpha(0f)
                 .setDuration(0)
-                .withEndAction(() -> bottomBarRecycler.setVisibility(View.INVISIBLE))
+                .withEndAction(() -> horizontalBarRecycler.setVisibility(View.INVISIBLE))
                 .start();
 
-        if (mEdgeHandleMode && !mLeftBar) {
-            // No collapsed button without the left bar: nothing of the inline bar stays on screen,
+        if (mEdgeHandleMode && !mVerticalBar) {
+            // No collapsed button without the vertical bar: nothing of the inline bar stays on screen,
             // the edge handle stands for it.
-            bottomBarAllApps.animate().cancel();
-            bottomBarAllApps.setAlpha(0f);
-            bottomBarAllApps.setVisibility(View.INVISIBLE);
-            fadeView(bottomBarBg, 0f, 0);
+            horizontalBarAllApps.animate().cancel();
+            horizontalBarAllApps.setAlpha(0f);
+            horizontalBarAllApps.setVisibility(View.INVISIBLE);
+            fadeView(horizontalBarBg, 0f, 0);
             fadeView(showBarIcon, 0f, 0);
             hideInlineBarWidgets();
             return;
         }
 
-        bottomBarAllApps.animate()
+        horizontalBarAllApps.animate()
                 .alpha(0f)
                 .setDuration(0)
                 .withEndAction(() -> {
-                    bottomBarAllApps.setVisibility(View.INVISIBLE);
+                    horizontalBarAllApps.setVisibility(View.INVISIBLE);
                     showBarIcon.setAlpha(0f);
                     showBarIcon.setVisibility(View.VISIBLE);
                     blackTintBar = mPrefs.getBoolean(Keys.BLACK_BAR, false);
@@ -1668,16 +1668,16 @@ public class Workspace extends SmoothPagedView
 
         final int screenWidth = Launcher.screenWidth;
         final int screenHeight = Launcher.screenHeight;
-        // Resizable when Keys.RESIZABLE_BOTTOM_BAR is on, the original formula otherwise. With the
-        // feature on, applyResizableBottomBar() has already cleared the XML ratio of iv_list_bg.
-        final int bottomBarHeight = getBottomBarHeight(screenWidth, screenHeight);
-        Log.d("BottomBar", "Before: width=" + bottomBarBg.getWidth() + ", height=" + bottomBarBg.getHeight());
-        ValueAnimator widthAnim = ValueAnimator.ofInt(bottomBarBg.getWidth(), collapsedWidth);
+        // Resizable when Keys.RESIZABLE_HORIZONTAL_BAR is on, the original formula otherwise. With the
+        // feature on, applyResizableHorizontalBar() has already cleared the XML ratio of iv_list_bg.
+        final int horizontalBarHeight = getHorizontalBarHeight(screenWidth, screenHeight);
+        Log.d("HorizontalBar", "Before: width=" + horizontalBarBg.getWidth() + ", height=" + horizontalBarBg.getHeight());
+        ValueAnimator widthAnim = ValueAnimator.ofInt(horizontalBarBg.getWidth(), collapsedWidth);
         widthAnim.addUpdateListener(animator -> {
-            ViewGroup.LayoutParams params = bottomBarBg.getLayoutParams();
+            ViewGroup.LayoutParams params = horizontalBarBg.getLayoutParams();
             params.width = (int) animator.getAnimatedValue();
-            params.height = bottomBarHeight;
-            bottomBarBg.setLayoutParams(params);
+            params.height = horizontalBarHeight;
+            horizontalBarBg.setLayoutParams(params);
         });
         widthAnim.setInterpolator(new AccelerateDecelerateInterpolator());
         widthAnim.setDuration(0);
@@ -1689,12 +1689,12 @@ public class Workspace extends SmoothPagedView
         scaleDownY.setDuration(0);
         scaleDownX.start();
         scaleDownY.start();
-        Log.d("BottomBar", "After: width=" + bottomBarBg.getWidth() + ", height=" + bottomBarBg.getHeight());
+        Log.d("HorizontalBar", "After: width=" + horizontalBarBg.getWidth() + ", height=" + horizontalBarBg.getHeight());
     }
 
-    private void showOverlayBottomBar() {
+    private void showOverlayHorizontalBar() {
         synchronized (overlayLock) {
-            if (overlayBottomBar != null) {
+            if (overlayHorizontalBar != null) {
                 if (isOverlayShowing) {
                     return;
                 } else {
@@ -1707,12 +1707,12 @@ public class Workspace extends SmoothPagedView
             // window, the inset listener and forceOriginalSizes() below all derive from it.
             int screenWidth = Launcher.screenWidth;
             int screenHeight = Launcher.screenHeight;
-            final int bottomBarHeight = getBottomBarHeight(screenWidth, screenHeight);
+            final int horizontalBarHeight = getHorizontalBarHeight(screenWidth, screenHeight);
 
             // Create overlay window parameters
             overlayWindowParams = new WindowManager.LayoutParams(
                     WindowManager.LayoutParams.MATCH_PARENT,
-                    bottomBarHeight,
+                    horizontalBarHeight,
                     WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                             | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
@@ -1731,7 +1731,7 @@ public class Workspace extends SmoothPagedView
 
             overlayWindowParams.gravity = Gravity.BOTTOM;
             // No system window animation: the bar slides itself, in step with the collapsed
-            // button / edge handle (startOverlayShowTransition(), hideOverlayBottomBar()).
+            // button / edge handle (startOverlayShowTransition(), hideOverlayHorizontalBar()).
             overlayWindowParams.windowAnimations = 0;
 
             LayoutInflater inflater = LayoutInflater.from(getContext());
@@ -1747,14 +1747,14 @@ public class Workspace extends SmoothPagedView
             final BarSwipeFrame barFrame = new BarSwipeFrame(getContext(), mBarSwipeHost);
             barFrame.addView(barContent, new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            overlayBottomBar = barFrame;
+            overlayHorizontalBar = barFrame;
 
-            overlayBottomBar.setOnApplyWindowInsetsListener((v, insets) -> {
+            overlayHorizontalBar.setOnApplyWindowInsetsListener((v, insets) -> {
                 int bottomInset = insets.getSystemWindowInsetBottom();
 
                 // Extend the bar into the nav bar area
                 ViewGroup.LayoutParams lp = v.getLayoutParams();
-                lp.height = bottomBarHeight + bottomInset;
+                lp.height = horizontalBarHeight + bottomInset;
                 v.setLayoutParams(lp);
 
                 // Optional: push content up so buttons stay visible
@@ -1768,39 +1768,39 @@ public class Workspace extends SmoothPagedView
                 return insets.consumeSystemWindowInsets();
             });
 
-            ImageView overlayAllApps = overlayBottomBar.findViewById(R.id.rl_allapps);
+            ImageView overlayAllApps = overlayHorizontalBar.findViewById(R.id.rl_allapps);
             blackTintBar = mPrefs.getBoolean(Keys.BLACK_BAR, false);
             if (blackTintBar) {
                 Helpers.applyColorFilterToImageView(overlayAllApps);
             }
 
             // Setup the overlay view
-            setupOverlayView(screenWidth, bottomBarHeight);
+            setupOverlayView(screenWidth, horizontalBarHeight);
             prepareOverlayForShow();
 
             // Add to window manager
             try {
-                overlayWindowManager.addView(overlayBottomBar, overlayWindowParams);
+                overlayWindowManager.addView(overlayHorizontalBar, overlayWindowParams);
                 isOverlayShowing = true;
-                final View addedBar = overlayBottomBar;
+                final View addedBar = overlayHorizontalBar;
                 addedBar.post(addedBar::requestApplyInsets);
                 if (mOverlayPersistent && mBuildStandby) {
                     // Built and laid out in advance, invisible: showing it is a change of alpha
                     // (activatePersistentOverlay()).
-                    overlayBottomBar.setAlpha(0f);
-                    overlayBottomBar.setTranslationY(0f);
+                    overlayHorizontalBar.setAlpha(0f);
+                    overlayHorizontalBar.setTranslationY(0f);
                     primeStandbyWindowAfterLayout(addedBar);
                 } else if (mOverlayPersistent) {
                     // Over the page's own bar, in the same place: it is there at once, no slide,
                     // so that it covers the bar that leaves with the page without a jump. No timer.
-                    overlayBottomBar.setAlpha(1f);
-                    overlayBottomBar.setTranslationY(0f);
+                    overlayHorizontalBar.setAlpha(1f);
+                    overlayHorizontalBar.setTranslationY(0f);
                 } else {
                     startOverlayShowTransition();
                     setupAutoHideForOverlay();
                 }
             } catch (Exception e) {
-                Log.e("OverlayBottomBar", "Failed to add overlay view", e);
+                Log.e("OverlayHorizontalBar", "Failed to add overlay view", e);
                 if (mOverlayPersistent) {
                     mPersistentFailed = true;   // typically no permission to draw over other apps
                 }
@@ -1838,7 +1838,7 @@ public class Workspace extends SmoothPagedView
 
     private void primeStandbyWindow(View bar) {
         synchronized (overlayLock) {
-            if (bar != overlayBottomBar || !mOverlayPersistent || mPersistentShown || mPersistentParking
+            if (bar != overlayHorizontalBar || !mOverlayPersistent || mPersistentShown || mPersistentParking
                     || !widgetBar) {
                 return;
             }
@@ -1848,27 +1848,27 @@ public class Workspace extends SmoothPagedView
         refreshWidgetBarAfterWake("persistent bar standby");
     }
 
-    private void setupOverlayView(int screenWidth, int bottomBarHeight) {
-        AbsoluteLayout userLayout = overlayBottomBar.findViewById(R.id.user_layout);
+    private void setupOverlayView(int screenWidth, int horizontalBarHeight) {
+        AbsoluteLayout userLayout = overlayHorizontalBar.findViewById(R.id.user_layout);
         if (userLayout != null) {
             userLayout.setVisibility(View.GONE);
         }
         
-        RecyclerView overlayRecycler = overlayBottomBar.findViewById(R.id.recycler_view);
-        ImageView overlayAllApps = overlayBottomBar.findViewById(R.id.rl_allapps);
-        ImageView overlayBg = overlayBottomBar.findViewById(R.id.iv_list_bg);
+        RecyclerView overlayRecycler = overlayHorizontalBar.findViewById(R.id.recycler_view);
+        ImageView overlayAllApps = overlayHorizontalBar.findViewById(R.id.rl_allapps);
+        ImageView overlayBg = overlayHorizontalBar.findViewById(R.id.iv_list_bg);
 
         selectedBackground = mPrefs.getString(Keys.BAR_SELECTED_BACKGROUND, "app_list_bg");
         if (!selectedBackground.equals("app_list_bg")) {
             overlayBg.setImageResource(getResId(selectedBackground));
         }
         
-        forceOriginalSizes(screenWidth, bottomBarHeight);
+        forceOriginalSizes(screenWidth, horizontalBarHeight);
         
         // Setup RecyclerView
         overlayRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
-        if (bottomBarRecycler.getAdapter() != null) {
-            setupRecyclerView(bottomBarRecycler, overlayRecycler);
+        if (horizontalBarRecycler.getAdapter() != null) {
+            setupRecyclerView(horizontalBarRecycler, overlayRecycler);
         }
         
         // Setup widget bar if enabled (a standby window is bound later, see primeStandbyWindow())
@@ -1883,16 +1883,16 @@ public class Workspace extends SmoothPagedView
                 mLauncher.onClickAllAppsButton();
             }
             if (!mOverlayPersistent) {
-                hideOverlayBottomBar();
+                hideOverlayHorizontalBar();
             }   // else all apps takes the persistent bar away itself (updatePersistentBar())
         });
 
-        overlayBottomBar.setOnTouchListener((v, event) -> {
+        overlayHorizontalBar.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
                 if (mOverlayPersistent) {
                     return false;   // a touch on the page does not put the page's bar away
                 }
-                hideOverlayBottomBar();
+                hideOverlayHorizontalBar();
                 return true;
             }
             return false;
@@ -1900,81 +1900,81 @@ public class Workspace extends SmoothPagedView
     }
 
     private void setupOverlayWidgetBar() {
-        ViewGroup musicWidget = overlayBottomBar.findViewById(R.id.rl_music_two);
+        ViewGroup musicWidget = overlayHorizontalBar.findViewById(R.id.rl_music_two);
         if (musicWidget != null) {
             mLauncher.initMusicBarView(musicWidget);
             mLauncher.preSetMusicWidgets();
             mLauncher.bindMusicBarOnclickListener(musicWidget);
         }
 
-        ViewGroup weatherWidget = overlayBottomBar.findViewById(R.id.bar_widget_weather);
+        ViewGroup weatherWidget = overlayHorizontalBar.findViewById(R.id.bar_widget_weather);
         if (weatherWidget != null) {
             mLauncher.initBarWeatherView(weatherWidget);
             mLauncher.showWeatherInfo();
         }
         
-        setWidgetBarTextView(overlayBottomBar);
+        setWidgetBarTextView(overlayHorizontalBar);
     }
 
-    private void forceOriginalSizes(int screenWidth, int bottomBarHeight) {
-        // Auto-hide overlay. bottomBarHeight is already the resizable height (showOverlayBottomBar);
+    private void forceOriginalSizes(int screenWidth, int horizontalBarHeight) {
+        // Auto-hide overlay. horizontalBarHeight is already the resizable height (showOverlayHorizontalBar);
         // barScale carries it into the one size the XML derives from a view's own width - the
-        // portrait recycler - and is exactly 1f when Keys.RESIZABLE_BOTTOM_BAR is off.
-        boolean resizableBottomBar = mPrefs.getBoolean(Keys.RESIZABLE_BOTTOM_BAR, false);
-        float barScale = resizableBottomBar
-                ? getBottomBarScale(screenWidth, Launcher.screenHeight, bottomBarHeight)
+        // portrait recycler - and is exactly 1f when Keys.RESIZABLE_HORIZONTAL_BAR is off.
+        boolean resizableHorizontalBar = mPrefs.getBoolean(Keys.RESIZABLE_HORIZONTAL_BAR, false);
+        float barScale = resizableHorizontalBar
+                ? getHorizontalBarScale(screenWidth, Launcher.screenHeight, horizontalBarHeight)
                 : 1f;
         if (widgetBar) {
-            forceOriginalSizesLayoutTwo(screenWidth, bottomBarHeight, resizableBottomBar, barScale);
+            forceOriginalSizesLayoutTwo(screenWidth, horizontalBarHeight, resizableHorizontalBar, barScale);
         } else {
-            forceOriginalSizesLayoutOne(screenWidth, bottomBarHeight, resizableBottomBar, barScale);
+            forceOriginalSizesLayoutOne(screenWidth, horizontalBarHeight, resizableHorizontalBar, barScale);
         }
     }
 
-    private void forceOriginalSizesLayoutOne(int screenWidth, int bottomBarHeight,
-                                             boolean resizableBottomBar, float barScale) {
+    private void forceOriginalSizesLayoutOne(int screenWidth, int horizontalBarHeight,
+                                             boolean resizableHorizontalBar, float barScale) {
         int allAppsWidth, allAppsHeight;
         int recyclerWidth, recyclerHeight;
         int showBarWidth, showBarHeight;
         
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             allAppsWidth = (int) (screenWidth * 0.11);
-            allAppsHeight = (int) (bottomBarHeight * 0.67);
+            allAppsHeight = (int) (horizontalBarHeight * 0.67);
             
             recyclerWidth = (int) (screenWidth * 0.8795);
             recyclerHeight = (int) (recyclerWidth * 0.142);
-            if (resizableBottomBar) {
+            if (resizableHorizontalBar) {
                 // XML "H,0.142" is a share of the recycler's own width and would ignore the bar
                 // height - keep that share of the (resized) bar instead.
-                recyclerHeight = Math.min(bottomBarHeight, (int) (recyclerWidth * 0.142 * barScale));
+                recyclerHeight = Math.min(horizontalBarHeight, (int) (recyclerWidth * 0.142 * barScale));
             }
             
             showBarWidth = (int) (screenWidth * 0.06);
-            showBarHeight = (int) (bottomBarHeight * 0.67);
+            showBarHeight = (int) (horizontalBarHeight * 0.67);
         } else {
             allAppsWidth = (int) (screenWidth * 0.11);
-            allAppsHeight = (int) (bottomBarHeight * 0.67);
+            allAppsHeight = (int) (horizontalBarHeight * 0.67);
             
             recyclerWidth = (int) (screenWidth * 0.8795);
-            recyclerHeight = bottomBarHeight;
+            recyclerHeight = horizontalBarHeight;
             
             showBarWidth = (int) (screenWidth * 0.06);
-            showBarHeight = (int) (bottomBarHeight * 0.67);
+            showBarHeight = (int) (horizontalBarHeight * 0.67);
         }
             
         // Apply forced dimensions
-        ImageView overlayAllApps = overlayBottomBar.findViewById(R.id.rl_allapps);
-        RecyclerView overlayRecycler = overlayBottomBar.findViewById(R.id.recycler_view);
-        ImageView overlayShowBar = overlayBottomBar.findViewById(R.id.show_bar);
-        ImageView overlayBg = overlayBottomBar.findViewById(R.id.iv_list_bg);
+        ImageView overlayAllApps = overlayHorizontalBar.findViewById(R.id.rl_allapps);
+        RecyclerView overlayRecycler = overlayHorizontalBar.findViewById(R.id.recycler_view);
+        ImageView overlayShowBar = overlayHorizontalBar.findViewById(R.id.show_bar);
+        ImageView overlayBg = overlayHorizontalBar.findViewById(R.id.iv_list_bg);
         
         // Force background to full size
         ViewGroup.LayoutParams bgParams = overlayBg.getLayoutParams();
         bgParams.width = screenWidth;
-        bgParams.height = bottomBarHeight;
-        if (resizableBottomBar && bgParams instanceof ConstraintLayout.LayoutParams bgConstraintParams) {
+        bgParams.height = horizontalBarHeight;
+        if (resizableHorizontalBar && bgParams instanceof ConstraintLayout.LayoutParams bgConstraintParams) {
             // Exact height wins: drop the XML "H,0.142" ratio / 0.1638 height percent.
-            BottomBarDimensions.clearConflictingHeightRules(bgConstraintParams);
+            HorizontalBarDimensions.clearConflictingHeightRules(bgConstraintParams);
         }
         overlayBg.setLayoutParams(bgParams);
         
@@ -1986,8 +1986,8 @@ public class Workspace extends SmoothPagedView
             constraintParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
             constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
             constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
-            if (resizableBottomBar) {
-                BottomBarDimensions.clearConflictingHeightRules(constraintParams);
+            if (resizableHorizontalBar) {
+                HorizontalBarDimensions.clearConflictingHeightRules(constraintParams);
             }
             overlayAllApps.setLayoutParams(constraintParams);
         }
@@ -2001,8 +2001,8 @@ public class Workspace extends SmoothPagedView
             constraintParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
             constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
             constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
-            if (resizableBottomBar) {
-                BottomBarDimensions.clearConflictingHeightRules(constraintParams);
+            if (resizableHorizontalBar) {
+                HorizontalBarDimensions.clearConflictingHeightRules(constraintParams);
             }
             overlayRecycler.setLayoutParams(constraintParams);
         }
@@ -2016,15 +2016,15 @@ public class Workspace extends SmoothPagedView
             constraintParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
             constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
             constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
-            if (resizableBottomBar) {
-                BottomBarDimensions.clearConflictingHeightRules(constraintParams);
+            if (resizableHorizontalBar) {
+                HorizontalBarDimensions.clearConflictingHeightRules(constraintParams);
             }
             overlayShowBar.setLayoutParams(constraintParams);
         }
     }
 
-    private void forceOriginalSizesLayoutTwo(int screenWidth, int bottomBarHeight,
-                                             boolean resizableBottomBar, float barScale) {
+    private void forceOriginalSizesLayoutTwo(int screenWidth, int horizontalBarHeight,
+                                             boolean resizableHorizontalBar, float barScale) {
         int allAppsWidth, allAppsHeight;
         int recyclerWidth, recyclerHeight;
         int showBarWidth, showBarHeight;
@@ -2032,31 +2032,31 @@ public class Workspace extends SmoothPagedView
         
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             allAppsWidth = (int) (screenWidth * 0.1);
-            allAppsHeight = (int) (bottomBarHeight * 0.67);
+            allAppsHeight = (int) (horizontalBarHeight * 0.67);
             
             recyclerWidth = (int) (screenWidth * 0.4385);
             recyclerHeight = (int) (recyclerWidth * 0.295);
-            if (resizableBottomBar) {
+            if (resizableHorizontalBar) {
                 // XML "H,0.295" is a share of the recycler's own width and would ignore the bar
                 // height - keep that share of the (resized) bar instead.
-                recyclerHeight = Math.min(bottomBarHeight, (int) (recyclerWidth * 0.295 * barScale));
+                recyclerHeight = Math.min(horizontalBarHeight, (int) (recyclerWidth * 0.295 * barScale));
             }
             
             showBarWidth = (int) (screenWidth * 0.06);
-            showBarHeight = (int) (bottomBarHeight * 0.67);
+            showBarHeight = (int) (horizontalBarHeight * 0.67);
             
             musicWidgetWidth = (int) (screenWidth * 0.295);
             dateWidgetWidth = (int) (screenWidth * 0.05);
             weatherWidgetWidth = (int) (screenWidth * 0.15);
         } else {
             allAppsWidth = (int) (screenWidth * 0.09);
-            allAppsHeight = (int) (bottomBarHeight * 0.67);
+            allAppsHeight = (int) (horizontalBarHeight * 0.67);
             
             recyclerWidth = (int) (screenWidth * 0.4395);
-            recyclerHeight = bottomBarHeight;
+            recyclerHeight = horizontalBarHeight;
             
             showBarWidth = (int) (screenWidth * 0.06);
-            showBarHeight = (int) (bottomBarHeight * 0.67);
+            showBarHeight = (int) (horizontalBarHeight * 0.67);
             
             musicWidgetWidth = (int) (screenWidth * 0.28);
             dateWidgetWidth = (int) (screenWidth * 0.05);
@@ -2072,20 +2072,20 @@ public class Workspace extends SmoothPagedView
         }
         
         // Apply forced dimensions
-        ImageView overlayAllApps = overlayBottomBar.findViewById(R.id.rl_allapps);
-        RecyclerView overlayRecycler = overlayBottomBar.findViewById(R.id.recycler_view);
-        ImageView overlayShowBar = overlayBottomBar.findViewById(R.id.show_bar);
-        ImageView overlayBg = overlayBottomBar.findViewById(R.id.iv_list_bg);
-        ViewGroup musicWidget = overlayBottomBar.findViewById(R.id.rl_music_two);            
-        ViewGroup weatherWidget = overlayBottomBar.findViewById(R.id.bar_widget_weather);
+        ImageView overlayAllApps = overlayHorizontalBar.findViewById(R.id.rl_allapps);
+        RecyclerView overlayRecycler = overlayHorizontalBar.findViewById(R.id.recycler_view);
+        ImageView overlayShowBar = overlayHorizontalBar.findViewById(R.id.show_bar);
+        ImageView overlayBg = overlayHorizontalBar.findViewById(R.id.iv_list_bg);
+        ViewGroup musicWidget = overlayHorizontalBar.findViewById(R.id.rl_music_two);            
+        ViewGroup weatherWidget = overlayHorizontalBar.findViewById(R.id.bar_widget_weather);
         
         // Force background to full size
         ViewGroup.LayoutParams bgParams = overlayBg.getLayoutParams();
         bgParams.width = screenWidth;
-        bgParams.height = bottomBarHeight;
-        if (resizableBottomBar && bgParams instanceof ConstraintLayout.LayoutParams bgConstraintParams) {
+        bgParams.height = horizontalBarHeight;
+        if (resizableHorizontalBar && bgParams instanceof ConstraintLayout.LayoutParams bgConstraintParams) {
             // Exact height wins: drop the XML "H,0.142" ratio / 0.1638 height percent.
-            BottomBarDimensions.clearConflictingHeightRules(bgConstraintParams);
+            HorizontalBarDimensions.clearConflictingHeightRules(bgConstraintParams);
         }
         overlayBg.setLayoutParams(bgParams);
         
@@ -2097,8 +2097,8 @@ public class Workspace extends SmoothPagedView
             constraintParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
             constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
             constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
-            if (resizableBottomBar) {
-                BottomBarDimensions.clearConflictingHeightRules(constraintParams);
+            if (resizableHorizontalBar) {
+                HorizontalBarDimensions.clearConflictingHeightRules(constraintParams);
             }
             overlayAllApps.setLayoutParams(constraintParams);
         }
@@ -2112,8 +2112,8 @@ public class Workspace extends SmoothPagedView
             constraintParams.endToStart = R.id.rl_music_two;
             constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
             constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
-            if (resizableBottomBar) {
-                BottomBarDimensions.clearConflictingHeightRules(constraintParams);
+            if (resizableHorizontalBar) {
+                HorizontalBarDimensions.clearConflictingHeightRules(constraintParams);
             }
             overlayRecycler.setLayoutParams(constraintParams);
         }
@@ -2123,7 +2123,7 @@ public class Workspace extends SmoothPagedView
             ViewGroup.LayoutParams musicParams = musicWidget.getLayoutParams();
             if (musicParams instanceof ConstraintLayout.LayoutParams constraintParams) {
                 constraintParams.width = musicWidgetWidth;
-                constraintParams.height = bottomBarHeight;
+                constraintParams.height = horizontalBarHeight;
                 constraintParams.startToEnd = R.id.recycler_view;
                 if (noWeather && (noDate || portraitBar)) {
                     // Nothing is left of the bar after the music widget (the portrait bar has no date).
@@ -2135,8 +2135,8 @@ public class Workspace extends SmoothPagedView
                 }
                 constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
                 constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
-                if (resizableBottomBar) {
-                    BottomBarDimensions.clearConflictingHeightRules(constraintParams);
+                if (resizableHorizontalBar) {
+                    HorizontalBarDimensions.clearConflictingHeightRules(constraintParams);
                 }
                 musicWidget.setLayoutParams(constraintParams);
             }
@@ -2144,12 +2144,12 @@ public class Workspace extends SmoothPagedView
 
         // Force date widget size
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            ViewGroup dateWidget = overlayBottomBar.findViewById(R.id.bar_widget_date);
+            ViewGroup dateWidget = overlayHorizontalBar.findViewById(R.id.bar_widget_date);
             if (dateWidget != null) {
                 ViewGroup.LayoutParams dateParams = dateWidget.getLayoutParams();
                 if (dateParams instanceof ConstraintLayout.LayoutParams constraintParams) {
                     constraintParams.width = dateWidgetWidth;
-                    constraintParams.height = bottomBarHeight;
+                    constraintParams.height = horizontalBarHeight;
                     constraintParams.startToEnd = R.id.rl_music_two;
                     if (noWeather) {
                         constraintParams.endToStart = ConstraintLayout.LayoutParams.UNSET;
@@ -2160,8 +2160,8 @@ public class Workspace extends SmoothPagedView
                     }
                     constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
                     constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
-                    if (resizableBottomBar) {
-                        BottomBarDimensions.clearConflictingHeightRules(constraintParams);
+                    if (resizableHorizontalBar) {
+                        HorizontalBarDimensions.clearConflictingHeightRules(constraintParams);
                     }
                     dateWidget.setLayoutParams(constraintParams);
                 }
@@ -2173,13 +2173,13 @@ public class Workspace extends SmoothPagedView
             ViewGroup.LayoutParams weatherParams = weatherWidget.getLayoutParams();
             if (weatherParams instanceof ConstraintLayout.LayoutParams constraintParams) {
                 constraintParams.width = weatherWidgetWidth;
-                constraintParams.height = bottomBarHeight;
+                constraintParams.height = horizontalBarHeight;
                 constraintParams.startToEnd = noDate ? R.id.rl_music_two : R.id.bar_widget_date;
                 constraintParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
                 constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
                 constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
-                if (resizableBottomBar) {
-                    BottomBarDimensions.clearConflictingHeightRules(constraintParams);
+                if (resizableHorizontalBar) {
+                    HorizontalBarDimensions.clearConflictingHeightRules(constraintParams);
                 }
                 weatherWidget.setLayoutParams(constraintParams);
             }
@@ -2194,8 +2194,8 @@ public class Workspace extends SmoothPagedView
             constraintParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
             constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
             constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
-            if (resizableBottomBar) {
-                BottomBarDimensions.clearConflictingHeightRules(constraintParams);
+            if (resizableHorizontalBar) {
+                HorizontalBarDimensions.clearConflictingHeightRules(constraintParams);
             }
             overlayShowBar.setLayoutParams(constraintParams);
         }
@@ -2211,19 +2211,19 @@ public class Workspace extends SmoothPagedView
      * once, while the apps are read a moment later) has a recycler without an adapter and would
      * stay empty until it is built again: it gets the adapter now.
      */
-    public void onBottomBarAdapterReady() {
-        if (overlayBottomBar == null || bottomBarRecycler == null || bottomBarRecycler.getAdapter() == null) {
+    public void onHorizontalBarAdapterReady() {
+        if (overlayHorizontalBar == null || horizontalBarRecycler == null || horizontalBarRecycler.getAdapter() == null) {
             return;
         }
-        RecyclerView overlayRecycler = overlayBottomBar.findViewById(R.id.recycler_view);
-        if (overlayRecycler == null || overlayRecycler.getAdapter() == bottomBarRecycler.getAdapter()) {
+        RecyclerView overlayRecycler = overlayHorizontalBar.findViewById(R.id.recycler_view);
+        if (overlayRecycler == null || overlayRecycler.getAdapter() == horizontalBarRecycler.getAdapter()) {
             return;
         }
-        if (mAdapterLateLoggedFor != overlayBottomBar) {
-            mAdapterLateLoggedFor = overlayBottomBar;
+        if (mAdapterLateLoggedFor != overlayHorizontalBar) {
+            mAdapterLateLoggedFor = overlayHorizontalBar;
             Log.d(TAG, "Overlay bar: apps attached after it was built");
         }
-        setupRecyclerView(bottomBarRecycler, overlayRecycler);
+        setupRecyclerView(horizontalBarRecycler, overlayRecycler);
     }
 
     private void setupRecyclerView(RecyclerView mBottomRecycler, RecyclerView mOverlayRecycler) {
@@ -2293,15 +2293,15 @@ public class Workspace extends SmoothPagedView
 
     /** Initial state of a freshly built overlay: invisible, all-apps button in place of show_bar. */
     private void prepareOverlayForShow() {
-        if (overlayBottomBar == null) return;
+        if (overlayHorizontalBar == null) return;
 
         // Nothing may show before startOverlayShowTransition() has moved the bar below the edge.
-        overlayBottomBar.setAlpha(0f);
-        overlayBottomBar.setVisibility(View.VISIBLE);
+        overlayHorizontalBar.setAlpha(0f);
+        overlayHorizontalBar.setVisibility(View.VISIBLE);
 
         // Show all apps icon in overlay
-        ImageView overlayAllApps = overlayBottomBar.findViewById(R.id.rl_allapps);
-        ImageView overlayShowBar = overlayBottomBar.findViewById(R.id.show_bar);
+        ImageView overlayAllApps = overlayHorizontalBar.findViewById(R.id.rl_allapps);
+        ImageView overlayShowBar = overlayHorizontalBar.findViewById(R.id.show_bar);
         if (overlayShowBar != null) {
             overlayShowBar.setVisibility(View.INVISIBLE);
         }
@@ -2318,7 +2318,7 @@ public class Workspace extends SmoothPagedView
      * moment with neither the button nor the bar on screen.
      */
     private void startOverlayShowTransition() {
-        final View bar = overlayBottomBar;
+        final View bar = overlayHorizontalBar;
         if (bar == null) return;
 
         bar.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
@@ -2328,7 +2328,7 @@ public class Workspace extends SmoothPagedView
                 if (observer.isAlive()) {
                     observer.removeOnPreDrawListener(this);
                 }
-                if (bar != overlayBottomBar || mOverlayHideAnimating) {
+                if (bar != overlayHorizontalBar || mOverlayHideAnimating) {
                     return true; // replaced, or already on its way out
                 }
 
@@ -2359,8 +2359,8 @@ public class Workspace extends SmoothPagedView
         });
     }
 
-    public void hideOverlayBottomBar() {
-        hideOverlayBottomBar(true);
+    public void hideOverlayHorizontalBar() {
+        hideOverlayHorizontalBar(true);
     }
 
     /**
@@ -2368,17 +2368,17 @@ public class Workspace extends SmoothPagedView
      * is paused) or the user swiped over the status bar strip (StatusBarSwipeDetector). Neither
      * reaches the bar as ACTION_OUTSIDE - a tap inside the bar is not outside it, and the swipe
      * strip is a window above the bar, while only windows above the touched one get ACTION_OUTSIDE.
-     * Does nothing without auto-hide or while the bar is hidden: hideOverlayBottomBar() alone would
+     * Does nothing without auto-hide or while the bar is hidden: hideOverlayHorizontalBar() alone would
      * also disable the inline recycler, i.e. the regular bar.
      */
     public void hideAutoHideBarIfShown(String reason) {
         synchronized (overlayLock) {
-            if (!autoHideBottomBar || !isOverlayShowing || mOverlayHideAnimating) {
+            if (!autoHideHorizontalBar || !isOverlayShowing || mOverlayHideAnimating) {
                 return;
             }
         }
         Log.d(TAG, "Hiding the auto-hide bar: " + reason);
-        hideOverlayBottomBar();
+        hideOverlayHorizontalBar();
     }
 
     /**
@@ -2386,7 +2386,7 @@ public class Workspace extends SmoothPagedView
      * handle) fades in, and the window is removed when the slide ends; otherwise both happen at
      * once. A slide-in still running is taken over from where it is.
      */
-    public void hideOverlayBottomBar(boolean animate) {
+    public void hideOverlayHorizontalBar(boolean animate) {
         hideOverlay(animate, false);
     }
 
@@ -2413,7 +2413,7 @@ public class Workspace extends SmoothPagedView
 
         long restoreDurationMs = 0;
         synchronized (overlayLock) {
-            final View bar = overlayBottomBar;
+            final View bar = overlayHorizontalBar;
             final WindowManager windowManager = overlayWindowManager;
 
             if (bar == null || windowManager == null) {
@@ -2433,7 +2433,7 @@ public class Workspace extends SmoothPagedView
                 finishOverlayHide(bar, windowManager);
                 return;
             } else if (isOverlayAnimating) {
-                // The overlay is being built right now (toggleBottomBar()).
+                // The overlay is being built right now (toggleHorizontalBar()).
                 return;
             } else {
                 isOverlayAnimating = true;
@@ -2479,7 +2479,7 @@ public class Workspace extends SmoothPagedView
      */
     private void onOverlaySlideOutEnded(View bar, WindowManager windowManager) {
         synchronized (overlayLock) {
-            if (mOverlayTouchHeld && bar == overlayBottomBar) {
+            if (mOverlayTouchHeld && bar == overlayHorizontalBar) {
                 mOverlayRemoveAtUp = true;
                 return;
             }
@@ -2491,7 +2491,7 @@ public class Workspace extends SmoothPagedView
     private void onOverlayTouchEnded() {
         synchronized (overlayLock) {
             mOverlayTouchHeld = false;
-            final View bar = overlayBottomBar;
+            final View bar = overlayHorizontalBar;
             final WindowManager windowManager = overlayWindowManager;
             if (bar == null || windowManager == null) {
                 return;
@@ -2501,7 +2501,7 @@ public class Workspace extends SmoothPagedView
                 // Posted: this runs in the dispatch of the window's last event.
                 mainHandler.post(() -> {
                     synchronized (overlayLock) {
-                        if (bar != overlayBottomBar) {
+                        if (bar != overlayHorizontalBar) {
                             return;
                         }
                     }
@@ -2509,7 +2509,7 @@ public class Workspace extends SmoothPagedView
                 });
             } else if (mOverlayHideAtUp && isOverlayShowing && !mOverlayHideAnimating) {
                 mOverlayHideAtUp = false;
-                mainHandler.post(this::hideOverlayBottomBar);
+                mainHandler.post(this::hideOverlayHorizontalBar);
             }
         }
     }
@@ -2525,13 +2525,13 @@ public class Workspace extends SmoothPagedView
                 return;
             }
         }
-        hideOverlayBottomBar();
+        hideOverlayHorizontalBar();
     }
 
     /** End of a hide: detaches the shared adapter and removes the window. */
     private void finishOverlayHide(View bar, WindowManager windowManager) {
         synchronized (overlayLock) {
-            if (bar != overlayBottomBar) {
+            if (bar != overlayHorizontalBar) {
                 // Already cleaned up (cleanupOverlayImmediately()) and possibly replaced: only make
                 // sure the old window is gone, the flags belong to the current overlay.
                 try {
@@ -2547,10 +2547,10 @@ public class Workspace extends SmoothPagedView
             try {
                 windowManager.removeView(bar);
             } catch (Exception e) {
-                Log.e("OverlayBottomBar", "Error removing overlay", e);
+                Log.e("OverlayHorizontalBar", "Error removing overlay", e);
             }
             // Clear all overlay references. isOverlayAnimating is still set here, which stops the
-            // hideOverlayBottomBar() that Launcher.cleanWidgetBar() calls back into.
+            // hideOverlayHorizontalBar() that Launcher.cleanWidgetBar() calls back into.
             clearOverlayReferences();
             isOverlayShowing = false;
             isOverlayAnimating = false;
@@ -2559,17 +2559,17 @@ public class Workspace extends SmoothPagedView
     }
 
     private void setOverlayTouchable(boolean touchable) {
-        if (overlayBottomBar == null || overlayWindowManager == null || overlayWindowParams == null
-                || !overlayBottomBar.isAttachedToWindow()) {
+        if (overlayHorizontalBar == null || overlayWindowManager == null || overlayWindowParams == null
+                || !overlayHorizontalBar.isAttachedToWindow()) {
             return;
         }
         // A copy with the height the window really has. overlayWindowParams is also the root
-        // view's own LayoutParams, whose height the inset listener in showOverlayBottomBar()
+        // view's own LayoutParams, whose height the inset listener in showOverlayHorizontalBar()
         // rewrites without ever resizing the window; pushing it here would resize the window in
         // the middle of the slide-out on devices with a bottom inset.
         WindowManager.LayoutParams params = new WindowManager.LayoutParams();
         params.copyFrom(overlayWindowParams);
-        int height = overlayBottomBar.getHeight();
+        int height = overlayHorizontalBar.getHeight();
         if (height > 0) {
             params.height = height;
         }
@@ -2582,27 +2582,27 @@ public class Workspace extends SmoothPagedView
         params.flags = flags;
         overlayWindowParams.flags = flags;
         try {
-            overlayWindowManager.updateViewLayout(overlayBottomBar, params);
+            overlayWindowManager.updateViewLayout(overlayHorizontalBar, params);
         } catch (Exception e) {
-            Log.w("OverlayBottomBar", "Could not update overlay flags", e);
+            Log.w("OverlayHorizontalBar", "Could not update overlay flags", e);
         }
     }
 
     /**
-     * Shows or hides what stands for the hidden bar: the edge handle without the left bar, the
+     * Shows or hides what stands for the hidden bar: the edge handle without the vertical bar, the
      * collapsed bar background and its show_bar button with it. Auto-hide only.
      */
     private void setCollapsedBarShown(boolean shown, long durationMs) {
-        if (!autoHideBottomBar) {
+        if (!autoHideHorizontalBar) {
             return;
         }
         if (mEdgeHandleMode) {
             updateEdgeHandle(shown ? "bar hidden" : "bar shown", durationMs,
                     shown && durationMs > 0 ? EDGE_HANDLE_RETURN_DELAY_MS : 0);
-            if (!mLeftBar) {
+            if (!mVerticalBar) {
                 return;
             }
-            // With the left bar the first page has its collapsed button as well (every page).
+            // With the vertical bar the first page has its collapsed button as well (every page).
         }
         if (workspaceView == null) {
             return;
@@ -2618,7 +2618,7 @@ public class Workspace extends SmoothPagedView
                 Helpers.removeColorFilterFromImageView(showBarIcon);
             }
         }
-        fadeView(bottomBarBg, shown ? 1f : 0f, durationMs);
+        fadeView(horizontalBarBg, shown ? 1f : 0f, durationMs);
         fadeView(showBarIcon, shown ? COLLAPSED_BUTTON_ALPHA : 0f, durationMs);
     }
 
@@ -2652,7 +2652,7 @@ public class Workspace extends SmoothPagedView
     }
 
     // ---------------------------------------------------------------------------------------------
-    // Edge handle (auto-hide without the left bar)
+    // Edge handle (auto-hide without the vertical bar)
     // ---------------------------------------------------------------------------------------------
 
     /** Called by Launcher.onResume() / onPause(): the launcher is (no longer) in front. */
@@ -2681,7 +2681,7 @@ public class Workspace extends SmoothPagedView
         }
         if (shouldShowEdgeHandle()) {
             if (mEdgeHandle == null) {
-                mEdgeHandle = new BottomBarEdgeHandle(getContext(), this::onEdgeHandleTriggered,
+                mEdgeHandle = new HorizontalBarEdgeHandle(getContext(), this::onEdgeHandleTriggered,
                         this::findEdgeHandleTarget);
             }
             applyEdgeHandleGeometry();
@@ -2704,9 +2704,9 @@ public class Workspace extends SmoothPagedView
                 && mLauncher != null
                 && mLauncher.mState == Launcher.State.WORKSPACE
                 && mState == State.NORMAL
-                && BottomBarPlacement.bar(placementPage(), mEveryPage, true, mLeftBar, isPageMoving(),
+                && HorizontalBarPlacement.bar(placementPage(), mEveryPage, true, mVerticalBar, isPageMoving(),
                         mPrefs.getBoolean(Keys.USER_LAYOUT, false))
-                        == BottomBarPlacement.Bar.HANDLE;
+                        == HorizontalBarPlacement.Bar.HANDLE;
     }
 
     /** 0 for the first page of the home screen (the one with the bar), 1 for any other. */
@@ -2725,23 +2725,23 @@ public class Workspace extends SmoothPagedView
         int screenWidth = Launcher.screenWidth;
         int screenHeight = Launcher.screenHeight;
         int longerEdge = Math.max(screenWidth, screenHeight);
-        int stripWidth = Math.max(1, Math.round(longerEdge * BottomBarEdgeHandle.STRIP_WIDTH_FRACTION));
-        // The window that catches the swipe is as wide as the left bar and computed like it, as a
+        int stripWidth = Math.max(1, Math.round(longerEdge * HorizontalBarEdgeHandle.STRIP_WIDTH_FRACTION));
+        // The window that catches the swipe is as wide as the vertical bar and computed like it, as a
         // share of the screen, so the swipe starts where the bar would be on any display. Only a
         // swipe to the right is taken there; a tap or a drag is handed to what is below, so it does
         // not have to stop short of a widget next to the strip. The width is the one Helpers uses
         // for the first page: what the launcher measured, else the formula of the layouts.
-        int barHeight = getBottomBarHeight(screenWidth, screenHeight);
+        int barHeight = getHorizontalBarHeight(screenWidth, screenHeight);
         boolean portrait = orientation == Configuration.ORIENTATION_PORTRAIT;
-        float leftBarWidth = Launcher.calculatedLeftBarWidth > 0
-                ? Launcher.calculatedLeftBarWidth
-                : PipEdgeTrim.computeLeftBarWidth(portrait, screenWidth, screenHeight, barHeight);
-        int touchWidth = EdgeHandleGeometry.touchWidth(stripWidth, leftBarWidth);
+        float verticalBarWidth = Launcher.calculatedVerticalBarWidth > 0
+                ? Launcher.calculatedVerticalBarWidth
+                : PipEdgeTrim.computeVerticalBarWidth(portrait, screenWidth, screenHeight, barHeight);
+        int touchWidth = EdgeHandleGeometry.touchWidth(stripWidth, verticalBarWidth);
         if (stripWidth != mEdgeHandleStripLogged || touchWidth != mEdgeHandleTouchLogged) {
             mEdgeHandleStripLogged = stripWidth;
             mEdgeHandleTouchLogged = touchWidth;
             Log.i(TAG, "Edge handle geometry: strip " + stripWidth + " px, touch " + touchWidth
-                    + " px (left bar width)");
+                    + " px (vertical bar width)");
         }
         mEdgeHandle.setGeometry(stripWidth, touchWidth,
                 barHeight,
@@ -2749,7 +2749,7 @@ public class Workspace extends SmoothPagedView
     }
 
     /** What a touch that the edge handle does not take belongs to: a pane under it, else the launcher. */
-    private BottomBarEdgeHandle.Target findEdgeHandleTarget(int rawX, int rawY) {
+    private HorizontalBarEdgeHandle.Target findEdgeHandleTarget(int rawX, int rawY) {
         if (mLauncher == null) {
             return null;
         }
@@ -2758,23 +2758,23 @@ public class Workspace extends SmoothPagedView
         if (pane != null) {
             View embedded = host.embeddedViewAt(rawX, rawY);
             if (embedded == null) {
-                return new BottomBarEdgeHandle.Target(pane, "pane");
+                return new HorizontalBarEdgeHandle.Target(pane, "pane");
             }
             if (WindowHost.isHostedView(embedded)) {
-                return new BottomBarEdgeHandle.Target(pane, "pane vd", EdgePassRoute.TargetKind.VD_VIEW, null, -1);
+                return new HorizontalBarEdgeHandle.Target(pane, "pane vd", EdgePassRoute.TargetKind.VD_VIEW, null, -1);
             }
             int displayId = WindowHost.activityViewDisplayId(embedded);
-            return new BottomBarEdgeHandle.Target(pane, "pane av display " + displayId,
+            return new HorizontalBarEdgeHandle.Target(pane, "pane av display " + displayId,
                     EdgePassRoute.TargetKind.ACTIVITY_VIEW, embedded, displayId);
         }
-        return new BottomBarEdgeHandle.Target(mLauncher.getWindow().getDecorView(), "launcher");
+        return new HorizontalBarEdgeHandle.Target(mLauncher.getWindow().getDecorView(), "launcher");
     }
 
     private void onEdgeHandleTriggered() {
         if (!mEdgeHandleMode || !shouldShowEdgeHandle()) {
             return;
         }
-        toggleBottomBar();
+        toggleHorizontalBar();
     }
 
     private void releaseEdgeHandle() {
@@ -2785,7 +2785,7 @@ public class Workspace extends SmoothPagedView
     }
 
     // ---------------------------------------------------------------------------------------------
-    // 'Bottom bar on every page', without auto-hide: the persistent overlay
+    // 'Horizontal bar on every page', without auto-hide: the persistent overlay
     // ---------------------------------------------------------------------------------------------
 
     /** Called when something that puts the persistent bar away or brings it back has changed. */
@@ -2795,7 +2795,7 @@ public class Workspace extends SmoothPagedView
 
     /**
      * The bar of the other pages is the bar's overlay window, built like the auto-hide bar but with
-     * no timer and not put away by a touch outside it or a swipe on it. BottomBarPlacement says
+     * no timer and not put away by a touch outside it or a swipe on it. HorizontalBarPlacement says
      * when it is there: while the pages move (the first page's own bar leaves with its page, and
      * the overlay is up from the first moment of the move, in the same place, so it covers that bar
      * without a jump), and on every page but the first at rest. It is put away, and comes back
@@ -2811,15 +2811,15 @@ public class Workspace extends SmoothPagedView
      * @param standbyDue called by the delay that waited before building the window in standby
      */
     private void updatePersistentBar(String reason, boolean standbyDue) {
-        boolean mode = mEveryPage && !autoHideBottomBar && workspaceView != null && mLauncher != null
+        boolean mode = mEveryPage && !autoHideHorizontalBar && workspaceView != null && mLauncher != null
                 && mPrefs != null && mPrefs.getBoolean(Keys.USER_LAYOUT, false);
-        BottomBarPlacement.Bar bar = mode
-                ? BottomBarPlacement.bar(placementPage(), true, false, mLeftBar, isPageMoving(), true)
-                : BottomBarPlacement.Bar.NONE;   // the mode check above includes the user layout
+        HorizontalBarPlacement.Bar bar = mode
+                ? HorizontalBarPlacement.bar(placementPage(), true, false, mVerticalBar, isPageMoving(), true)
+                : HorizontalBarPlacement.Bar.NONE;   // the mode check above includes the user layout
         boolean permitted = mode && mEdgeHandleHostVisible && !mPersistentFailed
                 && Settings.canDrawOverlays(getContext());
         PersistentBarWindow.State target = PersistentBarWindow.target(mode, mEdgeHandleHostVisible, permitted,
-                bar == BottomBarPlacement.Bar.PERSISTENT_OVERLAY, mode && persistentBarFree());
+                bar == HorizontalBarPlacement.Bar.PERSISTENT_OVERLAY, mode && persistentBarFree());
         PersistentBarWindow.Action action = PersistentBarWindow.action(persistentState(), target, isPageMoving());
         switch (action) {
             case REMOVE:
@@ -2836,7 +2836,7 @@ public class Workspace extends SmoothPagedView
                 break;
             case BUILD_NOW:
                 if (isPageMoving()) {
-                    Log.d(TAG, "Persistent bottom bar: no standby window yet, built now");
+                    Log.d(TAG, "Persistent horizontal bar: no standby window yet, built now");
                 }
                 showPersistentOverlay(reason, false);
                 break;
@@ -2844,9 +2844,9 @@ public class Workspace extends SmoothPagedView
                 activatePersistentOverlay(reason);
                 break;
             case PARK:
-                // The first page's bar is under it again. With the left bar that bar is another width
+                // The first page's bar is under it again. With the vertical bar that bar is another width
                 // than the overlay, so the overlay fades out (it must not show two bars for long).
-                parkPersistentOverlay(bar == BottomBarPlacement.Bar.EMBEDDED && mLeftBar
+                parkPersistentOverlay(bar == HorizontalBarPlacement.Bar.EMBEDDED && mVerticalBar
                         ? PERSISTENT_CROSSFADE_MS : 0, reason);
                 break;
             default:
@@ -2858,7 +2858,7 @@ public class Workspace extends SmoothPagedView
 
     /** What the window is now. A bar that is fading out to standby counts as standby. */
     private PersistentBarWindow.State persistentState() {
-        if (!mOverlayPersistent || overlayBottomBar == null) {
+        if (!mOverlayPersistent || overlayHorizontalBar == null) {
             return PersistentBarWindow.State.NONE;
         }
         return mPersistentShown && !mPersistentParking
@@ -2891,11 +2891,11 @@ public class Workspace extends SmoothPagedView
      */
     private void showPersistentOverlay(String reason, boolean standby) {
         synchronized (overlayLock) {
-            if (isOverlayShowing || isOverlayAnimating || overlayBottomBar != null
-                    || bottomBarAllApps == null) {
+            if (isOverlayShowing || isOverlayAnimating || overlayHorizontalBar != null
+                    || horizontalBarAllApps == null) {
                 return;
             }
-            Log.d(TAG, (standby ? "Persistent bottom bar window built, in standby (" : "Persistent bottom bar shown (")
+            Log.d(TAG, (standby ? "Persistent horizontal bar window built, in standby (" : "Persistent horizontal bar shown (")
                     + reason + ")" + (standby ? "" : " on page " + getCurrentPage()));
             mOverlayPersistent = true;
             isOverlayAnimating = true;
@@ -2903,7 +2903,7 @@ public class Workspace extends SmoothPagedView
             mPersistentGen++;
             // The inline bar stays as it is: it leaves with its page, or lies under the overlay.
             try {
-                showOverlayBottomBar();
+                showOverlayHorizontalBar();
             } finally {
                 mBuildStandby = false;
             }
@@ -2922,7 +2922,7 @@ public class Workspace extends SmoothPagedView
      */
     private void activatePersistentOverlay(String reason) {
         synchronized (overlayLock) {
-            final View bar = overlayBottomBar;
+            final View bar = overlayHorizontalBar;
             if (bar == null || !mOverlayPersistent) {
                 return;
             }
@@ -2940,23 +2940,23 @@ public class Workspace extends SmoothPagedView
             bar.setTranslationY(0f);
             bar.setAlpha(1f);
             setOverlayTouchable(true);
-            Log.d(TAG, "Persistent bottom bar shown (" + reason + ") on page " + getCurrentPage()
+            Log.d(TAG, "Persistent horizontal bar shown (" + reason + ") on page " + getCurrentPage()
                     + ", from standby in " + (SystemClock.uptimeMillis() - started) + " ms");
         }
     }
 
     /**
      * SHOWN to STANDBY. Touches pass through at once; the bar fades for {@code fadeMs} (the first
-     * page's own bar is another width with the left bar), then the widgets go back to the page's own
+     * page's own bar is another width with the vertical bar), then the widgets go back to the page's own
      * bar. The window and its adapter stay. A move that begins meanwhile activates it again.
      */
     private void parkPersistentOverlay(long fadeMs, String reason) {
         synchronized (overlayLock) {
-            final View bar = overlayBottomBar;
+            final View bar = overlayHorizontalBar;
             if (bar == null || !mOverlayPersistent || mPersistentParking) {
                 return;
             }
-            Log.d(TAG, "Persistent bottom bar parked (" + reason + ")");
+            Log.d(TAG, "Persistent horizontal bar parked (" + reason + ")");
             final int gen = ++mPersistentGen;
             mPersistentParking = true;
             mOverlayTouchHeld = false;
@@ -2964,7 +2964,7 @@ public class Workspace extends SmoothPagedView
             bar.animate().cancel();
             final Runnable end = () -> {
                 synchronized (overlayLock) {
-                    if (gen != mPersistentGen || bar != overlayBottomBar) {
+                    if (gen != mPersistentGen || bar != overlayHorizontalBar) {
                         return;   // activated again, or the window is gone
                     }
                     bar.setAlpha(0f);
@@ -2986,7 +2986,7 @@ public class Workspace extends SmoothPagedView
     /** @param fadeMs fade out for that long, 0 for at once */
     private void hidePersistentOverlay(long fadeMs, String reason) {
         synchronized (overlayLock) {
-            final View bar = overlayBottomBar;
+            final View bar = overlayHorizontalBar;
             final WindowManager windowManager = overlayWindowManager;
             if (!mOverlayPersistent) {
                 return;
@@ -3006,7 +3006,7 @@ public class Workspace extends SmoothPagedView
             if (isOverlayAnimating) {
                 return;   // still being built; the next update takes it away
             }
-            Log.d(TAG, "Persistent bottom bar hidden (" + reason + ")");
+            Log.d(TAG, "Persistent horizontal bar hidden (" + reason + ")");
             isOverlayAnimating = true;
             mOverlayHideAnimating = true;
             // Touches pass through while it fades: the page below is what the finger is on.
@@ -3044,7 +3044,7 @@ public class Workspace extends SmoothPagedView
         clearWidgetReferences();
         
         // Clear overlay view references
-        overlayBottomBar = null;
+        overlayHorizontalBar = null;
         overlayWindowParams = null;
         overlayWindowManager = null;
         mOverlayPersistent = false;
@@ -3070,17 +3070,17 @@ public class Workspace extends SmoothPagedView
     private void cleanupOverlayImmediately() {
         synchronized (overlayLock) {
             // Both flags guard against re-entry: clearOverlayReferences() calls
-            // Launcher.cleanWidgetBar(), which calls hideOverlayBottomBar() again.
+            // Launcher.cleanWidgetBar(), which calls hideOverlayHorizontalBar() again.
             isOverlayAnimating = true;
             mOverlayHideAnimating = true;
-            if (overlayBottomBar != null) {
-                overlayBottomBar.animate().cancel();
+            if (overlayHorizontalBar != null) {
+                overlayHorizontalBar.animate().cancel();
                 if (overlayWindowManager != null) {
                     try {
                         cleanupOverlayRecyclerView();
-                        overlayWindowManager.removeView(overlayBottomBar);
+                        overlayWindowManager.removeView(overlayHorizontalBar);
                     } catch (Exception e) {
-                        Log.e("OverlayBottomBar", "Error in immediate cleanup", e);
+                        Log.e("OverlayHorizontalBar", "Error in immediate cleanup", e);
                     }
                 }
             }
@@ -3094,9 +3094,9 @@ public class Workspace extends SmoothPagedView
     }
 
     private void cleanupOverlayRecyclerView() {
-        if (overlayBottomBar == null) return;
+        if (overlayHorizontalBar == null) return;
 
-        RecyclerView overlayRecycler = overlayBottomBar.findViewById(R.id.recycler_view);
+        RecyclerView overlayRecycler = overlayHorizontalBar.findViewById(R.id.recycler_view);
         if (overlayRecycler != null) {
             // Detach the shared adapter. The second argument keeps the view pool from being
             // reused across the two RecyclerViews, so no stale binding survives the swap.
@@ -3119,7 +3119,7 @@ public class Workspace extends SmoothPagedView
     }
 
     private void cleanupOverlayWidgetBar() {
-        if (overlayBottomBar == null) return;
+        if (overlayHorizontalBar == null) return;
         
         if (mLauncher != null) {
             mLauncher.clearBarWidgetReferences();
@@ -3127,20 +3127,20 @@ public class Workspace extends SmoothPagedView
         }
         
         // Cleanup music widget
-        ViewGroup musicWidget = overlayBottomBar.findViewById(R.id.rl_music_two);
+        ViewGroup musicWidget = overlayHorizontalBar.findViewById(R.id.rl_music_two);
         if (musicWidget != null) {
             cleanupViewGroupRecursively(musicWidget);
         }
         
         // Cleanup weather widget  
-        ViewGroup weatherWidget = overlayBottomBar.findViewById(R.id.bar_widget_weather);
+        ViewGroup weatherWidget = overlayHorizontalBar.findViewById(R.id.bar_widget_weather);
         if (weatherWidget != null) {
             cleanupViewGroupRecursively(weatherWidget);
         }
         
         // Cleanup date widget
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            ViewGroup dateWidget = overlayBottomBar.findViewById(R.id.bar_widget_date);
+            ViewGroup dateWidget = overlayHorizontalBar.findViewById(R.id.bar_widget_date);
             if (dateWidget != null) {
                 cleanupViewGroupRecursively(dateWidget);
             }
@@ -3189,15 +3189,15 @@ public class Workspace extends SmoothPagedView
         }
         
         // Clear RecyclerView adapter references
-        if (bottomBarRecycler != null) {
-            bottomBarRecycler.setAdapter(null);
-            bottomBarRecycler.setLayoutManager(null);
+        if (horizontalBarRecycler != null) {
+            horizontalBarRecycler.setAdapter(null);
+            horizontalBarRecycler.setLayoutManager(null);
         }
         
         // Clear other view references
-        bottomBarAllApps = null;
-        bottomBarRecycler = null;
-        bottomBarBg = null;
+        horizontalBarAllApps = null;
+        horizontalBarRecycler = null;
+        horizontalBarBg = null;
         showBarIcon = null;
         absoluteLayout = null;
     }
@@ -3206,8 +3206,8 @@ public class Workspace extends SmoothPagedView
         if (mPrefs == null) {
             mPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         }
-        autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
-        if (autoHideBottomBar) {
+        autoHideHorizontalBar = mPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false);
+        if (autoHideHorizontalBar) {
             scheduleAutoHide();
         }
     }
@@ -3268,7 +3268,7 @@ public class Workspace extends SmoothPagedView
         mIconCache = null;
         mDragController = null;
 
-        hideOverlayBottomBar(false);
+        hideOverlayHorizontalBar(false);
         cancelPendingAutoHide();
         clearWidgetReferences();
         mEdgeHandleMode = false;
@@ -5053,7 +5053,7 @@ public class Workspace extends SmoothPagedView
     }
 
     /**
-     * The pages that can be moved in the overview: the user page, which holds the bottom bar and
+     * The pages that can be moved in the overview: the user page, which holds the horizontal bar and
      * has no row in the screens table, stays first.
      */
     @Override

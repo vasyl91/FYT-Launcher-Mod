@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <!-- Bottom Bar -->
+    <!-- Horizontal Bar -->
     <ImageView
         android:id="@+id/iv_list_bg"
         android:layout_width="match_parent"

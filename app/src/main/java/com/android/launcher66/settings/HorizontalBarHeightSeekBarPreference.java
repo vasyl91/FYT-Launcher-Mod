@@ -18,15 +18,15 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 /**
- * Slider for the resizable bottom bar, shown under the "Resizable bottom bar" switch the same way
- * AutoHideSeekBarPreference sits under "Auto-hide bottom bar".
+ * Slider for the resizable horizontal bar, shown under the "Resizable horizontal bar" switch the same way
+ * AutoHideSeekBarPreference sits under "Auto-hide horizontal bar".
  *
- * Range: 8 % - 20 % of the shorter screen edge (BottomBarDimensions.MIN/MAX_MULTIPLIER), in
+ * Range: 8 % - 20 % of the shorter screen edge (HorizontalBarDimensions.MIN/MAX_MULTIPLIER), in
  * 0.1 % steps - roughly one pixel per step on head-unit screens.
  *
- * The value is kept per orientation: it is read from and written to Keys.BOTTOM_BAR_HEIGHT_PORT or
- * Keys.BOTTOM_BAR_HEIGHT_LAND, whichever matches the current configuration, as the float
- * multiplier BottomBarDimensions expects (14.2 % -> 0.142f). Nothing is stored under this
+ * The value is kept per orientation: it is read from and written to Keys.HORIZONTAL_BAR_HEIGHT_PORT or
+ * Keys.HORIZONTAL_BAR_HEIGHT_LAND, whichever matches the current configuration, as the float
+ * multiplier HorizontalBarDimensions expects (14.2 % -> 0.142f). Nothing is stored under this
  * preference's own key.
  *
  * The defaults (14.2 % portrait, 16.38 % landscape) are not all on the 0.1 % grid, so the step
@@ -36,24 +36,24 @@ import java.util.Locale;
  * Every real change goes through callChangeListener() first, so the fragment's
  * OnPreferenceChangeListener sees it (and may veto it); binding the row never counts as a change.
  */
-public class BottomBarHeightSeekBarPreference extends Preference {
+public class HorizontalBarHeightSeekBarPreference extends Preference {
 
     /** One step is 1/1000 of the shorter screen edge, i.e. 0.1 %. */
     private static final int STEPS_PER_UNIT = 1000;
-    static final int MIN_STEP = Math.round(BottomBarDimensions.MIN_MULTIPLIER * STEPS_PER_UNIT);
-    static final int MAX_STEP = Math.round(BottomBarDimensions.MAX_MULTIPLIER * STEPS_PER_UNIT);
+    static final int MIN_STEP = Math.round(HorizontalBarDimensions.MIN_MULTIPLIER * STEPS_PER_UNIT);
+    static final int MAX_STEP = Math.round(HorizontalBarDimensions.MAX_MULTIPLIER * STEPS_PER_UNIT);
 
     private boolean portrait;
     private float multiplier;
 
-    public BottomBarHeightSeekBarPreference(Context context, AttributeSet attrs) {
+    public HorizontalBarHeightSeekBarPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         // Same row layout as the auto-hide timeout slider, so both sliders look alike.
         setLayoutResource(R.layout.seekbar_preference_autohide);
         // The value lives under the per-orientation keys, never under this preference's key.
         setPersistent(false);
-        portrait = BottomBarDimensions.isPortrait(context);
-        multiplier = BottomBarDimensions.getDefaultMultiplier(portrait);
+        portrait = HorizontalBarDimensions.isPortrait(context);
+        multiplier = HorizontalBarDimensions.getDefaultMultiplier(portrait);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class BottomBarHeightSeekBarPreference extends Preference {
         seekBar.setMax(MAX_STEP - MIN_STEP); // Adjust range for SeekBar
         seekBar.setKeyProgressIncrement(1);  // D-pad / rotary controllers move one 0.1 % step
         seekBar.setProgress(toStep(multiplier) - MIN_STEP); // Map value to SeekBar progress
-        seekBar.setContentDescription(getContext().getString(R.string.bottom_bar_height_seekbar));
+        seekBar.setContentDescription(getContext().getString(R.string.horizontal_bar_height_seekbar));
         describeValue(seekBar);
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -130,7 +130,7 @@ public class BottomBarHeightSeekBarPreference extends Preference {
      */
     public void resetToDefault() {
         readValue();
-        if (updateValue(BottomBarDimensions.getDefaultMultiplier(portrait))) {
+        if (updateValue(HorizontalBarDimensions.getDefaultMultiplier(portrait))) {
             notifyChanged();
         }
     }
@@ -161,7 +161,7 @@ public class BottomBarHeightSeekBarPreference extends Preference {
      */
     static float fromStep(int step, boolean portrait) {
         int clamped = clampStep(step);
-        float defaultValue = BottomBarDimensions.getDefaultMultiplier(portrait);
+        float defaultValue = HorizontalBarDimensions.getDefaultMultiplier(portrait);
         if (clamped == toStep(defaultValue)) {
             return defaultValue;
         }
@@ -183,14 +183,14 @@ public class BottomBarHeightSeekBarPreference extends Preference {
         }
         multiplier = value;
         getPrefs().edit()
-                .putFloat(BottomBarDimensions.getHeightKey(portrait), value) // Save the value
+                .putFloat(HorizontalBarDimensions.getHeightKey(portrait), value) // Save the value
                 .apply();
         return true;
     }
 
     private void readValue() {
-        portrait = BottomBarDimensions.isPortrait(getContext());
-        multiplier = BottomBarDimensions.getConfiguredMultiplier(getPrefs(), portrait);
+        portrait = HorizontalBarDimensions.isPortrait(getContext());
+        multiplier = HorizontalBarDimensions.getConfiguredMultiplier(getPrefs(), portrait);
     }
 
     /** Lets TalkBack read "16.38 %" instead of the raw slider position. */

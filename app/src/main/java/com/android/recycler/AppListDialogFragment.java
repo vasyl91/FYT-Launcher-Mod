@@ -48,7 +48,7 @@ import java.util.Objects;
 public class AppListDialogFragment extends DialogFragment implements AdapterView.OnItemClickListener {
     public static final String TAG = "AppListDialogFragment";
 
-    /** AppMultiple.rowId() of the bottom-bar slot this picker was opened for. */
+    /** AppMultiple.rowId() of the horizontal-bar slot this picker was opened for. */
     private static final String ARG_TARGET_ROW_ID = "target_row_id";
 
     ImageView currentAppIcon;

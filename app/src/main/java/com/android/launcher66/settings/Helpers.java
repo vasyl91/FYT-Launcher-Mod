@@ -527,7 +527,7 @@ public class Helpers {
     /**
      * Works out the layout of the PiPs and widgets and saves it in the eight corner keys the
      * launcher reads. It is always derived from the rectangles the user drew (the User* keys) and
-     * the bars (see {@link CustomLayoutResolver}): an element the bottom bar or the left bar
+     * the bars (see {@link CustomLayoutResolver}): an element the horizontal bar or the vertical bar
      * covers is moved into free space, then cut, and only if it cannot fit even then it is reset.
      * Two elements that overlap on any page: the one that gives way is cut beside the other, and
      * if it cannot be cut it is moved or reset into free space.
@@ -559,30 +559,30 @@ public class Helpers {
         boolean changedAny = false;
         boolean[] needsReset = new boolean[rectangleKeys.length];
 
-        boolean leftBar = mPrefs.getBoolean(Keys.LEFT_BAR, false);
-        boolean autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
-        // 'Bottom bar on every page': the band of the bar is kept free on every screen
-        final boolean everyPage = mPrefs.getBoolean(Keys.BOTTOM_BAR_EVERY_PAGE, false)
+        boolean verticalBar = mPrefs.getBoolean(Keys.VERTICAL_BAR, false);
+        boolean autoHideHorizontalBar = mPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false);
+        // 'Horizontal bar on every page': the band of the bar is kept free on every screen
+        final boolean everyPage = mPrefs.getBoolean(Keys.HORIZONTAL_BAR_EVERY_PAGE, false)
                 && mPrefs.getBoolean(Keys.USER_LAYOUT, false);
         int orientation = LauncherApplication.sApp.getResources().getConfiguration().orientation;
 
-        // Geometry of the bar and the box it lives in; the left bar width follows from it.
+        // Geometry of the bar and the box it lives in; the vertical bar width follows from it.
         BarGeometry bar = getBarGeometry(mPrefs, orientation);
         boolean portrait = orientation == Configuration.ORIENTATION_PORTRAIT;
 
-        // Auto-hide reserves nothing. With the left bar it never did; without it there is no
+        // Auto-hide reserves nothing. With the vertical bar it never did; without it there is no
         // collapsed button any more - the bar is revealed through the thin edge handle, which
-        // stays on top of the widgets (Workspace / BottomBarEdgeHandle).
-        boolean bottomBar = !autoHideBottomBar;
-        Log.d(TAG, "Bottom bar area " + bar + (leftBar ? ", left bar" : "")
-                + (autoHideBottomBar ? ", auto-hide" : ""));
+        // stays on top of the widgets (Workspace / HorizontalBarEdgeHandle).
+        boolean horizontalBar = !autoHideHorizontalBar;
+        Log.d(TAG, "Horizontal bar area " + bar + (verticalBar ? ", vertical bar" : "")
+                + (autoHideHorizontalBar ? ", auto-hide" : ""));
 
-        // Same width the launcher offsets the first page by (Launcher.calculatedLeftBarWidth: CellLayout,
+        // Same width the launcher offsets the first page by (Launcher.calculatedVerticalBarWidth: CellLayout,
         // PiP panes); without a launcher the formula the layouts follow (7.1 % of the bar's height
         // in portrait, of the width in landscape).
-        float leftBarWidth = Launcher.calculatedLeftBarWidth > 0
-                ? Launcher.calculatedLeftBarWidth
-                : BottomBarDimensions.computeLeftBarWidth(portrait, bar.rootWidth, bar.rootHeight, bar.barHeight);
+        float verticalBarWidth = Launcher.calculatedVerticalBarWidth > 0
+                ? Launcher.calculatedVerticalBarWidth
+                : HorizontalBarDimensions.computeVerticalBarWidth(portrait, bar.rootWidth, bar.rootHeight, bar.barHeight);
         int margin = Integer.valueOf(mPrefs.getString(Keys.LAYOUT_MARGIN, "5"));
         if (margin < 0) margin = 10;
 
@@ -644,15 +644,15 @@ public class Helpers {
             CustomLayoutResolver.Env env = new CustomLayoutResolver.Env();
             env.margin = margin;
             if (screen == 0 || everyPage) {
-                if (bottomBar) {
+                if (horizontalBar) {
                     env.maxBottom = PipEdgeTrim.maxBottom((int) bar.barTop, margin);
                     // touching the bar counts as overlapping it
                     env.bottomTrigger = (int) bar.barTop - 1;
                 }
-                if (leftBar && screen == 0) {
-                    env.maxRight = PipEdgeTrim.maxRight(bar.rootWidth, leftBarWidth, margin);
+                if (verticalBar && screen == 0) {
+                    env.maxRight = PipEdgeTrim.maxRight(bar.rootWidth, verticalBarWidth, margin);
                     env.rightTrigger = env.maxRight;
-                    env.leftBarOffset = (int) leftBarWidth;
+                    env.verticalBarOffset = (int) verticalBarWidth;
                 }
             }
             GridGeometry grid = GridGeometry.published();
@@ -960,30 +960,30 @@ public class Helpers {
         if (thirdPip) enabledPipCount++;
         if (fourthPip) enabledPipCount++;
         
-        // Calculate bottom bar area to avoid
-        boolean leftBar = mPrefs.getBoolean(Keys.LEFT_BAR, false);
-        boolean autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
-        final boolean everyPage = mPrefs.getBoolean(Keys.BOTTOM_BAR_EVERY_PAGE, false)
+        // Calculate horizontal bar area to avoid
+        boolean verticalBar = mPrefs.getBoolean(Keys.VERTICAL_BAR, false);
+        boolean autoHideHorizontalBar = mPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false);
+        final boolean everyPage = mPrefs.getBoolean(Keys.HORIZONTAL_BAR_EVERY_PAGE, false)
                 && mPrefs.getBoolean(Keys.USER_LAYOUT, false);
         int orientation = LauncherApplication.sApp.getResources().getConfiguration().orientation;
         // Must be the same geometry checkAndResetIfOverlappingOnScreen() tested against, otherwise
         // a reset could place a rectangle inside the (resized) bar and be reset again on every
         // resume.
-        float bottomBarTop = getBarGeometry(mPrefs, orientation).barTop;
+        float horizontalBarTop = getBarGeometry(mPrefs, orientation).barTop;
         
-        // Base position for first PIP - ensure it doesn't overlap with bottom bar
+        // Base position for first PIP - ensure it doesn't overlap with horizontal bar
         int baseX = margin;
         int baseY = margin + dateMinHeight + margin;
         
-        // Adjust baseY if it would overlap with bottom bar on screen 0
+        // Adjust baseY if it would overlap with horizontal bar on screen 0
         float pipBottom = baseY + pipMinHeight;
-        if (keepsBarBand(screenToCompare, everyPage, leftBar, autoHideBottomBar) && pipBottom > bottomBarTop) {
-            // Calculate available space above bottom bar
-            float availableHeight = bottomBarTop - (margin + dateMinHeight + margin);
+        if (keepsBarBand(screenToCompare, everyPage, verticalBar, autoHideHorizontalBar) && pipBottom > horizontalBarTop) {
+            // Calculate available space above horizontal bar
+            float availableHeight = horizontalBarTop - (margin + dateMinHeight + margin);
             
             if (availableHeight >= pipMinHeight) {
-                // Can fit PIPs above bottom bar
-                baseY = (int) (bottomBarTop - pipMinHeight - margin);
+                // Can fit PIPs above horizontal bar
+                baseY = (int) (horizontalBarTop - pipMinHeight - margin);
             } else {
                 // Not enough space, need to reduce PIP height or adjust layout
                 // For now, just position at the top of available space
@@ -1004,10 +1004,10 @@ public class Helpers {
                         int x = baseX;
                         int y = baseY;
                         
-                        // Ensure PIP doesn't overlap with bottom bar on screen 0
+                        // Ensure PIP doesn't overlap with horizontal bar on screen 0
                         int pipScreen = mPrefs.getInt(Keys.PIP_DUAL_SCREEN, 1) - 1;
-                        if (keepsBarBand(pipScreen, everyPage, leftBar, autoHideBottomBar) && (y + pipMinHeight) > bottomBarTop) {
-                            y = (int) (bottomBarTop - pipMinHeight - margin);
+                        if (keepsBarBand(pipScreen, everyPage, verticalBar, autoHideHorizontalBar) && (y + pipMinHeight) > horizontalBarTop) {
+                            y = (int) (horizontalBarTop - pipMinHeight - margin);
                         }
                         
                         editorReset.putInt("pipDualTopLeftX", x);
@@ -1027,10 +1027,10 @@ public class Helpers {
                         int x = baseX;
                         int y = baseY;
                         
-                        // Ensure PIP doesn't overlap with bottom bar on screen 0
+                        // Ensure PIP doesn't overlap with horizontal bar on screen 0
                         int pipScreen = mPrefs.getInt(Keys.PIP_FIRST_SCREEN, 1) - 1;
-                        if (keepsBarBand(pipScreen, everyPage, leftBar, autoHideBottomBar) && (y + pipMinHeight) > bottomBarTop) {
-                            y = (int) (bottomBarTop - pipMinHeight - margin);
+                        if (keepsBarBand(pipScreen, everyPage, verticalBar, autoHideHorizontalBar) && (y + pipMinHeight) > horizontalBarTop) {
+                            y = (int) (horizontalBarTop - pipMinHeight - margin);
                         }
                         
                         editorReset.putInt("pipFirstTopLeftX", x);
@@ -1064,10 +1064,10 @@ public class Helpers {
                             y = baseY;
                         }
                         
-                        // Ensure PIP doesn't overlap with bottom bar on screen 0
+                        // Ensure PIP doesn't overlap with horizontal bar on screen 0
                         int pipScreen = mPrefs.getInt(Keys.PIP_SECOND_SCREEN, 1) - 1;
-                        if (keepsBarBand(pipScreen, everyPage, leftBar, autoHideBottomBar) && (y + pipMinHeight) > bottomBarTop) {
-                            y = (int) (bottomBarTop - pipMinHeight - margin);
+                        if (keepsBarBand(pipScreen, everyPage, verticalBar, autoHideHorizontalBar) && (y + pipMinHeight) > horizontalBarTop) {
+                            y = (int) (horizontalBarTop - pipMinHeight - margin);
                         }
                         
                         editorReset.putInt("pipSecondTopLeftX", x);
@@ -1105,10 +1105,10 @@ public class Helpers {
                             y = baseY + pipMinHeight + margin;
                         }
                         
-                        // Ensure PIP doesn't overlap with bottom bar on screen 0
+                        // Ensure PIP doesn't overlap with horizontal bar on screen 0
                         int pipScreen = mPrefs.getInt(Keys.PIP_THIRD_SCREEN, 1) - 1;
-                        if (keepsBarBand(pipScreen, everyPage, leftBar, autoHideBottomBar) && (y + pipMinHeight) > bottomBarTop) {
-                            y = (int) (bottomBarTop - pipMinHeight - margin);
+                        if (keepsBarBand(pipScreen, everyPage, verticalBar, autoHideHorizontalBar) && (y + pipMinHeight) > horizontalBarTop) {
+                            y = (int) (horizontalBarTop - pipMinHeight - margin);
                         }
                         
                         editorReset.putInt("pipThirdTopLeftX", x);
@@ -1142,10 +1142,10 @@ public class Helpers {
                             y = baseY + pipMinHeight + margin;
                         }
                         
-                        // Ensure PIP doesn't overlap with bottom bar on screen 0
+                        // Ensure PIP doesn't overlap with horizontal bar on screen 0
                         int pipScreen = mPrefs.getInt(Keys.PIP_FOURTH_SCREEN, 1) - 1;
-                        if (keepsBarBand(pipScreen, everyPage, leftBar, autoHideBottomBar) && (y + pipMinHeight) > bottomBarTop) {
-                            y = (int) (bottomBarTop - pipMinHeight - margin);
+                        if (keepsBarBand(pipScreen, everyPage, verticalBar, autoHideHorizontalBar) && (y + pipMinHeight) > horizontalBarTop) {
+                            y = (int) (horizontalBarTop - pipMinHeight - margin);
                         }
                         
                         editorReset.putInt("pipFourthTopLeftX", x);
@@ -1163,10 +1163,10 @@ public class Helpers {
                     if (compareScreensForReset(Keys.DATE_SCREEN, screenToCompare, mPrefs)) {
                         int dateY = margin;
                         
-                        // Ensure date doesn't overlap with bottom bar on screen 0
+                        // Ensure date doesn't overlap with horizontal bar on screen 0
                         int dateScreen = mPrefs.getInt(Keys.DATE_SCREEN, 1) - 1;
-                        if (keepsBarBand(dateScreen, everyPage, leftBar, autoHideBottomBar) && (dateY + dateMinHeight) > bottomBarTop) {
-                            dateY = (int) (bottomBarTop - dateMinHeight - margin);
+                        if (keepsBarBand(dateScreen, everyPage, verticalBar, autoHideHorizontalBar) && (dateY + dateMinHeight) > horizontalBarTop) {
+                            dateY = (int) (horizontalBarTop - dateMinHeight - margin);
                         }
                         
                         editorReset.putInt("dateTopLeftX", margin);
@@ -1187,9 +1187,9 @@ public class Helpers {
                         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
                             int musicY = margin + dateMinHeight + margin + ((pipMinHeight + margin) * 2);
                             
-                            // Ensure music doesn't overlap with bottom bar on screen 0
-                            if (keepsBarBand(musicScreen, everyPage, leftBar, autoHideBottomBar) && (musicY + musicMinHeight) > bottomBarTop) {
-                                musicY = (int) (bottomBarTop - musicMinHeight - margin);
+                            // Ensure music doesn't overlap with horizontal bar on screen 0
+                            if (keepsBarBand(musicScreen, everyPage, verticalBar, autoHideHorizontalBar) && (musicY + musicMinHeight) > horizontalBarTop) {
+                                musicY = (int) (horizontalBarTop - musicMinHeight - margin);
                             }
                             
                             editorReset.putInt("musicTopLeftX", margin);
@@ -1203,9 +1203,9 @@ public class Helpers {
                         } else {
                             int musicY = margin + radioMinHeight + margin;
                             
-                            // Ensure music doesn't overlap with bottom bar on screen 0
-                            if (keepsBarBand(musicScreen, everyPage, leftBar, autoHideBottomBar) && (musicY + musicMinHeight) > bottomBarTop) {
-                                musicY = (int) (bottomBarTop - musicMinHeight - margin);
+                            // Ensure music doesn't overlap with horizontal bar on screen 0
+                            if (keepsBarBand(musicScreen, everyPage, verticalBar, autoHideHorizontalBar) && (musicY + musicMinHeight) > horizontalBarTop) {
+                                musicY = (int) (horizontalBarTop - musicMinHeight - margin);
                             }
                             
                             editorReset.putInt("musicTopLeftX", margin + pipMinWidthStandard + margin);
@@ -1227,9 +1227,9 @@ public class Helpers {
                         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
                             int radioY = margin + dateMinHeight + margin + ((pipMinHeight + margin) * 2);
                             
-                            // Ensure radio doesn't overlap with bottom bar on screen 0
-                            if (keepsBarBand(radioScreen, everyPage, leftBar, autoHideBottomBar) && (radioY + radioMinHeight) > bottomBarTop) {
-                                radioY = (int) (bottomBarTop - radioMinHeight - margin);
+                            // Ensure radio doesn't overlap with horizontal bar on screen 0
+                            if (keepsBarBand(radioScreen, everyPage, verticalBar, autoHideHorizontalBar) && (radioY + radioMinHeight) > horizontalBarTop) {
+                                radioY = (int) (horizontalBarTop - radioMinHeight - margin);
                             }
                             
                             editorReset.putInt("radioTopLeftX", margin + musicMinWidth + margin);
@@ -1243,9 +1243,9 @@ public class Helpers {
                         } else {
                             int radioY = margin;
                             
-                            // Ensure radio doesn't overlap with bottom bar on screen 0
-                            if (keepsBarBand(radioScreen, everyPage, leftBar, autoHideBottomBar) && (radioY + radioMinHeight) > bottomBarTop) {
-                                radioY = (int) (bottomBarTop - radioMinHeight - margin);
+                            // Ensure radio doesn't overlap with horizontal bar on screen 0
+                            if (keepsBarBand(radioScreen, everyPage, verticalBar, autoHideHorizontalBar) && (radioY + radioMinHeight) > horizontalBarTop) {
+                                radioY = (int) (horizontalBarTop - radioMinHeight - margin);
                             }
                             
                             editorReset.putInt("radioTopLeftX", margin + dateMinWidth + margin);
@@ -1279,7 +1279,7 @@ public class Helpers {
     }
 
     /**
-     * The bottom bar as it is really drawn, in the coordinate space the widget and PiP positions
+     * The horizontal bar as it is really drawn, in the coordinate space the widget and PiP positions
      * are stored in: the box that holds them (user_layout / user_layout_left) with the bar at its
      * bottom edge. Workspace publishes that box's size; until it has been laid out, the screen
      * minus the status bar is used, which is the base the bar height is computed from anyway.
@@ -1308,50 +1308,50 @@ public class Helpers {
     }
 
     private static BarGeometry getBarGeometry(SharedPreferences prefs, int orientation) {
-        int statusBarHeight = BottomBarDimensions.getStatusBarHeight(
+        int statusBarHeight = HorizontalBarDimensions.getStatusBarHeight(
                 LauncherApplication.sApp.getResources());
-        int rootWidth = BottomBarDimensions.getBarRootWidth(Launcher.screenWidth);
-        int rootHeight = BottomBarDimensions.getBarRootHeight(Launcher.screenHeight, statusBarHeight);
-        int barHeight = getBottomBarHeight(prefs, orientation, rootWidth, rootHeight);
+        int rootWidth = HorizontalBarDimensions.getBarRootWidth(Launcher.screenWidth);
+        int rootHeight = HorizontalBarDimensions.getBarRootHeight(Launcher.screenHeight, statusBarHeight);
+        int barHeight = getHorizontalBarHeight(prefs, orientation, rootWidth, rootHeight);
         return new BarGeometry(rootWidth, rootHeight, barHeight);
     }
 
     /**
      * Whether the default positions of the elements on this screen keep out of the band of the
-     * bottom bar. The embedded bar and the persistent overlay occupy the band (the left bar is
+     * horizontal bar. The embedded bar and the persistent overlay occupy the band (the vertical bar is
      * only on the first screen, so on the other screens it does not change that); the auto-hiding
      * bar takes only a handle. Used for every element in one place so that the cases cannot drift
      * apart, which would make the overlap check reset an element to the same bad position again.
      */
-    private static boolean keepsBarBand(int screen, boolean everyPage, boolean leftBar,
-            boolean autoHideBottomBar) {
-        return barPage(screen, everyPage) && !(leftBar && screen == 0) && !autoHideBottomBar;
+    private static boolean keepsBarBand(int screen, boolean everyPage, boolean verticalBar,
+            boolean autoHideHorizontalBar) {
+        return barPage(screen, everyPage) && !(verticalBar && screen == 0) && !autoHideHorizontalBar;
     }
 
-    /** Whether the bottom bar is on this screen: the first, or any with 'Bottom bar on every page'. */
+    /** Whether the horizontal bar is on this screen: the first, or any with 'Horizontal bar on every page'. */
     private static boolean barPage(int screen, boolean everyPage) {
         return screen == 0 || (everyPage && screen > 0) || (everyPage && screen < 0);
     }
 
     /**
-     * Bottom bar height used by the overlap checks: the same value Workspace gives the bar, taken
+     * Horizontal bar height used by the overlap checks: the same value Workspace gives the bar, taken
      * from the box the bar lives in (portrait: its width, landscape: its height - the shortest edge
      * rule as before).
      *
-     * Keys.RESIZABLE_BOTTOM_BAR off -> the hardcoded 0.142 / 0.1638.
-     * Keys.RESIZABLE_BOTTOM_BAR on  -> the user multiplier (BottomBarDimensions sanitises it).
+     * Keys.RESIZABLE_HORIZONTAL_BAR off -> the hardcoded 0.142 / 0.1638.
+     * Keys.RESIZABLE_HORIZONTAL_BAR on  -> the user multiplier (HorizontalBarDimensions sanitises it).
      */
-    private static int getBottomBarHeight(SharedPreferences prefs, int orientation,
+    private static int getHorizontalBarHeight(SharedPreferences prefs, int orientation,
                                           int rootWidth, int rootHeight) {
         boolean portrait = orientation == Configuration.ORIENTATION_PORTRAIT;
-        boolean resizableBottomBar = prefs.getBoolean(Keys.RESIZABLE_BOTTOM_BAR, false);
-        if (!resizableBottomBar) {
+        boolean resizableHorizontalBar = prefs.getBoolean(Keys.RESIZABLE_HORIZONTAL_BAR, false);
+        if (!resizableHorizontalBar) {
             if (portrait) {
                 return (int) (rootWidth * 0.142);
             }
             return (int) (rootHeight * 0.1638);
         }
-        return BottomBarDimensions.computeBarHeight(prefs, portrait, rootWidth, rootHeight, 0);
+        return HorizontalBarDimensions.computeBarHeight(prefs, portrait, rootWidth, rootHeight, 0);
     }
 
     private boolean compareScreensForReset(String pipScreenKey, int screenToCompare, SharedPreferences mPrefs) {

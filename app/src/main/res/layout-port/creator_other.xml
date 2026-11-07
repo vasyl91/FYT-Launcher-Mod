@@ -14,7 +14,7 @@
         app:layout_constraintBottom_toTopOf="@id/creator_bar"
         app:layout_constraintRight_toRightOf="parent" />    
 
-    <!-- Bottom Bar -->
+    <!-- Horizontal Bar -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/creator_bar"
         android:layout_width="match_parent"

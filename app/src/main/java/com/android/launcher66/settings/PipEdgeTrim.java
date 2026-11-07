@@ -1,8 +1,8 @@
 package com.android.launcher66.settings;
 
 /**
- * Geometry rules for PiP and widget (date, music, radio) rectangles that a bigger bottom bar or the
- * left bar has started to cover. Instead of resetting the element to its default place (which
+ * Geometry rules for PiP and widget (date, music, radio) rectangles that a bigger horizontal bar or the
+ * vertical bar has started to cover. Instead of resetting the element to its default place (which
  * restarts the app inside a PiP and loses the user's layout of a widget), the covered edge is cut
  * back: the top-left corner stays where the user put it.
  *
@@ -15,7 +15,7 @@ public final class PipEdgeTrim {
     /** Bound that never trims. */
     public static final int NO_LIMIT = Integer.MAX_VALUE;
 
-    private static final float LEFT_BAR_FRACTION = 0.071f;
+    private static final float VERTICAL_BAR_FRACTION = 0.071f;
 
     private PipEdgeTrim() {
     }
@@ -49,21 +49,21 @@ public final class PipEdgeTrim {
         return barTop - Math.max(margin, 1);
     }
 
-    /** Largest right edge with {@code right + leftBarWidth <= rootWidth - margin}. */
-    public static int maxRight(int rootWidth, float leftBarWidth, int margin) {
-        return (int) Math.floor(rootWidth - margin - leftBarWidth);
+    /** Largest right edge with {@code right + verticalBarWidth <= rootWidth - margin}. */
+    public static int maxRight(int rootWidth, float verticalBarWidth, int margin) {
+        return (int) Math.floor(rootWidth - margin - verticalBarWidth);
     }
 
     /**
-     * Width of the left bar as its layouts draw it. Landscape: 7.1 % of the box width
+     * Width of the vertical bar as its layouts draw it. Landscape: 7.1 % of the box width
      * (layout_constraintWidth_percent). Portrait: the XML uses "W,0.071", i.e. 7.1 % of the bar's
-     * HEIGHT, which runs from the top of the box to the bottom bar.
+     * HEIGHT, which runs from the top of the box to the horizontal bar.
      */
-    public static float computeLeftBarWidth(boolean portrait, int rootWidth, int rootHeight, int barHeight) {
+    public static float computeVerticalBarWidth(boolean portrait, int rootWidth, int rootHeight, int barHeight) {
         if (portrait) {
-            return Math.max(0, rootHeight - barHeight) * LEFT_BAR_FRACTION;
+            return Math.max(0, rootHeight - barHeight) * VERTICAL_BAR_FRACTION;
         }
-        return rootWidth * LEFT_BAR_FRACTION;
+        return rootWidth * VERTICAL_BAR_FRACTION;
     }
 
     /**

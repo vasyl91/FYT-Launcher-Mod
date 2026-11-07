@@ -12,7 +12,7 @@ final class WeatherNeed {
 
     /**
      * @param userLayout the user layout is on (only it has the widget bar)
-     * @param widgetBar "Widget bottom bar" is on
+     * @param widgetBar "Widget horizontal bar" is on
      * @param noWeather "Hide the weather" is on
      * @param hotseatWeather the hotseat shows the weather (R.bool.weather_show, off by default)
      */

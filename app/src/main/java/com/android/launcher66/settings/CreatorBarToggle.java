@@ -11,8 +11,8 @@ public final class CreatorBarToggle {
 
     /**
      * @param firstScreen whether this is the creator of the first page
-     * @param autoHide    "Auto-hide bottom bar"
-     * @param everyPage   "Bottom bar on every page"
+     * @param autoHide    "Auto-hide horizontal bar"
+     * @param everyPage   "Horizontal bar on every page"
      * @return true when a double tap shows or hides the bar. The first page toggles it only with
      *         auto-hide, because without it the real bar takes the strip. The other pages also
      *         toggle it without the bar on every page, because then nothing takes the strip there.

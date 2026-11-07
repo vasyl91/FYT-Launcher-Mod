@@ -20,7 +20,7 @@
     <string name="swipe_detector_summary">Bottom centre part of the status bar will detect swipes and allow scrolling between pages. This might be useful when PiP view occupies most of the visible screen.</string>
 
     <string name="black_widgets">Widget text and button colour</string>
-    <string name="black_bar">Bottom bar text and button colour</string>
+    <string name="black_bar">Horizontal bar text and button colour</string>
     <string name="logcat_names_info">Log file names:</string>
     <string name="logcat_names_info_summary">reboot – started with the launcher after the device restarted\nstart – started with the launcher when it started again without a device restart (update, crash)\nwake – started when the device woke up\nuser – started by hand with “Logcat service”\nfull – holds all of the device\'s logs\npid – holds the launcher\'s logs only\ncrash – written the moment the launcher crashed: the error and the last log lines (what follows the restart is in the start log)\ncompat – written when code made for FYT units failed on this unit or Android version and was caught without a crash: the error and the last log lines</string>
     <string name="install_release_button_file">Tap to download and install release version %1$s (%2$s)</string>
@@ -38,10 +38,10 @@
     <string name="widget_bar_large_text">Large text</string>
     <string name="widget_bar_large_text_on">As large as the bar has room for</string>
     <string name="widget_bar_large_text_off">Usual text size</string>
-    <string name="bottom_bar_every_page">Bottom bar on every page</string>
-    <string name="bottom_bar_every_page_on">Shown on every page of the home screen</string>
-    <string name="bottom_bar_every_page_off">Only on the first page</string>
-    <string name="bottom_bar_every_page_no_overlay">Needs the permission to display over other apps</string>
+    <string name="horizontal_bar_every_page">Horizontal bar on every page</string>
+    <string name="horizontal_bar_every_page_on">Shown on every page of the home screen</string>
+    <string name="horizontal_bar_every_page_off">Only on the first page</string>
+    <string name="horizontal_bar_every_page_no_overlay">Needs the permission to display over other apps</string>
     <string name="widget_bar_line_mode">Title and artist arrangement</string>
     <string name="widget_bar_one_line_on">One line: artist – title</string>
     <string name="widget_bar_one_line_off">The title above the artist</string>

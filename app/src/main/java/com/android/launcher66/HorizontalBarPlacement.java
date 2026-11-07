@@ -1,14 +1,14 @@
 package com.android.launcher66;
 
 /**
- * Which bottom bar the home screen shows on a page, and which part of the page it takes from the
- * icons and widgets. The rules of 'Bottom bar on every page' in one place, free of views so that
+ * Which horizontal bar the home screen shows on a page, and which part of the page it takes from the
+ * icons and widgets. The rules of 'Horizontal bar on every page' in one place, free of views so that
  * they can be tested; Workspace and CellLayout follow the answers.
  *
  * <p>With the option off the bar belongs to the first page, as it always did:
  * <ul>
  *   <li>without auto-hide the bar is part of the first page and takes its last row(s);</li>
- *   <li>with auto-hide the first page has the button (with the left bar) or the edge handle
+ *   <li>with auto-hide the first page has the button (with the vertical bar) or the edge handle
  *       (without it), and only the first cell of its bottom row is taken for it.</li>
  * </ul>
  * With the option on, every page has what the first one has:
@@ -20,7 +20,7 @@ package com.android.launcher66;
  *       bar), and the bar that the handle reveals is the overlay with its timer, as today.</li>
  * </ul>
  */
-final class BottomBarPlacement {
+final class HorizontalBarPlacement {
 
     /** What is on screen for the bar on a page. */
     enum Bar { EMBEDDED, PERSISTENT_OVERLAY, HANDLE, BUTTON, NONE }
@@ -28,7 +28,7 @@ final class BottomBarPlacement {
     /** What the bar takes from the page's cells. */
     enum Reserve { ROW, CELL, NONE }
 
-    private BottomBarPlacement() {
+    private HorizontalBarPlacement() {
     }
 
     /**
@@ -37,7 +37,7 @@ final class BottomBarPlacement {
      * @param userLayout whether the user layout is on: the persistent overlay and the handles of the
      *                   other pages exist only there, so without it 'every page' means nothing
      */
-    static Bar bar(int page, boolean everyPage, boolean autoHide, boolean leftBar, boolean pageMoving,
+    static Bar bar(int page, boolean everyPage, boolean autoHide, boolean verticalBar, boolean pageMoving,
                    boolean userLayout) {
         everyPage &= userLayout;
         if (!everyPage && page != 0) {
@@ -47,7 +47,7 @@ final class BottomBarPlacement {
             if (pageMoving) {
                 return Bar.NONE;
             }
-            return page == 0 && leftBar ? Bar.BUTTON : Bar.HANDLE;
+            return page == 0 && verticalBar ? Bar.BUTTON : Bar.HANDLE;
         }
         if (page == 0 && !pageMoving) {
             return Bar.EMBEDDED;

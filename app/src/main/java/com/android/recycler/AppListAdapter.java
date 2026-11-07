@@ -357,9 +357,9 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder>
             helpers.setInAllApps(false);
             helpers.setInWidgets(false);
             helpers.setInRecent(false);
-            boolean autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
-            if (autoHideBottomBar) {
-                AppListAdapter.this.mLauncher.getWorkspace().hideBottomBar();
+            boolean autoHideHorizontalBar = mPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false);
+            if (autoHideHorizontalBar) {
+                AppListAdapter.this.mLauncher.getWorkspace().hideHorizontalBar();
             }
             boolean userStats = mPrefs.getBoolean(Keys.USER_STATS, false);
             if (userStats) {

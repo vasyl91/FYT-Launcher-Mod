@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The bars' rows (AppMultiple: the bottom bar, LeftAppMultiple: the left bar), read once and kept
+ * The bars' rows (AppMultiple: the horizontal bar, LeftAppMultiple: the vertical bar), read once and kept
  * in memory. The bars rebuild many times at a start, on the main thread, and each rebuild read
  * them from the database again; now the first read happens on a thread of its own at the start
  * (preload()), which also opens the database, and the main thread gets a copy. Whatever writes
@@ -31,7 +31,7 @@ public final class BarRows {
     private BarRows() {
     }
 
-    /** The bottom bar's rows by slot; a copy (null when the database cannot be read). */
+    /** The horizontal bar's rows by slot; a copy (null when the database cannot be read). */
     public static List<AppMultiple> bottom() {
         int generation;
         synchronized (LOCK) {
@@ -49,7 +49,7 @@ public final class BarRows {
         return rows == null ? null : new ArrayList<>(rows);
     }
 
-    /** The left bar's first limit rows by id; a copy. */
+    /** The vertical bar's first limit rows by id; a copy. */
     public static List<LeftAppMultiple> left(int limit) {
         int generation;
         synchronized (LOCK) {

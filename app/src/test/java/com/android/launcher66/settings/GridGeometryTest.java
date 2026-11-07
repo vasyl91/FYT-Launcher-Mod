@@ -63,7 +63,7 @@ class GridGeometryTest {
     }
 
     @Test
-    void leftBarOffsetShiftsTheColumns() {
+    void verticalBarOffsetShiftsTheColumns() {
         int[] without = grid.cellsOf(10, 20, 200, 100, 0);
         int[] with = grid.cellsOf(10, 20, 200, 100, 216);
         assertEquals(0, without[0]);

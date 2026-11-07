@@ -14,7 +14,7 @@ import java.util.function.LongSupplier;
 /**
  * Decides which home screens exist, in what order, and on which of them every custom element lives.
  *
- * <p>The pages are numbered from 1 in the preferences: page 1 is the user page with the bottom bar
+ * <p>The pages are numbered from 1 in the preferences: page 1 is the user page with the horizontal bar
  * ({@link #USER_PAGE_ID}, it is not in the screens table), page 2 is the first screen of the table and
  * so on. An empty page that no enabled element asks for disappears and the pages behind it move down,
  * and so do the numbers kept in the preferences. A page asked for behind the end gets a new screen at

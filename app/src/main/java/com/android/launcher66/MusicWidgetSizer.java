@@ -15,7 +15,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.google.android.flexbox.FlexboxLayout;
 
 /**
- * Sizes the children of a music widget (home screen or bottom bar) from the size the widget has,
+ * Sizes the children of a music widget (home screen or horizontal bar) from the size the widget has,
  * following the plan MusicWidgetPlan makes: the cover, the two text rows (one font for both), the
  * progress bar and the square buttons. It listens for the widget's layout, so a resize in the
  * layout wizard or a changed bar height is followed.
@@ -117,7 +117,7 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
             return;
         }
         Launcher launcher = launcherOf(mRoot.getContext());
-        int barH = launcher != null ? launcher.getBottomBarHeight() : 0;
+        int barH = launcher != null ? launcher.getHorizontalBarHeight() : 0;
         if (mBar && barH > 0 && h < barH * BAR_TRANSIENT_FRACTION) {
             return; // mid-layout (a wake, a rotation), a real one follows
         }

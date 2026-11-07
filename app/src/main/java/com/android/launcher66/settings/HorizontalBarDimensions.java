@@ -23,10 +23,10 @@ import com.android.launcher66.Launcher;
 import java.util.WeakHashMap;
 
 /**
- * Single source of truth for the height of the user-layout bottom bar
+ * Single source of truth for the height of the user-layout horizontal bar
  * (custom_layout_one_user*, custom_layout_two_user*, creator*).
  *
- * <p><b>Feature guard.</b> With {@link Keys#RESIZABLE_BOTTOM_BAR} off nothing changes: the XML
+ * <p><b>Feature guard.</b> With {@link Keys#RESIZABLE_HORIZONTAL_BAR} off nothing changes: the XML
  * keeps sizing the bar and {@link #getMultiplier} returns the very same double literals the old
  * code used (0.142 portrait, 0.1638 landscape), so every derived height is bit-identical.
  *
@@ -41,21 +41,21 @@ import java.util.WeakHashMap;
  *
  * <p>Methods that touch views must be called on the main thread.
  */
-public final class BottomBarDimensions {
+public final class HorizontalBarDimensions {
 
-    private static final String TAG = "BottomBarDimensions";
+    private static final String TAG = "HorizontalBarDimensions";
 
     /** Legacy multipliers. Kept as double literals so the fallback matches the old code exactly. */
     public static final double LEGACY_MULTIPLIER_PORTRAIT = 0.142;
     public static final double LEGACY_MULTIPLIER_LANDSCAPE = 0.1638;
 
-    /** Defaults of {@link Keys#BOTTOM_BAR_HEIGHT_PORT} / {@link Keys#BOTTOM_BAR_HEIGHT_LAND}. */
+    /** Defaults of {@link Keys#HORIZONTAL_BAR_HEIGHT_PORT} / {@link Keys#HORIZONTAL_BAR_HEIGHT_LAND}. */
     public static final float DEFAULT_MULTIPLIER_PORTRAIT = 0.142f;
     public static final float DEFAULT_MULTIPLIER_LANDSCAPE = 0.1638f;
 
     /**
      * Accepted range for user multipliers (values outside are clamped): 8 % - 20 % of the shorter
-     * screen edge, the range of the "Bottom bar height" slider (BottomBarHeightSeekBarPreference
+     * screen edge, the range of the "Horizontal bar height" slider (HorizontalBarHeightSeekBarPreference
      * derives its bounds from these). Below it icons and text become unusable, above it the left
      * bar and the workspace run out of room.
      */
@@ -65,7 +65,7 @@ public final class BottomBarDimensions {
     /** Inflated size rules per view, captured before the first override. Main thread only. */
     private static final WeakHashMap<View, XmlSizeSpec> sXmlSpecs = new WeakHashMap<>();
 
-    private BottomBarDimensions() {
+    private HorizontalBarDimensions() {
     }
 
     // ---------------------------------------------------------------------------------------
@@ -79,13 +79,13 @@ public final class BottomBarDimensions {
     }
 
     public static boolean isResizable(@Nullable SharedPreferences prefs) {
-        return prefs != null && prefs.getBoolean(Keys.RESIZABLE_BOTTOM_BAR, false);
+        return prefs != null && prefs.getBoolean(Keys.RESIZABLE_HORIZONTAL_BAR, false);
     }
 
     /** Preference key holding the user multiplier for the given orientation. */
     @NonNull
     public static String getHeightKey(boolean portrait) {
-        return portrait ? Keys.BOTTOM_BAR_HEIGHT_PORT : Keys.BOTTOM_BAR_HEIGHT_LAND;
+        return portrait ? Keys.HORIZONTAL_BAR_HEIGHT_PORT : Keys.HORIZONTAL_BAR_HEIGHT_LAND;
     }
 
     /** Default user multiplier for the given orientation (the legacy bar height). */
@@ -96,15 +96,15 @@ public final class BottomBarDimensions {
     /**
      * The spec, one-to-one:
      * <pre>
-     * portrait:  multiplier = resizableBottomBar ? getFloat(BOTTOM_BAR_HEIGHT_PORT, 0.142f) : 0.142f
-     * landscape: multiplier = resizableBottomBar ? getFloat(BOTTOM_BAR_HEIGHT_LAND, 0.1638f) : 0.1638f
+     * portrait:  multiplier = resizableHorizontalBar ? getFloat(HORIZONTAL_BAR_HEIGHT_PORT, 0.142f) : 0.142f
+     * landscape: multiplier = resizableHorizontalBar ? getFloat(HORIZONTAL_BAR_HEIGHT_LAND, 0.1638f) : 0.1638f
      * </pre>
      * returned as a double: the disabled path returns the exact legacy literal, the enabled path the
      * sanitised user value (see {@link #getConfiguredMultiplier}).
      */
     public static double getMultiplier(@Nullable SharedPreferences prefs, boolean portrait) {
-        boolean resizableBottomBar = isResizable(prefs);
-        if (!resizableBottomBar) {
+        boolean resizableHorizontalBar = isResizable(prefs);
+        if (!resizableHorizontalBar) {
             return portrait ? LEGACY_MULTIPLIER_PORTRAIT : LEGACY_MULTIPLIER_LANDSCAPE;
         }
         // Float.toString() gives the shortest decimal that identifies the float ("0.142"), so the
@@ -199,13 +199,13 @@ public final class BottomBarDimensions {
     }
 
     /**
-     * Width of the left bar as the layouts draw it (see {@link PipEdgeTrim#computeLeftBarWidth}).
+     * Width of the vertical bar as the layouts draw it (see {@link PipEdgeTrim#computeVerticalBarWidth}).
      * Landscape matches the old per-class formulas to the pixel; portrait follows the XML ratio
      * "W,0.071", which is relative to the bar's height, not to the screen width.
      */
-    public static float computeLeftBarWidth(boolean portrait, int rootWidth, int rootHeight,
+    public static float computeVerticalBarWidth(boolean portrait, int rootWidth, int rootHeight,
                                             int barHeight) {
-        return PipEdgeTrim.computeLeftBarWidth(portrait, rootWidth, rootHeight, barHeight);
+        return PipEdgeTrim.computeVerticalBarWidth(portrait, rootWidth, rootHeight, barHeight);
     }
 
     /** Same lookup as {@code Launcher.getStatusBarHeight()}, usable without a Launcher instance. */

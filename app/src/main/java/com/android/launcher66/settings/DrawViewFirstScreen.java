@@ -105,7 +105,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
 
     // Auto-hide bar bounds, reused on every touch move (no per-event allocations)
     private final RectF mAutoHideBarBounds = new RectF();
-    // The collapsed auto-hide button is only kept (and kept clear of) together with the left bar.
+    // The collapsed auto-hide button is only kept (and kept clear of) together with the vertical bar.
     // Without it the launcher shows a thin edge handle on top of the widgets instead, so the
     // creator has nothing to reserve and a double tap only toggles the controls bar.
     private boolean mCollapsedBarReserved = false;
@@ -287,8 +287,8 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
             View creatorBar = rootView.findViewById(R.id.creator_bar); 
             View creatorBarAutoHide = rootView.findViewById(R.id.creator_bar_auto_hide); 
             View creatorView = rootView.findViewById(R.id.creator_first_screen);   
-            mCollapsedBarReserved = sharedPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false)
-                    && sharedPrefs.getBoolean(Keys.LEFT_BAR, false);
+            mCollapsedBarReserved = sharedPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false)
+                    && sharedPrefs.getBoolean(Keys.VERTICAL_BAR, false);
             if (!mCollapsedBarReserved && creatorBarAutoHide != null) {
                 creatorBarAutoHide.setVisibility(View.GONE);
             }
@@ -304,13 +304,13 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
                         return true;
                     }
                     if (!CreatorBarToggle.canToggle(true,
-                            sharedPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false),
-                            sharedPrefs.getBoolean(Keys.BOTTOM_BAR_EVERY_PAGE, false))) {
+                            sharedPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false),
+                            sharedPrefs.getBoolean(Keys.HORIZONTAL_BAR_EVERY_PAGE, false))) {
                         return true;
                     }
                     boolean showControls = creatorBar.getVisibility() != View.VISIBLE;
                     creatorBar.setVisibility(showControls ? View.VISIBLE : View.GONE);
-                    // The collapsed button replaces the controls only with the left bar.
+                    // The collapsed button replaces the controls only with the vertical bar.
                     if (mCollapsedBarReserved && creatorBarAutoHide != null) {
                         creatorBarAutoHide.setVisibility(showControls ? View.GONE : View.VISIBLE);
                     }
@@ -455,7 +455,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        // This canvas is exactly the space the bottom bar leaves free. A bar made taller in the
+        // This canvas is exactly the space the horizontal bar leaves free. A bar made taller in the
         // settings shrinks it, and rectangles saved earlier then reach underneath it: the bar
         // cannot move out of the way, they can.
         fitRectanglesIntoCanvas();
@@ -463,13 +463,13 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
 
     /**
      * Brings the layout in line with the canvas after its size changed (a bigger or smaller bottom
-     * bar, the left bar). Helpers does the work first: it derives the layout from the rectangles
+     * bar, the vertical bar). Helpers does the work first: it derives the layout from the rectangles
      * the user drew, so an element is moved into free space, then cut, and only reset when it
      * cannot fit - and it goes back to its drawn place when the bar shrinks. Moving and shrinking
      * inside the canvas is only the safety net after that. Everything that changes is saved, so
      * the launcher shows the same layout; the user rectangles are not touched by any of it.
      *
-     * Skipped while the bar auto-hides: the workspace then uses the full height. With the left bar
+     * Skipped while the bar auto-hides: the workspace then uses the full height. With the vertical bar
      * the collapsed button is out of bounds, which clampAwayFromAutoHideBar() already handles;
      * without it nothing is.
      */
@@ -477,7 +477,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
         if (getWidth() <= 0 || getHeight() <= 0 || sharedPrefs == null) {
             return;
         }
-        if (sharedPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false)) {
+        if (sharedPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false)) {
             return;
         }
         // What is shown is saved first, so Helpers sees every rectangle of the creator.
@@ -571,8 +571,8 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
         hint.setTextAlign(Paint.Align.CENTER);
         hint.setShadowLayer(2, 1, 1, Color.WHITE);
         float centerX = getWidth() / 2f;
-        if (CreatorBarToggle.canToggle(true, sharedPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false),
-                sharedPrefs.getBoolean(Keys.BOTTOM_BAR_EVERY_PAGE, false))) {
+        if (CreatorBarToggle.canToggle(true, sharedPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false),
+                sharedPrefs.getBoolean(Keys.HORIZONTAL_BAR_EVERY_PAGE, false))) {
             float centerY = SettingsActivity.screenHeight / 2f;
             float lineHeight = hint.getTextSize() * 1.2f; 
             String centerText = getSafeContext().getString(R.string.double_tap, "1");
@@ -986,7 +986,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
      * Bounds of the creator's auto-hide bar in this view's coordinates, grown by {@link #margin}.
      *
      * Always read from the live view, so the collision logic sees whatever height the bar really
-     * has: the exact pixel height CreatorFirstScreen applies for Keys.RESIZABLE_BOTTOM_BAR, or the
+     * has: the exact pixel height CreatorFirstScreen applies for Keys.RESIZABLE_HORIZONTAL_BAR, or the
      * XML size (height percent / dimension ratio) when the feature is off. No hardcoded offsets.
      *
      * If a new exact height is applied but not laid out yet, the pending LayoutParams height is

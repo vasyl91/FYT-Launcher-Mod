@@ -64,7 +64,7 @@ import kotlin.coroutines.resume
  *     b. performDexOptMode(speed-profile)  (= cmd package compile -m speed-profile -f)
  *
  *  2. Usage refreshes - while the launcher runs, ART keeps recording hot methods of the user's
- *     own configuration (side bar, auto-hidden bottom bar, widget types, ...) in the same
+ *     own configuration (side bar, auto-hidden horizontal bar, widget types, ...) in the same
  *     profile, during EVERY session. The app is compiled again (step b only) when BOTH
  *     conditions are met:
  *       - at least [REFRESH_AFTER_DAYS] days since the previous compilation, and

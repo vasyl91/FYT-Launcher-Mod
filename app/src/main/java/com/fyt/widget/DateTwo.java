@@ -401,14 +401,14 @@ public class DateTwo extends AppCompatTextView implements SharedPreferences.OnSh
         return width;
     }
 
-    /** Height of the bottom bar as the launcher lays it out; 0 if unknown. */
+    /** Height of the horizontal bar as the launcher lays it out; 0 if unknown. */
     private static int getExpectedBarHeight() {
         Launcher launcher = Launcher.getLauncher();
         if (launcher == null) {
             return 0;
         }
         try {
-            return launcher.getBottomBarHeight();
+            return launcher.getHorizontalBarHeight();
         } catch (RuntimeException e) {
             return 0;
         }

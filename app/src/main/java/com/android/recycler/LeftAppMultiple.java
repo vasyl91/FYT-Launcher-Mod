@@ -11,7 +11,7 @@ public class LeftAppMultiple extends LitePalSupport {
      *
      * Every row is created with index = 0 (both the placeholders in
      * Launcher.refreshLeftCycle() and the real entries), so this value carries no
-     * information. Ordering of the left bar comes from "id asc" alone. Never use it in a
+     * information. Ordering of the vertical bar comes from "id asc" alone. Never use it in a
      * where clause: it is not unique (and "index" is a SQLite keyword, stored by LitePal as
      * index_lpcolumn).
      */
@@ -32,7 +32,7 @@ public class LeftAppMultiple extends LitePalSupport {
     }
 
     /**
-     * Primary key of this row - the only safe way to address a left-bar slot.
+     * Primary key of this row - the only safe way to address a vertical-bar slot.
      * Prefer the mapped {@code id} column, fall back to LitePal's internal object id for
      * rows that were just saved.
      */

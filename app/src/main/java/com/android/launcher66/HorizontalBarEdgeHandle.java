@@ -25,17 +25,17 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Handle of the auto-hide bottom bar when the left bar is off: a thin, semi-transparent strip on
- * the left screen edge, as tall as the bottom bar and level with it, with its two corners facing
+ * Handle of the auto-hide horizontal bar when the vertical bar is off: a thin, semi-transparent strip on
+ * the left screen edge, as tall as the horizontal bar and level with it, with its two corners facing
  * the middle of the screen slightly rounded. A swipe to the right, or a tap on the strip itself,
  * reveals the bar.
  *
  * <p>It lives in its own TYPE_APPLICATION_OVERLAY window - the window type of the bar overlay -
  * so it stays above the widgets and the PiP panes. Vertically the window is framed exactly like the
  * bar overlay (same type, flags, gravity and height), so the strip is level with the bar. The
- * window is as wide as the left bar (computed as a share of the screen like the bar, see
+ * window is as wide as the vertical bar (computed as a share of the screen like the bar, see
  * {@link EdgeHandleGeometry}), so that a swipe to the right is easy to start: a transparent
- * margin beside the strip takes only that swipe ({@link BottomBarEdgeGesture} holds the rules).
+ * margin beside the strip takes only that swipe ({@link HorizontalBarEdgeGesture} holds the rules).
  * Anything else that begins in the margin - a tap, a vertical drag, a long press - is handed to
  * the window of the launcher or of the pane that is under the finger, which is always one of the
  * launcher's own windows, so no permission or injected input is needed.
@@ -44,9 +44,9 @@ import java.util.List;
  * window, input included). Workspace decides when; this class only draws, animates and reports
  * the gesture. Main thread only.
  */
-final class BottomBarEdgeHandle {
+final class HorizontalBarEdgeHandle {
 
-    private static final String TAG = "BottomBarEdgeHandle";
+    private static final String TAG = "HorizontalBarEdgeHandle";
 
     /** Width of the visible strip, as a share of the longer screen edge. */
     static final float STRIP_WIDTH_FRACTION = 0.01f;
@@ -95,7 +95,7 @@ final class BottomBarEdgeHandle {
     private int touchWidth;
     private int barHeight;
 
-    BottomBarEdgeHandle(Context context, Runnable onTrigger, TargetFinder finder) {
+    HorizontalBarEdgeHandle(Context context, Runnable onTrigger, TargetFinder finder) {
         windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         view = new StripView(context, onTrigger, finder, this::onPassEnded);
         // No inset handling, on purpose: the bar overlay's inset listener only pads its content and
@@ -104,8 +104,8 @@ final class BottomBarEdgeHandle {
 
     /**
      * @param stripWidth width of the visible strip
-     * @param touchWidth width of the window, i.e. the width of the left bar (never below the strip)
-     * @param barHeight  height of the bottom bar, which the strip matches
+     * @param touchWidth width of the window, i.e. the width of the vertical bar (never below the strip)
+     * @param barHeight  height of the horizontal bar, which the strip matches
      * @param dark       black strip instead of a white one (the "black bar" setting)
      */
     void setGeometry(int stripWidth, int touchWidth, int barHeight, boolean dark) {
@@ -306,7 +306,7 @@ final class BottomBarEdgeHandle {
         private final Runnable onTrigger;
         private final TargetFinder finder;
         private final Runnable onPassEnded;
-        private final BottomBarEdgeGesture gesture;
+        private final HorizontalBarEdgeGesture gesture;
         private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         private final Path path = new Path();
         private final RectF rect = new RectF();
@@ -330,7 +330,7 @@ final class BottomBarEdgeHandle {
             this.onTrigger = onTrigger;
             this.finder = finder;
             this.onPassEnded = onPassEnded;
-            this.gesture = new BottomBarEdgeGesture(
+            this.gesture = new HorizontalBarEdgeGesture(
                     ViewConfiguration.get(context).getScaledTouchSlop(), ViewConfiguration.getTapTimeout());
             paint.setStyle(Paint.Style.FILL);
         }
@@ -479,7 +479,7 @@ final class BottomBarEdgeHandle {
             }
         }
 
-        private void decided(BottomBarEdgeGesture.Decision decision) {
+        private void decided(HorizontalBarEdgeGesture.Decision decision) {
             switch (decision) {
                 case OPEN_BAR:
                     removeCallbacks(timeout);
@@ -500,7 +500,7 @@ final class BottomBarEdgeHandle {
         /**
          * Hands the gesture to what is under the finger: replays what was held, then goes live. The
          * events are moved to a list of their own first: replaying them moves the page, which hides
-         * the handle and (see BottomBarEdgeHandle.hide) must not end this gesture under the loop.
+         * the handle and (see HorizontalBarEdgeHandle.hide) must not end this gesture under the loop.
          */
         private void startPassing() {
             setStripPressed(false);

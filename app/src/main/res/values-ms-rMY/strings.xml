@@ -35,10 +35,10 @@
     <string name="widget_bar_large_text">Teks besar</string>
     <string name="widget_bar_large_text_on">Sebesar yang ruang bar membenarkan</string>
     <string name="widget_bar_large_text_off">Saiz teks biasa</string>
-    <string name="bottom_bar_every_page">Bar bawah pada setiap halaman</string>
-    <string name="bottom_bar_every_page_on">Dipaparkan pada setiap halaman skrin utama</string>
-    <string name="bottom_bar_every_page_off">Pada halaman pertama sahaja</string>
-    <string name="bottom_bar_every_page_no_overlay">Memerlukan kebenaran untuk dipaparkan di atas apl lain</string>
+    <string name="horizontal_bar_every_page">Bar mendatar pada setiap halaman</string>
+    <string name="horizontal_bar_every_page_on">Dipaparkan pada setiap halaman skrin utama</string>
+    <string name="horizontal_bar_every_page_off">Pada halaman pertama sahaja</string>
+    <string name="horizontal_bar_every_page_no_overlay">Memerlukan kebenaran untuk dipaparkan di atas apl lain</string>
     <string name="widget_bar_line_mode">Susunan tajuk dan artis</string>
     <string name="widget_bar_one_line_on">Satu baris: artis – tajuk</string>
     <string name="widget_bar_one_line_off">Tajuk di atas artis</string>

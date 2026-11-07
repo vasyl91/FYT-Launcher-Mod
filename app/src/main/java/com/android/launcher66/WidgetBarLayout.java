@@ -13,7 +13,7 @@ import com.android.launcher66.settings.Keys;
 /**
  * Hides the date and the weather of the widget bar when the settings say so, and gives their room
  * to the music widget. One piece of code for the four layouts (custom_layout_two_user and
- * custom_layout_two_user_left, in layout-land and layout-port), for the bar of the first page and
+ * custom_layout_two_user_vertical, in layout-land and layout-port), for the bar of the first page and
  * for the overlay of the auto-hide bar.
  *
  * <p>It runs on a freshly inflated bar, before any view of the music widget is looked up and

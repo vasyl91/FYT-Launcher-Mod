@@ -137,10 +137,10 @@
 
     <string name="widgets_background_preference">Escolher a imagem de fundo dos widgets</string>
     <string name="widgets_background_dialog_title">Selecione a imagem de fundo dos widgets:</string>
-    <string name="bar_background_preference">Escolher a imagem de fundo da barra inferior</string>
-    <string name="bar_background_dialog_title">Selecione a imagem de fundo da barra inferior:</string>
+    <string name="bar_background_preference">Escolher a imagem de fundo da barra horizontal</string>
+    <string name="bar_background_dialog_title">Selecione a imagem de fundo da barra horizontal:</string>
     <string name="pick_image_manually">Escolher imagem de fundo</string>
-    <string name="resizable_bottom_bar_summary">Altura: %1$s do lado mais curto do ecrã (%2$s)</string>
+    <string name="resizable_horizontal_bar_summary">Altura: %1$s do lado mais curto do ecrã (%2$s)</string>
     <string name="logcat_names_info">Nomes dos ficheiros de registo:</string>
     <string name="logcat_names_info_summary">reboot – iniciado com o launcher depois de o dispositivo reiniciar\nstart – iniciado com o launcher quando este arrancou de novo sem reiniciar o dispositivo (atualização, falha)\nwake – iniciado quando o dispositivo acordou\nuser – iniciado manualmente com «Serviço Logcat»\nfull – contém todos os registos do dispositivo\npid – contém apenas os registos do launcher\ncrash – escrito no momento em que o launcher falhou: o erro e as últimas linhas do registo (o que acontece após o reinício está no registo start)\ncompat – escrito quando código feito para unidades FYT falhou nesta unidade ou versão do Android e foi intercetado sem falha: o erro e as últimas linhas do registo</string>
     <string name="syu_media_favorite_note">Guardado. A app de multimédia mostrará o coração depois de recarregar a biblioteca (p. ex., após reiniciar).</string>
@@ -156,10 +156,10 @@
     <string name="widget_bar_large_text">Texto grande</string>
     <string name="widget_bar_large_text_on">O maior que o espaço da barra permitir</string>
     <string name="widget_bar_large_text_off">Tamanho de texto normal</string>
-    <string name="bottom_bar_every_page">Barra inferior em todas as páginas</string>
-    <string name="bottom_bar_every_page_on">Apresentada em todas as páginas do ecrã principal</string>
-    <string name="bottom_bar_every_page_off">Apenas na primeira página</string>
-    <string name="bottom_bar_every_page_no_overlay">Requer a autorização para sobrepor a outras aplicações</string>
+    <string name="horizontal_bar_every_page">Barra horizontal em todas as páginas</string>
+    <string name="horizontal_bar_every_page_on">Apresentada em todas as páginas do ecrã principal</string>
+    <string name="horizontal_bar_every_page_off">Apenas na primeira página</string>
+    <string name="horizontal_bar_every_page_no_overlay">Requer a autorização para sobrepor a outras aplicações</string>
     <string name="widget_bar_line_mode">Disposição do título e do artista</string>
     <string name="widget_bar_one_line_on">Uma linha: artista – título</string>
     <string name="widget_bar_one_line_off">O título acima do artista</string>

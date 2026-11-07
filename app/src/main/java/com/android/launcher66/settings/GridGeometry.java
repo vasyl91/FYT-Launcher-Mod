@@ -7,7 +7,7 @@ package com.android.launcher66.settings;
  * row of icons. Pure Java (no Android imports) so the rules are unit-tested on the JVM.
  *
  * <p>Coordinates are the ones CellLayout uses. The creator saves widget rectangles in a box that
- * lacks the left bar, and CellLayout adds the bar's width on page 0 ({@code leftBarOffset}).
+ * lacks the vertical bar, and CellLayout adds the bar's width on page 0 ({@code verticalBarOffset}).
  */
 public final class GridGeometry {
 
@@ -64,12 +64,12 @@ public final class GridGeometry {
      * Cells a rectangle is assigned to, the way CellLayout.addCustomWidgetToGrid() does it: the
      * top left corner and the last pixel (right - 1, bottom - 1).
      *
-     * @param leftBarOffset width added to x on page 0 when the left bar is on, otherwise 0
+     * @param verticalBarOffset width added to x on page 0 when the vertical bar is on, otherwise 0
      * @return {firstCol, firstRow, lastCol, lastRow}
      */
-    public int[] cellsOf(int left, int top, int right, int bottom, int leftBarOffset) {
-        return new int[] {colOf(left + leftBarOffset), rowOf(top),
-                colOf(right - 1 + leftBarOffset), rowOf(bottom - 1)};
+    public int[] cellsOf(int left, int top, int right, int bottom, int verticalBarOffset) {
+        return new int[] {colOf(left + verticalBarOffset), rowOf(top),
+                colOf(right - 1 + verticalBarOffset), rowOf(bottom - 1)};
     }
 
     /** Smallest top that is assigned to {@code row} (row >= 1; row 0 has no lower bound). */

@@ -173,7 +173,7 @@
         app:layout_constraintBottom_toTopOf="@id/creator_bar_bottom"
         app:layout_constraintTop_toBottomOf="@id/creator_bar_top" /> 
 
-    <!-- Bottom Bar -->
+    <!-- Horizontal Bar -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/creator_bar_bottom"
         android:layout_width="match_parent"

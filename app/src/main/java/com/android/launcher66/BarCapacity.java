@@ -4,18 +4,18 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.util.Log;
 
-import com.android.launcher66.settings.BottomBarDimensions;
+import com.android.launcher66.settings.HorizontalBarDimensions;
 
 /**
- * How many slots the bars have room for. The bottom bar used to show a fixed set of slots per mode
- * (4, 5, 7 or 8) and the left bar a fixed five; both now follow the space they have, with one rule
+ * How many slots the bars have room for. The horizontal bar used to show a fixed set of slots per mode
+ * (4, 5, 7 or 8) and the vertical bar a fixed five; both now follow the space they have, with one rule
  * for how close two icons may stand: the pitch (icon start to next icon start) is at least
  * {@link #MIN_SLOT_PITCH} times the icon, i.e. the gap is at least a quarter of the icon, which is
  * what the widget bar has always had.
  *
- * The bottom bar's part is pure (screen width, preferences, orientation) so that it can run before
- * any view is measured, e.g. for the bar snapshots; the left bar's part needs the measured height
- * of its recycler and lives in Launcher.EvenVerticalLayoutManager. The left bar counts from the
+ * The horizontal bar's part is pure (screen width, preferences, orientation) so that it can run before
+ * any view is measured, e.g. for the bar snapshots; the vertical bar's part needs the measured height
+ * of its recycler and lives in Launcher.EvenVerticalLayoutManager. The vertical bar counts from the
  * visible icon (a fraction of the bar's width), not from the item box, so that both orientations
  * leave the same visible gap.
  */
@@ -26,35 +26,35 @@ public final class BarCapacity {
     /** Smallest pitch of two neighbouring icons, as a multiple of the icon size (both bars). */
     public static final float MIN_SLOT_PITCH = 1.25f;
 
-    /** Most slots the bottom bar is given, however low the bar is. */
+    /** Most slots the horizontal bar is given, however low the bar is. */
     public static final int MAX_BOTTOM_SLOTS = 16;
 
-    /** Rows the database keeps for the bottom bar before any extra slot is asked for. */
+    /** Rows the database keeps for the horizontal bar before any extra slot is asked for. */
     public static final int DEFAULT_BOTTOM_ROWS = 8;
 
-    /** Left bar: the apps opened last that the database remembers, whether they fit or not. */
+    /** Vertical bar: the apps opened last that the database remembers, whether they fit or not. */
     public static final int LEFT_MEMORY = 12;
 
-    /** Left bar: fewest slots it shows, the count it had before it followed the space. */
+    /** Vertical bar: fewest slots it shows, the count it had before it followed the space. */
     public static final int MIN_LEFT_SLOTS = 5;
 
     /**
-     * Left bar: width of the visible icon as a fraction of the bar's width. Must match
+     * Vertical bar: width of the visible icon as a fraction of the bar's width. Must match
      * layout_constraintWidth_percent of the icon in both item_left_app_list.xml files.
      */
     public static final float LEFT_ICON_WIDTH_PERCENT = 0.7394f;
 
     /**
-     * Left bar: item height as a multiple of the icon (the XML dimension ratio). Must match
+     * Vertical bar: item height as a multiple of the icon (the XML dimension ratio). Must match
      * layout_constraintDimensionRatio in res/layout-port (1:1.7) and res/layout-land (1:1).
      */
     public static final float LEFT_ITEM_RATIO_PORTRAIT = 1.7f;
     public static final float LEFT_ITEM_RATIO_LANDSCAPE = 1.0f;
 
     /**
-     * Left bar: smallest pitch of two neighbouring icons, as a multiple of the visible icon.
+     * Vertical bar: smallest pitch of two neighbouring icons, as a multiple of the visible icon.
      * 1.7 is the proportion of the portrait item that the owner found right; landscape (1:1) gets
-     * the same visible gap. This is the only place to tune the left bar's density.
+     * the same visible gap. This is the only place to tune the vertical bar's density.
      */
     public static final float LEFT_MIN_ICON_PITCH = MIN_SLOT_PITCH * 1.7f;
 
@@ -93,10 +93,10 @@ public final class BarCapacity {
     }
 
     // ---------------------------------------------------------------------------------------
-    // Bottom bar
+    // Horizontal bar
     // ---------------------------------------------------------------------------------------
 
-    /** Fewest slots the bottom bar shows in a mode, whatever the height: the count it had before. */
+    /** Fewest slots the horizontal bar shows in a mode, whatever the height: the count it had before. */
     public static int minBottomSlots(boolean portrait, boolean widgetMode) {
         if (widgetMode) {
             return portrait ? ICON_REFERENCE_SLOTS_PORTRAIT : ICON_REFERENCE_SLOTS_LANDSCAPE;
@@ -104,7 +104,7 @@ public final class BarCapacity {
         return portrait ? 7 : 8;
     }
 
-    /** Width of the bottom bar's recycler in px, as the layouts force it. */
+    /** Width of the horizontal bar's recycler in px, as the layouts force it. */
     public static int bottomRecyclerWidth(boolean portrait, boolean widgetMode) {
         float fraction;
         if (widgetMode) {
@@ -116,7 +116,7 @@ public final class BarCapacity {
     }
 
     /**
-     * Icon size of the bottom bar before it is cut down to the width of a tile. Always taken from
+     * Icon size of the horizontal bar before it is cut down to the width of a tile. Always taken from
      * the widget-bar metrics, in both modes, and scaled with the bar height when that is resizable
      * (user layouts only): a lower bar has smaller icons, which is where the extra slots come from.
      * AppListAdapter and bottomCapacity() both read it from here, so they cannot disagree.
@@ -130,18 +130,18 @@ public final class BarCapacity {
                 : widgetTileWidth;
 
         int iconSize = (int) (Math.min(widgetTileWidth, widgetRecyclerHeight) * ICON_FILL);
-        // Resizable bottom bar (user layouts only - the other layouts keep their XML bar): the
+        // Resizable horizontal bar (user layouts only - the other layouts keep their XML bar): the
         // icon follows the bar height proportionally, so it keeps exactly the icon/bar ratio of the
         // legacy layout (a lowered bar would otherwise clip it). Nothing changes while
-        // Keys.RESIZABLE_BOTTOM_BAR is off or at its default value; the tile width is untouched.
-        if (userLayout && BottomBarDimensions.isResizable(prefs)) {
-            iconSize = (int) (iconSize * BottomBarDimensions.getHeightScale(prefs, portrait));
+        // Keys.RESIZABLE_HORIZONTAL_BAR is off or at its default value; the tile width is untouched.
+        if (userLayout && HorizontalBarDimensions.isResizable(prefs)) {
+            iconSize = (int) (iconSize * HorizontalBarDimensions.getHeightScale(prefs, portrait));
         }
         return iconSize;
     }
 
     /**
-     * Slots that fit in the bottom bar: floor(recycler width / (icon * MIN_SLOT_PITCH)), at least
+     * Slots that fit in the horizontal bar: floor(recycler width / (icon * MIN_SLOT_PITCH)), at least
      * what the mode showed before and at most {@link #MAX_BOTTOM_SLOTS}. Pure: no view is measured.
      *
      * @param orientation Configuration.ORIENTATION_*; anything but portrait counts as landscape
@@ -178,10 +178,10 @@ public final class BarCapacity {
     }
 
     // ---------------------------------------------------------------------------------------
-    // Left bar
+    // Vertical bar
     // ---------------------------------------------------------------------------------------
 
-    /** Visible icon size of the left bar for a recycler whose inner width (without padding) is this. */
+    /** Visible icon size of the vertical bar for a recycler whose inner width (without padding) is this. */
     public static int leftIconSize(int recyclerInnerWidth) {
         return (int) (recyclerInnerWidth * LEFT_ICON_WIDTH_PERCENT);
     }
@@ -192,7 +192,7 @@ public final class BarCapacity {
     }
 
     /**
-     * Slots that fit in a left bar of this height when its visible icon is this big:
+     * Slots that fit in a vertical bar of this height when its visible icon is this big:
      * floor(height / (icon * LEFT_MIN_ICON_PITCH)), within [MIN_LEFT_SLOTS, LEFT_MEMORY].
      */
     public static int leftCapacity(int height, int iconSize) {

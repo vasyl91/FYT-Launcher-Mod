@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <!-- Bottom Bar -->
+    <!-- Horizontal Bar -->
     <ImageView
         android:id="@+id/iv_list_bg"
         android:layout_width="match_parent"
@@ -59,7 +59,7 @@
         app:layout_constraintRight_toLeftOf="@id/rl_music_two"
         app:layout_constraintLeft_toRightOf="@id/rl_allapps" />
 
-    <!-- Bottom Bar Music -->
+    <!-- Horizontal Bar Music -->
     <LinearLayout
         android:id="@+id/rl_music_two"
         android:layout_width="0dp"
@@ -76,7 +76,7 @@
         <include layout="@layout/music_bar_content" />
     </LinearLayout>
 
-    <!-- Bottom Bar Date -->
+    <!-- Horizontal Bar Date -->
     <com.google.android.flexbox.FlexboxLayout
         android:id="@+id/bar_widget_date"
         android:layout_width="0dp"
@@ -112,7 +112,7 @@
 
     </com.google.android.flexbox.FlexboxLayout>
 
-    <!-- Bottom Bar Weather -->
+    <!-- Horizontal Bar Weather -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bar_widget_weather"
         android:layout_width="0dp"

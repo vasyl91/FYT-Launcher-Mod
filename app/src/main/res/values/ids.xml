@@ -14,8 +14,8 @@
     <item type="id" name="widget_dims" />
     <item type="id" name="inactive" />
     <item type="id" name="active" />
-    <item type="id" name="rl_left_bar" />
-    <item type="id" name="left_recycler_view" />
+    <item type="id" name="rl_vertical_bar" />
+    <item type="id" name="vertical_recycler_view" />
     <item type="id" name="rl_allapps" />
     <item type="id" name="iv_map1" />
     <item type="id" name="ll_time" />

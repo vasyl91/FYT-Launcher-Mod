@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    The inside of the music widget (bottom bar). The sizes of the children are set in code by
+    The inside of the music widget (horizontal bar). The sizes of the children are set in code by
     MusicWidgetSizer from the size the widget has, so the 0dp here are placeholders.
 -->
 <merge

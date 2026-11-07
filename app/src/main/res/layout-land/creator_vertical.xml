@@ -5,9 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Left Bar -->
+    <!-- Vertical Bar -->
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/rl_left_bar"
+        android:id="@+id/rl_vertical_bar"
         android:background="@drawable/hotseat_bg"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -26,7 +26,7 @@
         app:layout_constraintBottom_toTopOf="@id/creator_bar"
         app:layout_constraintRight_toRightOf="parent" />    
 
-    <!-- Bottom Bar -->
+    <!-- Horizontal Bar -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/creator_bar"
         android:layout_width="match_parent"
@@ -270,7 +270,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Bottom Bar Auto Hide -->
+    <!-- Horizontal Bar Auto Hide -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/creator_bar_auto_hide"
         android:layout_width="0dp"

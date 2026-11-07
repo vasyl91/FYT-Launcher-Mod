@@ -19,7 +19,7 @@ class PipEdgeTrimTest {
     }
 
     @Test
-    void bottomBarCutsOnlyTheBottomEdge() {
+    void horizontalBarCutsOnlyTheBottomEdge() {
         // bar top at 1000, margin 5 -> bottom edge limited to 995
         int maxBottom = PipEdgeTrim.maxBottom(1000, 5);
         assertEquals(995, maxBottom);
@@ -51,8 +51,8 @@ class PipEdgeTrimTest {
     }
 
     @Test
-    void leftBarCutsOnlyTheRightEdge() {
-        // box 2000 wide, left bar 142, margin 5 -> right edge limited to 1853
+    void verticalBarCutsOnlyTheRightEdge() {
+        // box 2000 wide, vertical bar 142, margin 5 -> right edge limited to 1853
         int maxRight = PipEdgeTrim.maxRight(2000, 142f, 5);
         assertEquals(1853, maxRight);
         assertTrue(maxRight + 142 <= 2000 - 5);
@@ -61,7 +61,7 @@ class PipEdgeTrimTest {
     }
 
     @Test
-    void fractionalLeftBarWidthRoundsTheLimitDown() {
+    void fractionalVerticalBarWidthRoundsTheLimitDown() {
         int maxRight = PipEdgeTrim.maxRight(1920, 136.32f, 5);
         assertEquals(1778, maxRight);
         assertTrue(maxRight + 136.32f <= 1920 - 5);
@@ -69,7 +69,7 @@ class PipEdgeTrimTest {
     }
 
     @Test
-    void leftBarCutBelowTheMinimumWidthFallsBack() {
+    void verticalBarCutBelowTheMinimumWidthFallsBack() {
         assertNull(PipEdgeTrim.trim(1500, 100, 1900, 600, 1853, NO, 528, 360));
     }
 
@@ -92,22 +92,22 @@ class PipEdgeTrimTest {
     }
 
     @Test
-    void landscapeLeftBarIs7Point1PercentOfTheBoxWidth() {
-        assertEquals(142f, PipEdgeTrim.computeLeftBarWidth(false, 2000, 1200, 196), 0f);
+    void landscapeVerticalBarIs7Point1PercentOfTheBoxWidth() {
+        assertEquals(142f, PipEdgeTrim.computeVerticalBarWidth(false, 2000, 1200, 196), 0f);
         // Must stay bit-identical to the previous screenWidth * 0.071f.
-        assertEquals(1920 * 0.071f, PipEdgeTrim.computeLeftBarWidth(false, 1920, 720, 118), 0f);
-        assertEquals((int) (1920 * 0.071f), (int) PipEdgeTrim.computeLeftBarWidth(false, 1920, 720, 118));
+        assertEquals(1920 * 0.071f, PipEdgeTrim.computeVerticalBarWidth(false, 1920, 720, 118), 0f);
+        assertEquals((int) (1920 * 0.071f), (int) PipEdgeTrim.computeVerticalBarWidth(false, 1920, 720, 118));
     }
 
     @Test
-    void portraitLeftBarIs7Point1PercentOfTheHeightAboveTheBar() {
-        // XML: W,0.071 with the bar running from the top of the box down to the bottom bar.
+    void portraitVerticalBarIs7Point1PercentOfTheHeightAboveTheBar() {
+        // XML: W,0.071 with the bar running from the top of the box down to the horizontal bar.
         int rootWidth = 1200;
         int rootHeight = 1900;
         int barHeight = (int) (rootWidth * 0.142);
         assertEquals((rootHeight - barHeight) * 0.071f,
-                PipEdgeTrim.computeLeftBarWidth(true, rootWidth, rootHeight, barHeight), 0.0001f);
-        assertEquals(0f, PipEdgeTrim.computeLeftBarWidth(true, rootWidth, 100, 500), 0f);
+                PipEdgeTrim.computeVerticalBarWidth(true, rootWidth, rootHeight, barHeight), 0.0001f);
+        assertEquals(0f, PipEdgeTrim.computeVerticalBarWidth(true, rootWidth, 100, 500), 0f);
     }
 
     @Test
@@ -147,7 +147,7 @@ class PipEdgeTrimTest {
     }
 
     @Test
-    void dateWidgetCutAtTheBottomBarKeepsItsMinimumHeight() {
+    void dateWidgetCutAtTheHorizontalBarKeepsItsMinimumHeight() {
         WidgetMetrics.Metrics m = WidgetMetrics.compute(2000, 1200);
         int maxBottom = PipEdgeTrim.maxBottom(1000, 5);
         // 400 high, bar eats 45 of it: still above the minimum height (144)
@@ -170,7 +170,7 @@ class PipEdgeTrimTest {
     }
 
     @Test
-    void musicWidgetCutAtTheLeftBarWithinItsMinimumWidth() {
+    void musicWidgetCutAtTheVerticalBarWithinItsMinimumWidth() {
         WidgetMetrics.Metrics m = WidgetMetrics.compute(2000, 1200);
         int maxRight = PipEdgeTrim.maxRight(2000, 142f, 5); // 1853
         assertArrayEquals(new int[] {1500, 100, maxRight, 100 + m.musicMinHeight},

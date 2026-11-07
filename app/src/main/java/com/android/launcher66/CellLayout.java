@@ -175,7 +175,7 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
             new PorterDuffXfermode(PorterDuff.Mode.ADD);
     private final static Paint sPaint = new Paint();
 
-    private int excludeLastRow = 1; // do not allow to place the object where the bottom bar is
+    private int excludeLastRow = 1; // do not allow to place the object where the horizontal bar is
     private final float widgetScaleFactor = ScreenScale.widgetScale();
 
     private View mUserDateWidget = null;
@@ -190,7 +190,7 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
     private String selectedBackground;
 
     private SharedPreferences prefs;
-    private boolean leftBar = false;
+    private boolean verticalBar = false;
 
     /** The custom elements the model put on this page; see Launcher.placeCustomElements(). */
     private EnumSet<CustomElement> mAssignedElements = EnumSet.noneOf(CustomElement.class);
@@ -1585,19 +1585,19 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
 
     private boolean shouldExcludeFirstBottomCell() {
         int page = shownWorkspacePage();
-        return page >= 0 && BottomBarPlacement.reserve(page, barOnEveryPage(prefs),
-                prefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false), prefs.getBoolean(Keys.USER_LAYOUT, false)) == BottomBarPlacement.Reserve.CELL;
+        return page >= 0 && HorizontalBarPlacement.reserve(page, barOnEveryPage(prefs),
+                prefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false), prefs.getBoolean(Keys.USER_LAYOUT, false)) == HorizontalBarPlacement.Reserve.CELL;
     }
 
     private boolean shouldExcludeLastRow() {
         int page = shownWorkspacePage();
-        return page >= 0 && BottomBarPlacement.reserve(page, barOnEveryPage(prefs),
-                prefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false), prefs.getBoolean(Keys.USER_LAYOUT, false)) == BottomBarPlacement.Reserve.ROW;
+        return page >= 0 && HorizontalBarPlacement.reserve(page, barOnEveryPage(prefs),
+                prefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false), prefs.getBoolean(Keys.USER_LAYOUT, false)) == HorizontalBarPlacement.Reserve.ROW;
     }
 
-    /** 'Bottom bar on every page'. */
+    /** 'Horizontal bar on every page'. */
     private static boolean barOnEveryPage(SharedPreferences prefs) {
-        return prefs.getBoolean(Keys.BOTTOM_BAR_EVERY_PAGE, false);
+        return prefs.getBoolean(Keys.HORIZONTAL_BAR_EVERY_PAGE, false);
     }
 
     /**
@@ -1652,7 +1652,7 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
 
         final int countX = mCountX;
         final int countY;
-        // Apply only for the first page that contains the bottom bar
+        // Apply only for the first page that contains the horizontal bar
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         boolean shouldExcludeLastRow = shouldExcludeLastRow();
         boolean shouldExcludeFirstCell = shouldExcludeFirstBottomCell();
@@ -1805,7 +1805,7 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
 
         final int countX = mCountX;
         final int countY;
-        // apply only for the first page that contains the bottom bar
+        // apply only for the first page that contains the horizontal bar
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         boolean shouldExcludeLastRow = shouldExcludeLastRow();
         boolean shouldExcludeFirstCell = shouldExcludeFirstBottomCell();
@@ -2200,7 +2200,7 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         clusterRect = cluster.getBoundingRect();
 
         // Do not allow to reorder objects to the last row of the first screen
-        // where the bottom bar has it's place
+        // where the horizontal bar has it's place
         int fixedCountY;
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         boolean shouldExcludeLastRow = shouldExcludeLastRow();
@@ -3958,7 +3958,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                 return;
             }
 
-            int leftBarWidth = mLauncher.calculatedLeftBarWidth;
+            int verticalBarWidth = mLauncher.calculatedVerticalBarWidth;
             int margin = Integer.parseInt(prefs.getString(Keys.LAYOUT_MARGIN, "5"));
             int dateMinWidth = mLauncher.calculatedDateMinWidth;
             int radioMinHeight = mLauncher.calculatedRadioMinHeight;
@@ -3967,9 +3967,9 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             switch (prefix) {
                 case "date":
                     int dateMinHeight = mLauncher.calculatedDateMinHeight;
-                    if (isLeftBarOffsetActive(currentScreen)) {
-                        topLeftX = prefs.getInt("dateTopLeftX", margin) + leftBarWidth;
-                        topRightX = prefs.getInt("dateTopRightX", margin + dateMinWidth) + leftBarWidth;
+                    if (isVerticalBarOffsetActive(currentScreen)) {
+                        topLeftX = prefs.getInt("dateTopLeftX", margin) + verticalBarWidth;
+                        topRightX = prefs.getInt("dateTopRightX", margin + dateMinWidth) + verticalBarWidth;
                     } else {
                         topLeftX = prefs.getInt("dateTopLeftX", margin);
                         topRightX = prefs.getInt("dateTopRightX", margin + dateMinWidth);
@@ -3984,9 +3984,9 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                     int mapMinWidth = mLauncher.calculatedPipMinWidth;
                     int musicMinWidth = mLauncher.calculatedMusicMinWidth;
                     int musicMinHeight = mLauncher.calculatedMusicMinHeight;
-                    if (isLeftBarOffsetActive(currentScreen)) {
-                        topLeftX = prefs.getInt("musicTopLeftX", margin + mapMinWidth + margin) + leftBarWidth;
-                        topRightX = prefs.getInt("musicTopRightX", margin + mapMinWidth + margin + musicMinWidth) + leftBarWidth;
+                    if (isVerticalBarOffsetActive(currentScreen)) {
+                        topLeftX = prefs.getInt("musicTopLeftX", margin + mapMinWidth + margin) + verticalBarWidth;
+                        topRightX = prefs.getInt("musicTopRightX", margin + mapMinWidth + margin + musicMinWidth) + verticalBarWidth;
                     } else {
                         topLeftX = prefs.getInt("musicTopLeftX", margin + mapMinWidth + margin);
                         topRightX = prefs.getInt("musicTopRightX", margin + mapMinWidth + margin + musicMinWidth);
@@ -4003,9 +4003,9 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
 
                 case "radio":
                     int radioMinWidth = mLauncher.calculatedRadioMinWidth;
-                    if (isLeftBarOffsetActive(currentScreen)) {
-                        topLeftX = prefs.getInt("radioTopLeftX", margin + dateMinWidth + margin) + leftBarWidth;
-                        topRightX = prefs.getInt("radioTopRightX", margin + dateMinWidth + margin + radioMinWidth) + leftBarWidth;
+                    if (isVerticalBarOffsetActive(currentScreen)) {
+                        topLeftX = prefs.getInt("radioTopLeftX", margin + dateMinWidth + margin) + verticalBarWidth;
+                        topRightX = prefs.getInt("radioTopRightX", margin + dateMinWidth + margin + radioMinWidth) + verticalBarWidth;
                     } else {
                         topLeftX = prefs.getInt("radioTopLeftX", margin + dateMinWidth + margin);
                         topRightX = prefs.getInt("radioTopRightX", margin + dateMinWidth + margin + radioMinWidth);
@@ -4172,15 +4172,15 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
 
             int margin = Integer.parseInt(prefs.getString(Keys.LAYOUT_MARGIN, "5"));
 
-            int leftBarWidth = mLauncher.calculatedLeftBarWidth;
+            int verticalBarWidth = mLauncher.calculatedVerticalBarWidth;
             int pipMinWidth = mLauncher.calculatedPipMinWidth;
             int pipMinHeight = mLauncher.calculatedPipMinHeight;
 
             // Get bounds from preferences
             int topLeftX, topRightX;
-            if (isLeftBarOffsetActive(currentScreen)) {
-                topLeftX = prefs.getInt(pipKey + "TopLeftX", margin) + leftBarWidth;
-                topRightX = prefs.getInt(pipKey + "TopRightX", margin + pipMinWidth) + leftBarWidth;
+            if (isVerticalBarOffsetActive(currentScreen)) {
+                topLeftX = prefs.getInt(pipKey + "TopLeftX", margin) + verticalBarWidth;
+                topRightX = prefs.getInt(pipKey + "TopRightX", margin + pipMinWidth) + verticalBarWidth;
             } else {
                 topLeftX = prefs.getInt(pipKey + "TopLeftX", margin);
                 topRightX = prefs.getInt(pipKey + "TopRightX", margin + pipMinWidth);
@@ -4266,7 +4266,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
      * The geometry the placeholder for this pane would have, derived from preferences alone.
      *
      * Same inputs and same arithmetic as addPipPlaceholder(): the four corner preferences, the
-     * layout margin, the left-bar offset and the status bar height. No measured cell metrics are
+     * layout margin, the vertical-bar offset and the status bar height. No measured cell metrics are
      * involved, which is why this is exact even before the CellLayout has laid anything out.
      *
      * @return {x, y, width, height} or null when this page does not host the pane.
@@ -4296,14 +4296,14 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             if (prefs.getInt(screenKey, 1) - 1 != currentScreen) return null;
 
             int margin = Integer.parseInt(prefs.getString(Keys.LAYOUT_MARGIN, "5"));
-            int leftBarWidth = mLauncher.calculatedLeftBarWidth;
+            int verticalBarWidth = mLauncher.calculatedVerticalBarWidth;
             int pipMinWidth = mLauncher.calculatedPipMinWidth;
             int pipMinHeight = mLauncher.calculatedPipMinHeight;
 
             int topLeftX, topRightX;
-            if (isLeftBarOffsetActive(currentScreen)) {
-                topLeftX = prefs.getInt(pipKey + "TopLeftX", margin) + leftBarWidth;
-                topRightX = prefs.getInt(pipKey + "TopRightX", margin + pipMinWidth) + leftBarWidth;
+            if (isVerticalBarOffsetActive(currentScreen)) {
+                topLeftX = prefs.getInt(pipKey + "TopLeftX", margin) + verticalBarWidth;
+                topRightX = prefs.getInt(pipKey + "TopRightX", margin + pipMinWidth) + verticalBarWidth;
             } else {
                 topLeftX = prefs.getInt(pipKey + "TopLeftX", margin);
                 topRightX = prefs.getInt(pipKey + "TopRightX", margin + pipMinWidth);
@@ -4379,15 +4379,15 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
 
             // the saved rectangle as wide as the window (its size and the text it needs), which the cells are reserved from
             com.android.launcher66.settings.StatsWindowSize.syncSavedRectangle(getContext(), prefs, false);
-            int leftBarWidth = mLauncher.calculatedLeftBarWidth;
+            int verticalBarWidth = mLauncher.calculatedVerticalBarWidth;
             int statsWidth = mLauncher.calculatedStatsWidth;
             int statsHeight = mLauncher.calculatedStatsHeight;
 
             // Get bounds from preferences
             int topLeftX, topRightX;
-            if (isLeftBarOffsetActive(currentScreen)) {
-                topLeftX = prefs.getInt("statsTopLeftX", margin) + leftBarWidth;
-                topRightX = prefs.getInt("statsTopRightX", margin + statsWidth) + leftBarWidth;
+            if (isVerticalBarOffsetActive(currentScreen)) {
+                topLeftX = prefs.getInt("statsTopLeftX", margin) + verticalBarWidth;
+                topRightX = prefs.getInt("statsTopRightX", margin + statsWidth) + verticalBarWidth;
             } else {
                 topLeftX = prefs.getInt("statsTopLeftX", margin);
                 topRightX = prefs.getInt("statsTopRightX", margin + statsWidth);
@@ -4440,18 +4440,18 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
     }
 
     /**
-     * leftBar must be read from THIS page instance, not inherited from the setup host
+     * verticalBar must be read from THIS page instance, not inherited from the setup host
      * (readCustomElementPrefs() sets the field only on the host).
      */
-    private boolean isLeftBarOffsetActive(int currentScreen) {
+    private boolean isVerticalBarOffsetActive(int currentScreen) {
         if (currentScreen != 0) {
             return false;
         }
         SharedPreferences p = (prefs != null)
                 ? prefs
                 : PreferenceManager.getDefaultSharedPreferences(getContext());
-        leftBar = p.getBoolean(Keys.LEFT_BAR, false);
-        return leftBar && p.getBoolean(Keys.USER_LAYOUT, false);
+        verticalBar = p.getBoolean(Keys.VERTICAL_BAR, false);
+        return verticalBar && p.getBoolean(Keys.USER_LAYOUT, false);
     }
 
     public int[] getStatsPlaceholderPosition() {
@@ -4489,11 +4489,11 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             }
             prefs = p;
             int margin = Integer.parseInt(p.getString(Keys.LAYOUT_MARGIN, "5"));
-            int leftBarWidth = mLauncher.calculatedLeftBarWidth;
+            int verticalBarWidth = mLauncher.calculatedVerticalBarWidth;
             int statsWidth = mLauncher.calculatedStatsWidth;
             int statsHeight = mLauncher.calculatedStatsHeight;
-            int topLeftX = isLeftBarOffsetActive(currentScreen)
-                    ? p.getInt("statsTopLeftX", margin) + leftBarWidth
+            int topLeftX = isVerticalBarOffsetActive(currentScreen)
+                    ? p.getInt("statsTopLeftX", margin) + verticalBarWidth
                     : p.getInt("statsTopLeftX", margin);
             int topLeftY = p.getInt("statsTopLeftY", margin);
             return new int[]{topLeftX, topLeftY + mLauncher.getStatusBarHeight(), statsWidth,
@@ -4543,23 +4543,23 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
     }
 
     /**
-     * The bottom bar covers the last row(s) of the first page, unless it hides itself; with 'Bottom
-     * bar on every page' of every page (BottomBarPlacement).
+     * The horizontal bar covers the last row(s) of the first page, unless it hides itself; with 'Bottom
+     * bar on every page' of every page (HorizontalBarPlacement).
      */
     private boolean isBarRowExcluded(int pageIndex) {
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(getContext());
-        return BottomBarPlacement.reserve(pageIndex, barOnEveryPage(p),
-                p.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false), p.getBoolean(Keys.USER_LAYOUT, false)) == BottomBarPlacement.Reserve.ROW;
+        return HorizontalBarPlacement.reserve(pageIndex, barOnEveryPage(p),
+                p.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false), p.getBoolean(Keys.USER_LAYOUT, false)) == HorizontalBarPlacement.Reserve.ROW;
     }
 
     /** With the auto-hiding bar, only its handle in the bottom-left cell of a page is taken. */
     private boolean isFirstBottomCellExcluded(int pageIndex) {
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(getContext());
-        return BottomBarPlacement.reserve(pageIndex, barOnEveryPage(p),
-                p.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false), p.getBoolean(Keys.USER_LAYOUT, false)) == BottomBarPlacement.Reserve.CELL;
+        return HorizontalBarPlacement.reserve(pageIndex, barOnEveryPage(p),
+                p.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false), p.getBoolean(Keys.USER_LAYOUT, false)) == HorizontalBarPlacement.Reserve.CELL;
     }
 
-    /** A copy of mOccupied with the cells under the bottom bar marked as taken. */
+    /** A copy of mOccupied with the cells under the horizontal bar marked as taken. */
     private boolean[][] buildSearchOccupied(boolean excludeBarRows, boolean excludeFirstCell) {
         boolean[][] occupied = new boolean[mCountX][mCountY];
         for (int x = 0; x < mCountX; x++) {
@@ -4687,7 +4687,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
      * otherwise to another page with room. Nothing is deleted here any more. This used to delete
      * every item it could not fit on this page from the database, and two bugs made that hit
      * icons that were in nobody's way:
-     * - the bottom bar rows were excluded according to the page the user was LOOKING at
+     * - the horizontal bar rows were excluded according to the page the user was LOOKING at
      *   (shouldExcludeLastRow() -> getCurrentPage() == 0), so with the first page on screen the
      *   last row of every page with custom elements counted as covered by the bar;
      * - an item in such a row freed its own cell in the search copy, the search found that very
@@ -4726,7 +4726,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             }
         }
 
-        // Items under the bottom bar, which covers the first page only.
+        // Items under the horizontal bar, which covers the first page only.
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         boolean excludeBarRows = isBarRowExcluded(pageIndex);
         boolean excludeFirstCell = isFirstBottomCellExcluded(pageIndex);

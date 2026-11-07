@@ -45,10 +45,10 @@
     <string name="widget_bar_large_text">大字體</string>
     <string name="widget_bar_large_text_on">盡可能大，以欄內空間為限</string>
     <string name="widget_bar_large_text_off">一般字級</string>
-    <string name="bottom_bar_every_page">每頁都顯示底部欄</string>
-    <string name="bottom_bar_every_page_on">在主畫面的每一頁顯示</string>
-    <string name="bottom_bar_every_page_off">僅在第一頁</string>
-    <string name="bottom_bar_every_page_no_overlay">需要「顯示在其他應用程式上層」的權限</string>
+    <string name="horizontal_bar_every_page">每頁都顯示橫欄</string>
+    <string name="horizontal_bar_every_page_on">在主畫面的每一頁顯示</string>
+    <string name="horizontal_bar_every_page_off">僅在第一頁</string>
+    <string name="horizontal_bar_every_page_no_overlay">需要「顯示在其他應用程式上層」的權限</string>
     <string name="widget_bar_line_mode">標題與歌手的排列方式</string>
     <string name="widget_bar_one_line_on">單行：歌手 – 標題</string>
     <string name="widget_bar_one_line_off">標題顯示在歌手上方</string>

@@ -111,13 +111,13 @@
         <SwitchPreferenceCompat
             android:key="bottom_bar_every_page"
             android:defaultValue="false"
-            android:title="@string/bottom_bar_every_page"
-            android:summaryOn="@string/bottom_bar_every_page_on"
-            android:summaryOff="@string/bottom_bar_every_page_off" />
+            android:title="@string/horizontal_bar_every_page"
+            android:summaryOn="@string/horizontal_bar_every_page_on"
+            android:summaryOff="@string/horizontal_bar_every_page_off" />
         <SwitchPreferenceCompat
             android:key="auto_hide_bottom_bar"
             android:defaultValue="false"
-            android:title="@string/auto_hide_bottom_bar"
+            android:title="@string/auto_hide_horizontal_bar"
             android:summaryOn="@string/auto_hide_timeout" />     
         <com.android.launcher66.settings.AutoHideSeekBarPreference
             android:key="auto_hide_timeout"
@@ -125,11 +125,11 @@
         <SwitchPreferenceCompat
             android:key="resizable_bottom_bar"
             android:defaultValue="false"
-            android:title="@string/resizable_bottom_bar"
-            android:summaryOn="@string/resizable_bottom_bar_summary" />
+            android:title="@string/resizable_horizontal_bar"
+            android:summaryOn="@string/resizable_horizontal_bar_summary" />
         <!-- Stores its value under bottom_bar_height_port / bottom_bar_height_land
              (per orientation), never under its own key. -->
-        <com.android.launcher66.settings.BottomBarHeightSeekBarPreference
+        <com.android.launcher66.settings.HorizontalBarHeightSeekBarPreference
             android:key="bottom_bar_height"
             android:persistent="false" />
         <Preference
@@ -195,9 +195,9 @@
         <SwitchPreferenceCompat
             android:key="left_bar"
             android:defaultValue="false"
-            android:title="@string/left_bar"
-            android:summaryOn="@string/left_bar_on"
-            android:summaryOff="@string/left_bar_off" />
+            android:title="@string/vertical_bar"
+            android:summaryOn="@string/vertical_bar_on"
+            android:summaryOff="@string/vertical_bar_off" />
         <Preference
             android:key="layout_margin"
             android:title="@string/margins_str"

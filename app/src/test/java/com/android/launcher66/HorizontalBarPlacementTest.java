@@ -1,21 +1,21 @@
 package com.android.launcher66;
 
-import static com.android.launcher66.BottomBarPlacement.Bar.BUTTON;
-import static com.android.launcher66.BottomBarPlacement.Bar.EMBEDDED;
-import static com.android.launcher66.BottomBarPlacement.Bar.HANDLE;
-import static com.android.launcher66.BottomBarPlacement.Bar.NONE;
-import static com.android.launcher66.BottomBarPlacement.Bar.PERSISTENT_OVERLAY;
-import static com.android.launcher66.BottomBarPlacement.Reserve.CELL;
-import static com.android.launcher66.BottomBarPlacement.Reserve.ROW;
+import static com.android.launcher66.HorizontalBarPlacement.Bar.BUTTON;
+import static com.android.launcher66.HorizontalBarPlacement.Bar.EMBEDDED;
+import static com.android.launcher66.HorizontalBarPlacement.Bar.HANDLE;
+import static com.android.launcher66.HorizontalBarPlacement.Bar.NONE;
+import static com.android.launcher66.HorizontalBarPlacement.Bar.PERSISTENT_OVERLAY;
+import static com.android.launcher66.HorizontalBarPlacement.Reserve.CELL;
+import static com.android.launcher66.HorizontalBarPlacement.Reserve.ROW;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-class BottomBarPlacementTest {
+class HorizontalBarPlacementTest {
 
-    private static BottomBarPlacement.Bar bar(int page, boolean every, boolean autoHide, boolean left,
+    private static HorizontalBarPlacement.Bar bar(int page, boolean every, boolean autoHide, boolean left,
                                               boolean moving) {
-        return BottomBarPlacement.bar(page, every, autoHide, left, moving, true);
+        return HorizontalBarPlacement.bar(page, every, autoHide, left, moving, true);
     }
 
     @Test
@@ -39,10 +39,10 @@ class BottomBarPlacementTest {
 
     @Test
     void withTheOptionOffTheReservationIsTheFirstPagesOnly() {
-        assertEquals(ROW, BottomBarPlacement.reserve(0, false, false, true));
-        assertEquals(BottomBarPlacement.Reserve.NONE, BottomBarPlacement.reserve(1, false, false, true));
-        assertEquals(CELL, BottomBarPlacement.reserve(0, false, true, true));
-        assertEquals(BottomBarPlacement.Reserve.NONE, BottomBarPlacement.reserve(2, false, true, true));
+        assertEquals(ROW, HorizontalBarPlacement.reserve(0, false, false, true));
+        assertEquals(HorizontalBarPlacement.Reserve.NONE, HorizontalBarPlacement.reserve(1, false, false, true));
+        assertEquals(CELL, HorizontalBarPlacement.reserve(0, false, true, true));
+        assertEquals(HorizontalBarPlacement.Reserve.NONE, HorizontalBarPlacement.reserve(2, false, true, true));
     }
 
     @Test
@@ -66,7 +66,7 @@ class BottomBarPlacementTest {
     }
 
     @Test
-    void everyPageWithAutoHideHasTheHandleOnEveryPageAndTheButtonOnTheFirstWithTheLeftBar() {
+    void everyPageWithAutoHideHasTheHandleOnEveryPageAndTheButtonOnTheFirstWithTheVerticalBar() {
         assertEquals(HANDLE, bar(0, true, true, false, false));
         assertEquals(BUTTON, bar(0, true, true, true, false));
         assertEquals(HANDLE, bar(1, true, true, false, false));
@@ -78,27 +78,27 @@ class BottomBarPlacementTest {
     @Test
     void everyPageTakesTheRowOrTheCellOnEveryPage() {
         for (int page = 0; page < 4; page++) {
-            assertEquals(ROW, BottomBarPlacement.reserve(page, true, false, true));
-            assertEquals(CELL, BottomBarPlacement.reserve(page, true, true, true));
+            assertEquals(ROW, HorizontalBarPlacement.reserve(page, true, false, true));
+            assertEquals(CELL, HorizontalBarPlacement.reserve(page, true, true, true));
         }
     }
 
     @Test
     void withoutTheUserLayoutTheOtherPagesHaveNoBarAndNoReservation() {
         // the switch was left on, but the persistent overlay and the handles exist only in the user layout
-        assertEquals(NONE, BottomBarPlacement.bar(1, true, false, false, false, false));
-        assertEquals(NONE, BottomBarPlacement.bar(2, true, true, false, false, false));
-        assertEquals(NONE, BottomBarPlacement.bar(1, true, false, true, true, false));
-        assertEquals(BottomBarPlacement.Reserve.NONE, BottomBarPlacement.reserve(1, true, false, false));
-        assertEquals(BottomBarPlacement.Reserve.NONE, BottomBarPlacement.reserve(3, true, true, false));
+        assertEquals(NONE, HorizontalBarPlacement.bar(1, true, false, false, false, false));
+        assertEquals(NONE, HorizontalBarPlacement.bar(2, true, true, false, false, false));
+        assertEquals(NONE, HorizontalBarPlacement.bar(1, true, false, true, true, false));
+        assertEquals(HorizontalBarPlacement.Reserve.NONE, HorizontalBarPlacement.reserve(1, true, false, false));
+        assertEquals(HorizontalBarPlacement.Reserve.NONE, HorizontalBarPlacement.reserve(3, true, true, false));
     }
 
     @Test
     void withoutTheUserLayoutTheFirstPageIsAsToday() {
-        assertEquals(EMBEDDED, BottomBarPlacement.bar(0, true, false, false, false, false));
-        assertEquals(HANDLE, BottomBarPlacement.bar(0, true, true, false, false, false));
-        assertEquals(BUTTON, BottomBarPlacement.bar(0, true, true, true, false, false));
-        assertEquals(ROW, BottomBarPlacement.reserve(0, true, false, false));
-        assertEquals(CELL, BottomBarPlacement.reserve(0, true, true, false));
+        assertEquals(EMBEDDED, HorizontalBarPlacement.bar(0, true, false, false, false, false));
+        assertEquals(HANDLE, HorizontalBarPlacement.bar(0, true, true, false, false, false));
+        assertEquals(BUTTON, HorizontalBarPlacement.bar(0, true, true, true, false, false));
+        assertEquals(ROW, HorizontalBarPlacement.reserve(0, true, false, false));
+        assertEquals(CELL, HorizontalBarPlacement.reserve(0, true, true, false));
     }
 }

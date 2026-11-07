@@ -15,7 +15,7 @@ import java.util.List;
  *
  * <p>Step 2, on the screen with the bars. The order in which the bars are given way to:
  * <ol>
- *   <li>the element is <b>moved</b> into free space (up for the bottom bar, left for the left
+ *   <li>the element is <b>moved</b> into free space (up for the horizontal bar, left for the left
  *       bar), where free means no other element and no icon, folder or widget of the launcher
  *       database in the cells it would enter;</li>
  *   <li>what is still covered is <b>cut</b> (the edge at the bar), never below the minimum size;</li>
@@ -25,11 +25,11 @@ import java.util.List;
  *       space.</li>
  * </ol>
  * The result is always computed from the user rectangles, never from an earlier result, so it
- * goes back to them when the bar shrinks or the left bar disappears, and the same input always
+ * goes back to them when the bar shrinks or the vertical bar disappears, and the same input always
  * gives the same output.
  *
  * <p>Pure Java (no Android imports) so it is unit-tested on the JVM. Coordinates are the ones the
- * creator saves: the box the widgets live in, without the left bar and the status bar.
+ * creator saves: the box the widgets live in, without the vertical bar and the status bar.
  */
 public final class CustomLayoutResolver {
 
@@ -80,19 +80,19 @@ public final class CustomLayoutResolver {
         /** Layout margin; elements keep at least {@code max(margin, 1)} between them. */
         public int margin = 5;
         /**
-         * Left bar: the right edge may not pass {@code maxRight}. An element is affected when its
+         * Vertical bar: the right edge may not pass {@code maxRight}. An element is affected when its
          * right edge is beyond {@code rightTrigger}.
          */
         public int maxRight = NO_LIMIT;
         public int rightTrigger = NO_LIMIT;
-        /** Bottom bar, the same for the bottom edge. */
+        /** Horizontal bar, the same for the bottom edge. */
         public int maxBottom = NO_LIMIT;
         public int bottomTrigger = NO_LIMIT;
         /** The cell grid and the occupied cells ([column][row]) of this screen; null: do not move. */
         public GridGeometry grid;
         public boolean[][] occupied;
-        /** Width CellLayout adds to x on this screen (left bar on page 0). */
-        public int leftBarOffset;
+        /** Width CellLayout adds to x on this screen (vertical bar on page 0). */
+        public int verticalBarOffset;
 
         int gap() {
             return Math.max(margin, 1);
@@ -257,8 +257,8 @@ public final class CustomLayoutResolver {
     // ---------------------------------------------------------------- step 2: one axis
 
     /**
-     * Moves, cuts and where needed resets along one axis. The vertical case: the bottom bar pushes
-     * up. The horizontal one is the same with x for y: the left bar pushes to the left in the
+     * Moves, cuts and where needed resets along one axis. The vertical case: the horizontal bar pushes
+     * up. The horizontal one is the same with x for y: the vertical bar pushes to the left in the
      * coordinates of the box (on the screen the element stays to the right of the bar).
      */
     private static void resolveAxis(List<Element> els, int[][] r, boolean[] reset, Env env, boolean vertical) {
@@ -388,7 +388,7 @@ public final class CustomLayoutResolver {
     private static int ceilingFromGrid(int[] rect, Env env, boolean vertical) {
         GridGeometry g = env.grid;
         boolean[][] occ = env.occupied;
-        int off = env.leftBarOffset;
+        int off = env.verticalBarOffset;
         if (vertical) {
             int c0 = g.colOf(rect[LEFT] + off);
             int c1 = g.colOf(rect[RIGHT] - 1 + off);
@@ -519,7 +519,7 @@ public final class CustomLayoutResolver {
             if (!apart) return false;
         }
         if (!env.canMove()) return true;
-        int[] cells = env.grid.cellsOf(x, y, right, bottom, env.leftBarOffset);
+        int[] cells = env.grid.cellsOf(x, y, right, bottom, env.verticalBarOffset);
         for (int c = cells[0]; c <= cells[2]; c++) {
             for (int rw = cells[1]; rw <= cells[3]; rw++) {
                 if (env.occupied[c][rw]) return false;
@@ -540,7 +540,7 @@ public final class CustomLayoutResolver {
         }
         if (env.canMove()) {
             for (int c = 0; c < env.grid.countX; c++) {
-                xs.add(env.grid.colStart(c) - env.leftBarOffset);
+                xs.add(env.grid.colStart(c) - env.verticalBarOffset);
             }
             for (int rw = 0; rw < env.grid.countY; rw++) {
                 ys.add(env.grid.rowStart(rw));

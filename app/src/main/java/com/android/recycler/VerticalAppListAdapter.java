@@ -27,10 +27,10 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * The left bar: the apps opened last, each opened again by a tap. Choosing its apps (the app
- * picker) is the bottom bar's alone (AppListAdapter).
+ * The vertical bar: the apps opened last, each opened again by a tap. Choosing its apps (the app
+ * picker) is the horizontal bar's alone (AppListAdapter).
  */
-public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> {
+public class VerticalAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> {
 
     private static final String RECYCLER_APP = "recycler.app";
     private static final String RECYCLER_APP_MAP = "recycler.app.map";
@@ -40,7 +40,7 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
     private final Helpers helpers = new Helpers();
     private long mDataSignature;
 
-    public LeftAppListAdapter(Launcher launcher, List<AppListBean> data) {
+    public VerticalAppListAdapter(Launcher launcher, List<AppListBean> data) {
         this.mData = data;
         this.mLauncher = launcher;
         this.mDataSignature = calculateDataSignature(data);
@@ -54,13 +54,13 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
     public void notifyDataSetChanged(final List<AppListBean> data) {
         this.mLauncher.runOnUiThread(() -> {
             long newSignature = calculateDataSignature(data);
-            if (LeftAppListAdapter.this.mDataSignature == newSignature) {
-                LeftAppListAdapter.this.mData = data;
+            if (VerticalAppListAdapter.this.mDataSignature == newSignature) {
+                VerticalAppListAdapter.this.mData = data;
                 return;
             }
-            LeftAppListAdapter.this.mData = data;
-            LeftAppListAdapter.this.mDataSignature = newSignature;
-            LeftAppListAdapter.this.notifyDataSetChanged();
+            VerticalAppListAdapter.this.mData = data;
+            VerticalAppListAdapter.this.mDataSignature = newSignature;
+            VerticalAppListAdapter.this.notifyDataSetChanged();
         });
     }
 
@@ -115,29 +115,29 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
 
             } else if ("com.android.launcher66".equals(appListBean.packageName)
                     && !"com.android.launcher66.settings.SettingsActivity".equals(appListBean.className)) {
-                LeftAppListAdapter.this.mLauncher.onClickAllAppsButton();
+                VerticalAppListAdapter.this.mLauncher.onClickAllAppsButton();
 
             } else if ("com.android.launcher66.settings.SettingsActivity".equals(appListBean.className)) {
                 WindowUtil.removePip();
-                LeftAppListAdapter.this.mLauncher.refreshLeftCycle(appListBean);
-                Intent settingsIntent = new Intent(LeftAppListAdapter.this.mLauncher, SettingsActivity.class);
+                VerticalAppListAdapter.this.mLauncher.refreshLeftCycle(appListBean);
+                Intent settingsIntent = new Intent(VerticalAppListAdapter.this.mLauncher, SettingsActivity.class);
                 settingsIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                LeftAppListAdapter.this.mLauncher.startActivity(settingsIntent);
+                VerticalAppListAdapter.this.mLauncher.startActivity(settingsIntent);
                 onClickIcon(appListBean);
 
             } else if (appListBean.className.contains("com.syu.radio")) {
-                LeftAppListAdapter.this.mLauncher.stopMusic();
+                VerticalAppListAdapter.this.mLauncher.stopMusic();
                 final Intent intent = new Intent();
                 intent.setComponent(new ComponentName(appListBean.packageName, appListBean.className));
-                LeftAppListAdapter.this.mLauncher.startActivitySafely(view, intent, "");
-                LeftAppListAdapter.this.mLauncher.refreshLeftCycle(appListBean);
+                VerticalAppListAdapter.this.mLauncher.startActivitySafely(view, intent, "");
+                VerticalAppListAdapter.this.mLauncher.refreshLeftCycle(appListBean);
                 onClickIcon(appListBean);
 
             } else {
                 final Intent intent = new Intent();
                 intent.setComponent(new ComponentName(appListBean.packageName, appListBean.className));
-                LeftAppListAdapter.this.mLauncher.startActivitySafely(view, intent, "");
-                LeftAppListAdapter.this.mLauncher.refreshLeftCycle(appListBean);
+                VerticalAppListAdapter.this.mLauncher.startActivitySafely(view, intent, "");
+                VerticalAppListAdapter.this.mLauncher.refreshLeftCycle(appListBean);
                 onClickIcon(appListBean);
             }
         });
@@ -156,19 +156,19 @@ public class LeftAppListAdapter extends RecyclerView.Adapter<LeftAppListHolder> 
             helpers.setInAllApps(false);
             helpers.setInWidgets(false);
             helpers.setInRecent(false);
-            boolean autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
-            if (autoHideBottomBar) {
-                LeftAppListAdapter.this.mLauncher.getWorkspace().hideBottomBar();
+            boolean autoHideHorizontalBar = mPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false);
+            if (autoHideHorizontalBar) {
+                VerticalAppListAdapter.this.mLauncher.getWorkspace().hideHorizontalBar();
             }
             boolean userStats = mPrefs.getBoolean(Keys.USER_STATS, false);
             if (userStats) {
                 SharedPreferences statsPrefs =
-                        LeftAppListAdapter.this.mLauncher.getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
+                        VerticalAppListAdapter.this.mLauncher.getSharedPreferences("AppStatsPrefs", MODE_PRIVATE);
                 Set<String> apps = new HashSet<>(statsPrefs.getStringSet("stats_apps", new HashSet<String>()));
                 if (apps.contains(appListBean.packageName)) {
-                    SysCalls.sendBroadcast(LeftAppListAdapter.this.mLauncher, new Intent(RECYCLER_APP_MAP));
+                    SysCalls.sendBroadcast(VerticalAppListAdapter.this.mLauncher, new Intent(RECYCLER_APP_MAP));
                 } else {
-                    SysCalls.sendBroadcast(LeftAppListAdapter.this.mLauncher, new Intent(RECYCLER_APP));
+                    SysCalls.sendBroadcast(VerticalAppListAdapter.this.mLauncher, new Intent(RECYCLER_APP));
                 }
             }
         }

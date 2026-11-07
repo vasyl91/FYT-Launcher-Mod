@@ -138,7 +138,9 @@ public final class Keys {
     public static final String CANBUS_AUTO_CHECK_PREFIX = "canbus_auto_check_";
     /** Per car (+ car id): the fuel and range codes the automatic check found, see AutoCodes. */
     public static final String AUTO_CODES_PREFIX = "auto_codes_";
-    public static final String LEFT_BAR = "left_bar";
+    // The horizontal and vertical bars were the bottom bar and the left bar: the stored values of their
+    // preferences are those former names (users' data), only the names in the code changed.
+    public static final String VERTICAL_BAR = "left_bar";
     public static final String WIDGET_BAR = "widget_bar";
     /** The album cover is not shown in the widget bar and the title, artist and buttons take its room. */
     public static final String WIDGET_BAR_NO_COVER = "widget_bar_no_cover";
@@ -173,14 +175,14 @@ public final class Keys {
     public static final String BLACK_WIDGETS = "black_widgets";
     public static final String START_PAGE = "start_page";
     public static final String LAYOUT_MARGIN = "layout_margin";
-    /** The bottom bar is on every page of the home screen, not only on the first (BottomBarPlacement). */
-    public static final String BOTTOM_BAR_EVERY_PAGE = "bottom_bar_every_page";
-    public static final String AUTO_HIDE_BOTTOM_BAR = "auto_hide_bottom_bar";
+    /** The horizontal bar is on every page of the home screen, not only on the first (HorizontalBarPlacement). */
+    public static final String HORIZONTAL_BAR_EVERY_PAGE = "bottom_bar_every_page";
+    public static final String AUTO_HIDE_HORIZONTAL_BAR = "auto_hide_bottom_bar";
     public static final String AUTO_HIDE_TIMEOUT = "auto_hide_timeout";
-    public static final String RESIZABLE_BOTTOM_BAR = "resizable_bottom_bar";
-    public static final String BOTTOM_BAR_HEIGHT = "bottom_bar_height"; 
-    public static final String BOTTOM_BAR_HEIGHT_PORT = "bottom_bar_height_port";
-    public static final String BOTTOM_BAR_HEIGHT_LAND = "bottom_bar_height_land";
+    public static final String RESIZABLE_HORIZONTAL_BAR = "resizable_bottom_bar";
+    public static final String HORIZONTAL_BAR_HEIGHT = "bottom_bar_height"; 
+    public static final String HORIZONTAL_BAR_HEIGHT_PORT = "bottom_bar_height_port";
+    public static final String HORIZONTAL_BAR_HEIGHT_LAND = "bottom_bar_height_land";
 
     public static final String PIP_DUAL = "pip_dual";
     public static final String PIP_FIRST = "pip_first";

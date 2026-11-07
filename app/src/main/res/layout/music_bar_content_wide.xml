@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    The wide inside of the music widget (bottom bar), used when the date or the weather of the
+    The wide inside of the music widget (horizontal bar), used when the date or the weather of the
     widget bar is hidden and the music widget has their room. The text (title, artist) is between
     the cover and the buttons, and the buttons are a block on the right in 2 x 2 (prev and next above play/pause and
     favorite), 35% of what is left of the widget after the cover. The

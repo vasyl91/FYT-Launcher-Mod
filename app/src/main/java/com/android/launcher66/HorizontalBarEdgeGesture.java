@@ -20,7 +20,7 @@ package com.android.launcher66;
  *
  * One instance serves one window, one gesture at a time: {@link #onDown} starts it afresh.
  */
-final class BottomBarEdgeGesture {
+final class HorizontalBarEdgeGesture {
 
     enum Decision { UNDECIDED, OPEN_BAR, PASS }
 
@@ -36,7 +36,7 @@ final class BottomBarEdgeGesture {
     private boolean onStrip;
     private Decision decision = Decision.UNDECIDED;
 
-    BottomBarEdgeGesture(float touchSlop, long tapTimeoutMs) {
+    HorizontalBarEdgeGesture(float touchSlop, long tapTimeoutMs) {
         this.touchSlop = touchSlop;
         this.tapTimeoutMs = tapTimeoutMs;
     }

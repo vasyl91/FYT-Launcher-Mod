@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-/** Left bar capacity only; bottomCapacity() needs Launcher.screenWidth and is not loaded here. */
+/** Vertical bar capacity only; bottomCapacity() needs Launcher.screenWidth and is not loaded here. */
 class BarCapacityTest {
 
     @Test

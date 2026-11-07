@@ -89,7 +89,7 @@ public class CreatorOtherScreens extends Fragment {
         
         View rootView;
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-        boolean leftBar = sharedPrefs.getBoolean(Keys.LEFT_BAR, false);
+        boolean verticalBar = sharedPrefs.getBoolean(Keys.VERTICAL_BAR, false);
         pip = sharedPrefs.getBoolean(Keys.DISPLAY_PIP, false);
         dualPip = sharedPrefs.getBoolean(Keys.PIP_DUAL, false);
         firstPip = sharedPrefs.getBoolean(Keys.PIP_FIRST, false);

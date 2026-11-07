@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
  * The previous version hard-coded dividerHeight = 0 with no way to change it, so
  * getItemOffsets() always wrote an empty Rect - a no-op on both the bottom and the left
  * bar. It also applied the offset to outRect.left unconditionally, which is the wrong
- * axis for the vertically scrolling left bar, and it inset the very first item, which
+ * axis for the vertically scrolling vertical bar, and it inset the very first item, which
  * would have pushed the whole bar off-centre.
  *
  * The no-arg constructor still produces exactly the same no-op, so existing call sites
@@ -47,7 +47,7 @@ public class SimpleDividerDecoration extends RecyclerView.ItemDecoration {
 
         int position = parent.getChildAdapterPosition(view);
         if (position == RecyclerView.NO_POSITION || position == 0) {
-            // No leading gap: the bottom bar is centred by the spacing decoration
+            // No leading gap: the horizontal bar is centred by the spacing decoration
             // installed alongside this one, and an extra inset on item 0 would skew it.
             return;
         }

@@ -80,7 +80,7 @@ public class CreatorFirstScreen extends Fragment {
         
         View rootView;
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-        boolean leftBar = sharedPrefs.getBoolean(Keys.LEFT_BAR, false);
+        boolean verticalBar = sharedPrefs.getBoolean(Keys.VERTICAL_BAR, false);
         pip = sharedPrefs.getBoolean(Keys.DISPLAY_PIP, false);
         dualPip = sharedPrefs.getBoolean(Keys.PIP_DUAL, false);
         firstPip = sharedPrefs.getBoolean(Keys.PIP_FIRST, false);
@@ -97,16 +97,16 @@ public class CreatorFirstScreen extends Fragment {
         music = sharedPrefs.getBoolean(Keys.USER_MUSIC, true);
         radio = sharedPrefs.getBoolean(Keys.USER_RADIO, true); 
         stats = sharedPrefs.getBoolean(Keys.USER_STATS, true);        
-        if (leftBar) {           
-            rootView = inflater.inflate(R.layout.creator_left, container, false);
+        if (verticalBar) {           
+            rootView = inflater.inflate(R.layout.creator_vertical, container, false);
         } else {
             rootView = inflater.inflate(R.layout.creator, container, false);
         }
         layout = rootView.findViewById(R.id.creator_first_screen);
         canvas = new DrawViewFirstScreen(inflater, rootView, mContext);
         // After the canvas: its constructor gives the bar controls their base sizes, which the
-        // resizable bar then scales. No-op while Keys.RESIZABLE_BOTTOM_BAR is off.
-        applyResizableBottomBar(rootView, mContext);
+        // resizable bar then scales. No-op while Keys.RESIZABLE_HORIZONTAL_BAR is off.
+        applyResizableHorizontalBar(rootView, mContext);
         if (pip && dualPip && !firstPip && !secondPip && compareScreens(Keys.PIP_DUAL_SCREEN)) {
             String pipDualName;
             if (TextUtils.isEmpty(pipFirstName) || TextUtils.isEmpty(pipSecondName)) {
@@ -226,7 +226,7 @@ public class CreatorFirstScreen extends Fragment {
     }
 
     // -------------------------------------------------------------------------------------------
-    // Resizable bottom bar
+    // Resizable horizontal bar
     // -------------------------------------------------------------------------------------------
 
     /**
@@ -234,7 +234,7 @@ public class CreatorFirstScreen extends Fragment {
      * its coordinate space (scaled to fit the settings window, which can be smaller), and the bar
      * gets the configured height.
      *
-     * Keys.RESIZABLE_BOTTOM_BAR off: nothing is touched, creator*.xml keeps sizing the bar
+     * Keys.RESIZABLE_HORIZONTAL_BAR off: nothing is touched, creator*.xml keeps sizing the bar
      * (layout_constraintHeight_percent="0.1638" in landscape, layout_constraintDimensionRatio="H,0.142"
      * in portrait).
      *
@@ -248,16 +248,16 @@ public class CreatorFirstScreen extends Fragment {
      *  3. When the controls grew, a one-shot check after layout shrinks them back if they no longer
      *     fit the width of creator_buttons (the XML only fixes their share of the width).
      */
-    private void applyResizableBottomBar(@NonNull View rootView, @NonNull Context context) {
-        boolean portrait = BottomBarDimensions.isPortrait(context);
-        Point screen = BottomBarDimensions.resolveScreenSize(context);
-        int statusBarHeight = BottomBarDimensions.getStatusBarHeight(context.getResources());
+    private void applyResizableHorizontalBar(@NonNull View rootView, @NonNull Context context) {
+        boolean portrait = HorizontalBarDimensions.isPortrait(context);
+        Point screen = HorizontalBarDimensions.resolveScreenSize(context);
+        int statusBarHeight = HorizontalBarDimensions.getStatusBarHeight(context.getResources());
         // The box the launcher gives the bar and the widgets, and the bar inside it - exactly the
         // geometry Helpers checks the saved positions against.
-        int rootWidth = BottomBarDimensions.getBarRootWidth(screen.x);
-        int rootHeight = BottomBarDimensions.getBarRootHeight(screen.y, statusBarHeight);
-        int barHeight = BottomBarDimensions.computeBarHeight(sharedPrefs, portrait, rootWidth, rootHeight, 0);
-        int legacyBarHeight = BottomBarDimensions.computeLegacyBarHeight(portrait, rootWidth, rootHeight, 0);
+        int rootWidth = HorizontalBarDimensions.getBarRootWidth(screen.x);
+        int rootHeight = HorizontalBarDimensions.getBarRootHeight(screen.y, statusBarHeight);
+        int barHeight = HorizontalBarDimensions.computeBarHeight(sharedPrefs, portrait, rootWidth, rootHeight, 0);
+        int legacyBarHeight = HorizontalBarDimensions.computeLegacyBarHeight(portrait, rootWidth, rootHeight, 0);
         if (rootWidth <= 0 || rootHeight <= 0 || barHeight <= 0 || legacyBarHeight <= 0) {
             Log.w(TAG, "Bar geometry unknown (" + rootWidth + "x" + rootHeight + "), leaving the XML alone");
             return;
@@ -267,24 +267,24 @@ public class CreatorFirstScreen extends Fragment {
         //    saved in - and scales itself into whatever room the creator screen has. The settings
         //    window can be smaller than the launcher's (system bars), and without this the canvas
         //    silently became a different coordinate space than the launcher's.
-        boolean leftBar = sharedPrefs.getBoolean(Keys.LEFT_BAR, false);
-        boolean autoHideBottomBar = sharedPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
-        // The launcher shifts everything on its first page right by Launcher.calculatedLeftBarWidth
+        boolean verticalBar = sharedPrefs.getBoolean(Keys.VERTICAL_BAR, false);
+        boolean autoHideHorizontalBar = sharedPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false);
+        // The launcher shifts everything on its first page right by Launcher.calculatedVerticalBarWidth
         // (CellLayout placeholders, PiP panes), so the canvas has to leave exactly that room. In
         // portrait the bar is 7.1 % of its HEIGHT (W,0.071 in the layout), not of the width: the
         // canvas used to be ~66 px wider than the launcher's area on a 1080x2340 phone, and a
         // rectangle drawn up to its right edge came out wider than the screen allowed.
-        int leftBarWidth = 0;
-        if (leftBar) {
-            leftBarWidth = com.android.launcher66.Launcher.calculatedLeftBarWidth > 0
-                    ? com.android.launcher66.Launcher.calculatedLeftBarWidth
-                    : (int) BottomBarDimensions.computeLeftBarWidth(portrait, rootWidth, rootHeight, legacyBarHeight);
+        int verticalBarWidth = 0;
+        if (verticalBar) {
+            verticalBarWidth = com.android.launcher66.Launcher.calculatedVerticalBarWidth > 0
+                    ? com.android.launcher66.Launcher.calculatedVerticalBarWidth
+                    : (int) HorizontalBarDimensions.computeVerticalBarWidth(portrait, rootWidth, rootHeight, legacyBarHeight);
         }
-        int workspaceWidth = rootWidth - leftBarWidth;
+        int workspaceWidth = rootWidth - verticalBarWidth;
         // With auto-hide the workspace keeps the full height; only the collapsed button is reserved.
-        int workspaceHeight = autoHideBottomBar ? rootHeight : rootHeight - barHeight;
+        int workspaceHeight = autoHideHorizontalBar ? rootHeight : rootHeight - barHeight;
         View canvasArea = rootView.findViewById(R.id.creator_first_screen);
-        if (autoHideBottomBar) {
+        if (autoHideHorizontalBar) {
             // The auto-hide bar lies on top of the workspace instead of reserving room for it, so
             // the preview keeps the full height and the bar covers its bottom - as in the launcher.
             // It also means the preview does not jump when the bar is toggled with a double tap.
@@ -301,23 +301,23 @@ public class CreatorFirstScreen extends Fragment {
         Log.d(TAG, "Bar geometry: box " + rootWidth + "x" + rootHeight + ", bar " + barHeight
                 + "px, canvas area " + workspaceWidth + "x" + workspaceHeight);
 
-        boolean resizableBottomBar = sharedPrefs.getBoolean(Keys.RESIZABLE_BOTTOM_BAR, false);
-        if (!resizableBottomBar) {
+        boolean resizableHorizontalBar = sharedPrefs.getBoolean(Keys.RESIZABLE_HORIZONTAL_BAR, false);
+        if (!resizableHorizontalBar) {
             return; // creator*.xml keeps sizing the bar itself
         }
 
         // 2. Bar containers: exact pixel height, conflicting XML ratio / percent cleared.
-        BottomBarDimensions.applyExactHeight(rootView.findViewById(R.id.creator_bar), barHeight);
-        // Portrait layouts hang the left bar (rl_left_bar), the auto-hide width guide and the
+        HorizontalBarDimensions.applyExactHeight(rootView.findViewById(R.id.creator_bar), barHeight);
+        // Portrait layouts hang the vertical bar (rl_vertical_bar), the auto-hide width guide and the
         // auto-hide bar on this invisible view, which has its own "H,0.142" ratio. Resizing it is
         // what makes all three follow through their existing constraints. (Absent in landscape.)
-        BottomBarDimensions.applyExactHeight(rootView.findViewById(R.id.guideline_bottom_bar_height), barHeight);
+        HorizontalBarDimensions.applyExactHeight(rootView.findViewById(R.id.guideline_horizontal_bar_height), barHeight);
         if (!portrait) {
             // Landscape gives the auto-hide bar its own layout_constraintHeight_percent. In portrait
             // it is constrained between the guideline above and the parent, so it needs nothing.
-            BottomBarDimensions.applyExactHeight(rootView.findViewById(R.id.creator_bar_auto_hide), barHeight);
+            HorizontalBarDimensions.applyExactHeight(rootView.findViewById(R.id.creator_bar_auto_hide), barHeight);
         }
-        // Landscape rl_left_bar is constrained to the top of creator_bar - it follows as well.
+        // Landscape rl_vertical_bar is constrained to the top of creator_bar - it follows as well.
 
         // 3. Children with absolute sizes (given by DrawViewFirstScreen) scale with the bar.
         float scale = (float) barHeight / legacyBarHeight;
@@ -332,7 +332,7 @@ public class CreatorFirstScreen extends Fragment {
         if (scale > 1f) {
             fitArrowControlsToWidth(rootView);
         }
-        Log.d(TAG, "Resizable bottom bar: " + barHeight + "px (legacy " + legacyBarHeight
+        Log.d(TAG, "Resizable horizontal bar: " + barHeight + "px (legacy " + legacyBarHeight
                 + "px), controls x" + scale);
     }
 

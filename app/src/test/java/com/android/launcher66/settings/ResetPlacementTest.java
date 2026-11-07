@@ -83,9 +83,9 @@ class ResetPlacementTest {
     }
 
     @Test
-    void theLeftBarOffsetShiftsTheGridLines() {
+    void theVerticalBarOffsetShiftsTheGridLines() {
         Env env = env(true);
-        env.leftBarOffset = 100;
+        env.verticalBarOffset = 100;
         env.occupied[0][0] = true;
         int[] p = CustomLayoutResolver.placeReset(null, new int[] {80, 80},
                 new int[] {5, 5}, rects(), env, bounds);

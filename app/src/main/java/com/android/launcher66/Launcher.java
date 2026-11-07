@@ -114,7 +114,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.async.AsyncTask;
 import com.android.launcher66.settings.AppListPipDialogFragment;
 import com.android.launcher66.settings.AppListStatsDialogFragment;
-import com.android.launcher66.settings.BottomBarDimensions;
+import com.android.launcher66.settings.HorizontalBarDimensions;
 import com.android.launcher66.settings.CrashLoopGuard;
 import com.android.launcher66.settings.WidgetMetrics;
 import com.android.launcher66.settings.CanbusAsyncTask;
@@ -136,7 +136,7 @@ import com.android.recycler.AppListAdapter;
 import com.android.recycler.AppListBean;
 import com.android.recycler.AppListDialogFragment;
 import com.android.recycler.AppMultiple;
-import com.android.recycler.LeftAppListAdapter;
+import com.android.recycler.VerticalAppListAdapter;
 import com.android.recycler.LeftAppMultiple;
 import com.android.recycler.SimpleDividerDecoration;
 import com.fyt.car.IUiRefresher;
@@ -291,7 +291,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private static final String TOOLBAR_VOICE_SEARCH_ICON_METADATA_NAME = "com.android.launcher.toolbar_voice_search_icon";
     String state;
     boolean userLayout;
-    boolean leftBar;
+    boolean verticalBar;
     private KWAPI kwAPi;
     public TextView mAllAppView;
     /** The current instance. Also read by ColdStart from its guard thread, hence volatile. */
@@ -355,8 +355,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private TextView mKwMusicName;
     public boolean mKwPlayState;
     private View mLauncherView;
-    boolean mBottomBarSnapshotSaved;
-    long mSavedBottomBarSnapshotSignature;
+    boolean mHorizontalBarSnapshotSaved;
+    long mSavedHorizontalBarSnapshotSignature;
      private ImageView mMapbgUnitView;
     private TextView mMiuDrive;
     private View mMusicIcon;
@@ -616,7 +616,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public static int calculatedMusicMinWidth;
     public static int calculatedRadioMinHeight;
     public static int calculatedRadioMinWidth;
-    public static int calculatedLeftBarWidth;
+    public static int calculatedVerticalBarWidth;
     public static int orientationDimension;
     public static int orientedWidth;
     public static int screenWidth;
@@ -639,8 +639,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public static int icon_size;
     public static int apps_customize_page_view_margin_top;
     public static int apps_customize_page_view_margin_bottom;
-    public static int leftBarIconMargin;
-    public static int bottomBarIconMargin;
+    public static int verticalBarIconMargin;
+    public static int horizontalBarIconMargin;
     public static int workspaceIconAndFolderSize;
     public static int workspaceTopPadding;    
     public static int allAppsIconTextSize;
@@ -1693,7 +1693,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         fytData = mPrefs.getBoolean("fyt_data", true);   
         userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
-        leftBar = mPrefs.getBoolean(Keys.LEFT_BAR, false);
+        verticalBar = mPrefs.getBoolean(Keys.VERTICAL_BAR, false);
         widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false); 
 
         if (!userLayout) {
@@ -1843,17 +1843,17 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         orientation = getResources().getConfiguration().orientation;
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             orientationDimension = screenHeight;
-            // Only feeds calculatedLeftBarWidth (the collapsed auto-hide button width), not the bar
-            // itself: left as is. The left bar's HEIGHT follows the bar through its XML constraint
-            // (rl_left_bar -> top of iv_list_bg); the bar height is getBottomBarHeight().
-            int bottombarHeight = (int) (screenHeight * 0.142f);
-            calculatedLeftBarWidth = calculateDimension(orientationDimension - bottombarHeight , 7.1);
+            // Only feeds calculatedVerticalBarWidth (the collapsed auto-hide button width), not the bar
+            // itself: left as is. The vertical bar's HEIGHT follows the bar through its XML constraint
+            // (rl_vertical_bar -> top of iv_list_bg); the bar height is getHorizontalBarHeight().
+            int horizontalbarHeight = (int) (screenHeight * 0.142f);
+            calculatedVerticalBarWidth = calculateDimension(orientationDimension - horizontalbarHeight , 7.1);
             orientedWidth = screenWidth;
         } else {
             // Landscape, and ORIENTATION_UNDEFINED / SQUARE: those left both values at 0 (first
             // instance of the process) and calculateDimension() below threw from onCreate().
             orientationDimension = screenWidth;
-            calculatedLeftBarWidth = calculateDimension(orientationDimension, 7.1);
+            calculatedVerticalBarWidth = calculateDimension(orientationDimension, 7.1);
             orientedWidth = screenHeight;
         } 
 
@@ -1885,8 +1885,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
 
         // RecyclerView
-        leftBarIconMargin = calculateDimension(screenHeight, 3.2);
-        bottomBarIconMargin = calculateDimension(screenWidth, 2.0);
+        verticalBarIconMargin = calculateDimension(screenHeight, 3.2);
+        horizontalBarIconMargin = calculateDimension(screenWidth, 2.0);
 
         // Radio widget
         radioButtonHeight = wm.radioButtonHeight;
@@ -3512,16 +3512,16 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     /**
-     * Current bottom bar height in px - the same value Workspace uses for the regular bar and the
+     * Current horizontal bar height in px - the same value Workspace uses for the regular bar and the
      * auto-hide overlay. Shortest-edge rule (portrait: screen width, landscape: screen height minus
-     * the status bar); the user multiplier when Keys.RESIZABLE_BOTTOM_BAR is on, the hardcoded
+     * the status bar); the user multiplier when Keys.RESIZABLE_HORIZONTAL_BAR is on, the hardcoded
      * 0.142 / 0.1638 otherwise. Computed on demand, so a changed preference applies immediately.
      */
-    public int getBottomBarHeight() {
+    public int getHorizontalBarHeight() {
         SharedPreferences prefs = mPrefs != null ? mPrefs : PreferenceManager.getDefaultSharedPreferences(this);
         boolean portrait = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
         int statusBarHeight = portrait ? 0 : getStatusBarHeight();
-        return BottomBarDimensions.computeBarHeight(prefs, portrait, screenWidth, screenHeight, statusBarHeight);
+        return HorizontalBarDimensions.computeBarHeight(prefs, portrait, screenWidth, screenHeight, statusBarHeight);
     }
 
     public void pipOverview() {
@@ -5672,14 +5672,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     public void cleanWidgetBar() {
-        boolean autoHideBottomBar = mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
+        boolean autoHideHorizontalBar = mPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false);
         // The bar on every page (without auto-hide) is an overlay too, and lets go of the same views.
-        boolean overlayBar = autoHideBottomBar || mPrefs.getBoolean(Keys.BOTTOM_BAR_EVERY_PAGE, false);
+        boolean overlayBar = autoHideHorizontalBar || mPrefs.getBoolean(Keys.HORIZONTAL_BAR_EVERY_PAGE, false);
         if (overlayBar && widgetBar) {
             if (mWorkspace != null) {
-                if (autoHideBottomBar) {
+                if (autoHideHorizontalBar) {
                     // Not for the persistent bar: this would also disable the page's own recycler.
-                    mWorkspace.hideOverlayBottomBar();
+                    mWorkspace.hideOverlayHorizontalBar();
                 }
                 mWorkspace.cancelPendingAutoHide();
                 mWorkspace.clearWidgetReferences();
@@ -6800,7 +6800,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     public void onClickShowBarButton() {
-        mWorkspace.toggleBottomBar();
+        mWorkspace.toggleHorizontalBar();
     }
 
     public void onTouchDownAllAppsButton(View v) {
@@ -8193,7 +8193,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (!AppsCustomizePagedView.DISABLE_ALL_APPS && addedApps != null && mAppsCustomizeContent != null) {
                 mAppsCustomizeContent.addApps(addedApps);
             }
-            if (mAppBars.isAppInfoInBottomBar(addedApps)) {
+            if (mAppBars.isAppInfoInHorizontalBar(addedApps)) {
                 mAppBars.triggerAppData();
             }
         }
@@ -8691,8 +8691,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mAppsCustomizeContent.updateApps(apps);
         }
 
-        // Refresh bottom bar icons only if the changed apps are actually shown there
-        if (mAppBars.isAppInfoInBottomBar(apps)) {
+        // Refresh horizontal bar icons only if the changed apps are actually shown there
+        if (mAppBars.isAppInfoInHorizontalBar(apps)) {
             mAppBars.triggerAppData();
         }
     }
@@ -8722,15 +8722,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (packageRemoved) {
                 // 1. On-screen first, synchronously, so the tiles react in this frame
                 //    instead of waiting for the delayed triggerAppData() rebuild.
-                boolean bottomBarChanged = mAppBars.pruneBottomBarBeans(packageNames);
-                boolean leftBeansChanged = mAppBars.pruneLeftBarBeans(packageNames);
+                boolean horizontalBarChanged = mAppBars.pruneHorizontalBarBeans(packageNames);
+                boolean leftBeansChanged = mAppBars.pruneVerticalBarBeans(packageNames);
 
-                // 2. Then the database: drop + compact the left-bar rows, otherwise the
+                // 2. Then the database: drop + compact the vertical-bar rows, otherwise the
                 //    stale row survives and comes back (as a placeholder) on the next
-                //    rebuild. Bottom-bar rows are intentionally kept - the slot stays.
-                boolean leftRowsChanged = mAppBars.pruneLeftBarRows(packageNames);
+                //    rebuild. Horizontal-bar rows are intentionally kept - the slot stays.
+                boolean leftRowsChanged = mAppBars.pruneVerticalBarRows(packageNames);
 
-                if (bottomBarChanged || leftBeansChanged || leftRowsChanged) {
+                if (horizontalBarChanged || leftBeansChanged || leftRowsChanged) {
                     mAppBars.mLastAppListSourceSignature = Long.MIN_VALUE;
                     mAppBars.mLastLeftAppListSourceSignature = Long.MIN_VALUE;
                     mAppBars.triggerAppData();
@@ -8913,7 +8913,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     /**
-     * The left bar's layout manager: spreads at most maxItems items evenly over the recycler's
+     * The vertical bar's layout manager: spreads at most maxItems items evenly over the recycler's
      * height, and works out how many items that height has room for (BarCapacity.leftCapacity(),
      * from the visible icon, which follows the recycler's width), telling its listener when the answer changes.
      */

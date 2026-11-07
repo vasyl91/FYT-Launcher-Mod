@@ -24,7 +24,7 @@ public class AppMultiple extends LitePalSupport {
      * Primary key of this row. Prefer the mapped {@code id} column; fall back to
      * LitePal's internal object id for rows that were just saved.
      *
-     * This is the ONLY safe way to address a bottom-bar slot: {@link #index} is not
+     * This is the ONLY safe way to address a horizontal-bar slot: {@link #index} is not
      * guaranteed to be unique or contiguous. It is also a SQLite reserved keyword: LitePal
      * stores it as the column index_lpcolumn and rewrites "index" itself in the where, order
      * and select clauses it builds, so write it unquoted there (quoted, it matches no column);

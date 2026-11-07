@@ -5,9 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Left Bar -->
+    <!-- Vertical Bar -->
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/rl_left_bar"
+        android:id="@+id/rl_vertical_bar"
         android:background="@drawable/hotseat_bg"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -17,7 +17,7 @@
         app:layout_constraintLeft_toLeftOf="parent" >
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/left_recycler_view"
+            android:id="@+id/vertical_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintTop_toTopOf="parent"
@@ -36,7 +36,7 @@
         app:layout_constraintHeight_percent="0.8"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/iv_list_bg"
-        app:layout_constraintLeft_toRightOf="@id/rl_left_bar"
+        app:layout_constraintLeft_toRightOf="@id/rl_vertical_bar"
         app:layout_constraintRight_toLeftOf="@id/ll_time"
         app:justifyContent="space_around"
         app:alignItems="center" >
@@ -127,7 +127,7 @@
         <include layout="@layout/music_widget_content" />
     </LinearLayout>
 
-    <!-- Bottom Bar -->
+    <!-- Horizontal Bar -->
     <ImageView
         android:id="@+id/iv_list_bg"
         android:layout_width="match_parent"

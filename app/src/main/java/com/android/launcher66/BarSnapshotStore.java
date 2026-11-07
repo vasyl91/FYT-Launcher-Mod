@@ -21,7 +21,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * The bottom and left bars exactly as they were last shown, so that a start can draw them at once
+ * The bottom and vertical bars exactly as they were last shown, so that a start can draw them at once
  * instead of waiting until the whole app list is loaded (37.4 s and 45.7 s of uptime in captures
  * 29-09-2026 20:51 and 21:40, against a first frame at ~23 s).
  *

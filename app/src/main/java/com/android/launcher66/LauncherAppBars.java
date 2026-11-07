@@ -26,13 +26,13 @@ import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.android.launcher66.settings.BottomBarDimensions;
+import com.android.launcher66.settings.HorizontalBarDimensions;
 import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.SettingsActivity;
 import com.android.recycler.AppListAdapter;
 import com.android.recycler.AppListBean;
 import com.android.recycler.AppMultiple;
-import com.android.recycler.LeftAppListAdapter;
+import com.android.recycler.VerticalAppListAdapter;
 import com.android.recycler.LeftAppMultiple;
 import com.android.recycler.SimpleDividerDecoration;
 import com.syu.util.FytPackage;
@@ -76,28 +76,28 @@ final class LauncherAppBars {
 
     RecyclerView mRecyclerView;
 
-    LeftAppListAdapter mLeftAppListAdapter;
+    VerticalAppListAdapter mVerticalAppListAdapter;
 
     List<AppListBean> mLeftAppListData;
 
     /*
-     * Bar snapshots: the bottom and left bars as they were last shown, drawn at start while the
+     * Bar snapshots: the bottom and vertical bars as they were last shown, drawn at start while the
      * app list is still loading. See prefetchBarSnapshots().
      */
     /** True while setupRecyclerView()/setupLeftRecyclerView() run to show a snapshot. */
     boolean mApplyingBarSnapshot;
 
-    BarSnapshotStore.Snapshot mBottomBarSnapshot;
+    BarSnapshotStore.Snapshot mHorizontalBarSnapshot;
 
-    List<AppMultiple> mBottomBarSnapshotRows;
+    List<AppMultiple> mHorizontalBarSnapshotRows;
 
-    BarSnapshotStore.Snapshot mLeftBarSnapshot;
+    BarSnapshotStore.Snapshot mVerticalBarSnapshot;
 
-    List<LeftAppMultiple> mLeftBarSnapshotRows;
+    List<LeftAppMultiple> mVerticalBarSnapshotRows;
 
-    boolean mLeftBarSnapshotSaved;
+    boolean mVerticalBarSnapshotSaved;
 
-    long mSavedLeftBarSnapshotSignature;
+    long mSavedVerticalBarSnapshotSignature;
 
     /**
      * Snapshots read but not on screen yet: the bars' recycler views only exist once the workspace
@@ -161,7 +161,7 @@ final class LauncherAppBars {
      */
     final Map<String, Bitmap> mAppIconBitmapCache = new java.util.concurrent.ConcurrentHashMap<>();
 
-    /** Keys (appIconCacheKey) the left bar could not resolve at all; those rows are dropped. */
+    /** Keys (appIconCacheKey) the vertical bar could not resolve at all; those rows are dropped. */
     final java.util.Set<String> mUnresolvableIcons = java.util.concurrent.ConcurrentHashMap.newKeySet();
 
     /** Main thread only: icons waiting for the next worker pass, key -> {package, class, "strict"|"plain"}. */
@@ -180,11 +180,11 @@ final class LauncherAppBars {
 
     long mLastLeftAppListSourceSignature = Long.MIN_VALUE;
 
-    /** Slots the left bar has room for; -1 until first asked, then kept up to date by its layout manager. */
+    /** Slots the vertical bar has room for; -1 until first asked, then kept up to date by its layout manager. */
     int mLeftCapacity = -1;
 
     /**
-     * Slots the left bar shows: what its height has room for, as the layout manager last worked it
+     * Slots the vertical bar shows: what its height has room for, as the layout manager last worked it
      * out. Before the first measure of a run it is the value stored for this orientation.
      */
     int leftCapacity() {
@@ -204,24 +204,24 @@ final class LauncherAppBars {
     }
 
     /**
-     * The left bar's room changed (a turn of the screen, a lower or higher bottom bar): the list is
+     * The vertical bar's room changed (a turn of the screen, a lower or higher horizontal bar): the list is
      * built again so that it has as many apps as fit now, from the apps the database remembers.
      */
     void onLeftCapacityChanged(int capacity) {
         if (capacity == mLeftCapacity) {
             return;
         }
-        Log.d(Launcher.TAG, "Left bar capacity " + mLeftCapacity + " -> " + capacity);
+        Log.d(Launcher.TAG, "Vertical bar capacity " + mLeftCapacity + " -> " + capacity);
         mLeftCapacity = capacity;
         mLastLeftAppListSourceSignature = Long.MIN_VALUE;
         if (AllAppsList.data == null || AllAppsList.data.isEmpty()) {
             return; // the first real build is still to come and will use the new capacity
         }
-        refreshLeftBar(null);
+        refreshVerticalBar(null);
     }
 
     /**
-     * Slots the bottom bar shows with these settings: what fits at the icon size, never fewer than
+     * Slots the horizontal bar shows with these settings: what fits at the icon size, never fewer than
      * the bar showed before. Pure, so it can be asked before anything is measured.
      */
     int bottomCapacity(boolean currentUserLayout, boolean currentWidgetBar) {
@@ -234,8 +234,8 @@ final class LauncherAppBars {
                 ? mLauncher.mPrefs
                 : PreferenceManager.getDefaultSharedPreferences(mLauncher);
         boolean currentUserLayout = prefs.getBoolean(Keys.USER_LAYOUT, false);
-        boolean currentLeftBar = prefs.getBoolean(Keys.LEFT_BAR, false);
-        return !currentUserLayout || currentLeftBar;
+        boolean currentVerticalBar = prefs.getBoolean(Keys.VERTICAL_BAR, false);
+        return !currentUserLayout || currentVerticalBar;
     }
 
     void refreshRecyclerDecorationsAfterLayout(RecyclerView recyclerView) {
@@ -269,22 +269,22 @@ final class LauncherAppBars {
     }
 
     /**
-     * Makes sure mRecyclerView and the other views of the inline bottom bar carry the dynamic bar
+     * Makes sure mRecyclerView and the other views of the inline horizontal bar carry the dynamic bar
      * height instead of their XML layout_constraintDimensionRatio / layout_constraintHeight_percent.
      *
      * Workspace owns the per-view rules (it inflates the bar and also sizes the auto-hide overlay
      * from the same height); this only re-applies them whenever the recycler is (re)bound. The
      * call is idempotent and requests a layout only when a value changed. With
-     * Keys.RESIZABLE_BOTTOM_BAR off it does nothing and the XML stays in charge.
+     * Keys.RESIZABLE_HORIZONTAL_BAR off it does nothing and the XML stays in charge.
      */
-    boolean ensureResizableBottomBar(String source) {
-        if (mLauncher.mWorkspace == null || mLauncher.mPrefs == null || !BottomBarDimensions.isResizable(mLauncher.mPrefs)) {
+    boolean ensureResizableHorizontalBar(String source) {
+        if (mLauncher.mWorkspace == null || mLauncher.mPrefs == null || !HorizontalBarDimensions.isResizable(mLauncher.mPrefs)) {
             return false;
         }
         // When something changed, Workspace also invalidates the recycler's item decorations, and
         // every caller rebinds or refreshes the recycler right after - no extra
         // refreshRecyclerDecorationsAfterLayout() (and its listeners) needed here.
-        return mLauncher.mWorkspace.applyResizableBottomBar(source);
+        return mLauncher.mWorkspace.applyResizableHorizontalBar(source);
     }
 
     void installBottomRecyclerDecorations(RecyclerView recyclerView) {
@@ -393,7 +393,7 @@ final class LauncherAppBars {
             List<LeftAppMultiple> left = BarRows.left(BarCapacity.LEFT_MEMORY);
             mLauncher.runOnUiThread(() -> {
                 refreshCycle(data);
-                refreshLeftBar(left);
+                refreshVerticalBar(left);
             });
         });
     }
@@ -518,7 +518,7 @@ final class LauncherAppBars {
         
         mRecyclerView = (RecyclerView) mLauncher.mWorkspace.findViewById(R.id.recycler_view);
         if (mRecyclerView == null) {
-            Log.d(Launcher.TAG, "Bottom bar not built yet, waiting for the layout");
+            Log.d(Launcher.TAG, "Horizontal bar not built yet, waiting for the layout");
             
             // Reset flag before early return so retry can work
             mIsInitializingAppData = false;
@@ -572,7 +572,7 @@ final class LauncherAppBars {
         // A database that has opened once does not become unavailable again, so probe once.
         if (!sDatabaseProbeOk) {
             try {
-                // The bottom bar's rows: usually read already (BarRows.preload()).
+                // The horizontal bar's rows: usually read already (BarRows.preload()).
                 BarRows.bottom();
                 sDatabaseProbeOk = true;
             } catch (Exception e) {
@@ -643,7 +643,7 @@ final class LauncherAppBars {
         }
         // A bar window that was built before the apps arrived (see Workspace) gets them now
         if (mLauncher.mWorkspace != null) {
-            mLauncher.mWorkspace.onBottomBarAdapterReady();
+            mLauncher.mWorkspace.onHorizontalBarAdapterReady();
         }
         // No change/remove/add animations = no flicker when notifyDataSetChanged() is called.
         if (recyclerView.getItemAnimator() != null) {
@@ -651,7 +651,7 @@ final class LauncherAppBars {
         }
 
         // Dynamic bar height instead of the XML ratio/percent (no-op unless the feature is on).
-        ensureResizableBottomBar("setupRecyclerView");
+        ensureResizableHorizontalBar("setupRecyclerView");
 
         installBottomRecyclerDecorations(recyclerView);
 
@@ -665,21 +665,21 @@ final class LauncherAppBars {
         // One call instead of two — each one adds an OnGlobalLayoutListener + 2 postDelayed
         refreshRecyclerDecorationsAfterLayout(recyclerView);
 
-        boolean autoHideBottomBar = mLauncher.mPrefs.getBoolean(Keys.AUTO_HIDE_BOTTOM_BAR, false);
-        if (autoHideBottomBar) {
+        boolean autoHideHorizontalBar = mLauncher.mPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false);
+        if (autoHideHorizontalBar) {
             disableRecycler();
         }
     }
 
     void setupLeftRecyclerView() {
         mLauncher.userLayout = mLauncher.mPrefs.getBoolean(Keys.USER_LAYOUT, false);
-        mLauncher.leftBar = mLauncher.mPrefs.getBoolean(Keys.LEFT_BAR, false);
+        mLauncher.verticalBar = mLauncher.mPrefs.getBoolean(Keys.VERTICAL_BAR, false);
 
-        if (!(mLauncher.userLayout && mLauncher.leftBar || !mLauncher.userLayout)) {
+        if (!(mLauncher.userLayout && mLauncher.verticalBar || !mLauncher.userLayout)) {
             return;
         }
 
-        RecyclerView mLeftRecyclerView = (RecyclerView) mLauncher.mWorkspace.findViewById(R.id.left_recycler_view);
+        RecyclerView mLeftRecyclerView = (RecyclerView) mLauncher.mWorkspace.findViewById(R.id.vertical_recycler_view);
 
         if (mLeftRecyclerView == null) {
             if (mLeftRecyclerLayoutPending) {
@@ -715,8 +715,8 @@ final class LauncherAppBars {
         mLeftRecyclerView.setVisibility(View.VISIBLE);
 
         // Initialize adapter FIRST, before any layout might occur
-        if (mLeftAppListAdapter == null) {
-            mLeftAppListAdapter = new LeftAppListAdapter(mLauncher, Collections.emptyList());
+        if (mVerticalAppListAdapter == null) {
+            mVerticalAppListAdapter = new VerticalAppListAdapter(mLauncher, Collections.emptyList());
         }
 
         if (mLeftRecyclerView.getLayoutManager() instanceof Launcher.EvenVerticalLayoutManager) {
@@ -728,8 +728,8 @@ final class LauncherAppBars {
             mLeftRecyclerView.setLayoutManager(newLeftLayoutManager());
         }
 
-        if (mLeftRecyclerView.getAdapter() != mLeftAppListAdapter) {
-            mLeftRecyclerView.setAdapter(mLeftAppListAdapter);
+        if (mLeftRecyclerView.getAdapter() != mVerticalAppListAdapter) {
+            mLeftRecyclerView.setAdapter(mVerticalAppListAdapter);
         }
         if (mLeftRecyclerView.getItemAnimator() != null) {
             mLeftRecyclerView.setItemAnimator(null);
@@ -820,7 +820,7 @@ final class LauncherAppBars {
     long calculateLeftAppRowsSignature(List<LeftAppMultiple> rows, int capacity) {
         long signature = 1469598103934665603L;
         signature = (signature * 31L) + (mLauncher.mPrefs.getBoolean(Keys.USER_LAYOUT, false) ? 1L : 0L);
-        signature = (signature * 31L) + (mLauncher.mPrefs.getBoolean(Keys.LEFT_BAR, false) ? 1L : 0L);
+        signature = (signature * 31L) + (mLauncher.mPrefs.getBoolean(Keys.VERTICAL_BAR, false) ? 1L : 0L);
         signature = (signature * 31L) + capacity;
         signature = (signature * 31L) + getAllAppsDataSize();
         if (rows == null) {
@@ -843,15 +843,15 @@ final class LauncherAppBars {
 
     void initializeLeftAppData() {
         if (mApplyingBarSnapshot) {
-            applyLeftBarSnapshot();
+            applyVerticalBarSnapshot();
             return;
         }
         final int capacity = leftCapacity();
         List<LeftAppMultiple> leftAppData = BarRows.left(BarCapacity.LEFT_MEMORY);
         long sourceSignature = calculateLeftAppRowsSignature(leftAppData, capacity);
         if (sourceSignature == mLastLeftAppListSourceSignature
-                && mLeftAppListAdapter != null
-                && mLeftAppListAdapter.getItemCount() > 0
+                && mVerticalAppListAdapter != null
+                && mVerticalAppListAdapter.getItemCount() > 0
                 && mLeftAppListData != null
                 && !mLeftAppListData.isEmpty()) {
             Log.d(Launcher.TAG, "initializeLeftAppData: unchanged, skipping rebuild");
@@ -868,13 +868,13 @@ final class LauncherAppBars {
         BarSnapshotCollector leftSnapshot = new BarSnapshotCollector();
         
         // Ensure adapter exists
-        if (mLeftAppListAdapter == null) {
+        if (mVerticalAppListAdapter == null) {
             mLeftAppListData = nextLeftAppListData;
-            mLeftAppListAdapter = new LeftAppListAdapter(mLauncher, mLeftAppListData);
+            mVerticalAppListAdapter = new VerticalAppListAdapter(mLauncher, mLeftAppListData);
             
-            RecyclerView mLeftRecyclerView = (RecyclerView) mLauncher.mWorkspace.findViewById(R.id.left_recycler_view);
+            RecyclerView mLeftRecyclerView = (RecyclerView) mLauncher.mWorkspace.findViewById(R.id.vertical_recycler_view);
             if (mLeftRecyclerView != null) {
-                mLeftRecyclerView.setAdapter(mLeftAppListAdapter);
+                mLeftRecyclerView.setAdapter(mVerticalAppListAdapter);
             }
         }
 
@@ -930,13 +930,13 @@ final class LauncherAppBars {
             }
         }
         
-        if (mLeftAppListAdapter != null) {
+        if (mVerticalAppListAdapter != null) {
             mLeftAppListData = nextLeftAppListData;
-            mLeftAppListAdapter.notifyDataSetChanged(mLeftAppListData);
+            mVerticalAppListAdapter.notifyDataSetChanged(mLeftAppListData);
             mLastLeftAppListSourceSignature = sourceSignature;
             mLeftUsedFallbackIcon = leftSnapshot.usedFallbackIcon;
             Log.d(Launcher.TAG, "Left app data initialized with " + mLeftAppListData.size() + " items");
-            saveLeftBarSnapshot(leftAppData, capacity, leftSnapshot);
+            saveVerticalBarSnapshot(leftAppData, capacity, leftSnapshot);
         }
     }
 
@@ -974,7 +974,7 @@ final class LauncherAppBars {
         final Context appContext = mLauncher.getApplicationContext();
         final boolean currentUserLayout = mLauncher.mPrefs.getBoolean(Keys.USER_LAYOUT, false);
         final boolean currentWidgetBar = mLauncher.mPrefs.getBoolean(Keys.WIDGET_BAR, false);
-        final boolean currentLeftBar = mLauncher.mPrefs.getBoolean(Keys.LEFT_BAR, false);
+        final boolean currentVerticalBar = mLauncher.mPrefs.getBoolean(Keys.VERTICAL_BAR, false);
         final int currentOrientation = mLauncher.orientation;
         // On the main thread, before the thread starts: both read the preferences and the screen
         // size the way the bars will when they are built.
@@ -988,15 +988,15 @@ final class LauncherAppBars {
             try {
                 bottomRows = queryBottomAppRows();
                 BarSnapshotStore.Snapshot s = BarSnapshotStore.load(appContext, BarSnapshotStore.BOTTOM);
-                if (s != null && bottomRows != null && s.signature == bottomBarSnapshotSignature(
+                if (s != null && bottomRows != null && s.signature == horizontalBarSnapshotSignature(
                         bottomRows, currentUserLayout, currentWidgetBar, currentOrientation,
                         currentBottomCapacity)) {
                     bottom = s;
                 }
                 leftRows = BarRows.left(BarCapacity.LEFT_MEMORY);
                 s = BarSnapshotStore.load(appContext, BarSnapshotStore.LEFT);
-                if (s != null && leftRows != null && s.signature == leftBarSnapshotSignature(
-                        leftRows, currentUserLayout, currentLeftBar, currentLeftCapacity)) {
+                if (s != null && leftRows != null && s.signature == verticalBarSnapshotSignature(
+                        leftRows, currentUserLayout, currentVerticalBar, currentLeftCapacity)) {
                     left = s;
                 }
             } catch (RuntimeException e) {
@@ -1038,7 +1038,7 @@ final class LauncherAppBars {
         if (mPendingBottomSnapshot != null) {
             RecyclerView recycler = (RecyclerView) mLauncher.mWorkspace.findViewById(R.id.recycler_view);
             if (hasCurrentAppListData()) {
-                Log.i(Launcher.TAG, "Bottom bar snapshot not needed: the bar was built first, "
+                Log.i(Launcher.TAG, "Horizontal bar snapshot not needed: the bar was built first, "
                         + (SystemClock.uptimeMillis() - mBarSnapshotReadAtMs) + " ms after reading it");
                 mPendingBottomSnapshot = null;
                 mPendingBottomSnapshotRows = null;
@@ -1047,8 +1047,8 @@ final class LauncherAppBars {
                     mAppListAdapter = new AppListAdapter(mLauncher, Collections.emptyList());
                 }
                 mRecyclerView = recycler;
-                mBottomBarSnapshot = mPendingBottomSnapshot;
-                mBottomBarSnapshotRows = mPendingBottomSnapshotRows;
+                mHorizontalBarSnapshot = mPendingBottomSnapshot;
+                mHorizontalBarSnapshotRows = mPendingBottomSnapshotRows;
                 mPendingBottomSnapshot = null;
                 mPendingBottomSnapshotRows = null;
                 mApplyingBarSnapshot = true;
@@ -1056,10 +1056,10 @@ final class LauncherAppBars {
                     setupRecyclerView(recycler);
                 } finally {
                     mApplyingBarSnapshot = false;
-                    mBottomBarSnapshot = null;
-                    mBottomBarSnapshotRows = null;
+                    mHorizontalBarSnapshot = null;
+                    mHorizontalBarSnapshotRows = null;
                 }
-                Log.i(Launcher.TAG, "Bottom bar shown from snapshot (" + (mAppListData != null ? mAppListData.size() : 0)
+                Log.i(Launcher.TAG, "Horizontal bar shown from snapshot (" + (mAppListData != null ? mAppListData.size() : 0)
                         + " items), " + (SystemClock.uptimeMillis() - mBarSnapshotReadAtMs) + " ms after reading it");
             }
         }
@@ -1067,13 +1067,13 @@ final class LauncherAppBars {
         // layout pass and then build the bar the normal way, with PackageManager icons.
         if (mPendingLeftSnapshot != null) {
             if (hasCurrentLeftAppListData()) {
-                Log.i(Launcher.TAG, "Left bar snapshot not needed: the bar was built first, "
+                Log.i(Launcher.TAG, "Vertical bar snapshot not needed: the bar was built first, "
                         + (SystemClock.uptimeMillis() - mBarSnapshotReadAtMs) + " ms after reading it");
                 mPendingLeftSnapshot = null;
                 mPendingLeftSnapshotRows = null;
-            } else if (mLauncher.mWorkspace.findViewById(R.id.left_recycler_view) != null) {
-                mLeftBarSnapshot = mPendingLeftSnapshot;
-                mLeftBarSnapshotRows = mPendingLeftSnapshotRows;
+            } else if (mLauncher.mWorkspace.findViewById(R.id.vertical_recycler_view) != null) {
+                mVerticalBarSnapshot = mPendingLeftSnapshot;
+                mVerticalBarSnapshotRows = mPendingLeftSnapshotRows;
                 mPendingLeftSnapshot = null;
                 mPendingLeftSnapshotRows = null;
                 mApplyingBarSnapshot = true;
@@ -1081,10 +1081,10 @@ final class LauncherAppBars {
                     setupLeftRecyclerView();
                 } finally {
                     mApplyingBarSnapshot = false;
-                    mLeftBarSnapshot = null;
-                    mLeftBarSnapshotRows = null;
+                    mVerticalBarSnapshot = null;
+                    mVerticalBarSnapshotRows = null;
                 }
-                Log.i(Launcher.TAG, "Left bar shown from snapshot (" + (mLeftAppListData != null ? mLeftAppListData.size() : 0)
+                Log.i(Launcher.TAG, "Vertical bar shown from snapshot (" + (mLeftAppListData != null ? mLeftAppListData.size() : 0)
                         + " items), " + (SystemClock.uptimeMillis() - mBarSnapshotReadAtMs) + " ms after reading it");
             }
         }
@@ -1108,13 +1108,13 @@ final class LauncherAppBars {
     }
 
     /**
-     * The bottom bar from its snapshot. Leaves mLastAppListSourceSignature and
+     * The horizontal bar from its snapshot. Leaves mLastAppListSourceSignature and
      * finishAppListInitialization() alone: the real list still replaces this one, and nothing that
      * waits for the app data (PiP) starts early.
      */
-    void applyBottomBarSnapshot() {
-        BarSnapshotStore.Snapshot snapshot = mBottomBarSnapshot;
-        List<AppMultiple> rows = mBottomBarSnapshotRows;
+    void applyHorizontalBarSnapshot() {
+        BarSnapshotStore.Snapshot snapshot = mHorizontalBarSnapshot;
+        List<AppMultiple> rows = mHorizontalBarSnapshotRows;
         if (snapshot == null || rows == null || mAppListAdapter == null) {
             return;
         }
@@ -1138,11 +1138,11 @@ final class LauncherAppBars {
         mAppListAdapter.notifyDataSetChanged(mAppListData);
     }
 
-    /** The left bar from its snapshot; same rules as applyBottomBarSnapshot(). */
-    void applyLeftBarSnapshot() {
-        BarSnapshotStore.Snapshot snapshot = mLeftBarSnapshot;
-        List<LeftAppMultiple> rows = mLeftBarSnapshotRows;
-        if (snapshot == null || rows == null || mLeftAppListAdapter == null) {
+    /** The vertical bar from its snapshot; same rules as applyHorizontalBarSnapshot(). */
+    void applyVerticalBarSnapshot() {
+        BarSnapshotStore.Snapshot snapshot = mVerticalBarSnapshot;
+        List<LeftAppMultiple> rows = mVerticalBarSnapshotRows;
+        if (snapshot == null || rows == null || mVerticalAppListAdapter == null) {
             return;
         }
         Map<Long, LeftAppMultiple> rowsById = new HashMap<>();
@@ -1161,50 +1161,50 @@ final class LauncherAppBars {
             beans.add(bean);
         }
         mLeftAppListData = beans;
-        mLeftAppListAdapter.notifyDataSetChanged(mLeftAppListData);
+        mVerticalAppListAdapter.notifyDataSetChanged(mLeftAppListData);
     }
 
-    /** Saves the bottom bar as just built, unless it is the same as the last one saved. */
-    void saveBottomBarSnapshot(List<AppMultiple> rows, boolean currentUserLayout,
+    /** Saves the horizontal bar as just built, unless it is the same as the last one saved. */
+    void saveHorizontalBarSnapshot(List<AppMultiple> rows, boolean currentUserLayout,
                                        boolean currentWidgetBar, int capacity, BarSnapshotCollector snapshot) {
         if (rows == null || snapshot == null || snapshot.usedFallbackIcon
                 || !LauncherApplication.isFytDevice()
                 || AllAppsList.data == null || AllAppsList.data.isEmpty()) {
             return; // only a bar built from the real app list is worth showing next time
         }
-        long signature = bottomBarSnapshotSignature(rows, currentUserLayout, currentWidgetBar,
+        long signature = horizontalBarSnapshotSignature(rows, currentUserLayout, currentWidgetBar,
                 mLauncher.orientation, capacity);
-        if (mLauncher.mBottomBarSnapshotSaved && signature == mLauncher.mSavedBottomBarSnapshotSignature) {
+        if (mLauncher.mHorizontalBarSnapshotSaved && signature == mLauncher.mSavedHorizontalBarSnapshotSignature) {
             return;
         }
-        mLauncher.mBottomBarSnapshotSaved = true;
-        mLauncher.mSavedBottomBarSnapshotSignature = signature;
+        mLauncher.mHorizontalBarSnapshotSaved = true;
+        mLauncher.mSavedHorizontalBarSnapshotSignature = signature;
         BarSnapshotStore.saveAsync(mLauncher.getApplicationContext(), BarSnapshotStore.BOTTOM, signature, snapshot.items);
     }
 
-    /** Saves the left bar as just built, unless it is the same as the last one saved. */
-    void saveLeftBarSnapshot(List<LeftAppMultiple> rows, int capacity, BarSnapshotCollector snapshot) {
+    /** Saves the vertical bar as just built, unless it is the same as the last one saved. */
+    void saveVerticalBarSnapshot(List<LeftAppMultiple> rows, int capacity, BarSnapshotCollector snapshot) {
         if (rows == null || snapshot == null || snapshot.usedFallbackIcon
                 || !LauncherApplication.isFytDevice()
                 || AllAppsList.data == null || AllAppsList.data.isEmpty()) {
             return;
         }
-        long signature = leftBarSnapshotSignature(rows, mLauncher.mPrefs.getBoolean(Keys.USER_LAYOUT, false),
-                mLauncher.mPrefs.getBoolean(Keys.LEFT_BAR, false), capacity);
-        if (mLeftBarSnapshotSaved && signature == mSavedLeftBarSnapshotSignature) {
+        long signature = verticalBarSnapshotSignature(rows, mLauncher.mPrefs.getBoolean(Keys.USER_LAYOUT, false),
+                mLauncher.mPrefs.getBoolean(Keys.VERTICAL_BAR, false), capacity);
+        if (mVerticalBarSnapshotSaved && signature == mSavedVerticalBarSnapshotSignature) {
             return;
         }
-        mLeftBarSnapshotSaved = true;
-        mSavedLeftBarSnapshotSignature = signature;
+        mVerticalBarSnapshotSaved = true;
+        mSavedVerticalBarSnapshotSignature = signature;
         BarSnapshotStore.saveAsync(mLauncher.getApplicationContext(), BarSnapshotStore.LEFT, signature, snapshot.items);
     }
 
     /**
-     * What the bottom bar is built from, apart from the app list itself (which
+     * What the horizontal bar is built from, apart from the app list itself (which
      * calculateAppRowsSignature() includes): its rows and the layout settings. A snapshot is shown
      * only while this is unchanged. Pure; also used off the main thread.
      */
-    long bottomBarSnapshotSignature(List<AppMultiple> rows, boolean currentUserLayout,
+    long horizontalBarSnapshotSignature(List<AppMultiple> rows, boolean currentUserLayout,
                                             boolean currentWidgetBar, int currentOrientation,
                                             int capacity) {
         long signature = 7046029254386353131L;
@@ -1230,12 +1230,12 @@ final class LauncherAppBars {
         return signature;
     }
 
-    /** As bottomBarSnapshotSignature(), for the left bar. */
-    long leftBarSnapshotSignature(List<LeftAppMultiple> rows, boolean currentUserLayout,
-                                          boolean currentLeftBar, int capacity) {
+    /** As horizontalBarSnapshotSignature(), for the vertical bar. */
+    long verticalBarSnapshotSignature(List<LeftAppMultiple> rows, boolean currentUserLayout,
+                                          boolean currentVerticalBar, int capacity) {
         long signature = -3750763034362895579L;
         signature = (signature * 31L) + (currentUserLayout ? 1L : 0L);
-        signature = (signature * 31L) + (currentLeftBar ? 1L : 0L);
+        signature = (signature * 31L) + (currentVerticalBar ? 1L : 0L);
         signature = (signature * 31L) + capacity;
         if (rows == null) {
             return signature;
@@ -1263,8 +1263,8 @@ final class LauncherAppBars {
     }
 
     boolean hasCurrentLeftAppListData() {
-        return mLeftAppListAdapter != null
-                && mLeftAppListAdapter.getItemCount() > 0
+        return mVerticalAppListAdapter != null
+                && mVerticalAppListAdapter.getItemCount() > 0
                 && mLeftAppListData != null
                 && !mLeftAppListData.isEmpty();
     }
@@ -1279,7 +1279,7 @@ final class LauncherAppBars {
     }
 
     // =====================================================================================
-    // BOTTOM BAR - single source of truth for row -> bean mapping
+    // HORIZONTAL BAR - single source of truth for row -> bean mapping
     // =====================================================================================
 
     List<AppMultiple> queryBottomAppRows() {
@@ -1460,7 +1460,7 @@ final class LauncherAppBars {
 
     void initializeAppList() {
         if (mApplyingBarSnapshot) {
-            applyBottomBarSnapshot();
+            applyHorizontalBarSnapshot();
             return;
         }
         Log.d(Launcher.TAG, "initializeAppList");
@@ -1535,7 +1535,7 @@ final class LauncherAppBars {
             mAppListAdapter.notifyDataSetChanged(mAppListData);
             mLastAppListSourceSignature = sourceSignature;
             mBottomUsedFallbackIcon = bottomSnapshot.usedFallbackIcon;
-            saveBottomBarSnapshot(appData, mLauncher.userLayout, mLauncher.widgetBar, capacity, bottomSnapshot);
+            saveHorizontalBarSnapshot(appData, mLauncher.userLayout, mLauncher.widgetBar, capacity, bottomSnapshot);
         } else if (!safeToUpdate) {
             scheduleAppListInitializationRetry("incompleteAllAppsList");
         }
@@ -1570,31 +1570,31 @@ final class LauncherAppBars {
         if (mRecyclerView != null) {
             // Re-apply the dynamic bar height first so the rebind below sizes the icons against it.
             // (Workspace skips this if the bar was inflated for another orientation.)
-            ensureResizableBottomBar("configuration");
+            ensureResizableHorizontalBar("configuration");
         }
         if (mRecyclerView != null && mAppListAdapter != null) {
             mAppListAdapter.notifyDataSetChanged();
-            rebuildBottomBarForCapacity();
+            rebuildHorizontalBarForCapacity();
         }
         
         // Refresh left recycler view
         mLauncher.userLayout = mLauncher.mPrefs.getBoolean(Keys.USER_LAYOUT, false);
-        mLauncher.leftBar = mLauncher.mPrefs.getBoolean(Keys.LEFT_BAR, false);
-        if (mLauncher.userLayout && mLauncher.leftBar || !mLauncher.userLayout) {
-            RecyclerView mLeftRecyclerView = (RecyclerView) mLauncher.mWorkspace.findViewById(R.id.left_recycler_view);
-            if (mLeftRecyclerView != null && mLeftAppListAdapter != null) {
-                mLeftAppListAdapter.notifyDataSetChanged();
+        mLauncher.verticalBar = mLauncher.mPrefs.getBoolean(Keys.VERTICAL_BAR, false);
+        if (mLauncher.userLayout && mLauncher.verticalBar || !mLauncher.userLayout) {
+            RecyclerView mLeftRecyclerView = (RecyclerView) mLauncher.mWorkspace.findViewById(R.id.vertical_recycler_view);
+            if (mLeftRecyclerView != null && mVerticalAppListAdapter != null) {
+                mVerticalAppListAdapter.notifyDataSetChanged();
             }
         }
     }
 
     /**
-     * The room for the bottom bar's slots may have changed without the rows having done so (the
+     * The room for the horizontal bar's slots may have changed without the rows having done so (the
      * bar height, the widget bar, a turn of the screen): rebuilds the list when the capacity is no
      * longer the one it was built for. refreshCycle() compares signatures, which include the
      * capacity, so nothing is rebuilt - and nothing loops - while the capacity stays the same.
      */
-    void rebuildBottomBarForCapacity() {
+    void rebuildHorizontalBarForCapacity() {
         if (!hasCurrentAppListData()) {
             return; // nothing built yet; the first build uses the current capacity
         }
@@ -1657,7 +1657,7 @@ final class LauncherAppBars {
             mAppListAdapter.notifyDataSetChanged(mAppListData);
             mLastAppListSourceSignature = sourceSignature;
             mBottomUsedFallbackIcon = bottomSnapshot.usedFallbackIcon;
-            saveBottomBarSnapshot(data, mLauncher.userLayout, mLauncher.widgetBar, capacity, bottomSnapshot);
+            saveHorizontalBarSnapshot(data, mLauncher.userLayout, mLauncher.widgetBar, capacity, bottomSnapshot);
         } else if (!safeToUpdate) {
             scheduleAppListInitializationRetry("refreshCycleIncompleteAllAppsList");
         }
@@ -1665,8 +1665,8 @@ final class LauncherAppBars {
 
     public void refreshLeftCycle(AppListBean bean) {
         mLauncher.userLayout = mLauncher.mPrefs.getBoolean(Keys.USER_LAYOUT, false);
-        mLauncher.leftBar = mLauncher.mPrefs.getBoolean(Keys.LEFT_BAR, false);
-        if (!(mLauncher.userLayout && mLauncher.leftBar || !mLauncher.userLayout)) return;
+        mLauncher.verticalBar = mLauncher.mPrefs.getBoolean(Keys.VERTICAL_BAR, false);
+        if (!(mLauncher.userLayout && mLauncher.verticalBar || !mLauncher.userLayout)) return;
         
         Log.d(Launcher.TAG, "--------------->>>   refreshLeftCycle");
         // The database off the main thread (StrictMode, a tap on every app opened), in order
@@ -1675,17 +1675,17 @@ final class LauncherAppBars {
             try {
                 topRows = writeLeftCycle(bean);
             } catch (RuntimeException e) {
-                Log.w(Launcher.TAG, "refreshLeftCycle: left bar rows not written", e);
+                Log.w(Launcher.TAG, "refreshLeftCycle: vertical bar rows not written", e);
                 return;
             }
-            mLauncher.mHandler.post(() -> refreshLeftBar(topRows));
+            mLauncher.mHandler.post(() -> refreshVerticalBar(topRows));
         });
     }
 
     private static final ExecutorService LEFT_CYCLE_WRITER =
             Executors.newSingleThreadExecutor(r -> new Thread(r, "LeftCycleWriter"));
 
-    /** The opened app first in the left bar's rows; returns the rows to show. */
+    /** The opened app first in the vertical bar's rows; returns the rows to show. */
     private List<LeftAppMultiple> writeLeftCycle(AppListBean bean) {
         // Get all physical rows from database
         List<LeftAppMultiple> physical = LitePal.order("id asc").find(LeftAppMultiple.class);
@@ -1754,12 +1754,12 @@ final class LauncherAppBars {
         return BarRows.left(BarCapacity.LEFT_MEMORY);
     }
 
-    public void refreshLeftBar(@Nullable List<LeftAppMultiple> leftAppData) {
+    public void refreshVerticalBar(@Nullable List<LeftAppMultiple> leftAppData) {
         mLauncher.userLayout = mLauncher.mPrefs.getBoolean(Keys.USER_LAYOUT, false);
-        mLauncher.leftBar = mLauncher.mPrefs.getBoolean(Keys.LEFT_BAR, false);
-        if (!(mLauncher.userLayout && mLauncher.leftBar || !mLauncher.userLayout)) return;
+        mLauncher.verticalBar = mLauncher.mPrefs.getBoolean(Keys.VERTICAL_BAR, false);
+        if (!(mLauncher.userLayout && mLauncher.verticalBar || !mLauncher.userLayout)) return;
 
-        Log.d(Launcher.TAG, "--------------->>>   refreshLeftBar");
+        Log.d(Launcher.TAG, "--------------->>>   refreshVerticalBar");
 
         final int capacity = leftCapacity();
         final List<LeftAppMultiple> src = (leftAppData != null && !leftAppData.isEmpty())
@@ -1767,11 +1767,11 @@ final class LauncherAppBars {
                 : BarRows.left(BarCapacity.LEFT_MEMORY);
         long sourceSignature = calculateLeftAppRowsSignature(src, capacity);
         if (sourceSignature == mLastLeftAppListSourceSignature
-                && mLeftAppListAdapter != null
-                && mLeftAppListAdapter.getItemCount() > 0
+                && mVerticalAppListAdapter != null
+                && mVerticalAppListAdapter.getItemCount() > 0
                 && mLeftAppListData != null
                 && !mLeftAppListData.isEmpty()) {
-            Log.d(Launcher.TAG, "refreshLeftBar: unchanged, skipping adapter rebuild");
+            Log.d(Launcher.TAG, "refreshVerticalBar: unchanged, skipping adapter rebuild");
             return;
         }
 
@@ -1783,8 +1783,8 @@ final class LauncherAppBars {
         Map<String, Boolean> installCache = new HashMap<>();
 
         if ((src == null || src.isEmpty()) && hasExistingLeftListData) {
-            Log.w(Launcher.TAG, "refreshLeftBar: empty rows during refresh, keeping current list");
-            scheduleAppListInitializationRetry("refreshLeftBarEmptyRows");
+            Log.w(Launcher.TAG, "refreshVerticalBar: empty rows during refresh, keeping current list");
+            scheduleAppListInitializationRetry("refreshVerticalBarEmptyRows");
             return;
         }
 
@@ -1831,7 +1831,7 @@ final class LauncherAppBars {
                 continue;
             }
 
-            // Same rule as the bottom bar: the bean remembers which physical row it came
+            // Same rule as the horizontal bar: the bean remembers which physical row it came
             // from. The visible left list is compacted (rows whose package is gone are
             // skipped), so the adapter position is NOT the row position.
             bean.rowId = row.rowId();
@@ -1839,21 +1839,21 @@ final class LauncherAppBars {
             leftSnapshot.add((long) row.id, row.packageName, row.className, beanName, beanIcon);
             added++;
         }
-        if (mLeftAppListAdapter != null) {
+        if (mVerticalAppListAdapter != null) {
             mLeftAppListData = nextLeftAppListData;
-            mLeftAppListAdapter.notifyDataSetChanged(mLeftAppListData);
+            mVerticalAppListAdapter.notifyDataSetChanged(mLeftAppListData);
             mLastLeftAppListSourceSignature = sourceSignature;
             mLeftUsedFallbackIcon = leftSnapshot.usedFallbackIcon;
-            saveLeftBarSnapshot(src, capacity, leftSnapshot);
+            saveVerticalBarSnapshot(src, capacity, leftSnapshot);
         }
     }
 
     /**
-     * Clears every left-bar row pointing at one of the just-uninstalled packages and compacts the
+     * Clears every vertical-bar row pointing at one of the just-uninstalled packages and compacts the
      * remaining rows upwards, mirroring the ordering logic of refreshLeftCycle().
      * Returns true when the database was actually modified.
      */
-    boolean pruneLeftBarRows(ArrayList<String> packageNames) {
+    boolean pruneVerticalBarRows(ArrayList<String> packageNames) {
         if (packageNames == null || packageNames.isEmpty()) {
             return false;
         }
@@ -1896,12 +1896,12 @@ final class LauncherAppBars {
         }
 
         mLastLeftAppListSourceSignature = Long.MIN_VALUE;
-        Log.d(Launcher.TAG, "pruneLeftBarRows: left bar compacted after uninstall of " + packageNames);
+        Log.d(Launcher.TAG, "pruneVerticalBarRows: vertical bar compacted after uninstall of " + packageNames);
         return true;
     }
 
     /**
-     * Immediately turns every bottom-bar tile whose package was just uninstalled into the
+     * Immediately turns every horizontal-bar tile whose package was just uninstalled into the
      * "+" placeholder, instead of waiting for the delayed triggerAppData() rebuild.
      *
      * The AppMultiple row itself is deliberately NOT touched: the slot must survive an
@@ -1910,7 +1910,7 @@ final class LauncherAppBars {
      *
      * @return true if anything visible changed
      */
-    boolean pruneBottomBarBeans(ArrayList<String> packageNames) {
+    boolean pruneHorizontalBarBeans(ArrayList<String> packageNames) {
         if (packageNames == null || packageNames.isEmpty()
                 || mAppListData == null || mAppListData.isEmpty()) {
             return false;
@@ -1948,10 +1948,10 @@ final class LauncherAppBars {
                     LitePal.update(AppMultiple.class, v, bean.rowId);
                     BarRows.invalidate();
                 } catch (Exception e) {
-                    Log.e(Launcher.TAG, "pruneBottomBarBeans: failed to clear row " + bean.rowId, e);
+                    Log.e(Launcher.TAG, "pruneHorizontalBarBeans: failed to clear row " + bean.rowId, e);
                 }
             } else {
-                Log.w(Launcher.TAG, "pruneBottomBarBeans: bean for " + bean.packageName
+                Log.w(Launcher.TAG, "pruneHorizontalBarBeans: bean for " + bean.packageName
                         + " has no rowId, slot cleared in memory only");
             }
         }
@@ -1965,12 +1965,12 @@ final class LauncherAppBars {
             mAppListAdapter.notifyDataSetChanged(mAppListData);
         }
         mLastAppListSourceSignature = Long.MIN_VALUE;
-        Log.d(Launcher.TAG, "pruneBottomBarBeans: slots emptied after uninstall of " + packageNames);
+        Log.d(Launcher.TAG, "pruneHorizontalBarBeans: slots emptied after uninstall of " + packageNames);
         return true;
     }
 
-    /** In-memory counterpart of pruneLeftBarRows(): drops the tiles right away. */
-    boolean pruneLeftBarBeans(ArrayList<String> packageNames) {
+    /** In-memory counterpart of pruneVerticalBarRows(): drops the tiles right away. */
+    boolean pruneVerticalBarBeans(ArrayList<String> packageNames) {
         if (packageNames == null || packageNames.isEmpty()
                 || mLeftAppListData == null || mLeftAppListData.isEmpty()) {
             return false;
@@ -1994,8 +1994,8 @@ final class LauncherAppBars {
         }
 
         mLeftAppListData = next;
-        if (mLeftAppListAdapter != null) {
-            mLeftAppListAdapter.notifyDataSetChanged(mLeftAppListData);
+        if (mVerticalAppListAdapter != null) {
+            mVerticalAppListAdapter.notifyDataSetChanged(mLeftAppListData);
         }
         mLastLeftAppListSourceSignature = Long.MIN_VALUE;
         return true;
@@ -2066,7 +2066,7 @@ final class LauncherAppBars {
     }
 
     /**
-     * Writes the first eight rows of the bottom bar. Only the rows matter: initializeAppList()
+     * Writes the first eight rows of the horizontal bar. Only the rows matter: initializeAppList()
      * reads them back (BarRows) and builds the beans from them, for whatever capacity the bar has.
      */
     void createDefaultAppEntries() {
@@ -2148,11 +2148,11 @@ final class LauncherAppBars {
     }
 
     /**
-     * Returns true if any of the given package names is currently configured as a bottom-bar
-     * shortcut (stored in AppMultiple) or left-bar shortcut (LeftAppMultiple).
+     * Returns true if any of the given package names is currently configured as a horizontal-bar
+     * shortcut (stored in AppMultiple) or vertical-bar shortcut (LeftAppMultiple).
      * Used to avoid needlessly re-running initAppData for unrelated package change events.
      */
-    boolean isPackageInBottomBar(ArrayList<String> packageNames) {
+    boolean isPackageInHorizontalBar(ArrayList<String> packageNames) {
         if (packageNames == null || packageNames.isEmpty()) return false;
         if (mAppListData != null) {
             for (AppListBean bean : mAppListData) {
@@ -2167,11 +2167,11 @@ final class LauncherAppBars {
         return false;
     }
 
-    boolean isAppInfoInBottomBar(ArrayList<AppInfo> appInfos) {
+    boolean isAppInfoInHorizontalBar(ArrayList<AppInfo> appInfos) {
         if (appInfos == null || appInfos.isEmpty()) return false;
         ArrayList<String> pkgs = new ArrayList<>();
         for (AppInfo ai : appInfos) pkgs.add(ai.getPackageName());
-        return isPackageInBottomBar(pkgs);
+        return isPackageInHorizontalBar(pkgs);
     }
 
     @WorkerThread
@@ -2208,14 +2208,14 @@ final class LauncherAppBars {
     }
 
     /**
-     * Strict icon loader used ONLY by the left bar. Returns null when the package/component can
+     * Strict icon loader used ONLY by the vertical bar. Returns null when the package/component can
      * no longer be resolved (e.g. it has just been uninstalled) instead of falling back to the
-     * "add app" placeholder icon that the bottom bar legitimately uses. "Strict" is unrelated to
+     * "add app" placeholder icon that the horizontal bar legitimately uses. "Strict" is unrelated to
      * StrictMode. Worker thread only: getActivityIcon creates a class loader and the package's
      * Resources, which took seconds on the main thread right after a boot.
      */
     @WorkerThread
-    Bitmap loadLeftBarIconStrict(String packageName, String className) {
+    Bitmap loadVerticalBarIconStrict(String packageName, String className) {
         if (TextUtils.isEmpty(packageName)) {
             return null;
         }
@@ -2253,7 +2253,7 @@ final class LauncherAppBars {
             }
         }
         if (drawable == null) {
-            Log.w(Launcher.TAG, "loadLeftBarIconStrict: no icon for " + packageName + "/" + className);
+            Log.w(Launcher.TAG, "loadVerticalBarIconStrict: no icon for " + packageName + "/" + className);
             return null;
         }
 
@@ -2319,7 +2319,7 @@ final class LauncherAppBars {
             for (String[] item : batch) {
                 String key = appIconCacheKey(item[0], item[1]);
                 if ("strict".equals(item[2])) {
-                    Bitmap icon = loadLeftBarIconStrict(item[0], item[1]);
+                    Bitmap icon = loadVerticalBarIconStrict(item[0], item[1]);
                     if (icon == null) {
                         mUnresolvableIcons.add(key);
                         missing++;
@@ -2347,7 +2347,7 @@ final class LauncherAppBars {
                 mLastAppListSourceSignature = Long.MIN_VALUE;
                 mLastLeftAppListSourceSignature = Long.MIN_VALUE;
                 refreshCycle(data);
-                refreshLeftBar(left);
+                refreshVerticalBar(left);
             });
           } catch (Throwable t) {
             Log.w(Launcher.TAG, "Loading the bar icons failed", t);

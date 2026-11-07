@@ -805,7 +805,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
             String bgColor = prefs.getString("bg_stats_color", "#FF000000");
             int bgAlpha = prefs.getInt(Keys.ALPHA_SEEK_BAR, 255);
             boolean background = prefs.getBoolean("stats_bg", true);
-            boolean leftBar = prefs.getBoolean(Keys.LEFT_BAR, false);
+            boolean verticalBar = prefs.getBoolean(Keys.VERTICAL_BAR, false);
             boolean drawableBg = prefs.getBoolean("bg_drawable", false);
             boolean colorBg = prefs.getBoolean("bg_color", false);
             int margin = Integer.parseInt(prefs.getString(Keys.LAYOUT_MARGIN, "5"));
@@ -813,7 +813,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
 
             wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
             LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            int leftBarSize = Launcher.calculatedLeftBarWidth;
+            int verticalBarSize = Launcher.calculatedVerticalBarWidth;
             StatsWindowSize.syncSavedRectangle(this, prefs, mapApp);
             statsWidthSelector = prefs.getInt(mapApp ? Keys.APP_STATS_WIDTH_SELECTOR : Keys.STATS_WIDTH_SELECTOR, 0);
             // From the size, not from the width saved: the saved widths of the large and the medium window (from their
@@ -836,8 +836,8 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 statsTopLeftX = prefs.getInt("appStatsTopLeftX", maxBorderX - statsWidth - margin);
                 statsTopLeftY = prefs.getInt("appStatsTopLeftY", margin + getStatusBarHeight()) + getStatusBarHeight();
             } else {
-                if (leftBar) {
-                    statsTopLeftX = prefs.getInt("statsTopLeftX", margin + 10) + leftBarSize;
+                if (verticalBar) {
+                    statsTopLeftX = prefs.getInt("statsTopLeftX", margin + 10) + verticalBarSize;
                 } else {
                     statsTopLeftX = prefs.getInt("statsTopLeftX", margin + 10);
                 }   

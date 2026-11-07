@@ -147,7 +147,7 @@ public class StatusBarSwipeDetector extends Service {
     }
 
     /**
-     * Swiping over this strip hides the auto-hide bottom bar. The bar does not notice the swipe by
+     * Swiping over this strip hides the auto-hide horizontal bar. The bar does not notice the swipe by
      * itself: this window lies above it, and only windows above the touched one get ACTION_OUTSIDE.
      */
     private void hideAutoHideBarOnce() {
