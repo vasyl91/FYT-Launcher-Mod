@@ -102,11 +102,14 @@ public final class FuelModel {
     /** Below this speed (km/h) the consumption is in L/h, and above the other one it is back in L/100 km. */
     static final double LOW_SPEED_ENTER_KMH = 10.0;
     static final double LOW_SPEED_EXIT_KMH = 13.0;
-    /** Only a car that goes silent below its threshold has an estimate: "no value" counted this near it, and how many. */
-    static final double NO_VALUE_NEAR_KMH = 5.0;
-    static final int NO_VALUE_MIN = 20;
-    /** Silence above the threshold by more than this (km/h) is a fault, not a threshold: no estimate. */
-    static final double NO_ESTIMATE_ABOVE_KMH = 8.0;
+    /** While speeding up (m/s²) the car's real consumption changes with every message: this long without one is "no value". */
+    static final double ACCEL_LEARN = 0.3;
+    static final long ACCEL_SILENCE_MS = 3_000L;
+    /**
+     * Silence while slowing down above the threshold is the car cutting the fuel (it sends a code only when it changes):
+     * after this long the consumption shown is 0.
+     */
+    static final long CUTOFF_SILENCE_MS = 2_000L;
     /** The edge correction: the car's values to average, the limit (L/h) and how fast it fades below the threshold. */
     static final int EDGE_MEMORY = 10;
     static final double EDGE_LIMIT_LPH = 1.5;
@@ -279,12 +282,11 @@ public final class FuelModel {
     private final Wls coast = new Wls(COAST_PRIOR, new double[]{PRIOR_WEIGHT, PRIOR_WEIGHT});
     private int samples;
     private long drivingMs;
-    private double thresholdKmh = DEFAULT_THRESHOLD_KMH;
+    /** The speed from which the car gives values, learned while speeding up only (FuelSpeedThreshold). */
+    private FuelSpeedThreshold speedThreshold = new FuelSpeedThreshold();
     private boolean rpmSeen;
     private boolean rpmValid;
     private double idleRpm = DEFAULT_IDLE_RPM;
-    /** "No value" while driving at or just above the threshold: a car that goes silent below some speed. */
-    private int noValueBelow;
     /** How much the model falls short of the car's values when speeding up just under the threshold, L/h. */
     private double edgeUpLph;
     private int edgeUpCount;
@@ -399,6 +401,12 @@ public final class FuelModel {
         } else if (stillSinceT < 0) {
             stillSinceT = t;
         }
+        if (isMoving() && lastFuelT >= 0 && t - lastFuelT > ACCEL_SILENCE_MS) {
+            double a = aEff(t);
+            if (!Double.isNaN(a) && a >= ACCEL_LEARN) {
+                speedThreshold.onAccelerating(v, false);    // no code for 3 s while speeding up: none
+            }
+        }
         if (v < LOW_SPEED_ENTER_KMH) {
             lowSpeed = true;
         } else if (v > LOW_SPEED_EXIT_KMH) {
@@ -504,6 +512,9 @@ public final class FuelModel {
             fuelSaysNothing = false;
             double carLph = value / 10.0 * kmh() / 100.0;
             if (moving) {
+                if (!Double.isNaN(a) && a >= ACCEL_LEARN) {
+                    speedThreshold.onAccelerating(kmh(), true);
+                }
                 // before learnEdge(), which forgets when the estimate was shown
                 blend(t, value / 10.0);
                 learnEdge(t, carLph);
@@ -526,14 +537,10 @@ public final class FuelModel {
             blendL100 = Double.NaN;
             // "no value" (65535 and the like), 0 while driving, or a value the widget would not show
             fuelSaysNothing = true;
-            if (moving) {
-                if (kmh() <= thresholdKmh + NO_VALUE_NEAR_KMH) {
-                    noValueBelow = Math.min(noValueBelow + 1, 1_000_000);
-                }
-                // the speed where the car stops giving values: the 90th percentile of the speeds it gives none
-                // at, followed a step at a time, so that a single "no value" at speed does not move it far
-                thresholdKmh += kmh() > thresholdKmh ? 0.9 : -0.1;
-                thresholdKmh = Math.max(5, Math.min(150, thresholdKmh));
+            // Only while speeding up is "no value" a statement about the threshold: slowing down, a car that
+            // cuts the fuel says nothing at any speed, and with an unknown acceleration nothing is known.
+            if (moving && !Double.isNaN(a) && a >= ACCEL_LEARN) {
+                speedThreshold.onAccelerating(kmh(), false);
             }
         }
     }
@@ -618,7 +625,7 @@ public final class FuelModel {
         }
         Mode mode = mode(t, a);
         double kmh = kmh();
-        double w = Math.exp(-Math.max(0, kmh - thresholdKmh) / WEIGHT_SCALE_KMH);
+        double w = Math.exp(-Math.max(0, kmh - thresholdKmh()) / WEIGHT_SCALE_KMH);
         double v = kmh / 3.6;
         switch (mode) {
             case DRIVING:
@@ -729,7 +736,12 @@ public final class FuelModel {
 
     /** The car goes silent below some speed, and the model is calibrated: the only cars with an estimate. */
     public boolean thresholdCar() {
-        return noValueBelow >= NO_VALUE_MIN && calibrated();
+        return hasThreshold() && calibrated();
+    }
+
+    /** The speed from which the car gives values is known: it was learned while speeding up. */
+    public boolean hasThreshold() {
+        return !Double.isNaN(speedThreshold.threshold());
     }
 
     /** The speed is under 10 km/h (back above 13): the consumption is in litres per hour. */
@@ -737,9 +749,30 @@ public final class FuelModel {
         return lowSpeed;
     }
 
-    /** The car gives no value now: "no value", 0 while driving, or nothing for 5 s while driving. */
+    /**
+     * The car gives no value now: "no value" or 0 while driving, or nothing for 5 s while driving under its threshold and
+     * not slowing down. Above the threshold the car's last value lasts until its next code, since it sends a code only
+     * when it changes.
+     */
     public boolean carGivesNoValue(long now) {
-        return fuelSaysNothing || (isMoving() && lastFuelT >= 0 && now - lastFuelT > NO_UPDATE_MS);
+        if (fuelSaysNothing) {
+            return true;
+        }
+        if (!isMoving() || lastFuelT < 0 || now - lastFuelT <= NO_UPDATE_MS || !hasThreshold()) {
+            return false;
+        }
+        return kmh() < thresholdKmh() && mode(now, aEff(now)) != Mode.OVERRUN;
+    }
+
+    /**
+     * The car cut the fuel while slowing down above its threshold: it said "no value", or sent no code for 2 s. The
+     * consumption shown is 0 until its next code.
+     */
+    public boolean fuelCutOff(long now) {
+        if (!isMoving() || !hasThreshold() || kmh() < thresholdKmh() || mode(now, aEff(now)) != Mode.OVERRUN) {
+            return false;
+        }
+        return fuelSaysNothing || (lastFuelT >= 0 && now - lastFuelT > CUTOFF_SILENCE_MS);
     }
 
     /** The estimate to show now, or null: not a threshold car, not calibrated, silent at speed, or the car gives a value. */
@@ -748,8 +781,8 @@ public final class FuelModel {
             return null;
         }
         double kmh = kmh();
-        if (kmh > thresholdKmh + NO_ESTIMATE_ABOVE_KMH) {
-            return null;
+        if (kmh >= thresholdKmh()) {
+            return null;    // the car's value wins from its threshold up
         }
         blendL100 = Double.NaN;     // the estimate is shown: the way back starts afresh
         boolean moving = isMoving();
@@ -844,7 +877,7 @@ public final class FuelModel {
         if (Double.isNaN(a) || a < COAST_ACCEL || a <= 0) {
             return 0;
         }
-        return edgeUpLph * Math.exp(-Math.max(0, thresholdKmh - kmh()) / EDGE_SCALE_KMH);
+        return edgeUpLph * Math.exp(-Math.max(0, thresholdKmh() - kmh()) / EDGE_SCALE_KMH);
     }
 
     /** The model's L/h now, as learned, with no bias and no edge. */
@@ -882,12 +915,13 @@ public final class FuelModel {
     private double coastLevel(double kmh, boolean engineBraking) {
         double[] c = coast.solve();
         double learned = Math.max(0, Math.min(2.5, c[0] + c[1] * kmh / 3.6));
-        if (engineBraking || kmh >= thresholdKmh) {
+        double threshold = thresholdKmh();
+        if (engineBraking || kmh >= threshold) {
             return learned;
         }
         double idle = idle();
-        double atTheThreshold = Math.max(0, Math.min(2.5, c[0] + c[1] * thresholdKmh / 3.6));
-        return idle + (atTheThreshold - idle) * kmh / thresholdKmh;
+        double atTheThreshold = Math.max(0, Math.min(2.5, c[0] + c[1] * threshold / 3.6));
+        return idle + (atTheThreshold - idle) * kmh / threshold;
     }
 
     private static double[] clampDrive(double[] p, double[] prior) {
@@ -924,8 +958,10 @@ public final class FuelModel {
         return drive.solve();
     }
 
+    /** The learned threshold, km/h, or the default where none is known: the weights and the levels need a number. */
     double thresholdKmh() {
-        return thresholdKmh;
+        double learned = speedThreshold.threshold();
+        return Double.isNaN(learned) ? DEFAULT_THRESHOLD_KMH : learned;
     }
 
     double idleRpm() {
@@ -1102,10 +1138,10 @@ public final class FuelModel {
 
     /** What the model learned, for the settings (the car's data is in the settings already). */
     public String serialize() {
-        StringBuilder sb = new StringBuilder("3;");
-        sb.append(samples).append(';').append(drivingMs).append(';').append(thresholdKmh).append(';')
+        StringBuilder sb = new StringBuilder("4;");
+        sb.append(samples).append(';').append(drivingMs).append(';').append(speedThreshold.write()).append(';')
                 .append(rpmSeen ? 1 : 0).append(';').append(rpmValid ? 1 : 0).append(';').append(idleRpm).append(';')
-                .append(noValueBelow).append(';').append(edgeUpLph).append(';').append(edgeUpCount);
+                .append(edgeUpLph).append(';').append(edgeUpCount);
         drive.write(sb);
         coast.write(sb);
         return sb.toString();
@@ -1120,6 +1156,9 @@ public final class FuelModel {
             return new FuelModel();
         }
         try {
+            if (text.startsWith("4;")) {
+                return parseV4(text);
+            }
             if (text.startsWith("3;")) {
                 return parseV3(text);
             }
@@ -1132,12 +1171,12 @@ public final class FuelModel {
         return new FuelModel();
     }
 
-    private static FuelModel parseV3(String text) {
+    private static FuelModel parseV4(String text) {
         FuelModel m = new FuelModel();
         String[] f = text.split(";", -1);
         m.samples = Integer.parseInt(f[1]);
         m.drivingMs = Long.parseLong(f[2]);
-        m.thresholdKmh = number(f[3]);
+        m.speedThreshold = FuelSpeedThreshold.read(f[3]);
         m.rpmSeen = "1".equals(f[4]);
         m.rpmValid = "1".equals(f[5]);
         m.rpmJudged = m.rpmValid;
@@ -1145,13 +1184,41 @@ public final class FuelModel {
         if (m.idleRpm != DEFAULT_IDLE_RPM) {
             m.idleRpmSamples = IDLE_RPM_SAMPLES;      // learned already
         }
-        m.noValueBelow = Integer.parseInt(f[7]);
+        m.edgeUpLph = number(f[7]);
+        m.edgeUpCount = Integer.parseInt(f[8]);
+        int at = m.drive.read(f, 9);
+        at = m.coast.read(f, at);
+        if (at != f.length || m.samples < 0 || m.drivingMs < 0 || m.edgeUpCount < 0
+                || m.idleRpm < 300 || m.idleRpm > 2000 || Math.abs(m.edgeUpLph) > EDGE_LIMIT_LPH) {
+            return new FuelModel();
+        }
+        return m;
+    }
+
+    /**
+     * Format 3: the calibration is kept, the threshold is not. It was moved by every "no value", also those of
+     * engine braking, so it is contaminated; the speed bins start empty and the threshold is learned afresh.
+     */
+    private static FuelModel parseV3(String text) {
+        FuelModel m = new FuelModel();
+        String[] f = text.split(";", -1);
+        m.samples = Integer.parseInt(f[1]);
+        m.drivingMs = Long.parseLong(f[2]);
+        double oldThreshold = number(f[3]);
+        m.rpmSeen = "1".equals(f[4]);
+        m.rpmValid = "1".equals(f[5]);
+        m.rpmJudged = m.rpmValid;
+        m.idleRpm = number(f[6]);
+        if (m.idleRpm != DEFAULT_IDLE_RPM) {
+            m.idleRpmSamples = IDLE_RPM_SAMPLES;      // learned already
+        }
+        int noValueBelow = Integer.parseInt(f[7]);
         m.edgeUpLph = number(f[8]);
         m.edgeUpCount = Integer.parseInt(f[9]);
         int at = m.drive.read(f, 10);
         at = m.coast.read(f, at);
-        if (at != f.length || m.samples < 0 || m.drivingMs < 0 || m.noValueBelow < 0 || m.edgeUpCount < 0
-                || m.thresholdKmh < 5 || m.thresholdKmh > 150 || m.idleRpm < 300 || m.idleRpm > 2000
+        if (at != f.length || m.samples < 0 || m.drivingMs < 0 || noValueBelow < 0 || m.edgeUpCount < 0
+                || oldThreshold < 5 || oldThreshold > 150 || m.idleRpm < 300 || m.idleRpm > 2000
                 || Math.abs(m.edgeUpLph) > EDGE_LIMIT_LPH) {
             return new FuelModel();
         }
@@ -1171,7 +1238,7 @@ public final class FuelModel {
         FuelModel m = new FuelModel();
         m.samples = Integer.parseInt(f[1]);
         m.drivingMs = Long.parseLong(f[2]);
-        m.thresholdKmh = number(f[3]);
+        double oldThreshold = number(f[3]);
         m.rpmSeen = "1".equals(f[4]);
         Wls old = new Wls(LEGACY_DRIVE_PRIOR, LEGACY_DRIVE_WEIGHT);
         int at = old.read(f, 5);
@@ -1183,7 +1250,7 @@ public final class FuelModel {
                 return new FuelModel();
             }
         }
-        if (at != f.length || m.samples < 0 || m.drivingMs < 0 || m.thresholdKmh < 5 || m.thresholdKmh > 150) {
+        if (at != f.length || m.samples < 0 || m.drivingMs < 0 || oldThreshold < 5 || oldThreshold > 150) {
             return new FuelModel();
         }
         // the old driving model cannot be moved over coefficient by coefficient: its values go in as samples
@@ -1197,7 +1264,6 @@ public final class FuelModel {
         }
         m.samples = Math.min(m.samples, MIN_SAMPLES);
         m.drivingMs = Math.min(m.drivingMs, MIN_DRIVING_MS);
-        m.noValueBelow = m.thresholdKmh != DEFAULT_THRESHOLD_KMH ? NO_VALUE_MIN : 0;
         return m;
     }
 

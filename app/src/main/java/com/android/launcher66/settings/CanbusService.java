@@ -168,7 +168,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
         public void run() {
             long now = System.currentTimeMillis();
             if (fuelModel != null && now - fuelRefreshedAt >= FUEL_TICK_MS - 100
-                    && fuelModel.carGivesNoValue(now)) {
+                    && (fuelModel.carGivesNoValue(now) || fuelModel.fuelCutOff(now))) {
                 touchRpm(now);
                 refreshFuelEstimate();
             }
@@ -1575,7 +1575,10 @@ public class CanbusService extends Service implements PropertyChangeListener {
         int value = fuelValue;
         ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_str)).setTextColor(Color.parseColor(textColor));
         ((TextView) absoluteStats.findViewById(R.id.instantaneous_consumption_val)).setTextColor(Color.parseColor(textColor));
-        if (value > 0 && value < 3001) {
+        // Slowing down above its threshold the car sends no code when it cuts the fuel: its last value would
+        // stand for a consumption of 0
+        boolean cutOff = fuelModel != null && fuelModel.fuelCutOff(System.currentTimeMillis());
+        if (value > 0 && value < 3001 && !cutOff) {
             ConsumptionUnits.Shown shown = carValueShown(value);
             double blended = fuelModel != null ? fuelModel.blendedCarL100() : Double.NaN;
             if (!Double.isNaN(blended) && (shown == null || shown.unit != ConsumptionUnits.Unit.LH)) {
@@ -1586,7 +1589,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
             }
         } else if (!showFuelEstimate()) {
             // No value from the car, and no estimate (none learned yet, or no fuel code)
-            setFuelText(0, value == 0 ? carValueShown(0) : null);
+            setFuelText(0, value == 0 || cutOff ? carValueShown(0) : null);
         }
     }
 
@@ -1673,8 +1676,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
         if (fuelModel == null) {
             return;
         }
-        if (!fuelModel.carGivesNoValue(System.currentTimeMillis())) {
-            if (fuelModel.lowSpeed() || fuelShownPerHour) {
+        long now = System.currentTimeMillis();
+        if (!fuelModel.carGivesNoValue(now)) {
+            if (fuelModel.lowSpeed() || fuelShownPerHour || fuelModel.fuelCutOff(now)) {
                 showFuel();
             }
             return;

@@ -359,7 +359,7 @@ class FuelModelTest {
 
     // ---- the car's value back after an estimate: a large jump is shown in steps ----
 
-    /** A calibrated model that shows an estimate at a steady 33 km/h; {t, estimate in L/100 km}. */
+    /** A calibrated model that shows an estimate at a steady 27 km/h (under its threshold of 30); {t, estimate in L/100 km}. */
     private static final class Steady {
         final FuelModel m = new FuelModel();
         long t;
@@ -367,11 +367,11 @@ class FuelModelTest {
 
         Steady() {
             t = drive(m, new Random(1), 0, 900, 30, 0.9);
-            // speeding up to 33 km/h and staying there (above 13 km/h, in L/100 km), the car silent: the estimate
+            // speeding up to 27 km/h and staying there (above 13 km/h, in L/100 km), the car saying no value: the estimate
             FuelModel.Estimate e = null;
             double kmh = 15;
             for (int i = 0; i < 100; i++, t += 200) {
-                kmh = Math.min(33, kmh + 0.3);
+                kmh = Math.min(27, kmh + 0.3);
                 m.onSpeed(t, kmh, true);
                 if (i % 5 == 0) {
                     m.onFuel(t, 65535);
@@ -386,7 +386,7 @@ class FuelModelTest {
         /** The car's value (L/100 km) arrives {@code afterMs} later at the same speed; the value to show instead, or NaN. */
         double car(double l100, long afterMs) {
             t += afterMs;
-            m.onSpeed(t, 33, true);
+            m.onSpeed(t, 27, true);
             m.onFuel(t, (int) Math.round(l100 * 10));
             return m.blendedCarL100();
         }
@@ -475,7 +475,7 @@ class FuelModelTest {
         Steady s = new Steady();
         assertFalse(Double.isNaN(s.car(s.estimate + 6, 200)));
         s.t += 300;
-        s.m.onSpeed(s.t, 33, true);
+        s.m.onSpeed(s.t, 27, true);
         s.m.onFuel(s.t, 65535);
         assertTrue(Double.isNaN(s.m.blendedCarL100()));
 
@@ -483,8 +483,8 @@ class FuelModelTest {
         assertFalse(Double.isNaN(z.car(z.estimate + 6, 200)));
         // the fuel is cut while slowing down: the car's own 0
         z.t += 1000;
-        z.m.onSpeed(z.t - 200, 36, true);
-        z.m.onSpeed(z.t, 33, true);
+        z.m.onSpeed(z.t - 200, 30, true);
+        z.m.onSpeed(z.t, 27, true);
         z.m.onFuel(z.t, 0);
         assertTrue(Double.isNaN(z.m.blendedCarL100()));
     }
@@ -540,7 +540,7 @@ class FuelModelTest {
 
     /**
      * Slows down from {@code kmh} at {@code accel} to {@code endKmh}: a speed every 200 ms, the RPM if {@code rpm}, the
-     * car's value every second above 30 km/h and nothing at all below it (no "no value"); the estimate every 200 ms.
+     * car's value every second above 30 km/h and "no value" below it; the estimate every 200 ms.
      */
     private static Fade slowDownAndGoSilent(FuelModel m, long t, double kmh, double accel, double endKmh, boolean rpm,
             Car car, DoubleUnaryOperator rpmCarLph) {
@@ -556,6 +556,8 @@ class FuelModelTest {
                 m.onFuel(t, value);
                 f.lastCarLph = value / 10.0 * kmh / 100.0;
                 f.lastCarT = t;
+            } else if (step % 5 == 0) {
+                m.onFuel(t, 65535);
             }
             FuelModel.Estimate e = m.estimate(t);
             if (e != null) {
@@ -576,7 +578,7 @@ class FuelModelTest {
         double[] kmh = {35};
         t = ride(m, t, kmh, 0, 0, 6, car, new Log());
         Fade f = slowDownAndGoSilent(m, t, 35, -0.8, 3, false, car, null);
-        assertTrue(f.at.get(0) - f.lastCarT > FuelModel.NO_UPDATE_MS, "the first estimate comes after 5 s of silence");
+        assertTrue(f.at.get(0) > f.lastCarT, "the first estimate comes after the car's last value, under the threshold");
         assertFalse(Double.isNaN(f.lastCarLph));
         // the first estimate is the car's last value in L/h, not the target
         assertEquals(f.lastCarLph, f.after(0), 0.1);
@@ -648,9 +650,9 @@ class FuelModelTest {
             speedUpJump(m, clock);
         }
         String text = m.serialize();
-        assertTrue(text.startsWith("3;"));
+        assertTrue(text.startsWith("4;"));
         String[] f = text.split(";", -1);
-        assertFalse(f[8].equals("0.0") && f[9].equals("0"), text);
+        assertFalse(f[7].equals("0.0") && f[8].equals("0"), text);
         FuelModel back = FuelModel.parse(text);
         assertEquals(text, back.serialize());
         // the same ride from the same state: the same jump, and a smaller one than with no correction
@@ -658,18 +660,168 @@ class FuelModelTest {
         assertEquals(withEdge, speedUpJump(back, new long[]{clock[0]}), 1e-9);
 
         // the same text with no correction
-        f[8] = "0.0";
-        f[9] = "0";
+        f[7] = "0.0";
+        f[8] = "0";
         FuelModel none = FuelModel.parse(String.join(";", f));
         assertTrue(none.calibrated());
         assertTrue(speedUpJump(none, new long[]{clock[0]}) > withEdge + 0.3);
         // an unknown format, a cut text and a bad correction: a new model
-        assertFalse(FuelModel.parse("4" + text.substring(1)).calibrated());
+        assertFalse(FuelModel.parse("5" + text.substring(1)).calibrated());
         assertFalse(FuelModel.parse(text.substring(0, text.lastIndexOf(';'))).calibrated());
         assertFalse(FuelModel.parse(text.substring(0, text.length() - 1) + "x").calibrated());
         f = text.split(";", -1);
-        f[8] = "9.0";
+        f[7] = "9.0";
         assertFalse(FuelModel.parse(String.join(";", f)).calibrated());
+    }
+
+
+    // ---- the threshold is learned while speeding up only; the car sends a code only when it changes ----
+
+    /**
+     * A car with a threshold of 30 km/h that, like com.syu.ms, sends a code only when the value changes: speeding up
+     * through 0-60 km/h it gives "no value" below 30 and a changing value above; slowing down it gives nothing.
+     */
+    private static long speedUpThroughTheThreshold(FuelModel m, long t) {
+        double kmh = 0;
+        for (int step = 0; kmh < 60; step++, t += 200) {
+            kmh += 0.8 * 3.6 * 0.2;
+            m.onSpeed(t, kmh, true);
+            if (step % 5 == 0) {
+                m.onFuel(t, kmh > 30 ? (int) Math.round(trueLph(kmh, 0.8, 0.9) / kmh * 1000) : 65535);
+            }
+        }
+        return t;
+    }
+
+    @Test
+    void theThresholdIsLearnedWhileSpeedingUp() {
+        FuelModel m = new FuelModel();
+        long t = 0;
+        for (int i = 0; i < 12; i++) {
+            t = speedUpThroughTheThreshold(m, t);
+            t = hold(m, t, 0, 0);
+            double kmh = 60;
+            for (int s = 0; s < 150; s++, t += 200) {      // slowing down to a stop: the car sends nothing
+                kmh = Math.max(0, kmh - 1.0 * 3.6 * 0.2);
+                m.onSpeed(t, kmh, true);
+            }
+        }
+        assertTrue(m.hasThreshold());
+        assertEquals(30.0, m.thresholdKmh(), 5.0);
+    }
+
+    @Test
+    void engineBrakingDoesNotMoveTheThreshold() {
+        FuelModel m = new FuelModel();
+        long t = 0;
+        for (int i = 0; i < 12; i++) {
+            t = speedUpThroughTheThreshold(m, t);
+            for (int s = 0; s < 40; s++, t += 200) {
+                m.onSpeed(t, 60, true);
+            }
+        }
+        double learned = m.thresholdKmh();
+        assertTrue(m.hasThreshold());
+        // 200 "no value" at 80 km/h while slowing down, and 20 s of silence
+        double kmh = 85;
+        for (int i = 0; i < 200; i++, t += 200) {
+            kmh = Math.max(40, kmh - 0.8 * 3.6 * 0.2);
+            m.onSpeed(t, kmh, true);
+            m.onFuel(t, 65535);
+        }
+        for (int i = 0; i < 100; i++, t += 200) {
+            kmh = Math.max(40, kmh - 0.5 * 3.6 * 0.2);
+            m.onSpeed(t, kmh, true);
+        }
+        assertEquals(learned, m.thresholdKmh(), 0.0);
+        assertNull(m.estimate(t), "no estimate above the threshold");
+    }
+
+    @Test
+    void aCarThatGivesValuesAtEverySpeedHasNoThreshold() {
+        FuelModel m = new FuelModel();
+        long t = 0;
+        double kmh = 0;
+        for (int i = 0; i < 20; i++) {
+            kmh = 0;
+            for (int step = 0; kmh < 60; step++, t += 200) {
+                kmh += 0.8 * 3.6 * 0.2;
+                m.onSpeed(t, kmh, true);
+                if (step % 5 == 0) {
+                    m.onFuel(t, 60 + step);
+                }
+            }
+        }
+        assertFalse(m.hasThreshold());
+    }
+
+    @Test
+    void aSteadyValueOfTheCarIsNotNoValue() {
+        FuelModel m = new FuelModel();
+        long t = 0;
+        for (int i = 0; i < 12; i++) {
+            t = speedUpThroughTheThreshold(m, t);
+            for (int s = 0; s < 50; s++, t += 200) {
+                m.onSpeed(t, 60, true);
+            }
+        }
+        drive(m, new Random(1), t, 900, 30, 0.9);
+        // 10 s at 90 km/h with the car's last value standing: the car's value, not a "no value", not an estimate
+        long at = 100_000_000L;
+        m.onFuel(at, 80);
+        for (int i = 0; i < 50; i++, at += 200) {
+            m.onSpeed(at, 90, true);
+        }
+        assertFalse(m.carGivesNoValue(at));
+        assertNull(m.estimate(at));
+    }
+
+    @Test
+    void silenceWhileSlowingDownAboveTheThresholdIsAFuelCutOff() {
+        FuelModel m = new FuelModel();
+        long t = 0;
+        for (int i = 0; i < 12; i++) {
+            t = speedUpThroughTheThreshold(m, t);
+            for (int s = 0; s < 50; s++, t += 200) {
+                m.onSpeed(t, 60, true);
+            }
+        }
+        double kmh = 80;
+        m.onFuel(t, 70);
+        for (int i = 0; i < 30; i++, t += 200) {      // 6 s of braking, the car silent
+            kmh -= 0.9 * 3.6 * 0.2;
+            m.onSpeed(t, kmh, true);
+        }
+        assertTrue(m.fuelCutOff(t));
+        assertFalse(m.carGivesNoValue(t));
+        // the car's next code ends it
+        m.onFuel(t, 20);
+        assertFalse(m.fuelCutOff(t));
+    }
+
+    @Test
+    void theBinsReadBackAndAnOldThresholdIsNotKept() {
+        FuelModel m = new FuelModel();
+        long t = 0;
+        for (int i = 0; i < 12; i++) {
+            t = speedUpThroughTheThreshold(m, t);
+        }
+        assertTrue(m.hasThreshold());
+        FuelModel back = FuelModel.parse(m.serialize());
+        assertTrue(back.hasThreshold());
+        assertEquals(m.thresholdKmh(), back.thresholdKmh(), 0.0);
+        assertEquals(m.serialize(), back.serialize());
+        // format 3 keeps the calibration and drops the contaminated threshold
+        String[] f = m.serialize().split(";", -1);
+        StringBuilder v3 = new StringBuilder("3;" + f[1] + ";" + f[2] + ";22.9;" + f[4] + ";" + f[5] + ";" + f[6] + ";55;"
+                + f[7] + ";" + f[8]);
+        for (int i = 9; i < f.length; i++) {
+            v3.append(';').append(f[i]);
+        }
+        FuelModel migrated = FuelModel.parse(v3.toString());
+        assertFalse(migrated.hasThreshold());
+        assertEquals(m.samples(), migrated.samples());
+        assertTrue(migrated.serialize().startsWith("4;"));
     }
 
     @Test
@@ -1066,9 +1218,10 @@ class FuelModelTest {
         FuelModel second = FuelModel.parse(TEXT_2);
         for (FuelModel m : new FuelModel[]{first, second}) {
             assertTrue(m.calibrated());
-            assertTrue(m.thresholdCar());
-            assertEquals(22.899999999999316, m.thresholdKmh(), 1e-9);
-            assertTrue(m.serialize().startsWith("3;"));
+            // the threshold of the old models was moved by engine braking: it is learned afresh
+            assertFalse(m.hasThreshold());
+            assertFalse(m.thresholdCar());
+            assertTrue(m.serialize().startsWith("4;"));
             assertEquals(m.serialize(), FuelModel.parse(m.serialize()).serialize());
             for (double[] ref : LEGACY_LPH) {
                 double got = litresAt(FuelModel.parse(m.serialize()), 20_000_000L, ref[0], ref[1], -1);
@@ -1078,7 +1231,7 @@ class FuelModelTest {
         // the learning of the old model carries over as it is for the slowing down
         assertEquals(first.coastAt(25), second.coastAt(25), 1e-9);
         // an unknown format is a new model
-        assertFalse(FuelModel.parse("4" + TEXT_2.substring(1)).calibrated());
+        assertFalse(FuelModel.parse("5" + TEXT_2.substring(1)).calibrated());
         assertFalse(FuelModel.parse("2;1;2;3").calibrated());
     }
 
