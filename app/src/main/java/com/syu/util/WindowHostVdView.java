@@ -197,8 +197,16 @@ public class WindowHostVdView extends ViewGroup {
             Log.i(TAG, pkg + " already runs on display " + vd.getDisplayId() + ", not started again");
             return true;
         }
+        if (pkg != null && pkg.equals(vd.getPackage())) {
+            // The display was taken over, but the app's task is not on it: it was opened full
+            // screen on the main display. The task comes back as it is, see PaneLaunchFlags.
+            Log.i(TAG, pkg + " is not on display " + vd.getDisplayId()
+                    + " (moved or gone), brought to it as it is");
+        }
 
-        Intent i = new Intent(intent).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        // The flags are replaced, not added to: the intent of an ActivityView carries CLEAR_TOP and
+        // others that make an app with a trampoline launcher activity (DABdream) crash.
+        Intent i = new Intent(intent).setFlags(PaneLaunchFlags.FLAGS);
         // No launch bounds or freeform mode here: the task simply fills the display.
         Bundle options = ActivityOptions.makeBasic().setLaunchDisplayId(vd.getDisplayId()).toBundle();
 
