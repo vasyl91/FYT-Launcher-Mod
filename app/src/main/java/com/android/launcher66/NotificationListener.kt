@@ -36,6 +36,7 @@ import com.android.launcher66.settings.Helpers
 import com.fyt.car.LauncherNotify
 import com.fyt.car.MusicService
 import com.fyt.car.StockKindArbiter
+import com.fyt.car.StockRedraw
 import com.fyt.car.StockSources
 import com.fyt.car.StockTitles
 import com.fyt.car.StockTrack
@@ -656,6 +657,7 @@ class NotificationListener : NotificationListenerService() {
      */
     private fun handleStockSourceUpdate(t: StockTrack) {
         if (destroyed.get() || isCleanedUp) return
+        val previous = stockTrack?.takeIf { it.key == fytMusicPath }
         stockTrack = t
         fytState = t.playing
         fytMusicPath = t.key
@@ -670,6 +672,12 @@ class NotificationListener : NotificationListenerService() {
             pathName = if (t.localFile) StockTitles.fileBaseName(t.key) else null
         )
         applyFytMeta(meta, stockSourcePackage(t.kind))
+        // The widget draws only when told to, and applyFytMeta() tells it once per title. The cover
+        // of a BT song comes 1.5 to 6 s after the title, the play state at any time: each is drawn
+        // when it arrives. The 500 ms loop only follows the position.
+        if (StockSources.shownOverlay() == t.kind && StockRedraw.needsRedraw(previous, t)) {
+            fytStatus()
+        }
     }
 
     /**
@@ -679,8 +687,19 @@ class NotificationListener : NotificationListenerService() {
      */
     private fun handleStockSourcePaused(t: StockTrack) {
         if (destroyed.get() || isCleanedUp) return
-        if (source != MusicService.SOURCE) return
-        if (!helpers.isFytMusicAllowed()) return
+        // The radio and BT audio own the sound channel: a session's app or the 1.8 s after one of
+        // its tracks is no reason to keep a pause away from the widget. The other stock sources
+        // (com.syu.music, the com.syu.media players) still give way to a session.
+        val overlay = StockSources.shownOverlay() == t.kind
+        if (!overlay) {
+            if (source != MusicService.SOURCE) return
+            if (!helpers.isFytMusicAllowed()) return
+        }
+        val previous = stockTrack?.takeIf { it.key == fytMusicPath }
+        if (overlay && !StockRedraw.needsRedraw(previous, t)) {
+            stockTrack = t
+            return
+        }
         stockTrack = t
         fytState = false
         fytMusicPath = t.key
@@ -706,6 +725,19 @@ class NotificationListener : NotificationListenerService() {
         if (!fytState && source == MusicService.SOURCE && cached != null && cached.path == fytMusicPath) {
             fytStatus()
         }
+    }
+
+    /**
+     * Whether the 500 ms loop has a position to draw: the state of the overlay the widget shows
+     * (the radio, BT), else com.syu.music's or the com.syu.media player's, which is what
+     * MusicService.state holds. BT audio plays while that player stands still.
+     */
+    private fun fytLoopPlaying(): Boolean {
+        val stock = stockTrack
+        if (stock != null && stock.key == fytMusicPath && StockSources.shownOverlay() == stock.kind) {
+            return fytState
+        }
+        return MusicService.state
     }
 
     private fun stockSourcePackage(kind: StockKindArbiter.Kind): String = when (kind) {
@@ -1422,7 +1454,7 @@ class NotificationListener : NotificationListenerService() {
         override fun run() {
             val service = serviceRef.get() ?: return
             if (service.destroyed.get()) return
-            if (MusicService.state) {
+            if (service.fytLoopPlaying()) {
                 if (service.fytCurMinutes != service.prevCurFyt) {
                     service.prevCurFyt = service.fytCurMinutes
                     service.setStatus(1)

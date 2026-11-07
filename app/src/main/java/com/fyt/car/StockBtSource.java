@@ -138,7 +138,11 @@ final class StockBtSource {
                 positionMs = firstInt(ints);
                 break;
             case 13:
-                btPlaying = ints != null && ints.length > 0 && ints[0] == 1;
+                boolean nowPlaying = ints != null && ints.length > 0 && ints[0] == 1;
+                if (nowPlaying != btPlaying) {
+                    Log.i(TAG, "bt play state " + (nowPlaying ? 1 : 0) + " (channel " + CarStates.mAppID + ")");
+                }
+                btPlaying = nowPlaying;
                 break;
             default:
                 return;
@@ -192,6 +196,7 @@ final class StockBtSource {
         coverWorker.execute(() -> {
             SyuMediaFiles.Data data = SyuMediaFiles.read(SyuMediaFiles.FAMILY_BT_COVER, path);
             if (data == null) {
+                Log.i(TAG, "bt cover " + path + ": modified - song changed " + changedAt + " -> missing");
                 return;
             }
             int hash = Arrays.hashCode(data.bytes);
@@ -200,11 +205,16 @@ final class StockBtSource {
                     ? StockBtCover.isFresh(data.lastModifiedMs, changedAt)
                     : hash != coverHashBeforeChange;
             byte[] png = fresh ? StockCoverLoader.toPng(data.bytes) : null;
+            Log.i(TAG, "bt cover " + path + ": modified " + data.lastModifiedMs + " song changed " + changedAt
+                    + " -> " + (!fresh ? "stale" : png == null ? "unreadable" : "fresh"));
             if (png == null) {
                 return;
             }
             main.post(() -> {
                 if (generation != coverGeneration || Arrays.equals(png, cover)) {
+                    if (generation == coverGeneration) {
+                        Log.i(TAG, "bt cover " + path + ": same as shown");
+                    }
                     return;
                 }
                 cover = png;

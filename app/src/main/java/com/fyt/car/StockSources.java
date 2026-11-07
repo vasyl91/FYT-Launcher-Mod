@@ -249,6 +249,12 @@ public final class StockSources {
         return null;
     }
 
+    /** Whether the phone reports BT audio as playing (code 13), for the log of the widget's symbol. */
+    public static boolean isBtPlayingNow() {
+        StockBtSource bt = sBt;
+        return bt != null && bt.isPhonePlaying();
+    }
+
     /** Whether the overlay shown plays: read live, the channel moves between publications. */
     public static boolean isShownPlaying() {
         Kind kind = sShown;

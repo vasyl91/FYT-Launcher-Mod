@@ -32,6 +32,7 @@ import com.android.recycler.AppListBean;
 import com.fyt.car.IUiRefresher;
 import com.fyt.car.LauncherNotify;
 import com.fyt.car.MusicService;
+import com.fyt.car.StockKindArbiter;
 import com.fyt.car.StockSources;
 import com.fyt.car.StockTitles;
 import com.fyt.skin.SkinUtils;
@@ -618,8 +619,37 @@ final class LauncherMusicWidget {
         }
     }
 
+    /**
+     * After a press the button shows the opposite symbol at once, and the source takes a moment to
+     * report the new state; a redraw in between used to put the old symbol back. Until the state
+     * changes or the time is over, the symbol of the press stays.
+     */
+    private long mPlayPauseOverrideUntilMs;
+    private boolean mPlayPauseOverrideShowsPlaying;
+    private boolean mPlayPauseOverrideFrom;
+    private static final long PLAY_PAUSE_OVERRIDE_MS = 2000;
+
+    private void holdPlayPauseSymbol(boolean stateAtPress) {
+        mPlayPauseOverrideFrom = stateAtPress;
+        mPlayPauseOverrideShowsPlaying = !stateAtPress;
+        mPlayPauseOverrideUntilMs = SystemClock.elapsedRealtime() + PLAY_PAUSE_OVERRIDE_MS;
+        // The state may never change (the command was lost): the live state is drawn again then
+        mLauncher.mHandler.postDelayed(this::redrawLastRefresh, PLAY_PAUSE_OVERRIDE_MS + 50);
+    }
+
+    private int mIconLogState = -1;
+    private String mIconLogWhy = "";
+
     public void setPlayPauseIcon() {
         boolean playing = isMediaPlayingNow();
+        if (mPlayPauseOverrideUntilMs != 0) {
+            if (SystemClock.elapsedRealtime() >= mPlayPauseOverrideUntilMs || playing != mPlayPauseOverrideFrom) {
+                mPlayPauseOverrideUntilMs = 0; // the source has answered, or did not in time
+            } else {
+                playing = mPlayPauseOverrideShowsPlaying;
+            }
+        }
+        logIcon(playing);
         if (this.mPlayPauseButton != null && !temporarilyDisablePlayPauseButton) {
             if (playing) {
                 this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
@@ -685,6 +715,32 @@ final class LauncherMusicWidget {
         });
         return false;
     }
+
+    /** One line per change of the symbol or of the way the state was found, not per draw. */
+    private void logIcon(boolean playing) {
+        StockKindArbiter.Kind shown = StockSources.shownKind();
+        String via;
+        if ("mediaController".equals(mediaSource)) {
+            via = "session";
+        } else if (StockSources.shownOverlay() != null) {
+            via = "overlay";
+        } else if (StockSources.isSyuMediaUnit() && MusicService.isSyuMediaSource()) {
+            via = "syu-media";
+        } else {
+            via = "audio";
+        }
+        int state = playing ? 1 : 0;
+        if (state == mIconLogState && via.equals(mIconLogWhy)) {
+            return;
+        }
+        mIconLogState = state;
+        mIconLogWhy = via;
+        Log.i(TAG_ICON, "icon " + (playing ? "playing" : "paused") + " via " + via + " (src " + mediaSource
+                + ", shown " + shown + ", bt " + (StockSources.isBtPlayingNow() ? 1 : 0)
+                + ", channel " + CarStates.mAppID + ")");
+    }
+
+    private static final String TAG_ICON = "MusicWidget";
 
     private void redrawLastRefresh() {
         Object[] a = mLastRefresh;
@@ -1484,6 +1540,7 @@ final class LauncherMusicWidget {
                 MediaTransportController.handleAction(mLauncher,
                         MediaTransportController.ACTION_PLAY_PAUSE, getPreferredMediaControllerPackage());
             } else if ("fyt".equals(mediaSource)) {
+                holdPlayPauseSymbol(stockPlayingForIcon());
                 if (this.mPlayPauseButton != null) {
                     if (stockPlayingForIcon()) {
                         this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
