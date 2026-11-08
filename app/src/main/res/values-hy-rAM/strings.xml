@@ -532,4 +532,10 @@
     <string name="bars_category">Գոտիներ</string>
     <string name="vertical_bar_background_preference">Ընտրել ֆոն ուղղահայաց գոտու համար</string>
     <string name="vertical_bar_background_dialog_title">Ընտրեք ֆոն ուղղահայաց գոտու համար՝</string>
+    <string name="horizontal_bar_position">Հորիզոնական գոտու դիրքը</string>
+    <string name="horizontal_bar_position_bottom">Էկրանի ներքևում</string>
+    <string name="horizontal_bar_position_top">Էկրանի վերևում</string>
+    <string name="vertical_bar_side">Ուղղահայաց գոտու կողմը</string>
+    <string name="vertical_bar_side_left">Էկրանի ձախ կողմում</string>
+    <string name="vertical_bar_side_right">Էկրանի աջ կողմում</string>
 </resources>

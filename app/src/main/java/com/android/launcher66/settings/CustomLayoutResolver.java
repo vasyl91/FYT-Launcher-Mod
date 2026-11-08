@@ -88,6 +88,14 @@ public final class CustomLayoutResolver {
         /** Horizontal bar, the same for the bottom edge. */
         public int maxBottom = NO_LIMIT;
         public int bottomTrigger = NO_LIMIT;
+        /**
+         * Horizontal bar at the top: no element may start above {@code minTop}. One that does is moved
+         * down by the difference (its size is kept), cut at the bottom if that is not enough room, and
+         * reset only when it cannot be cut to its minimum.
+         */
+        public int minTop = Integer.MIN_VALUE;
+        /** The lowest bottom edge the moved elements may reach when {@link #minTop} is set. */
+        public int minTopBottomLimit = NO_LIMIT;
         /** The cell grid and the occupied cells ([column][row]) of this screen; null: do not move. */
         public GridGeometry grid;
         public boolean[][] occupied;
@@ -136,10 +144,33 @@ public final class CustomLayoutResolver {
         boolean[] cut = new boolean[n];
         int[] conflictWith = new int[n];
         java.util.Arrays.fill(conflictWith, -1);
+        moveBelowTopBar(elements, r, reset, env);
         fitOverlapping(elements, r, reset, cut, conflictWith, env);
         resolveAxis(elements, r, reset, env, false);
         resolveAxis(elements, r, reset, env, true);
         return new Result(r, reset, cut, conflictWith);
+    }
+
+    // ---------------------------------------------------------------- step 0: the bar at the top
+
+    private static void moveBelowTopBar(List<Element> els, int[][] r, boolean[] reset, Env env) {
+        if (env.minTop == Integer.MIN_VALUE) return;
+        for (int i = 0; i < r.length; i++) {
+            Element el = els.get(i);
+            if (reset[i] || el.fixed || r[i][TOP] >= env.minTop) continue;
+            int shift = env.minTop - r[i][TOP];
+            int bottom = r[i][BOTTOM] + shift;
+            int limit = env.minTopBottomLimit;
+            if (bottom > limit) {
+                bottom = limit;       // cut at the bottom, the top corner stays below the bar
+            }
+            if (bottom - env.minTop < el.minHeight || bottom <= env.minTop) {
+                reset[i] = true;
+                continue;
+            }
+            r[i][TOP] = env.minTop;
+            r[i][BOTTOM] = bottom;
+        }
     }
 
     // ---------------------------------------------------------------- step 1: user rectangles

@@ -836,7 +836,8 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 statsTopLeftX = prefs.getInt("appStatsTopLeftX", maxBorderX - statsWidth - margin);
                 statsTopLeftY = prefs.getInt("appStatsTopLeftY", margin + getStatusBarHeight()) + getStatusBarHeight();
             } else {
-                if (verticalBar) {
+                // Shifted by the bar's width only when the vertical bar is on the left
+                if (verticalBar && !prefs.getBoolean(Keys.VERTICAL_BAR_RIGHT, false)) {
                     statsTopLeftX = prefs.getInt("statsTopLeftX", margin + 10) + verticalBarSize;
                 } else {
                     statsTopLeftX = prefs.getInt("statsTopLeftX", margin + 10);

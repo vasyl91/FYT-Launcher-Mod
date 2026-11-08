@@ -532,4 +532,10 @@
     <string name="bars_category">አሞሌዎች</string>
     <string name="vertical_bar_background_preference">ለቀጥ ያለ አሞሌ ዳራ ምረጥ</string>
     <string name="vertical_bar_background_dialog_title">ለቀጥ ያለ አሞሌ ዳራ ይምረጡ፦</string>
+    <string name="horizontal_bar_position">የአግድም አሞሌ ቦታ</string>
+    <string name="horizontal_bar_position_bottom">በማያ ገጹ ታች</string>
+    <string name="horizontal_bar_position_top">በማያ ገጹ ላይ</string>
+    <string name="vertical_bar_side">የቀጥ ያለ አሞሌ ጎን</string>
+    <string name="vertical_bar_side_left">በማያ ገጹ ግራ በኩል</string>
+    <string name="vertical_bar_side_right">በማያ ገጹ ቀኝ በኩል</string>
 </resources>

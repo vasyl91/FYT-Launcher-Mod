@@ -532,4 +532,10 @@
     <string name="bars_category">แถบ</string>
     <string name="vertical_bar_background_preference">เลือกพื้นหลังสำหรับแถบแนวตั้ง</string>
     <string name="vertical_bar_background_dialog_title">เลือกพื้นหลังสำหรับแถบแนวตั้ง:</string>
+    <string name="horizontal_bar_position">ตำแหน่งแถบแนวนอน</string>
+    <string name="horizontal_bar_position_bottom">ที่ด้านล่างของหน้าจอ</string>
+    <string name="horizontal_bar_position_top">ที่ด้านบนของหน้าจอ</string>
+    <string name="vertical_bar_side">ด้านของแถบแนวตั้ง</string>
+    <string name="vertical_bar_side_left">ที่ด้านซ้ายของหน้าจอ</string>
+    <string name="vertical_bar_side_right">ที่ด้านขวาของหน้าจอ</string>
 </resources>

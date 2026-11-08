@@ -123,6 +123,13 @@
             android:key="start_page"
             android:title="@string/start_page"
             android:summary="1" />   
+        <com.android.launcher66.settings.CustomNoSwitchPreference
+            android:key="horizontal_bar_top"
+            android:defaultValue="false"
+            android:title="@string/horizontal_bar_position"
+            android:summaryOn="@string/horizontal_bar_position_top"
+            android:summaryOff="@string/horizontal_bar_position_bottom"
+            app:layout="@layout/preference_no_switch" />
         <SwitchPreferenceCompat
             android:key="bottom_bar_every_page"
             android:defaultValue="false"
@@ -213,6 +220,13 @@
             android:title="@string/vertical_bar"
             android:summaryOn="@string/vertical_bar_on"
             android:summaryOff="@string/vertical_bar_off" />
+        <com.android.launcher66.settings.CustomNoSwitchPreference
+            android:key="vertical_bar_right"
+            android:defaultValue="false"
+            android:title="@string/vertical_bar_side"
+            android:summaryOn="@string/vertical_bar_side_right"
+            android:summaryOff="@string/vertical_bar_side_left"
+            app:layout="@layout/preference_no_switch" />
         <Preference
             android:key="choose_vertical_bar_background"
             android:title="@string/vertical_bar_background_preference" />

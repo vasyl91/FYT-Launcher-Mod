@@ -532,4 +532,10 @@
     <string name="bars_category">Amabha</string>
     <string name="vertical_bar_background_preference">Khetha isizinda sebha eqondile</string>
     <string name="vertical_bar_background_dialog_title">Khetha isizinda sebha eqondile:</string>
+    <string name="horizontal_bar_position">Indawo yebha evundlile</string>
+    <string name="horizontal_bar_position_bottom">Ezansi kusikrini</string>
+    <string name="horizontal_bar_position_top">Phezulu esikrinini</string>
+    <string name="vertical_bar_side">Uhlangothi lwebha eqondile</string>
+    <string name="vertical_bar_side_left">Ohlangothini lwesobunxele lwesikrini</string>
+    <string name="vertical_bar_side_right">Ohlangothini lwesokudla lwesikrini</string>
 </resources>

@@ -532,4 +532,10 @@
     <string name="bars_category">Balke</string>
     <string name="vertical_bar_background_preference">Kies agtergrond vir vertikale balk</string>
     <string name="vertical_bar_background_dialog_title">Kies agtergrond vir vertikale balk:</string>
+    <string name="horizontal_bar_position">Posisie van horisontale balk</string>
+    <string name="horizontal_bar_position_bottom">Onderaan die skerm</string>
+    <string name="horizontal_bar_position_top">Bo-aan die skerm</string>
+    <string name="vertical_bar_side">Kant van vertikale balk</string>
+    <string name="vertical_bar_side_left">Aan die linkerkant van die skerm</string>
+    <string name="vertical_bar_side_right">Aan die regterkant van die skerm</string>
 </resources>

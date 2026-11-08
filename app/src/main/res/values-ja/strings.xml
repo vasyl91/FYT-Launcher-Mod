@@ -532,4 +532,10 @@
     <string name="bars_category">バー</string>
     <string name="vertical_bar_background_preference">縦バーの背景を選択</string>
     <string name="vertical_bar_background_dialog_title">縦バーの背景を選んでください:</string>
+    <string name="horizontal_bar_position">横バーの位置</string>
+    <string name="horizontal_bar_position_bottom">画面の下</string>
+    <string name="horizontal_bar_position_top">画面の上</string>
+    <string name="vertical_bar_side">縦バーの側</string>
+    <string name="vertical_bar_side_left">画面の左側</string>
+    <string name="vertical_bar_side_right">画面の右側</string>
 </resources>

@@ -542,4 +542,10 @@
     <string name="bars_category">Bars</string>
     <string name="vertical_bar_background_preference">Choose background for vertical bar</string>
     <string name="vertical_bar_background_dialog_title">Select background for vertical bar:</string>
+    <string name="horizontal_bar_position">Horizontal bar position</string>
+    <string name="horizontal_bar_position_bottom">At the bottom of the screen</string>
+    <string name="horizontal_bar_position_top">At the top of the screen</string>
+    <string name="vertical_bar_side">Vertical bar side</string>
+    <string name="vertical_bar_side_left">On the left side of the screen</string>
+    <string name="vertical_bar_side_right">On the right side of the screen</string>
 </resources>

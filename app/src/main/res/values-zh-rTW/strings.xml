@@ -532,4 +532,10 @@
     <string name="bars_category">欄</string>
     <string name="vertical_bar_background_preference">選擇縱欄背景</string>
     <string name="vertical_bar_background_dialog_title">為縱欄選擇背景：</string>
+    <string name="horizontal_bar_position">橫欄位置</string>
+    <string name="horizontal_bar_position_bottom">在螢幕底部</string>
+    <string name="horizontal_bar_position_top">在螢幕頂部</string>
+    <string name="vertical_bar_side">縱欄所在側</string>
+    <string name="vertical_bar_side_left">在螢幕左側</string>
+    <string name="vertical_bar_side_right">在螢幕右側</string>
 </resources>

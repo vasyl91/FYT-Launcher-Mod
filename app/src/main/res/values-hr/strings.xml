@@ -532,4 +532,10 @@
     <string name="bars_category">Trake</string>
     <string name="vertical_bar_background_preference">Odaberi pozadinu za okomitu traku</string>
     <string name="vertical_bar_background_dialog_title">Odaberite pozadinu za okomitu traku:</string>
+    <string name="horizontal_bar_position">Položaj vodoravne trake</string>
+    <string name="horizontal_bar_position_bottom">pri dnu zaslona</string>
+    <string name="horizontal_bar_position_top">pri vrhu zaslona</string>
+    <string name="vertical_bar_side">Strana okomite trake</string>
+    <string name="vertical_bar_side_left">Na lijevoj strani zaslona</string>
+    <string name="vertical_bar_side_right">Na desnoj strani zaslona</string>
 </resources>

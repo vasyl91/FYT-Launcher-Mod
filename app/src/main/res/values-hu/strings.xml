@@ -532,4 +532,10 @@
     <string name="bars_category">Sávok</string>
     <string name="vertical_bar_background_preference">Függőleges sáv hátterének kiválasztása</string>
     <string name="vertical_bar_background_dialog_title">Válassza ki a függőleges sáv hátterét:</string>
+    <string name="horizontal_bar_position">Vízszintes sáv helye</string>
+    <string name="horizontal_bar_position_bottom">A képernyő alján</string>
+    <string name="horizontal_bar_position_top">A képernyő tetején</string>
+    <string name="vertical_bar_side">Függőleges sáv oldala</string>
+    <string name="vertical_bar_side_left">A képernyő bal oldalán</string>
+    <string name="vertical_bar_side_right">A képernyő jobb oldalán</string>
 </resources>

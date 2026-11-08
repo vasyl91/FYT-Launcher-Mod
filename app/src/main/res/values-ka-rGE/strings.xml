@@ -532,4 +532,10 @@
     <string name="bars_category">ზოლები</string>
     <string name="vertical_bar_background_preference">ვერტიკალური ზოლის ფონის არჩევა</string>
     <string name="vertical_bar_background_dialog_title">აირჩიეთ ვერტიკალური ზოლის ფონი:</string>
+    <string name="horizontal_bar_position">ჰორიზონტალური ზოლის მდებარეობა</string>
+    <string name="horizontal_bar_position_bottom">ეკრანის ქვედა ნაწილში</string>
+    <string name="horizontal_bar_position_top">ეკრანის ზედა ნაწილში</string>
+    <string name="vertical_bar_side">ვერტიკალური ზოლის მხარე</string>
+    <string name="vertical_bar_side_left">ეკრანის მარცხენა მხარეს</string>
+    <string name="vertical_bar_side_right">ეკრანის მარჯვენა მხარეს</string>
 </resources>

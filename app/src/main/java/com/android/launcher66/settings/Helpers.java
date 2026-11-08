@@ -644,7 +644,11 @@ public class Helpers {
             CustomLayoutResolver.Env env = new CustomLayoutResolver.Env();
             env.margin = margin;
             if (screen == 0 || everyPage) {
-                if (horizontalBar) {
+                if (horizontalBar && bar.top) {
+                    // Below the bar: what starts above it is moved down (touching counts as overlapping)
+                    env.minTop = bar.barHeight + Math.max(margin, 1);
+                    env.minTopBottomLimit = bar.rootHeight - margin;
+                } else if (horizontalBar) {
                     env.maxBottom = PipEdgeTrim.maxBottom((int) bar.barTop, margin);
                     // touching the bar counts as overlapping it
                     env.bottomTrigger = (int) bar.barTop - 1;
@@ -652,14 +656,16 @@ public class Helpers {
                 if (verticalBar && screen == 0) {
                     env.maxRight = PipEdgeTrim.maxRight(bar.rootWidth, verticalBarWidth, margin);
                     env.rightTrigger = env.maxRight;
-                    env.verticalBarOffset = (int) verticalBarWidth;
+                    // The page is shifted by the bar's width only when the bar is on its left
+                    env.verticalBarOffset = mPrefs.getBoolean(Keys.VERTICAL_BAR_RIGHT, false) ? 0 : (int) verticalBarWidth;
                 }
             }
             GridGeometry grid = GridGeometry.published();
             // Away from the bars the cells are only read from the model's in-memory copy: before it is
             // loaded they would cost two database queries on this (possibly main) thread.
             boolean barsHere = env.maxBottom != CustomLayoutResolver.NO_LIMIT
-                    || env.maxRight != CustomLayoutResolver.NO_LIMIT;
+                    || env.maxRight != CustomLayoutResolver.NO_LIMIT
+                    || env.minTop != Integer.MIN_VALUE;
             if (!barsHere && !LauncherModel.getScreenSnapshot().isReady()) {
                 grid = null;
             }
@@ -677,7 +683,8 @@ public class Helpers {
             }
 
             CustomLayoutResolver.Result result = CustomLayoutResolver.resolve(elements, env);
-            ScreenResolution resolution = new ScreenResolution(screen, env, new CustomLayoutResolver.Bounds(margin, margin,
+            ScreenResolution resolution = new ScreenResolution(screen, env, new CustomLayoutResolver.Bounds(margin,
+                    env.minTop != Integer.MIN_VALUE ? env.minTop : margin,
                     env.maxRight != CustomLayoutResolver.NO_LIMIT ? env.maxRight : bar.rootWidth - margin,
                     env.maxBottom != CustomLayoutResolver.NO_LIMIT ? env.maxBottom : bar.rootHeight - margin));
             for (int k = 0; k < elements.size(); k++) {
@@ -969,7 +976,8 @@ public class Helpers {
         // Must be the same geometry checkAndResetIfOverlappingOnScreen() tested against, otherwise
         // a reset could place a rectangle inside the (resized) bar and be reset again on every
         // resume.
-        float horizontalBarTop = getBarGeometry(mPrefs, orientation).barTop;
+        final BarGeometry barGeometry = getBarGeometry(mPrefs, orientation);
+        float horizontalBarTop = barGeometry.barTop;
         
         // Base position for first PIP - ensure it doesn't overlap with horizontal bar
         int baseX = margin;
@@ -977,7 +985,10 @@ public class Helpers {
         
         // Adjust baseY if it would overlap with horizontal bar on screen 0
         float pipBottom = baseY + pipMinHeight;
-        if (keepsBarBand(screenToCompare, everyPage, verticalBar, autoHideHorizontalBar) && pipBottom > horizontalBarTop) {
+        if (barGeometry.top && keepsBarBand(screenToCompare, everyPage, verticalBar, autoHideHorizontalBar)) {
+            // Under the bar at the top: the date, then the PiPs below it
+            baseY += barGeometry.barHeight;
+        } else if (keepsBarBand(screenToCompare, everyPage, verticalBar, autoHideHorizontalBar) && pipBottom > horizontalBarTop) {
             // Calculate available space above horizontal bar
             float availableHeight = horizontalBarTop - (margin + dateMinHeight + margin);
             
@@ -1006,8 +1017,8 @@ public class Helpers {
                         
                         // Ensure PIP doesn't overlap with horizontal bar on screen 0
                         int pipScreen = mPrefs.getInt(Keys.PIP_DUAL_SCREEN, 1) - 1;
-                        if (keepsBarBand(pipScreen, everyPage, verticalBar, autoHideHorizontalBar) && (y + pipMinHeight) > horizontalBarTop) {
-                            y = (int) (horizontalBarTop - pipMinHeight - margin);
+                        if (keepsBarBand(pipScreen, everyPage, verticalBar, autoHideHorizontalBar) && bandReaches(barGeometry, y, pipMinHeight)) {
+                            y = fitDefaultY(barGeometry, y, pipMinHeight, margin);
                         }
                         
                         editorReset.putInt("pipDualTopLeftX", x);
@@ -1029,8 +1040,8 @@ public class Helpers {
                         
                         // Ensure PIP doesn't overlap with horizontal bar on screen 0
                         int pipScreen = mPrefs.getInt(Keys.PIP_FIRST_SCREEN, 1) - 1;
-                        if (keepsBarBand(pipScreen, everyPage, verticalBar, autoHideHorizontalBar) && (y + pipMinHeight) > horizontalBarTop) {
-                            y = (int) (horizontalBarTop - pipMinHeight - margin);
+                        if (keepsBarBand(pipScreen, everyPage, verticalBar, autoHideHorizontalBar) && bandReaches(barGeometry, y, pipMinHeight)) {
+                            y = fitDefaultY(barGeometry, y, pipMinHeight, margin);
                         }
                         
                         editorReset.putInt("pipFirstTopLeftX", x);
@@ -1066,8 +1077,8 @@ public class Helpers {
                         
                         // Ensure PIP doesn't overlap with horizontal bar on screen 0
                         int pipScreen = mPrefs.getInt(Keys.PIP_SECOND_SCREEN, 1) - 1;
-                        if (keepsBarBand(pipScreen, everyPage, verticalBar, autoHideHorizontalBar) && (y + pipMinHeight) > horizontalBarTop) {
-                            y = (int) (horizontalBarTop - pipMinHeight - margin);
+                        if (keepsBarBand(pipScreen, everyPage, verticalBar, autoHideHorizontalBar) && bandReaches(barGeometry, y, pipMinHeight)) {
+                            y = fitDefaultY(barGeometry, y, pipMinHeight, margin);
                         }
                         
                         editorReset.putInt("pipSecondTopLeftX", x);
@@ -1107,8 +1118,8 @@ public class Helpers {
                         
                         // Ensure PIP doesn't overlap with horizontal bar on screen 0
                         int pipScreen = mPrefs.getInt(Keys.PIP_THIRD_SCREEN, 1) - 1;
-                        if (keepsBarBand(pipScreen, everyPage, verticalBar, autoHideHorizontalBar) && (y + pipMinHeight) > horizontalBarTop) {
-                            y = (int) (horizontalBarTop - pipMinHeight - margin);
+                        if (keepsBarBand(pipScreen, everyPage, verticalBar, autoHideHorizontalBar) && bandReaches(barGeometry, y, pipMinHeight)) {
+                            y = fitDefaultY(barGeometry, y, pipMinHeight, margin);
                         }
                         
                         editorReset.putInt("pipThirdTopLeftX", x);
@@ -1144,8 +1155,8 @@ public class Helpers {
                         
                         // Ensure PIP doesn't overlap with horizontal bar on screen 0
                         int pipScreen = mPrefs.getInt(Keys.PIP_FOURTH_SCREEN, 1) - 1;
-                        if (keepsBarBand(pipScreen, everyPage, verticalBar, autoHideHorizontalBar) && (y + pipMinHeight) > horizontalBarTop) {
-                            y = (int) (horizontalBarTop - pipMinHeight - margin);
+                        if (keepsBarBand(pipScreen, everyPage, verticalBar, autoHideHorizontalBar) && bandReaches(barGeometry, y, pipMinHeight)) {
+                            y = fitDefaultY(barGeometry, y, pipMinHeight, margin);
                         }
                         
                         editorReset.putInt("pipFourthTopLeftX", x);
@@ -1165,8 +1176,8 @@ public class Helpers {
                         
                         // Ensure date doesn't overlap with horizontal bar on screen 0
                         int dateScreen = mPrefs.getInt(Keys.DATE_SCREEN, 1) - 1;
-                        if (keepsBarBand(dateScreen, everyPage, verticalBar, autoHideHorizontalBar) && (dateY + dateMinHeight) > horizontalBarTop) {
-                            dateY = (int) (horizontalBarTop - dateMinHeight - margin);
+                        if (keepsBarBand(dateScreen, everyPage, verticalBar, autoHideHorizontalBar) && bandReaches(barGeometry, dateY, dateMinHeight)) {
+                            dateY = fitDefaultY(barGeometry, dateY, dateMinHeight, margin);
                         }
                         
                         editorReset.putInt("dateTopLeftX", margin);
@@ -1188,8 +1199,8 @@ public class Helpers {
                             int musicY = margin + dateMinHeight + margin + ((pipMinHeight + margin) * 2);
                             
                             // Ensure music doesn't overlap with horizontal bar on screen 0
-                            if (keepsBarBand(musicScreen, everyPage, verticalBar, autoHideHorizontalBar) && (musicY + musicMinHeight) > horizontalBarTop) {
-                                musicY = (int) (horizontalBarTop - musicMinHeight - margin);
+                            if (keepsBarBand(musicScreen, everyPage, verticalBar, autoHideHorizontalBar) && bandReaches(barGeometry, musicY, musicMinHeight)) {
+                                musicY = fitDefaultY(barGeometry, musicY, musicMinHeight, margin);
                             }
                             
                             editorReset.putInt("musicTopLeftX", margin);
@@ -1204,8 +1215,8 @@ public class Helpers {
                             int musicY = margin + radioMinHeight + margin;
                             
                             // Ensure music doesn't overlap with horizontal bar on screen 0
-                            if (keepsBarBand(musicScreen, everyPage, verticalBar, autoHideHorizontalBar) && (musicY + musicMinHeight) > horizontalBarTop) {
-                                musicY = (int) (horizontalBarTop - musicMinHeight - margin);
+                            if (keepsBarBand(musicScreen, everyPage, verticalBar, autoHideHorizontalBar) && bandReaches(barGeometry, musicY, musicMinHeight)) {
+                                musicY = fitDefaultY(barGeometry, musicY, musicMinHeight, margin);
                             }
                             
                             editorReset.putInt("musicTopLeftX", margin + pipMinWidthStandard + margin);
@@ -1228,8 +1239,8 @@ public class Helpers {
                             int radioY = margin + dateMinHeight + margin + ((pipMinHeight + margin) * 2);
                             
                             // Ensure radio doesn't overlap with horizontal bar on screen 0
-                            if (keepsBarBand(radioScreen, everyPage, verticalBar, autoHideHorizontalBar) && (radioY + radioMinHeight) > horizontalBarTop) {
-                                radioY = (int) (horizontalBarTop - radioMinHeight - margin);
+                            if (keepsBarBand(radioScreen, everyPage, verticalBar, autoHideHorizontalBar) && bandReaches(barGeometry, radioY, radioMinHeight)) {
+                                radioY = fitDefaultY(barGeometry, radioY, radioMinHeight, margin);
                             }
                             
                             editorReset.putInt("radioTopLeftX", margin + musicMinWidth + margin);
@@ -1244,8 +1255,8 @@ public class Helpers {
                             int radioY = margin;
                             
                             // Ensure radio doesn't overlap with horizontal bar on screen 0
-                            if (keepsBarBand(radioScreen, everyPage, verticalBar, autoHideHorizontalBar) && (radioY + radioMinHeight) > horizontalBarTop) {
-                                radioY = (int) (horizontalBarTop - radioMinHeight - margin);
+                            if (keepsBarBand(radioScreen, everyPage, verticalBar, autoHideHorizontalBar) && bandReaches(barGeometry, radioY, radioMinHeight)) {
+                                radioY = fitDefaultY(barGeometry, radioY, radioMinHeight, margin);
                             }
                             
                             editorReset.putInt("radioTopLeftX", margin + dateMinWidth + margin);
@@ -1291,19 +1302,24 @@ public class Helpers {
         final int rootWidth;
         final int rootHeight;
         final int barHeight;
+        /** First y of the bar when it is at the bottom; meaningless at the top. */
         final float barTop;
+        /** The bar is at the top of the box. */
+        final boolean top;
 
-        BarGeometry(int rootWidth, int rootHeight, int barHeight) {
+        BarGeometry(int rootWidth, int rootHeight, int barHeight, boolean top) {
             this.rootWidth = rootWidth;
             this.rootHeight = rootHeight;
             this.barHeight = barHeight;
             this.barTop = rootHeight - barHeight;
+            this.top = top;
         }
 
         @NonNull
         @Override
         public String toString() {
-            return rootWidth + "x" + rootHeight + ", bar " + barHeight + "px from y=" + barTop;
+            return rootWidth + "x" + rootHeight + ", bar " + barHeight + "px at the "
+                    + (top ? "top" : "bottom, from y=" + barTop);
         }
     }
 
@@ -1313,7 +1329,17 @@ public class Helpers {
         int rootWidth = HorizontalBarDimensions.getBarRootWidth(Launcher.screenWidth);
         int rootHeight = HorizontalBarDimensions.getBarRootHeight(Launcher.screenHeight, statusBarHeight);
         int barHeight = getHorizontalBarHeight(prefs, orientation, rootWidth, rootHeight);
-        return new BarGeometry(rootWidth, rootHeight, barHeight);
+        return new BarGeometry(rootWidth, rootHeight, barHeight, prefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false));
+    }
+
+    /** Whether a rectangle of this height at y reaches into the horizontal bar's band. */
+    private static boolean bandReaches(BarGeometry bar, int y, int height) {
+        return bar.top ? y < bar.barHeight : y + height > bar.barTop;
+    }
+
+    /** y moved just out of the band of the bar (above it at the bottom, below it at the top). */
+    private static int fitDefaultY(BarGeometry bar, int y, int height, int margin) {
+        return bar.top ? bar.barHeight + margin : (int) (bar.barTop - height - margin);
     }
 
     /**

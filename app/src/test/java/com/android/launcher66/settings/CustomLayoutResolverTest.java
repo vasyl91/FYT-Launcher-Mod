@@ -411,4 +411,37 @@ class CustomLayoutResolverTest {
         Result r = CustomLayoutResolver.resolve(user, new Env());
         assertArrayEquals(new int[] {100, 400, 400, 690}, r.rects[0]);
     }
+
+    // ------------------------------------------------------------ the horizontal bar at the top
+
+    private static Env topBar() {
+        Env env = new Env();
+        env.margin = 5;
+        env.minTop = 100 + 5;           // a bar of 100 px at the top
+        env.minTopBottomLimit = 1000 - 5;
+        return env;
+    }
+
+    @Test
+    void anElementUnderTheTopBarIsMovedDownAndKeepsItsSize() {
+        Result r = resolve(topBar(), widget("date", 100, 20, 400, 220, 100, 100));
+        assertFalse(r.reset[0]);
+        assertArrayEquals(new int[] {100, 105, 400, 305}, r.rects[0]);
+    }
+
+    @Test
+    void anElementBelowTheTopBarIsLeftAlone() {
+        Result r = resolve(topBar(), widget("date", 100, 300, 400, 500, 100, 100));
+        assertArrayEquals(new int[] {100, 300, 400, 500}, r.rects[0]);
+    }
+
+    @Test
+    void movedDownTooFarItIsCutAtTheBottomThenResetWhenItCannotBe() {
+        Result cut = resolve(topBar(), widget("date", 100, 20, 400, 1000, 100, 100));
+        assertFalse(cut.reset[0]);
+        assertEquals(105, cut.rects[0][1]);
+        assertEquals(995, cut.rects[0][3]);
+        Result reset = resolve(topBar(), widget("radio", 100, 20, 400, 980, 100, 900));
+        assertTrue(reset.reset[0]);
+    }
 }

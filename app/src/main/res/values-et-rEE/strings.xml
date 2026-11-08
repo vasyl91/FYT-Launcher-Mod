@@ -60,4 +60,10 @@
     <string name="bars_category">Ribad</string>
     <string name="vertical_bar_background_preference">Vali vertikaalse riba taust</string>
     <string name="vertical_bar_background_dialog_title">Valige vertikaalse riba taust:</string>
+    <string name="horizontal_bar_position">Horisontaalse riba asukoht</string>
+    <string name="horizontal_bar_position_bottom">Ekraani allservas</string>
+    <string name="horizontal_bar_position_top">Ekraani ülaservas</string>
+    <string name="vertical_bar_side">Vertikaalse riba külg</string>
+    <string name="vertical_bar_side_left">Ekraani vasakul küljel</string>
+    <string name="vertical_bar_side_right">Ekraani paremal küljel</string>
 </resources>

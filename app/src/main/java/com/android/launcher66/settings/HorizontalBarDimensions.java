@@ -524,4 +524,20 @@ public final class HorizontalBarDimensions {
             return Float.NaN;
         }
     }
+
+    /**
+     * The height of the horizontal bar in the launcher's box (below the status bar), the same sum the
+     * creator of the first page makes. 0 when the screen is not known.
+     */
+    public static int boxBarHeight(Context context, SharedPreferences prefs) {
+        boolean portrait = isPortrait(context);
+        Point screen = resolveScreenSize(context);
+        int statusBarHeight = getStatusBarHeight(context.getResources());
+        int rootWidth = getBarRootWidth(screen.x);
+        int rootHeight = getBarRootHeight(screen.y, statusBarHeight);
+        if (rootWidth <= 0 || rootHeight <= 0) {
+            return 0;
+        }
+        return Math.max(0, computeBarHeight(prefs, portrait, rootWidth, rootHeight, 0));
+    }
 }

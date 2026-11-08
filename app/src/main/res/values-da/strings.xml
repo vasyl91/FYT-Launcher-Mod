@@ -532,4 +532,10 @@
     <string name="bars_category">Bjælker</string>
     <string name="vertical_bar_background_preference">Vælg baggrund til lodret bjælke</string>
     <string name="vertical_bar_background_dialog_title">Vælg baggrund til lodret bjælke:</string>
+    <string name="horizontal_bar_position">Placering af vandret bjælke</string>
+    <string name="horizontal_bar_position_bottom">Nederst på skærmen</string>
+    <string name="horizontal_bar_position_top">Øverst på skærmen</string>
+    <string name="vertical_bar_side">Side for lodret bjælke</string>
+    <string name="vertical_bar_side_left">I venstre side af skærmen</string>
+    <string name="vertical_bar_side_right">I højre side af skærmen</string>
 </resources>

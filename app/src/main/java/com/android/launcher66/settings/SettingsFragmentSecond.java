@@ -92,6 +92,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private PendingDialog pendingDialog = PendingDialog.NONE;
     /** "Choose background for vertical bar": only with the vertical bar on. */
     private Preference verticalBarBackground;
+    /** "Vertical bar side": only with the vertical bar on. */
+    private Preference verticalBarSide;
 
     private int defaultColorR = 255;
     private int defaultColorG = 255;
@@ -528,6 +530,15 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (barTintBlack != null) {
             barTintBlack.setOnPreferenceClickListener(this);
         }
+        Preference horizontalBarTop = findPreference(Keys.HORIZONTAL_BAR_TOP);
+        if (horizontalBarTop != null) {
+            horizontalBarTop.setOnPreferenceClickListener(this);
+        }
+        verticalBarSide = findPreference(Keys.VERTICAL_BAR_RIGHT);
+        if (verticalBarSide != null) {
+            verticalBarSide.setVisible(sharedPrefs.getBoolean(Keys.VERTICAL_BAR, false));
+            verticalBarSide.setOnPreferenceClickListener(this);
+        }
         verticalBarBackground = findPreference(Keys.VERTICAL_BAR_BACKGROUND);
         if (verticalBarBackground != null) {
             verticalBarBackground.setVisible(sharedPrefs.getBoolean(Keys.VERTICAL_BAR, false));
@@ -793,7 +804,15 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 // On or off, the launcher has to rebuild the bar (dynamic height <-> XML height).
                 helpers.setBarSettingsChanged(true);
                 break;
+            case Keys.HORIZONTAL_BAR_TOP:
+            case Keys.VERTICAL_BAR_RIGHT:
+                // The bars are laid out again, and the rectangles of the widgets are fitted to the new bands
+                helpers.setBarSettingsChanged(true);
+                break;
             case Keys.VERTICAL_BAR:
+                if (verticalBarSide != null) {
+                    verticalBarSide.setVisible(sharedPrefs.getBoolean(Keys.VERTICAL_BAR, false));
+                }
                 if (verticalBarBackground != null) {
                     verticalBarBackground.setVisible(sharedPrefs.getBoolean(Keys.VERTICAL_BAR, false));
                 }

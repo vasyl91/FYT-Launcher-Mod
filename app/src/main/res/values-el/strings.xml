@@ -532,4 +532,10 @@
     <string name="bars_category">Γραμμές</string>
     <string name="vertical_bar_background_preference">Επιλογή φόντου για την κάθετη γραμμή</string>
     <string name="vertical_bar_background_dialog_title">Επιλέξτε φόντο για την κάθετη γραμμή:</string>
+    <string name="horizontal_bar_position">Θέση οριζόντιας γραμμής</string>
+    <string name="horizontal_bar_position_bottom">Στο κάτω μέρος της οθόνης</string>
+    <string name="horizontal_bar_position_top">Στο επάνω μέρος της οθόνης</string>
+    <string name="vertical_bar_side">Πλευρά κάθετης γραμμής</string>
+    <string name="vertical_bar_side_left">Στην αριστερή πλευρά της οθόνης</string>
+    <string name="vertical_bar_side_right">Στη δεξιά πλευρά της οθόνης</string>
 </resources>

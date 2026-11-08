@@ -532,4 +532,10 @@
     <string name="bars_category">Felt</string>
     <string name="vertical_bar_background_preference">Velg bakgrunn for vertikalt felt</string>
     <string name="vertical_bar_background_dialog_title">Velg bakgrunn for vertikalt felt:</string>
+    <string name="horizontal_bar_position">Plassering av horisontalt felt</string>
+    <string name="horizontal_bar_position_bottom">Nederst på skjermen</string>
+    <string name="horizontal_bar_position_top">Øverst på skjermen</string>
+    <string name="vertical_bar_side">Side for vertikalt felt</string>
+    <string name="vertical_bar_side_left">På venstre side av skjermen</string>
+    <string name="vertical_bar_side_right">På høyre side av skjermen</string>
 </resources>

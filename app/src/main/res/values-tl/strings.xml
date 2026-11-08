@@ -532,4 +532,10 @@
     <string name="bars_category">Mga bar</string>
     <string name="vertical_bar_background_preference">Pumili ng background para sa patayong bar</string>
     <string name="vertical_bar_background_dialog_title">Piliin ang background para sa patayong bar:</string>
+    <string name="horizontal_bar_position">Posisyon ng pahalang na bar</string>
+    <string name="horizontal_bar_position_bottom">Sa ibaba ng screen</string>
+    <string name="horizontal_bar_position_top">Sa itaas ng screen</string>
+    <string name="vertical_bar_side">Gilid ng patayong bar</string>
+    <string name="vertical_bar_side_left">Sa kaliwang bahagi ng screen</string>
+    <string name="vertical_bar_side_right">Sa kanang bahagi ng screen</string>
 </resources>

@@ -915,6 +915,8 @@ public class Workspace extends SmoothPagedView
                 mLauncher.preSetMusicWidgets();
                 mBarWeatherWidget = workspaceView.findViewById(R.id.bar_widget_weather);
             }
+            // After the widget bar has chosen its variant: the bars to their edges
+            applyBarConstraints(workspaceView, verticalBar);
             
             horizontalBarAllApps = workspaceView.findViewById(R.id.rl_allapps);
             if (blackTintBar) {
@@ -951,6 +953,7 @@ public class Workspace extends SmoothPagedView
             mEveryPage = false;
             workspaceView = this.mLauncher.getLayoutInflater().inflate(R.layout.custom_layout_one, workspaceLayout, false);
             customScreen[0].addView(workspaceView);
+            applyBarConstraints(workspaceView, true);
             applyVerticalBarBackground(workspaceView);
 
             TextView naviTextSize = workspaceView.findViewById(R.id.tv_map);
@@ -1547,6 +1550,25 @@ public class Workspace extends SmoothPagedView
         Log.d(TAG, "Widget bar refreshed after wake: " + source);
     }
 
+    /**
+     * Where the box of the home screen starts, from the top of the screen: the status bar in landscape (the same
+     * rule as the height of the box, see getHorizontalBarHeight()), nothing in portrait. A bar at the top starts there.
+     */
+    int topBarOffset() {
+        boolean portrait = orientation == Configuration.ORIENTATION_PORTRAIT;
+        return portrait || mLauncher == null ? 0 : mLauncher.getStatusBarHeight();
+    }
+
+    /** The horizontal bar at the top and the vertical bar at the right, as chosen (BarConstraints). */
+    private void applyBarConstraints(View layoutRoot, boolean verticalBarOn) {
+        if (!(layoutRoot instanceof androidx.constraintlayout.widget.ConstraintLayout)) {
+            return;
+        }
+        boolean top = mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
+        boolean right = verticalBarOn && mPrefs.getBoolean(Keys.VERTICAL_BAR_RIGHT, false);
+        BarConstraints.apply((androidx.constraintlayout.widget.ConstraintLayout) layoutRoot, R.id.iv_list_bg, 0, top, right);
+    }
+
     /** The background chosen for the vertical bar ("Choose background for vertical bar"); hotseat_bg is its own. */
     private void applyVerticalBarBackground(View root) {
         View bar = root == null ? null : root.findViewById(R.id.rl_vertical_bar);
@@ -1746,7 +1768,10 @@ public class Workspace extends SmoothPagedView
                         WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
             }
 
-            overlayWindowParams.gravity = Gravity.BOTTOM;
+            // At the top the bar sits below the status bar (the inset listener moves the window)
+            boolean barAtTop = mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
+            overlayWindowParams.gravity = barAtTop ? Gravity.TOP : Gravity.BOTTOM;
+            overlayWindowParams.y = barAtTop ? topBarOffset() : 0;
             // No system window animation: the bar slides itself, in step with the collapsed
             // button / edge handle (startOverlayShowTransition(), hideOverlayHorizontalBar()).
             overlayWindowParams.windowAnimations = 0;
@@ -1761,12 +1786,18 @@ public class Workspace extends SmoothPagedView
                 WidgetBarLayout.apply(barContent, inflater, mPrefs,
                         orientation == Configuration.ORIENTATION_PORTRAIT);
             }
+            applyBarConstraints(barContent, false);
             final BarSwipeFrame barFrame = new BarSwipeFrame(getContext(), mBarSwipeHost);
             barFrame.addView(barContent, new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             overlayHorizontalBar = barFrame;
 
+            final boolean barOnTop = mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
             overlayHorizontalBar.setOnApplyWindowInsetsListener((v, insets) -> {
+                if (barOnTop) {
+                    // Below the status bar: the window sits at y = topBarOffset(), nothing to extend
+                    return insets.consumeSystemWindowInsets();
+                }
                 int bottomInset = insets.getSystemWindowInsetBottom();
 
                 // Extend the bar into the nav bar area
@@ -2350,7 +2381,7 @@ public class Workspace extends SmoothPagedView
                 }
 
                 // This frame is drawn below the edge; the slide starts from there.
-                bar.setTranslationY(bar.getHeight());
+                bar.setTranslationY(mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false) ? -bar.getHeight() : bar.getHeight());
                 bar.setAlpha(1f);
                 bar.animate()
                         .translationY(0f)
@@ -2472,7 +2503,7 @@ public class Workspace extends SmoothPagedView
                 } else {
                     restoreDurationMs = BAR_HIDE_DURATION_MS;
                     bar.animate()
-                            .translationY(distance)
+                            .translationY(mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false) ? -distance : distance)
                             .setDuration(BAR_HIDE_DURATION_MS)
                             .setInterpolator(new AccelerateInterpolator(1.5f))
                             .withEndAction(() -> onOverlaySlideOutEnded(bar, windowManager))
@@ -2760,6 +2791,7 @@ public class Workspace extends SmoothPagedView
             Log.i(TAG, "Edge handle geometry: strip " + stripWidth + " px, touch " + touchWidth
                     + " px (vertical bar width)");
         }
+        mEdgeHandle.setPlacement(mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false), topBarOffset());
         mEdgeHandle.setGeometry(stripWidth, touchWidth,
                 barHeight,
                 mPrefs.getBoolean(Keys.BLACK_BAR, false));

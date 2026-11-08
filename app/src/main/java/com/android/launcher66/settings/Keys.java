@@ -178,6 +178,10 @@ public final class Keys {
     public static final String START_PAGE = "start_page";
     public static final String LAYOUT_MARGIN = "layout_margin";
     /** The horizontal bar is on every page of the home screen, not only on the first (HorizontalBarPlacement). */
+    /** The horizontal bar is at the top of the screen (the stored key is new, it has no former name). */
+    public static final String HORIZONTAL_BAR_TOP = "horizontal_bar_top";
+    /** The vertical bar is at the right edge of the screen. */
+    public static final String VERTICAL_BAR_RIGHT = "vertical_bar_right";
     public static final String HORIZONTAL_BAR_EVERY_PAGE = "bottom_bar_every_page";
     public static final String AUTO_HIDE_HORIZONTAL_BAR = "auto_hide_bottom_bar";
     public static final String AUTO_HIDE_TIMEOUT = "auto_hide_timeout";

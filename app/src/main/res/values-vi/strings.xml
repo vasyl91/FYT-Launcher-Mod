@@ -532,4 +532,10 @@
     <string name="bars_category">Thanh</string>
     <string name="vertical_bar_background_preference">Chọn nền cho thanh dọc</string>
     <string name="vertical_bar_background_dialog_title">Chọn nền cho thanh dọc:</string>
+    <string name="horizontal_bar_position">Vị trí thanh ngang</string>
+    <string name="horizontal_bar_position_bottom">Ở cuối màn hình</string>
+    <string name="horizontal_bar_position_top">Ở đầu màn hình</string>
+    <string name="vertical_bar_side">Phía của thanh dọc</string>
+    <string name="vertical_bar_side_left">Ở bên trái màn hình</string>
+    <string name="vertical_bar_side_right">Ở bên phải màn hình</string>
 </resources>

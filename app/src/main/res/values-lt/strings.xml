@@ -532,4 +532,10 @@
     <string name="bars_category">Juostos</string>
     <string name="vertical_bar_background_preference">Pasirinkti vertikaliosios juostos foną</string>
     <string name="vertical_bar_background_dialog_title">Pasirinkite vertikaliosios juostos foną:</string>
+    <string name="horizontal_bar_position">Horizontaliosios juostos padėtis</string>
+    <string name="horizontal_bar_position_bottom">Ekrano apačioje</string>
+    <string name="horizontal_bar_position_top">Ekrano viršuje</string>
+    <string name="vertical_bar_side">Vertikaliosios juostos pusė</string>
+    <string name="vertical_bar_side_left">Kairėje ekrano pusėje</string>
+    <string name="vertical_bar_side_right">Dešinėje ekrano pusėje</string>
 </resources>

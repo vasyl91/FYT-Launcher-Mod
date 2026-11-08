@@ -532,4 +532,10 @@
     <string name="bars_category">Bars</string>
     <string name="vertical_bar_background_preference">Tscherner il fund per la bara verticala</string>
     <string name="vertical_bar_background_dialog_title">Tscherna il fund per la bara verticala:</string>
+    <string name="horizontal_bar_position">Posiziun da la bara orizontala</string>
+    <string name="horizontal_bar_position_bottom">Giu sin il visur</string>
+    <string name="horizontal_bar_position_top">Si sin il visur</string>
+    <string name="vertical_bar_side">Vart da la bara verticala</string>
+    <string name="vertical_bar_side_left">Sin la vart sanestra dal visur</string>
+    <string name="vertical_bar_side_right">Sin la vart dretga dal visur</string>
 </resources>

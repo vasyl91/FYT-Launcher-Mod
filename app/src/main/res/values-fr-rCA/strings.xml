@@ -64,4 +64,10 @@
     <string name="bars_category">Barres</string>
     <string name="vertical_bar_background_preference">Choisir l\'arrière-plan de la barre verticale</string>
     <string name="vertical_bar_background_dialog_title">Sélectionnez l\'arrière-plan de la barre verticale :</string>
+    <string name="horizontal_bar_position">Position de la barre horizontale</string>
+    <string name="horizontal_bar_position_bottom">En bas de l\'écran</string>
+    <string name="horizontal_bar_position_top">En haut de l\'écran</string>
+    <string name="vertical_bar_side">Côté de la barre verticale</string>
+    <string name="vertical_bar_side_left">Sur le côté gauche de l\'écran</string>
+    <string name="vertical_bar_side_right">Sur le côté droit de l\'écran</string>
 </resources>

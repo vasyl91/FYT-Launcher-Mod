@@ -94,6 +94,9 @@ final class HorizontalBarEdgeHandle {
 
     private int touchWidth;
     private int barHeight;
+    /** The bar is at the top, below the status bar's {@code topOffset}; else at the bottom. */
+    private boolean barOnTop;
+    private int topOffset;
 
     HorizontalBarEdgeHandle(Context context, Runnable onTrigger, TargetFinder finder) {
         windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
@@ -108,6 +111,21 @@ final class HorizontalBarEdgeHandle {
      * @param barHeight  height of the horizontal bar, which the strip matches
      * @param dark       black strip instead of a white one (the "black bar" setting)
      */
+    void setPlacement(boolean top, int topOffset) {
+        boolean changed = barOnTop != top || this.topOffset != topOffset;
+        barOnTop = top;
+        this.topOffset = topOffset;
+        if (changed && params != null && attached) {
+            params.gravity = (top ? Gravity.TOP : Gravity.BOTTOM) | Gravity.LEFT;
+            params.y = top ? topOffset : 0;
+            try {
+                windowManager.updateViewLayout(view, params);
+            } catch (RuntimeException e) {
+                Log.w(TAG, "Edge handle: the placement could not be applied", e);
+            }
+        }
+    }
+
     void setGeometry(int stripWidth, int touchWidth, int barHeight, boolean dark) {
         this.touchWidth = Math.max(stripWidth, touchWidth);
         this.barHeight = barHeight;
@@ -236,7 +254,8 @@ final class HorizontalBarEdgeHandle {
                     WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
         }
         // Same flags, cutout mode and bottom gravity as the bar overlay window.
-        params.gravity = Gravity.BOTTOM | Gravity.LEFT;
+        params.gravity = (barOnTop ? Gravity.TOP : Gravity.BOTTOM) | Gravity.LEFT;
+        params.y = barOnTop ? topOffset : 0;
         // No system window animation: the strip fades itself, in step with the bar.
         params.windowAnimations = 0;
         params.setTitle(TAG);

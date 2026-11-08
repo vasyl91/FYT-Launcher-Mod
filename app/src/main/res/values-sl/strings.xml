@@ -532,4 +532,10 @@
     <string name="bars_category">Vrstice</string>
     <string name="vertical_bar_background_preference">Izberi ozadje za navpično vrstico</string>
     <string name="vertical_bar_background_dialog_title">Izberite ozadje za navpično vrstico:</string>
+    <string name="horizontal_bar_position">Položaj vodoravne vrstice</string>
+    <string name="horizontal_bar_position_bottom">Na dnu zaslona</string>
+    <string name="horizontal_bar_position_top">Na vrhu zaslona</string>
+    <string name="vertical_bar_side">Stran navpične vrstice</string>
+    <string name="vertical_bar_side_left">Na levi strani zaslona</string>
+    <string name="vertical_bar_side_right">Na desni strani zaslona</string>
 </resources>

@@ -532,4 +532,10 @@
     <string name="bars_category">Barre</string>
     <string name="vertical_bar_background_preference">Scegli lo sfondo della barra verticale</string>
     <string name="vertical_bar_background_dialog_title">Seleziona lo sfondo della barra verticale:</string>
+    <string name="horizontal_bar_position">Posizione della barra orizzontale</string>
+    <string name="horizontal_bar_position_bottom">In basso sullo schermo</string>
+    <string name="horizontal_bar_position_top">In alto sullo schermo</string>
+    <string name="vertical_bar_side">Lato della barra verticale</string>
+    <string name="vertical_bar_side_left">Sul lato sinistro dello schermo</string>
+    <string name="vertical_bar_side_right">Sul lato destro dello schermo</string>
 </resources>

@@ -532,4 +532,10 @@
     <string name="bars_category">Balken</string>
     <string name="vertical_bar_background_preference">Achtergrond voor verticale balk kiezen</string>
     <string name="vertical_bar_background_dialog_title">Selecteer achtergrond voor verticale balk:</string>
+    <string name="horizontal_bar_position">Positie van horizontale balk</string>
+    <string name="horizontal_bar_position_bottom">Onderaan het scherm</string>
+    <string name="horizontal_bar_position_top">Bovenaan het scherm</string>
+    <string name="vertical_bar_side">Kant van verticale balk</string>
+    <string name="vertical_bar_side_left">Aan de linkerkant van het scherm</string>
+    <string name="vertical_bar_side_right">Aan de rechterkant van het scherm</string>
 </resources>

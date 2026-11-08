@@ -532,4 +532,10 @@
     <string name="bars_category">Leisten</string>
     <string name="vertical_bar_background_preference">Hintergrund für die vertikale Leiste wählen</string>
     <string name="vertical_bar_background_dialog_title">Hintergrund für die vertikale Leiste auswählen:</string>
+    <string name="horizontal_bar_position">Position der horizontalen Leiste</string>
+    <string name="horizontal_bar_position_bottom">Am unteren Bildschirmrand</string>
+    <string name="horizontal_bar_position_top">Am oberen Bildschirmrand</string>
+    <string name="vertical_bar_side">Seite der vertikalen Leiste</string>
+    <string name="vertical_bar_side_left">Auf der linken Bildschirmseite</string>
+    <string name="vertical_bar_side_right">Auf der rechten Bildschirmseite</string>
 </resources>

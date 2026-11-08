@@ -532,4 +532,10 @@
     <string name="bars_category">바</string>
     <string name="vertical_bar_background_preference">세로 바 배경 선택</string>
     <string name="vertical_bar_background_dialog_title">세로 바 배경을 선택하세요:</string>
+    <string name="horizontal_bar_position">가로 바 위치</string>
+    <string name="horizontal_bar_position_bottom">화면 하단</string>
+    <string name="horizontal_bar_position_top">화면 상단</string>
+    <string name="vertical_bar_side">세로 바 위치(좌/우)</string>
+    <string name="vertical_bar_side_left">화면 왼쪽</string>
+    <string name="vertical_bar_side_right">화면 오른쪽</string>
 </resources>

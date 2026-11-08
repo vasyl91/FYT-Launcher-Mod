@@ -95,6 +95,18 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
 
     // Bounds
     private int minBorderX, minBorderY, maxBorderX, maxBorderY;
+    /**
+     * The horizontal bar at the top takes this much of the canvas (0 otherwise): nothing is drawn above
+     * it. The canvas then spans the whole height, so the coordinates stay those of the launcher's box.
+     */
+    private int topInset;
+
+    public void setTopInset(int inset) {
+        if (inset != topInset) {
+            topInset = inset;
+            invalidate();
+        }
+    }
 
     /** Colour the canvas is filled with; the creator paints the space around it to match. */
     public static final int CANVAS_BACKGROUND_COLOR = Color.parseColor("#8c8b8b");
@@ -759,7 +771,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
         }
 
         minBorderX = margin;
-        minBorderY = margin;
+        minBorderY = margin + topInset;
         maxBorderX = getWidth() - margin;
         maxBorderY = getHeight() - margin;
 
@@ -901,6 +913,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
 
         maxBorderX = getWidth();
         maxBorderY = getHeight();
+        minBorderY = margin + topInset;
 
         final int STEP = 1;
         RectF r = rectFromBallIds(ids[0], ids[1], ids[2], ids[3]);
@@ -914,7 +927,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
 
         if (viewId == R.id.top_up) {
             cand = new RectF(r.left, r.top - STEP, r.right, r.bottom);
-            if (cand.top < margin) cand = null;
+            if (cand.top < minBorderY) cand = null;
 
         } else if (viewId == R.id.top_down) {
             cand = new RectF(r.left, r.top + STEP, r.right, r.bottom);

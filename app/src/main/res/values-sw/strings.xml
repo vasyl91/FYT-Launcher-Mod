@@ -532,4 +532,10 @@
     <string name="bars_category">Pau</string>
     <string name="vertical_bar_background_preference">Chagua mandharinyuma ya upau wima</string>
     <string name="vertical_bar_background_dialog_title">Chagua mandharinyuma ya upau wima:</string>
+    <string name="horizontal_bar_position">Mahali pa upau mlalo</string>
+    <string name="horizontal_bar_position_bottom">Chini ya skrini</string>
+    <string name="horizontal_bar_position_top">Juu ya skrini</string>
+    <string name="vertical_bar_side">Upande wa upau wima</string>
+    <string name="vertical_bar_side_left">Upande wa kushoto wa skrini</string>
+    <string name="vertical_bar_side_right">Upande wa kulia wa skrini</string>
 </resources>

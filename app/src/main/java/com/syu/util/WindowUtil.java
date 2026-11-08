@@ -2663,7 +2663,8 @@ public class WindowUtil {
 
         int[] def = defaultPipRect();
 
-        if (verticalBar && pipScreen == 0) {
+        // The first page is shifted by the bar's width only when the vertical bar is on its left
+        if (verticalBar && pipScreen == 0 && !prefs.getBoolean(Keys.VERTICAL_BAR_RIGHT, false)) {
             mapTopLeftX = prefs.getInt(topLeftXKey, def[0]) + Launcher.calculatedVerticalBarWidth;
             mapBottomRightX = prefs.getInt(bottomRightXKey, def[2]) + Launcher.calculatedVerticalBarWidth;
         } else {

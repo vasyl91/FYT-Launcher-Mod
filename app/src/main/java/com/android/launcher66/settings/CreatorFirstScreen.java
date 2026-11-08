@@ -111,6 +111,13 @@ public class CreatorFirstScreen extends Fragment {
         } else {
             rootView = inflater.inflate(R.layout.creator, container, false);
         }
+        final boolean barAtTop = sharedPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
+        final boolean verticalBarAtRight = verticalBar && sharedPrefs.getBoolean(Keys.VERTICAL_BAR_RIGHT, false);
+        if ((barAtTop || verticalBarAtRight) && rootView instanceof ConstraintLayout) {
+            // The bars to their edges; the canvas keeps the whole height with the bar at the top
+            com.android.launcher66.BarConstraints.apply((ConstraintLayout) rootView, R.id.creator_bar,
+                    R.id.creator_first_screen, barAtTop, verticalBarAtRight);
+        }
         layout = rootView.findViewById(R.id.creator_first_screen);
         canvas = new DrawViewFirstScreen(inflater, rootView, mContext);
         // After the canvas: its constructor gives the bar controls their base sizes, which the
@@ -291,7 +298,9 @@ public class CreatorFirstScreen extends Fragment {
         }
         int workspaceWidth = rootWidth - verticalBarWidth;
         // With auto-hide the workspace keeps the full height; only the collapsed button is reserved.
-        int workspaceHeight = autoHideHorizontalBar ? rootHeight : rootHeight - barHeight;
+        // (a bar at the top leaves the canvas the whole height too, its band is kept free by the topInset)
+        final boolean barAtTop = sharedPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
+        int workspaceHeight = autoHideHorizontalBar || barAtTop ? rootHeight : rootHeight - barHeight;
         View canvasArea = rootView.findViewById(R.id.creator_first_screen);
         if (autoHideHorizontalBar) {
             // The auto-hide bar lies on top of the workspace instead of reserving room for it, so
@@ -305,6 +314,7 @@ public class CreatorFirstScreen extends Fragment {
             canvasArea.setBackgroundColor(DrawViewFirstScreen.CANVAS_BACKGROUND_COLOR);
         }
         if (canvas != null) {
+            canvas.setTopInset(barAtTop && !autoHideHorizontalBar ? barHeight : 0);
             canvas.setWorkspaceArea(workspaceWidth, workspaceHeight);
         }
         Log.d(TAG, "Bar geometry: box " + rootWidth + "x" + rootHeight + ", bar " + barHeight

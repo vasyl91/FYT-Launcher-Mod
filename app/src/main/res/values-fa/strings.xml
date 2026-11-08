@@ -532,4 +532,10 @@
     <string name="bars_category">نوارها</string>
     <string name="vertical_bar_background_preference">انتخاب پس‌زمینه نوار عمودی</string>
     <string name="vertical_bar_background_dialog_title">پس‌زمینه نوار عمودی را انتخاب کنید:</string>
+    <string name="horizontal_bar_position">موقعیت نوار افقی</string>
+    <string name="horizontal_bar_position_bottom">پایین صفحه</string>
+    <string name="horizontal_bar_position_top">بالای صفحه</string>
+    <string name="vertical_bar_side">سمت نوار عمودی</string>
+    <string name="vertical_bar_side_left">در سمت چپ صفحه</string>
+    <string name="vertical_bar_side_right">در سمت راست صفحه</string>
 </resources>

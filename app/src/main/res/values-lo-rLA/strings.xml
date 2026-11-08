@@ -532,4 +532,10 @@
     <string name="bars_category">ແຖບ</string>
     <string name="vertical_bar_background_preference">ເລືອກພື້ນຫຼັງສຳລັບແຖບແນວຕັ້ງ</string>
     <string name="vertical_bar_background_dialog_title">ເລືອກພື້ນຫຼັງສຳລັບແຖບແນວຕັ້ງ:</string>
+    <string name="horizontal_bar_position">ຕຳແໜ່ງແຖບແນວນອນ</string>
+    <string name="horizontal_bar_position_bottom">ຢູ່ລຸ່ມຂອງໜ້າຈໍ</string>
+    <string name="horizontal_bar_position_top">ຢູ່ເທິງຂອງໜ້າຈໍ</string>
+    <string name="vertical_bar_side">ດ້ານຂອງແຖບແນວຕັ້ງ</string>
+    <string name="vertical_bar_side_left">ຢູ່ດ້ານຊ້າຍຂອງໜ້າຈໍ</string>
+    <string name="vertical_bar_side_right">ຢູ່ດ້ານຂວາຂອງໜ້າຈໍ</string>
 </resources>

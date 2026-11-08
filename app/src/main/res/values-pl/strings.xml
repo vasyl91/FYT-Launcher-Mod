@@ -532,4 +532,10 @@
     <string name="bars_category">Paski</string>
     <string name="vertical_bar_background_preference">Wybierz tło dla paska pionowego</string>
     <string name="vertical_bar_background_dialog_title">Wybierz tło dla paska pionowego:</string>
+    <string name="horizontal_bar_position">Położenie paska poziomego</string>
+    <string name="horizontal_bar_position_bottom">U dołu ekranu</string>
+    <string name="horizontal_bar_position_top">U góry ekranu</string>
+    <string name="vertical_bar_side">Strona paska pionowego</string>
+    <string name="vertical_bar_side_left">Po lewej stronie ekranu</string>
+    <string name="vertical_bar_side_right">Po prawej stronie ekranu</string>
 </resources>

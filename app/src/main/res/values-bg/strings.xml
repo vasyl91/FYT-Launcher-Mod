@@ -532,4 +532,10 @@
     <string name="bars_category">Ленти</string>
     <string name="vertical_bar_background_preference">Избор на фон за вертикалната лента</string>
     <string name="vertical_bar_background_dialog_title">Изберете фон за вертикалната лента:</string>
+    <string name="horizontal_bar_position">Позиция на хоризонталната лента</string>
+    <string name="horizontal_bar_position_bottom">В долната част на екрана</string>
+    <string name="horizontal_bar_position_top">В горната част на екрана</string>
+    <string name="vertical_bar_side">Страна на вертикалната лента</string>
+    <string name="vertical_bar_side_left">От лявата страна на екрана</string>
+    <string name="vertical_bar_side_right">От дясната страна на екрана</string>
 </resources>

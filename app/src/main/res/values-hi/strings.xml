@@ -532,4 +532,10 @@
     <string name="bars_category">बार</string>
     <string name="vertical_bar_background_preference">ऊर्ध्वाधर बार के लिए पृष्ठभूमि चुनें</string>
     <string name="vertical_bar_background_dialog_title">ऊर्ध्वाधर बार के लिए पृष्ठभूमि चुनें:</string>
+    <string name="horizontal_bar_position">क्षैतिज बार की स्थिति</string>
+    <string name="horizontal_bar_position_bottom">स्क्रीन के नीचे</string>
+    <string name="horizontal_bar_position_top">स्क्रीन के ऊपर</string>
+    <string name="vertical_bar_side">ऊर्ध्वाधर बार का पक्ष</string>
+    <string name="vertical_bar_side_left">स्क्रीन के बाईं ओर</string>
+    <string name="vertical_bar_side_right">स्क्रीन के दाईं ओर</string>
 </resources>

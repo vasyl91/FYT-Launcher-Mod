@@ -532,4 +532,10 @@
     <string name="bars_category">Çubuklar</string>
     <string name="vertical_bar_background_preference">Dikey çubuk için arka plan seçin</string>
     <string name="vertical_bar_background_dialog_title">Dikey çubuk için arka plan seçin:</string>
+    <string name="horizontal_bar_position">Yatay çubuğun konumu</string>
+    <string name="horizontal_bar_position_bottom">Ekranın altında</string>
+    <string name="horizontal_bar_position_top">Ekranın üstünde</string>
+    <string name="vertical_bar_side">Dikey çubuğun tarafı</string>
+    <string name="vertical_bar_side_left">Ekranın sol tarafında</string>
+    <string name="vertical_bar_side_right">Ekranın sağ tarafında</string>
 </resources>

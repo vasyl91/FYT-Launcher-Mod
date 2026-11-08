@@ -532,4 +532,10 @@
     <string name="bars_category">Панэлі</string>
     <string name="vertical_bar_background_preference">Выбраць фон для вертыкальнай панэлі</string>
     <string name="vertical_bar_background_dialog_title">Выберыце фон для вертыкальнай панэлі:</string>
+    <string name="horizontal_bar_position">Месца гарызантальнай панэлі</string>
+    <string name="horizontal_bar_position_bottom">Унізе экрана</string>
+    <string name="horizontal_bar_position_top">Уверсе экрана</string>
+    <string name="vertical_bar_side">Бок вертыкальнай панэлі</string>
+    <string name="vertical_bar_side_left">Злева на экране</string>
+    <string name="vertical_bar_side_right">Справа на экране</string>
 </resources>

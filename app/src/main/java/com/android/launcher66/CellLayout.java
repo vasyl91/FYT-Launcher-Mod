@@ -1583,6 +1583,21 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         }
     }
 
+    /** The horizontal bar is at the top: its row (or its corner cell) is the first one, not the last. */
+    private boolean barOnTop() {
+        return PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
+    }
+
+    /** The cell of the collapsed bar's button and the handle: at the corner of the vertical bar. */
+    private int cornerCellX() {
+        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(getContext());
+        return p.getBoolean(Keys.VERTICAL_BAR, false) && p.getBoolean(Keys.VERTICAL_BAR_RIGHT, false) ? mCountX - 1 : 0;
+    }
+
+    private int cornerCellY() {
+        return barOnTop() ? 0 : mCountY - 1;
+    }
+
     private boolean shouldExcludeFirstBottomCell() {
         int page = shownWorkspacePage();
         return page >= 0 && HorizontalBarPlacement.reserve(page, barOnEveryPage(prefs),
@@ -1657,12 +1672,15 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         boolean shouldExcludeLastRow = shouldExcludeLastRow();
         boolean shouldExcludeFirstCell = shouldExcludeFirstBottomCell();
 
-        if (shouldExcludeLastRow) {
+        final boolean barTop = barOnTop();
+        final int cornerX = cornerCellX();
+        final int cornerY = cornerCellY();
+        // The reserved row is the last one, or the first with the bar at the top
+        final int firstRow = shouldExcludeLastRow && barTop ? excludeLastRow : 0;
+        if (shouldExcludeLastRow && !barTop) {
             countY = mCountY - excludeLastRow;
-        } else if (shouldExcludeFirstCell) {
-            countY = mCountY; // Only exclude specific cell, not the whole row
         } else {
-            countY = mCountY;
+            countY = mCountY; // Only the specific cell is excluded, or the first row
         }
 
         if (minSpanX <= 0 || minSpanY <= 0 || spanX <= 0 || spanY <= 0 ||
@@ -1670,11 +1688,11 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
             return bestXY;
         }
 
-        for (int y = 0; y < countY - (minSpanY - 1); y++) {
+        for (int y = firstRow; y < countY - (minSpanY - 1); y++) {
             inner:
             for (int x = 0; x < countX - (minSpanX - 1); x++) {
-                // Check if this is the excluded first bottom cell
-                if (shouldExcludeFirstCell && y == mCountY - 1 && x == 0) {
+                // Check if this is the excluded corner cell
+                if (shouldExcludeFirstCell && y == cornerY && x == cornerX) {
                     continue inner; // Skip the first cell in bottom row
                 }
                 int ySize = -1;
@@ -1684,7 +1702,7 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
                     for (int i = 0; i < minSpanX; i++) {
                         for (int j = 0; j < minSpanY; j++) {
                             // Also check if any part of the span would cover the excluded cell
-                            if (shouldExcludeFirstCell && (y + j) == mCountY - 1 && (x + i) == 0) {
+                            if (shouldExcludeFirstCell && (y + j) == cornerY && (x + i) == cornerX) {
                                 continue inner;
                             }
                             if (occupied[x + i][y + j]) {
@@ -1810,19 +1828,21 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         boolean shouldExcludeLastRow = shouldExcludeLastRow();
         boolean shouldExcludeFirstCell = shouldExcludeFirstBottomCell();
 
-        if (shouldExcludeLastRow) {
+        final boolean barTop = barOnTop();
+        final int cornerX = cornerCellX();
+        final int cornerY = cornerCellY();
+        final int firstRow = shouldExcludeLastRow && barTop ? excludeLastRow : 0;
+        if (shouldExcludeLastRow && !barTop) {
             countY = mCountY - excludeLastRow;
-        } else if (shouldExcludeFirstCell) {
-            countY = mCountY;
         } else {
             countY = mCountY;
         }
 
-        for (int y = 0; y < countY - (spanY - 1); y++) {
+        for (int y = firstRow; y < countY - (spanY - 1); y++) {
             inner:
             for (int x = 0; x < countX - (spanX - 1); x++) {
-                // Check if this is the excluded first bottom cell
-                if (shouldExcludeFirstCell && y == mCountY - 1 && x == 0) {
+                // Check if this is the excluded corner cell
+                if (shouldExcludeFirstCell && y == cornerY && x == cornerX) {
                     continue inner;
                 }
 
@@ -1830,7 +1850,7 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
                 for (int i = 0; i < spanX; i++) {
                     for (int j = 0; j < spanY; j++) {
                         // Check if any part of the span would cover the excluded cell
-                        if (shouldExcludeFirstCell && (y + j) == mCountY - 1 && (x + i) == 0) {
+                        if (shouldExcludeFirstCell && (y + j) == cornerY && (x + i) == cornerX) {
                             continue inner;
                         }
                         if (occupied[x + i][y + j] && (blockOccupied == null || blockOccupied[i][j])) {
@@ -2206,17 +2226,17 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         boolean shouldExcludeLastRow = shouldExcludeLastRow();
         boolean shouldExcludeFirstCell = shouldExcludeFirstBottomCell();
 
-        if (shouldExcludeLastRow) {
+        final boolean barTop = barOnTop();
+        final int fixedFirstRow = shouldExcludeLastRow && barTop ? excludeLastRow : 0;
+        if (shouldExcludeLastRow && !barTop) {
             fixedCountY = mCountY - excludeLastRow;
-        } else if (shouldExcludeFirstCell) {
-            fixedCountY = mCountY;
         } else {
             fixedCountY = mCountY;
         }
 
         // Due to the nature of the algorithm, the only check required to verify a valid solution
         // is to ensure that completed shifted cluster lies completely within the cell layout.
-        if (!fail && clusterRect.left >= 0 && clusterRect.right <= mCountX && clusterRect.top >= 0 &&
+        if (!fail && clusterRect.left >= 0 && clusterRect.right <= mCountX && clusterRect.top >= fixedFirstRow &&
                 clusterRect.bottom <= fixedCountY) {
             foundSolution = true;
         } else {
@@ -3233,6 +3253,8 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         boolean shouldExcludeFirstCell = shouldExcludeFirstBottomCell();
+        final int excludedCornerX = cornerCellX();
+        final int excludedCornerY = cornerCellY();
 
         boolean foundCell = false;
         while (true) {
@@ -3256,15 +3278,15 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
             for (int y = startY; y < endY && !foundCell; y++) {
                 inner:
                 for (int x = startX; x < endX; x++) {
-                    // Check if this is the excluded first bottom cell
-                    if (shouldExcludeFirstCell && y == mCountY - 1 && x == 0) {
+                    // Check if this is the excluded corner cell
+                    if (shouldExcludeFirstCell && y == excludedCornerY && x == excludedCornerX) {
                         continue inner;
                     }
 
                     for (int i = 0; i < spanX; i++) {
                         for (int j = 0; j < spanY; j++) {
                             // Check if any part of the span would cover the excluded cell
-                            if (shouldExcludeFirstCell && (y + j) == mCountY - 1 && (x + i) == 0) {
+                            if (shouldExcludeFirstCell && (y + j) == excludedCornerY && (x + i) == excludedCornerX) {
                                 continue inner;
                             }
                             if (occupied[x + i][y + j]) {
@@ -4451,7 +4473,8 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                 ? prefs
                 : PreferenceManager.getDefaultSharedPreferences(getContext());
         verticalBar = p.getBoolean(Keys.VERTICAL_BAR, false);
-        return verticalBar && p.getBoolean(Keys.USER_LAYOUT, false);
+        // The page is shifted by the bar's width only when the bar is on its left
+        return verticalBar && p.getBoolean(Keys.USER_LAYOUT, false) && !p.getBoolean(Keys.VERTICAL_BAR_RIGHT, false);
     }
 
     public int[] getStatsPlaceholderPosition() {
@@ -4568,14 +4591,17 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             }
         }
         if (excludeBarRows) {
+            boolean top = barOnTop();
             for (int x = 0; x < mCountX; x++) {
-                for (int y = Math.max(0, mCountY - excludeLastRow); y < mCountY; y++) {
+                int from = top ? 0 : Math.max(0, mCountY - excludeLastRow);
+                int to = top ? Math.min(mCountY, excludeLastRow) : mCountY;
+                for (int y = from; y < to; y++) {
                     occupied[x][y] = true;
                 }
             }
         }
         if (excludeFirstCell && mCountX > 0 && mCountY > 0) {
-            occupied[0][mCountY - 1] = true;
+            occupied[cornerCellX()][cornerCellY()] = true;
         }
         return occupied;
     }
@@ -4737,9 +4763,13 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                     continue;
                 }
                 LayoutParams lp = (LayoutParams) child.getLayoutParams();
+                boolean barTop = barOnTop();
+                int cornerX = cornerCellX();
+                int cornerY = cornerCellY();
                 boolean underBar = excludeBarRows
-                        ? lp.cellY + lp.cellVSpan > mCountY - excludeLastRow
-                        : lp.cellX == 0 && lp.cellY + lp.cellVSpan > mCountY - 1;
+                        ? (barTop ? lp.cellY < excludeLastRow : lp.cellY + lp.cellVSpan > mCountY - excludeLastRow)
+                        : lp.cellX <= cornerX && cornerX < lp.cellX + lp.cellHSpan
+                                && lp.cellY <= cornerY && cornerY < lp.cellY + lp.cellVSpan;
                 if (underBar) {
                     conflictingViews.add(child);
                 }

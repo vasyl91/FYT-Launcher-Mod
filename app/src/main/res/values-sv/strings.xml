@@ -532,4 +532,10 @@
     <string name="bars_category">Fält</string>
     <string name="vertical_bar_background_preference">Välj bakgrund för vertikala fältet</string>
     <string name="vertical_bar_background_dialog_title">Välj bakgrund för vertikala fältet:</string>
+    <string name="horizontal_bar_position">Placering av horisontellt fält</string>
+    <string name="horizontal_bar_position_bottom">Längst ned på skärmen</string>
+    <string name="horizontal_bar_position_top">Högst upp på skärmen</string>
+    <string name="vertical_bar_side">Sida för vertikalt fält</string>
+    <string name="vertical_bar_side_left">På skärmens vänstra sida</string>
+    <string name="vertical_bar_side_right">På skärmens högra sida</string>
 </resources>

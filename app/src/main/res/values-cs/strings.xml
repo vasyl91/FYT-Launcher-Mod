@@ -532,4 +532,10 @@
     <string name="bars_category">Panely</string>
     <string name="vertical_bar_background_preference">Vybrat pozadí pro svislý panel</string>
     <string name="vertical_bar_background_dialog_title">Vyberte pozadí pro svislý panel:</string>
+    <string name="horizontal_bar_position">Poloha vodorovného panelu</string>
+    <string name="horizontal_bar_position_bottom">Ve spodní části obrazovky</string>
+    <string name="horizontal_bar_position_top">V horní části obrazovky</string>
+    <string name="vertical_bar_side">Strana svislého panelu</string>
+    <string name="vertical_bar_side_left">Na levé straně obrazovky</string>
+    <string name="vertical_bar_side_right">Na pravé straně obrazovky</string>
 </resources>

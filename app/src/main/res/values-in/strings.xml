@@ -532,4 +532,10 @@
     <string name="bars_category">Bilah</string>
     <string name="vertical_bar_background_preference">Pilih latar belakang untuk bilah vertikal</string>
     <string name="vertical_bar_background_dialog_title">Pilih latar belakang untuk bilah vertikal:</string>
+    <string name="horizontal_bar_position">Posisi bilah horizontal</string>
+    <string name="horizontal_bar_position_bottom">Di bagian bawah layar</string>
+    <string name="horizontal_bar_position_top">Di bagian atas layar</string>
+    <string name="vertical_bar_side">Sisi bilah vertikal</string>
+    <string name="vertical_bar_side_left">Di sisi kiri layar</string>
+    <string name="vertical_bar_side_right">Di sisi kanan layar</string>
 </resources>

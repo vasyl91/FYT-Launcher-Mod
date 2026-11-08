@@ -532,4 +532,10 @@
     <string name="bars_category">Palkit</string>
     <string name="vertical_bar_background_preference">Valitse pystypalkin tausta</string>
     <string name="vertical_bar_background_dialog_title">Valitse pystypalkin tausta:</string>
+    <string name="horizontal_bar_position">Vaakapalkin sijainti</string>
+    <string name="horizontal_bar_position_bottom">Näytön alareunassa</string>
+    <string name="horizontal_bar_position_top">Näytön yläreunassa</string>
+    <string name="vertical_bar_side">Pystypalkin puoli</string>
+    <string name="vertical_bar_side_left">Näytön vasemmalla puolella</string>
+    <string name="vertical_bar_side_right">Näytön oikealla puolella</string>
 </resources>

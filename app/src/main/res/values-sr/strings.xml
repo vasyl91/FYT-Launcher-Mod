@@ -532,4 +532,10 @@
     <string name="bars_category">Траке</string>
     <string name="vertical_bar_background_preference">Изабери позадину за вертикалну траку</string>
     <string name="vertical_bar_background_dialog_title">Изаберите позадину за вертикалну траку:</string>
+    <string name="horizontal_bar_position">Положај хоризонталне траке</string>
+    <string name="horizontal_bar_position_bottom">На дну екрана</string>
+    <string name="horizontal_bar_position_top">На врху екрана</string>
+    <string name="vertical_bar_side">Страна вертикалне траке</string>
+    <string name="vertical_bar_side_left">На левој страни екрана</string>
+    <string name="vertical_bar_side_right">На десној страни екрана</string>
 </resources>

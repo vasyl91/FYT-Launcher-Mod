@@ -532,4 +532,10 @@
     <string name="bars_category">Bar</string>
     <string name="vertical_bar_background_preference">Pilih latar belakang untuk bar menegak</string>
     <string name="vertical_bar_background_dialog_title">Pilih latar belakang untuk bar menegak:</string>
+    <string name="horizontal_bar_position">Kedudukan bar mendatar</string>
+    <string name="horizontal_bar_position_bottom">Di bahagian bawah skrin</string>
+    <string name="horizontal_bar_position_top">Di bahagian atas skrin</string>
+    <string name="vertical_bar_side">Sisi bar menegak</string>
+    <string name="vertical_bar_side_left">Di sebelah kiri skrin</string>
+    <string name="vertical_bar_side_right">Di sebelah kanan skrin</string>
 </resources>

@@ -532,4 +532,10 @@
     <string name="bars_category">Bare</string>
     <string name="vertical_bar_background_preference">Alegeți fundalul pentru bara verticală</string>
     <string name="vertical_bar_background_dialog_title">Selectați fundalul pentru bara verticală:</string>
+    <string name="horizontal_bar_position">Poziția barei orizontale</string>
+    <string name="horizontal_bar_position_bottom">În partea de jos a ecranului</string>
+    <string name="horizontal_bar_position_top">În partea de sus a ecranului</string>
+    <string name="vertical_bar_side">Partea barei verticale</string>
+    <string name="vertical_bar_side_left">În partea stângă a ecranului</string>
+    <string name="vertical_bar_side_right">În partea dreaptă a ecranului</string>
 </resources>

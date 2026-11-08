@@ -532,4 +532,10 @@
     <string name="bars_category">الأشرطة</string>
     <string name="vertical_bar_background_preference">اختيار خلفية الشريط العمودي</string>
     <string name="vertical_bar_background_dialog_title">اختر خلفية الشريط العمودي:</string>
+    <string name="horizontal_bar_position">موضع الشريط الأفقي</string>
+    <string name="horizontal_bar_position_bottom">في أسفل الشاشة</string>
+    <string name="horizontal_bar_position_top">في أعلى الشاشة</string>
+    <string name="vertical_bar_side">جانب الشريط العمودي</string>
+    <string name="vertical_bar_side_left">على الجانب الأيسر من الشاشة</string>
+    <string name="vertical_bar_side_right">على الجانب الأيمن من الشاشة</string>
 </resources>

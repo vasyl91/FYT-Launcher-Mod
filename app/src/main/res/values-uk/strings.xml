@@ -532,4 +532,10 @@
     <string name="bars_category">Панелі</string>
     <string name="vertical_bar_background_preference">Вибрати тло для вертикальної панелі</string>
     <string name="vertical_bar_background_dialog_title">Виберіть тло для вертикальної панелі:</string>
+    <string name="horizontal_bar_position">Розташування горизонтальної панелі</string>
+    <string name="horizontal_bar_position_bottom">Унизу екрана</string>
+    <string name="horizontal_bar_position_top">Угорі екрана</string>
+    <string name="vertical_bar_side">Сторона вертикальної панелі</string>
+    <string name="vertical_bar_side_left">З лівого боку екрана</string>
+    <string name="vertical_bar_side_right">З правого боку екрана</string>
 </resources>

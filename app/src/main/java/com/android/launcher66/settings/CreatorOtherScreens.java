@@ -108,7 +108,19 @@ public class CreatorOtherScreens extends Fragment {
         stats = sharedPrefs.getBoolean(Keys.USER_STATS, true);       
         rootView = inflater.inflate(R.layout.creator_other, container, false);
         layout = rootView.findViewById(R.id.creator_other_screens);
+        // The bar at the top: the controls go to the top and the canvas spans the whole height, so that
+        // the coordinates stay those of the launcher's box; the band of the bar is kept free of rectangles
+        // where the bar is on this page ("Horizontal bar on every page" without auto-hide).
+        final boolean barAtTop = sharedPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
+        if (barAtTop && rootView instanceof ConstraintLayout) {
+            com.android.launcher66.BarConstraints.apply((ConstraintLayout) rootView, R.id.creator_bar,
+                    R.id.creator_other_screens, true, false);
+        }
         canvas = new DrawViewOtherScreens(inflater, rootView, mContext, mSelectedScreen);
+        if (barAtTop && sharedPrefs.getBoolean(Keys.HORIZONTAL_BAR_EVERY_PAGE, false)
+                && !sharedPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false)) {
+            canvas.setTopInset(HorizontalBarDimensions.boxBarHeight(mContext, sharedPrefs));
+        }
         if (pip && dualPip && !firstPip && !secondPip && compareScreens(Keys.PIP_DUAL_SCREEN)) {
             String pipDualName;
             if (TextUtils.isEmpty(pipFirstName) || TextUtils.isEmpty(pipSecondName)) {
