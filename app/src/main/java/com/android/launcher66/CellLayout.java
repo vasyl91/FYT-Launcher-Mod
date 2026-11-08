@@ -43,6 +43,7 @@ import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.FolderIcon.FolderRingAnimator;
+import com.android.launcher66.settings.BarLayouts;
 import com.android.launcher66.settings.GridGeometry;
 import com.android.launcher66.settings.Keys;
 
@@ -1585,17 +1586,25 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
 
     /** The horizontal bar is at the top: its row (or its corner cell) is the first one, not the last. */
     private boolean barOnTop() {
-        return PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
+        return barSides().top;
     }
 
-    /** The cell of the collapsed bar's button and the handle: at the corner of the vertical bar. */
-    private int cornerCellX() {
+    /** The sides of the bars and of the handle, from the one place that reads them (BarLayouts). */
+    private BarLayout barSides() {
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(getContext());
-        return p.getBoolean(Keys.VERTICAL_BAR, false) && p.getBoolean(Keys.VERTICAL_BAR_RIGHT, false) ? mCountX - 1 : 0;
+        return BarLayouts.sides(p, p.getBoolean(Keys.VERTICAL_BAR, false));
+    }
+
+    /**
+     * The cell the auto-hide bar reserves: the corner on the handle's side, which is where the handle
+     * lies and, when the vertical bar is on the same side, the collapsed bar's button.
+     */
+    private int cornerCellX() {
+        return barSides().cornerCellX(mCountX);
     }
 
     private int cornerCellY() {
-        return barOnTop() ? 0 : mCountY - 1;
+        return barSides().cornerCellY(mCountY);
     }
 
     private boolean shouldExcludeFirstBottomCell() {
@@ -4474,7 +4483,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                 : PreferenceManager.getDefaultSharedPreferences(getContext());
         verticalBar = p.getBoolean(Keys.VERTICAL_BAR, false);
         // The page is shifted by the bar's width only when the bar is on its left
-        return verticalBar && p.getBoolean(Keys.USER_LAYOUT, false) && !p.getBoolean(Keys.VERTICAL_BAR_RIGHT, false);
+        return verticalBar && p.getBoolean(Keys.USER_LAYOUT, false) && !BarLayouts.sides(p, true).right;
     }
 
     public int[] getStatsPlaceholderPosition() {

@@ -21,18 +21,22 @@ public final class BarLayout {
     public final int barHeight;
     public final int verticalBarWidth;
     public final boolean top;
+    /** The vertical bar is at the right edge. */
     public final boolean right;
+    /** The edge handle (and the reserved corner cell of the auto-hide bar) is at the right edge. */
+    public final boolean handleRight;
     /** The vertical bar is on (and, by the caller's choice of page, it is the first one). */
     public final boolean verticalBar;
 
     public BarLayout(int rootWidth, int rootHeight, int barHeight, int verticalBarWidth,
-                     boolean top, boolean right, boolean verticalBar) {
+                     boolean top, boolean right, boolean handleRight, boolean verticalBar) {
         this.rootWidth = rootWidth;
         this.rootHeight = rootHeight;
         this.barHeight = barHeight;
         this.verticalBarWidth = verticalBar ? Math.max(0, verticalBarWidth) : 0;
         this.top = top;
         this.right = right;
+        this.handleRight = handleRight;
         this.verticalBar = verticalBar;
     }
 
@@ -59,7 +63,8 @@ public final class BarLayout {
 
     /**
      * The corner of the collapsed (auto-hide) bar's button: the vertical bar's width, in the band of the
-     * horizontal bar, at the side of the vertical bar. {left, top, right, bottom}.
+     * horizontal bar, at the side of the vertical bar. {left, top, right, bottom}. The button exists
+     * only where the vertical bar and the handle are on the same side ({@link #buttonShown()}).
      */
     public int[] collapsedButton() {
         int left = right ? rootWidth - verticalBarWidth : 0;
@@ -117,9 +122,25 @@ public final class BarLayout {
         return top ? 0 : countY - 1;
     }
 
-    /** The cell of the collapsed bar's button and the handle: at the corner of the vertical bar. */
+    /**
+     * Whether the collapsed bar shows a button in the corner of the vertical bar: only when the handle
+     * is on the same side. On the other side the handle stands for the bar and there is no button.
+     */
+    public boolean buttonShown() {
+        return verticalBar && sidesAgree();
+    }
+
+    /** The vertical bar and the handle are on the same side. */
+    public boolean sidesAgree() {
+        return right == handleRight;
+    }
+
+    /**
+     * The cell the auto-hide bar reserves: at the corner on the handle's side, which is where the
+     * handle lies and, when the button is shown, the button too.
+     */
     public int cornerCellX(int countX) {
-        return right ? countX - 1 : 0;
+        return handleRight ? countX - 1 : 0;
     }
 
     public int cornerCellY(int countY) {

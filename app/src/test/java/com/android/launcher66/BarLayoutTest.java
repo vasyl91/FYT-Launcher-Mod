@@ -9,11 +9,11 @@ class BarLayoutTest {
 
     // landscape box 1280 x 640, bar 100, vertical bar 91; portrait box 720 x 1200, bar 102, vertical bar 85
     private static BarLayout land(boolean top, boolean right, boolean vertical) {
-        return new BarLayout(1280, 640, 100, 91, top, right, vertical);
+        return new BarLayout(1280, 640, 100, 91, top, right, right, vertical);
     }
 
     private static BarLayout port(boolean top, boolean right, boolean vertical) {
-        return new BarLayout(720, 1200, 102, 85, top, right, vertical);
+        return new BarLayout(720, 1200, 102, 85, top, right, right, vertical);
     }
 
     @Test
@@ -98,5 +98,27 @@ class BarLayoutTest {
         assertEquals(7, land(false, true, true).cornerCellX(8));
         assertEquals(5, land(false, true, true).cornerCellY(6));
         assertEquals(0, land(true, true, true).cornerCellY(6));
+    }
+
+    @Test
+    void theCornerCellIsOnTheHandlesSideAndTheButtonOnlyWhenTheSidesAgree() {
+        // vertical bar side x handle side
+        BarLayout leftLeft = new BarLayout(1280, 640, 100, 91, false, false, false, true);
+        BarLayout rightRight = new BarLayout(1280, 640, 100, 91, false, true, true, true);
+        BarLayout barRightHandleLeft = new BarLayout(1280, 640, 100, 91, false, true, false, true);
+        BarLayout barLeftHandleRight = new BarLayout(1280, 640, 100, 91, false, false, true, true);
+        assertEquals(0, leftLeft.cornerCellX(8));
+        assertEquals(7, rightRight.cornerCellX(8));
+        // the handle is on the left: the left corner is reserved, the right one takes icons
+        assertEquals(0, barRightHandleLeft.cornerCellX(8));
+        assertEquals(7, barLeftHandleRight.cornerCellX(8));
+        assertEquals(true, leftLeft.buttonShown());
+        assertEquals(true, rightRight.buttonShown());
+        assertEquals(false, barRightHandleLeft.buttonShown());
+        assertEquals(false, barLeftHandleRight.buttonShown());
+        // without the vertical bar there is never a button
+        assertEquals(false, new BarLayout(1280, 640, 100, 91, false, false, false, false).buttonShown());
+        // the corner at the top
+        assertEquals(0, new BarLayout(1280, 640, 100, 91, true, true, false, true).cornerCellY(6));
     }
 }

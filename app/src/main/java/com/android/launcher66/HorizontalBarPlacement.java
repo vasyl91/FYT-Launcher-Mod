@@ -8,8 +8,9 @@ package com.android.launcher66;
  * <p>With the option off the bar belongs to the first page, as it always did:
  * <ul>
  *   <li>without auto-hide the bar is part of the first page and takes its last row(s);</li>
- *   <li>with auto-hide the first page has the button (with the vertical bar) or the edge handle
- *       (without it), and only the first cell of its bottom row is taken for it.</li>
+ *   <li>with auto-hide the first page has the button (with the vertical bar on the handle's side) or the
+ *       edge handle (without it, or with the vertical bar on the other side), and only one cell of
+ *       its bar's row, at the handle's side, is taken for it.</li>
  * </ul>
  * With the option on, every page has what the first one has:
  * <ul>
@@ -34,11 +35,15 @@ final class HorizontalBarPlacement {
     /**
      * @param page the page that is shown (or being left), 0 for the first
      * @param pageMoving whether the pages are moving, between two pages or back to the same one
+     * @param verticalBar whether the vertical bar is on (it is on the first page only)
+     * @param buttonSide the vertical bar and the edge handle are on the same side: the collapsed bar has
+     *                   its button in the corner of the vertical bar. On different sides the handle
+     *                   stands for the bar, with no button, whatever the vertical bar does
      * @param userLayout whether the user layout is on: the persistent overlay and the handles of the
      *                   other pages exist only there, so without it 'every page' means nothing
      */
-    static Bar bar(int page, boolean everyPage, boolean autoHide, boolean verticalBar, boolean pageMoving,
-                   boolean userLayout) {
+    static Bar bar(int page, boolean everyPage, boolean autoHide, boolean verticalBar, boolean buttonSide,
+                   boolean pageMoving, boolean userLayout) {
         everyPage &= userLayout;
         if (!everyPage && page != 0) {
             return Bar.NONE;
@@ -47,7 +52,7 @@ final class HorizontalBarPlacement {
             if (pageMoving) {
                 return Bar.NONE;
             }
-            return page == 0 && verticalBar ? Bar.BUTTON : Bar.HANDLE;
+            return page == 0 && verticalBar && buttonSide ? Bar.BUTTON : Bar.HANDLE;
         }
         if (page == 0 && !pageMoving) {
             return Bar.EMBEDDED;

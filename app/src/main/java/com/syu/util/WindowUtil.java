@@ -1,6 +1,7 @@
 package com.syu.util;
 
 import com.android.launcher66.SysCalls;
+import com.android.launcher66.settings.BarLayouts;
 import com.android.launcher66.settings.CrashLoopGuard;
 import android.SystemProperties;
 import android.app.ActivityManager;
@@ -2664,7 +2665,7 @@ public class WindowUtil {
         int[] def = defaultPipRect();
 
         // The first page is shifted by the bar's width only when the vertical bar is on its left
-        if (verticalBar && pipScreen == 0 && !prefs.getBoolean(Keys.VERTICAL_BAR_RIGHT, false)) {
+        if (verticalBar && pipScreen == 0 && !BarLayouts.sides(prefs, true).right) {
             mapTopLeftX = prefs.getInt(topLeftXKey, def[0]) + Launcher.calculatedVerticalBarWidth;
             mapBottomRightX = prefs.getInt(bottomRightXKey, def[2]) + Launcher.calculatedVerticalBarWidth;
         } else {

@@ -657,7 +657,7 @@ public class Helpers {
                     env.maxRight = PipEdgeTrim.maxRight(bar.rootWidth, verticalBarWidth, margin);
                     env.rightTrigger = env.maxRight;
                     // The page is shifted by the bar's width only when the bar is on its left
-                    env.verticalBarOffset = mPrefs.getBoolean(Keys.VERTICAL_BAR_RIGHT, false) ? 0 : (int) verticalBarWidth;
+                    env.verticalBarOffset = BarLayouts.sides(mPrefs, true).right ? 0 : (int) verticalBarWidth;
                 }
             }
             GridGeometry grid = GridGeometry.published();

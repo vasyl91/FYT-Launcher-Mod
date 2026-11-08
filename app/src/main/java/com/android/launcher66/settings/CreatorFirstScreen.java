@@ -112,7 +112,7 @@ public class CreatorFirstScreen extends Fragment {
             rootView = inflater.inflate(R.layout.creator, container, false);
         }
         final boolean barAtTop = sharedPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
-        final boolean verticalBarAtRight = verticalBar && sharedPrefs.getBoolean(Keys.VERTICAL_BAR_RIGHT, false);
+        final boolean verticalBarAtRight = verticalBar && BarLayouts.sides(sharedPrefs, true).right;
         if ((barAtTop || verticalBarAtRight) && rootView instanceof ConstraintLayout) {
             // The bars to their edges; the canvas keeps the whole height with the bar at the top
             com.android.launcher66.BarConstraints.apply((ConstraintLayout) rootView, R.id.creator_bar,
