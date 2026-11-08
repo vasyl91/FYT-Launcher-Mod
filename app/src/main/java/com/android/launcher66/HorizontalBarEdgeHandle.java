@@ -40,6 +40,15 @@ import java.util.List;
  * the window of the launcher or of the pane that is under the finger, which is always one of the
  * launcher's own windows, so no permission or injected input is needed.
  *
+ * <p>Where the launcher may monitor input (system privileges, Android 10 and later) the window takes no
+ * touch at all, like the stats window: the input dispatcher gives every touch to the window below, an
+ * app in a pane included, and an input monitor ({@link EdgeSwipeMonitor}) only watches for the swipe
+ * inwards that opens the bar, taking the gesture from the window below once it is recognised. Then a
+ * click on the visible strip does not open the bar any more (a swipe does), and the window gives the
+ * system gestures at the edge no exclusion (a window that takes no touch cannot). Elsewhere the window
+ * takes the touches itself and hands on the ones that are not the swipe, as described above
+ * ({@link EdgeHandleInput} decides which).
+ *
  * <p>The window is added once and then only shown and hidden (a hidden root view hides the whole
  * window, input included). Workspace decides when; this class only draws, animates and reports
  * the gesture. Main thread only.
@@ -91,6 +100,11 @@ final class HorizontalBarEdgeHandle {
     private boolean attached = false;
     private boolean shown = false;
     private boolean addFailedLogged = false;
+    private final Context context;
+    /** The monitor of the swipe, while the handle is shown where one can run; else null. */
+    private EdgeSwipeMonitor monitor;
+    private boolean monitorTried;
+    private final int[] monitorAt = new int[2];
 
     private int touchWidth;
     private int barHeight;
@@ -102,10 +116,50 @@ final class HorizontalBarEdgeHandle {
     private int topOffset;
 
     HorizontalBarEdgeHandle(Context context, Runnable onTrigger, TargetFinder finder) {
+        this.context = context;
         windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         view = new StripView(context, onTrigger, finder, this::onPassEnded);
         // No inset handling, on purpose: the bar overlay's inset listener only pads its content and
         // never resizes its window, so a window of exactly the bar height is what lines up with it.
+        view.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> updateMonitorArea());
+    }
+
+    /** The window's rectangle on the display, for the monitor. */
+    private void updateMonitorArea() {
+        if (monitor == null || !attached) {
+            return;
+        }
+        view.getLocationOnScreen(monitorAt);
+        monitor.setArea(monitorAt[0], monitorAt[1], monitorAt[0] + view.getWidth(),
+                monitorAt[1] + view.getHeight(), onRightEdge);
+    }
+
+    /**
+     * Starts the monitor where it can run, once per showing of the handle, and says which way the touches go.
+     */
+    private void startInput(boolean log) {
+        if (monitor == null && !monitorTried) {
+            monitorTried = true;
+            if (EdgeHandleInput.monitorPossible(Build.VERSION.SDK_INT, LauncherApplication.hasSystemPrivileges())) {
+                monitor = EdgeSwipeMonitor.start(context, view::triggerFromMonitor);
+            }
+            if (log) {
+                boolean started = monitor != null;
+                Log.i(TAG, "Edge handle input: " + (EdgeHandleInput.mode(Build.VERSION.SDK_INT,
+                        LauncherApplication.hasSystemPrivileges(), started) == EdgeHandleInput.Mode.MONITOR
+                        ? "monitor" : "window") + " (" + EdgeHandleInput.reason(Build.VERSION.SDK_INT,
+                        LauncherApplication.hasSystemPrivileges(), started) + ")");
+            }
+        }
+        updateMonitorArea();
+    }
+
+    private void stopMonitor() {
+        monitorTried = false;
+        if (monitor != null) {
+            monitor.dispose();
+            monitor = null;
+        }
     }
 
     /**
@@ -156,7 +210,9 @@ final class HorizontalBarEdgeHandle {
         boolean changed = !shown;
         shown = true;
         pass.show();
-        setTouchable(true);
+        startInput(changed);
+        // With the monitor the window takes no touch: the app below gets all of them
+        setTouchable(monitor == null);
         if (!changed && view.getVisibility() == View.VISIBLE && view.getAlpha() >= 1f) {
             return false; // already fully shown, keep whatever is running
         }
@@ -182,6 +238,7 @@ final class HorizontalBarEdgeHandle {
     boolean hide(long durationMs) {
         boolean changed = shown;
         shown = false;
+        stopMonitor();
         if (!attached) {
             return changed;
         }
@@ -233,6 +290,7 @@ final class HorizontalBarEdgeHandle {
     /** Removes the window; the instance must not be used afterwards. */
     void release() {
         shown = false;
+        stopMonitor();
         pass.release();
         view.animate().cancel();
         view.cancelGesture();
@@ -649,6 +707,11 @@ final class HorizontalBarEdgeHandle {
             } finally {
                 out.recycle();
             }
+        }
+
+        /** The monitor recognised the swipe inwards: the window took no part in it. */
+        void triggerFromMonitor() {
+            trigger();
         }
 
         private void trigger() {
