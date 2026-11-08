@@ -1425,6 +1425,38 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mHandler.postDelayed(mWorkspaceLoadingWatchdog, WORKSPACE_LOADING_WATCHDOG_MS);
     }
 
+    /**
+     * What the watchdog has done for this return from the settings (WorkspaceLoadWatch decides): how often it
+     * started the load again and how often it waited for a load that was alive. Both start over with each
+     * reload asked for by recreateView().
+     */
+    private int mLoadWatchRestarts;
+    private int mLoadWatchExtraWaits;
+    /** A reload that recreateView() skipped because a load was binding, and when (uptimeMillis; 0 if none). */
+    private long mSkippedReloadAtMs;
+
+    /**
+     * R1 (the loading state of the workspace): the model owns the fact that a load is running; this flag is the
+     * launcher's own view of it, and it is set and cleared in these two methods only, each saying why in the log.
+     * A load that stops binding is started again (restartWorkspaceLoad) and not just let go, a reload that was
+     * skipped is not lost (mSkippedReloadAtMs), and every stop of a load says why in the log (LauncherModel).
+     */
+    private void beginWorkspaceLoading(String reason) {
+        if (!mWorkspaceLoading) {
+            Log.d(TAG, "Workspace loading begins (" + reason + ")");
+        }
+        mWorkspaceLoading = true;
+        armWorkspaceLoadingWatchdog();
+    }
+
+    private void endWorkspaceLoading(String reason) {
+        if (mWorkspaceLoading) {
+            Log.d(TAG, "Workspace loading ends (" + reason + ")");
+        }
+        mWorkspaceLoading = false;
+        mHandler.removeCallbacks(mWorkspaceLoadingWatchdog);
+    }
+
     private void onWorkspaceLoadingWatchdog() {
         if (!mWorkspaceLoading || isDestroyed() || isFinishing() || mWorkspace == null) {
             return;
@@ -1434,11 +1466,69 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             armWorkspaceLoadingWatchdog();
             return;
         }
-        Log.w(TAG, "Workspace loading made no progress for " + WORKSPACE_LOADING_WATCHDOG_MS
-                + " ms, the bind never finished: releasing the loading state");
-        mWorkspaceLoading = false;
-        placeCustomElements("workspaceLoadingWatchdog");
-        mWorkspace.onWorkspaceLoadFinished();
+        final WorkspaceLoadWatch.Snapshot snapshot = mModel != null ? mModel.loadSnapshot() : null;
+        if (snapshot == null) {
+            endWorkspaceLoading("watchdog, no model");
+            return;
+        }
+        Log.w(TAG, "Workspace load silent for " + WORKSPACE_LOADING_WATCHDOG_MS + " ms, " + snapshot
+                + "; worker thread: " + workerStack());
+        switch (WorkspaceLoadWatch.decide(snapshot, mLoadWatchRestarts, mLoadWatchExtraWaits)) {
+            case WAIT_MORE:
+                mLoadWatchExtraWaits++;
+                Log.w(TAG, "Workspace load " + snapshot.loadId + " still running on the worker thread, waiting");
+                armWorkspaceLoadingWatchdog();
+                break;
+            case RESTART:
+                mLoadWatchRestarts++;
+                Log.w(TAG, "Workspace load " + snapshot.loadId + " made no progress for "
+                        + WORKSPACE_LOADING_WATCHDOG_MS + " ms, starting it again");
+                restartWorkspaceLoad("watchdog, load " + snapshot.loadId + " silent");
+                break;
+            default:
+                Log.e(TAG, "Workspace load " + snapshot.loadId + " made no progress after " + mLoadWatchRestarts
+                        + " restarts, the bind never finished: releasing the loading state; " + snapshot);
+                endWorkspaceLoading("watchdog release");
+                placeCustomElements("workspaceLoadingWatchdog");
+                mWorkspace.onWorkspaceLoadFinished();
+                break;
+        }
+    }
+
+    /** The top frames of the worker thread's stack: what the loader waits behind, if it waits. */
+    private static String workerStack() {
+        try {
+            Thread worker = LauncherModel.getWorkerThread();
+            if (worker == null) {
+                return "no worker thread";
+            }
+            StackTraceElement[] stack = worker.getStackTrace();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < Math.min(8, stack.length); i++) {
+                if (i > 0) {
+                    sb.append(" < ");
+                }
+                sb.append(stack[i].getClassName().substring(stack[i].getClassName().lastIndexOf('.') + 1))
+                        .append('.').append(stack[i].getMethodName()).append(':').append(stack[i].getLineNumber());
+            }
+            return sb.length() == 0 ? "empty" : sb.toString();
+        } catch (RuntimeException e) {
+            return "unavailable (" + e + ")";
+        }
+    }
+
+    /**
+     * Loads the workspace again from the database, without loading all the apps again if they are loaded: the
+     * state of the load is reset (the workspace only) and a load is started, with the flag and the watchdog.
+     */
+    private void restartWorkspaceLoad(String reason) {
+        if (mModel == null) {
+            endWorkspaceLoading("restart without a model");
+            return;
+        }
+        beginWorkspaceLoading(reason);
+        mModel.resetLoadedState(false, true, reason);
+        mModel.startLoader(true, -1, reason);
     }
 
     private void requestWorkspaceLoader(String source, boolean throttle) {
@@ -1451,10 +1541,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             return;
         }
         mLastWorkspaceNullLoaderMs = now;
-        mWorkspaceLoading = true;
-        armWorkspaceLoadingWatchdog();
+        beginWorkspaceLoading(source);
         Log.w(TAG, "Starting workspace loader from " + source);
-        mModel.startLoader(true, -1);
+        mModel.startLoader(true, -1, source);
     }
 
 
@@ -1732,11 +1821,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (sPausedFromUserAction) {
                 // If the user leaves launcher, then we should just load items asynchronously when
                 // they return.
-                mModel.startLoader(true, -1);
+                mModel.startLoader(true, -1, "launcher created");
             } else {
                 // We only load the page synchronously if the user rotates (or triggers a
                 // configuration change) while launcher is in the foreground
-                mModel.startLoader(true, mWorkspace.getCurrentPage());
+                mModel.startLoader(true, mWorkspace.getCurrentPage(), "launcher created, page bound at once");
             }
         }
         markStartup("loader");
@@ -2675,18 +2764,33 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         boolean rebindRebuildsUserPage = false;
         try {
             long nowReload = SystemClock.uptimeMillis();
-            if (mWorkspaceLoading || nowReload - mLastForceReloadMs < FORCE_RELOAD_THROTTLE_MS) {
-                Log.d(TAG, "recreateView: loader already in flight, skipping forceReload()");
+            // The flag is the launcher's; whether a load really runs is the model's to say (R1)
+            final WorkspaceLoadWatch.Snapshot snapshot = mModel.loadSnapshot();
+            final boolean liveLoad = snapshot.alive();
+            if (mWorkspaceLoading && !liveLoad) {
+                Log.w(TAG, "Loading flag set without a live load, reloading (" + snapshot + ")");
+            }
+            if ((mWorkspaceLoading && liveLoad) || nowReload - mLastForceReloadMs < FORCE_RELOAD_THROTTLE_MS) {
+                if (mWorkspaceLoading && liveLoad) {
+                    // Not lost: when that load has finished, it is run again if it began to bind before this request
+                    mSkippedReloadAtMs = nowReload;
+                    Log.d(TAG, "recreateView: load " + snapshot.loadId
+                            + " in flight, the reload is kept until it has finished");
+                } else {
+                    Log.d(TAG, "recreateView: reload asked for a moment ago, skipping forceReload()");
+                }
             } else {
                 mLastForceReloadMs = nowReload;
+                mSkippedReloadAtMs = 0L;
+                mLoadWatchRestarts = 0;
+                mLoadWatchExtraWaits = 0;
                 Log.d(TAG, "recreateView: forceReload()");
                 // Loading from here, not only from startBinding(): the reload takes a few dozen ms
                 // on the loader thread first, and the layout checks of this same resume used to
                 // judge the freshly created, still empty bar in that gap (as requestWorkspaceLoader()
                 // does; the watchdog covers a bind that never comes).
-                mWorkspaceLoading = true;
-                armWorkspaceLoadingWatchdog();
-                mModel.forceReload();
+                beginWorkspaceLoading("recreateView");
+                mModel.forceReload("recreateView");
                 rebindRebuildsUserPage = LauncherApplication.sApp.getResources().getBoolean(R.bool.apps_custom_page);
             }
         } catch (Exception e) {
@@ -3149,7 +3253,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (isChangingConfigurations()) {
             // Check if the loader should be stopped (using ViewModel logic)
             if (mViewModel.shouldStopLoader()) {
-                mModel.stopLoader();
+                mModel.stopLoader("destroy, configuration change");
             }
             // Release UI resources
             if (mAppsCustomizeContent != null) {
@@ -3157,7 +3261,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             }
         } else {
             // Activity is permanently destroyed
-            mModel.stopLoader();
+            mModel.stopLoader("destroy");
             if (mAppsCustomizeContent != null) {
                 mAppsCustomizeContent.surrender();
             }
@@ -8081,11 +8185,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         // so the workspace is loading for the whole bind, whoever started it. Only binds started
         // through requestWorkspaceLoader() used to set this; a rebind from mModel.forceReload()
         // (recreateView(), on the way back from the settings) or from the model itself ran with
-        // mWorkspaceLoading == false, i.e. with isWorkspaceLocked() false and every guard that
+        // mWorkspaceLoading false, i.e. with isWorkspaceLocked() false and every guard that
         // relies on it open, while pages with not yet bound icons looked empty. Upstream Launcher3
         // does the same here (setWorkspaceLoading(true)). finishBindingItems() clears it.
-        mWorkspaceLoading = true;
-        armWorkspaceLoadingWatchdog();
+        beginWorkspaceLoading("startBinding");
         mBindOnResumeCallbacks.clear();
         mWorkspace.clearDropTargets();
         mWorkspace.removeAllWorkspaceScreens();
@@ -8594,9 +8697,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 completeAdd(sPendingAddList.get(i));
             }
             sPendingAddList.clear();
-            mWorkspaceLoading = false;
-            mHandler.removeCallbacks(mWorkspaceLoadingWatchdog);
+            endWorkspaceLoading("finishBindingItems");
             mLastWorkspaceNullLoaderMs = 0L;
+            mLoadWatchRestarts = 0;
+            mLoadWatchExtraWaits = 0;
+            runSkippedReloadIfDue();
             if (upgradePath) {
                 mWorkspace.getUniqueComponents(true, null);
                 mIntentsOnWorkspaceFromUpgradePath = mWorkspace.getUniqueComponents(true, null);
@@ -8614,6 +8719,32 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mWorkspace.onWorkspaceLoadFinished();
             mHomeRecovery.scheduleHomeLayoutWatchdog("finishBindingItems", !isAllAppsVisible());
         }
+    }
+
+    /**
+     * A reload that recreateView() kept while a load was binding runs now, once, when that load began to bind before
+     * it was asked for (the bind then read the settings before they changed); a bind that began later has seen them.
+     */
+    private void runSkippedReloadIfDue() {
+        final long skippedAt = mSkippedReloadAtMs;
+        if (skippedAt == 0L || mModel == null) {
+            return;
+        }
+        mSkippedReloadAtMs = 0L;
+        final WorkspaceLoadWatch.Snapshot snapshot = mModel.loadSnapshot();
+        if (!WorkspaceLoadWatch.mustRunSkippedReload(snapshot.bindStartedMs, skippedAt)) {
+            Log.d(TAG, "Reload kept while load " + snapshot.loadId + " was binding dropped: the bind began after it");
+            return;
+        }
+        mHandler.post(() -> {
+            if (mModel == null || isDestroyed() || isFinishing()) {
+                return;
+            }
+            Log.i(TAG, "Running the reload skipped while load " + snapshot.loadId + " was binding");
+            mLastForceReloadMs = SystemClock.uptimeMillis();
+            beginWorkspaceLoading("skipped reload");
+            mModel.forceReload("skipped reload");
+        });
     }
 
     @Override
@@ -8863,7 +8994,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public void dumpState() {
         Log.d(TAG, "BEGIN launcher66 dump state for launcher " + this);
         Log.d(TAG, "mSavedState=" + mSavedState);
-        Log.d(TAG, "mWorkspaceLoading=" + mWorkspaceLoading);
+        Log.d(TAG, "workspaceLoading: " + mWorkspaceLoading);
         Log.d(TAG, "mRestoring=" + mRestoring);
         Log.d(TAG, "mWaitingForResult=" + mWaitingForResult);
         Log.d(TAG, "mSavedInstanceState=" + mSavedInstanceState);

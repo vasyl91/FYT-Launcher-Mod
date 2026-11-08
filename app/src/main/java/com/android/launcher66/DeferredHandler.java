@@ -107,6 +107,13 @@ public class DeferredHandler {
         }
     }
 
+    /** How many runnables wait in the queue. */
+    public int size() {
+        synchronized (this.mQueue) {
+            return this.mQueue.size();
+        }
+    }
+
     public void cancel() {
         synchronized (this.mQueue) {
             this.mQueue.clear();

@@ -97,6 +97,11 @@ public class LauncherModel extends BroadcastReceiver {
     }
     private static final Handler sWorker = new Handler(sWorkerThread.getLooper());
 
+    /** The loader's thread, for the launcher to log what it is doing when a load goes quiet. */
+    static Thread getWorkerThread() {
+        return sWorkerThread;
+    }
+
     // We start off with everything not loaded.  After that, we assume that
     // our monitoring of the package manager provides all updates and we never
     // need to do a requery.  These are only ever touched from the loader thread.
@@ -1208,7 +1213,7 @@ public class LauncherModel extends BroadcastReceiver {
                         PackageUpdatedTask.OP_UNAVAILABLE, packages));
         } else if (Intent.ACTION_LOCALE_CHANGED.equals(action)) {
             // If we have changed locale we need to clear out the labels in all apps/workspace.
-            forceReload();
+            forceReload("locale changed");
         } else if (Intent.ACTION_CONFIGURATION_CHANGED.equals(action)) {
              // Check if configuration change was an mcc/mnc change which would affect app resources
              // and we would need to clear out the labels in all apps/workspace. Same handling as
@@ -1223,7 +1228,7 @@ public class LauncherModel extends BroadcastReceiver {
             int delay = mFirstUse ? 300000 : 0;
             if (SystemClock.elapsedRealtime() > delay && mPreviousConfigMcc != currentConfig.mcc) {
                 Log.d(TAG, "Reload apps on config change. curr_mcc:" + currentConfig.mcc + " prevmcc:" + mPreviousConfigMcc);
-                forceReload();
+                forceReload("mcc changed");
             }
             if (mFirstUse) {
                 String spKey = LauncherAppState.getSharedPreferencesKey();
@@ -1247,8 +1252,8 @@ public class LauncherModel extends BroadcastReceiver {
         }
     }
 
-    public void forceReload() {
-        resetLoadedState(true, true);
+    public void forceReload(String reason) {
+        resetLoadedState(true, true, reason);
 
         // Do this here because if the launcher activity is running it will be restarted.
         // If it's not running startLoaderFromBackground will merely tell it that it needs
@@ -1256,11 +1261,11 @@ public class LauncherModel extends BroadcastReceiver {
         startLoaderFromBackground();
     }
 
-    public void resetLoadedState(boolean resetAllAppsLoaded, boolean resetWorkspaceLoaded) {
+    public void resetLoadedState(boolean resetAllAppsLoaded, boolean resetWorkspaceLoaded, String reason) {
         synchronized (mLock) {
             // Stop any existing loaders first, so they don't set mAllAppsLoaded or
             // mWorkspaceLoaded to true later
-            stopLoaderLocked();
+            stopLoaderLocked(reason);
             if (resetAllAppsLoaded) mAllAppsLoaded = false;
             if (resetWorkspaceLoaded) mWorkspaceLoaded = false;
         }
@@ -1284,25 +1289,30 @@ public class LauncherModel extends BroadcastReceiver {
             }
         }
         if (runLoader) {
-            startLoader(false, -1);
+            startLoader(false, -1, "background request");
         }
     }
 
     // If there is already a loader task running, tell it to stop.
     // returns true if isLaunching() was true on the old task
-    private boolean stopLoaderLocked() {
+    private boolean stopLoaderLocked(String reason) {
         boolean isLaunching = false;
         LoaderTask oldTask = mLoaderTask;
         if (oldTask != null) {
             if (oldTask.isLaunching()) {
                 isLaunching = true;
             }
-            oldTask.stopLocked();
+            oldTask.stopLocked(reason);
         }
         return isLaunching;
     }
 
     public void startLoader(boolean isLaunching, int synchronousBindPage) {
+        startLoader(isLaunching, synchronousBindPage, "unspecified");
+    }
+
+    /** @param reason why the load is started, for the log (R1: every load says why it started and why it stopped) */
+    public void startLoader(boolean isLaunching, int synchronousBindPage, String reason) {
         synchronized (mLock) {
             if (DEBUG_LOADERS) {
                 Log.d(TAG, "startLoader isLaunching=" + isLaunching);
@@ -1316,8 +1326,8 @@ public class LauncherModel extends BroadcastReceiver {
             if (mCallbacks != null && mCallbacks.get() != null) {
                 // If there is already one running, tell it to stop.
                 // also, don't downgrade isLaunching if we're already running
-                isLaunching = isLaunching || stopLoaderLocked();
-                mLoaderTask = new LoaderTask(mApp.getContext(), isLaunching);
+                isLaunching = isLaunching || stopLoaderLocked("replaced by a load started for " + reason);
+                mLoaderTask = new LoaderTask(mApp.getContext(), isLaunching, reason);
                 if (synchronousBindPage > -1 && mAllAppsLoaded && mWorkspaceLoaded) {
                     mLoaderTask.runBindSynchronousPage(synchronousBindPage);
                 } else {
@@ -1338,13 +1348,30 @@ public class LauncherModel extends BroadcastReceiver {
         }
     }
 
-    public void stopLoader() {
+    public void stopLoader(String reason) {
         synchronized (mLock) {
             if (mLoaderTask != null) {
-                mLoaderTask.stopLocked();
+                mLoaderTask.stopLocked(reason);
             }
         }
     }
+
+    /**
+     * What the model knows of the load, for the launcher to judge a silent one by (WorkspaceLoadWatch). Read under
+     * the lock, no I/O. After a load is gone the numbers are those of the last one.
+     */
+    public WorkspaceLoadWatch.Snapshot loadSnapshot() {
+        synchronized (mLock) {
+            LoaderTask task = mLoaderTask;
+            return new WorkspaceLoadWatch.Snapshot(task != null ? task.mId : sLastLoadId, task != null,
+                    task != null && task.mStopped, mIsLoaderTaskRunning, mWorkspaceLoaded, mAllAppsLoaded,
+                    mHandler.size(), task != null ? task.mBindStartedMs : sLastBindStartedMs);
+        }
+    }
+
+    private static int sLoadIdSeq = 0;
+    private static int sLastLoadId = 0;
+    private static long sLastBindStartedMs = 0L;
 
     /** Loads the workspace screens db into a map of Rank -> ScreenId */
     public static TreeMap<Integer, Long> loadWorkspaceScreensDb(Context context) {
@@ -1511,12 +1538,21 @@ public class LauncherModel extends BroadcastReceiver {
         private boolean mIsLoadingAndBindingWorkspace;
         private boolean mStopped;
         private boolean mLoadAndBindStepFinished;
+        private final int mId = ++sLoadIdSeq;
+        private final String mStartReason;
+        private long mStartedMs;
+        private volatile long mBindStartedMs;
+        private int mDroppedSteps;
+        private String mDropReason;
+        private boolean mDroppedLogged;
 
         private HashMap<Object, CharSequence> mLabelCache;
 
-        LoaderTask(Context context, boolean isLaunching) {
+        LoaderTask(Context context, boolean isLaunching, String startReason) {
             mContext = context;
             mIsLaunching = isLaunching;
+            mStartReason = startReason;
+            sLastLoadId = mId;
             mLabelCache = new HashMap<Object, CharSequence>();
         }
 
@@ -1539,13 +1575,23 @@ public class LauncherModel extends BroadcastReceiver {
 
             boolean isUpgradePath = false;
             if (!mWorkspaceLoaded) {
+                final long loadStart = SystemClock.uptimeMillis();
                 isUpgradePath = loadWorkspace();
                 synchronized (LoaderTask.this) {
                     if (mStopped) {
+                        Log.i(TAG, "Loader " + mId + " was stopped while loading the workspace");
                         return isUpgradePath;
                     }
                     mWorkspaceLoaded = true;
                 }
+                int widgets;
+                int items;
+                synchronized (sBgLock) {
+                    widgets = sBgAppWidgets.size();
+                    items = sBgWorkspaceItems.size();
+                }
+                Log.i(TAG, "Loader " + mId + " workspace loaded: " + items + " items, " + widgets
+                        + " widgets in " + (SystemClock.uptimeMillis() - loadStart) + " ms");
             }
 
             // Bind the workspace
@@ -1639,6 +1685,8 @@ public class LauncherModel extends BroadcastReceiver {
         public void run() {
             boolean isUpgrade = false;
 
+            mStartedMs = SystemClock.uptimeMillis();
+            Log.i(TAG, "Loader " + mId + " started (" + mStartReason + ")");
             synchronized (mLock) {
                 mIsLoaderTaskRunning = true;
             }
@@ -1727,10 +1775,26 @@ public class LauncherModel extends BroadcastReceiver {
             }
         }
 
-        public void stopLocked() {
+        public void stopLocked(String reason) {
             synchronized (LoaderTask.this) {
+                if (!mStopped) {
+                    Log.i(TAG, "Loader " + mId + " stopped by " + reason);
+                }
                 mStopped = true;
                 this.notify();
+            }
+        }
+
+        /** Counted for the one line that says how many bind steps this load lost (see logDropped()). */
+        private void noteDropped(String why) {
+            mDroppedSteps++;
+            mDropReason = why;
+        }
+
+        private void logDropped() {
+            if (mDroppedSteps > 0 && !mDroppedLogged) {
+                mDroppedLogged = true;
+                Log.w(TAG, "Loader " + mId + " dropped " + mDroppedSteps + " bind steps (" + mDropReason + ")");
             }
         }
 
@@ -1744,15 +1808,18 @@ public class LauncherModel extends BroadcastReceiver {
         Callbacks tryGetCallbacks(Callbacks oldCallbacks) {
             synchronized (mLock) {
                 if (mStopped) {
+                    noteDropped("stopped");
                     return null;
                 }
 
                 if (mCallbacks == null) {
+                    noteDropped("other launcher");
                     return null;
                 }
 
                 final Callbacks callbacks = mCallbacks.get();
                 if (callbacks != oldCallbacks) {
+                    noteDropped("other launcher");
                     return null;
                 }
                 if (callbacks == null) {
@@ -2687,6 +2754,9 @@ public class LauncherModel extends BroadcastReceiver {
                 public void run() {
                     Callbacks callbacks = tryGetCallbacks(oldCallbacks);
                     if (callbacks != null) {
+                        mBindStartedMs = SystemClock.uptimeMillis();
+                        sLastBindStartedMs = mBindStartedMs;
+                        Log.i(TAG, "Loader " + mId + " bind started");
                         callbacks.startBinding();
                     }
                 }
@@ -2738,6 +2808,9 @@ public class LauncherModel extends BroadcastReceiver {
                     Callbacks callbacks = tryGetCallbacks(oldCallbacks);
                     if (callbacks != null) {
                         callbacks.finishBindingItems(isUpgradePath);
+                        Log.i(TAG, "Loader " + mId + " bind finished in " + (SystemClock.uptimeMillis() - t) + " ms");
+                    } else {
+                        logDropped();
                     }
 
                     // If we're profiling, ensure this is the last thing in the queue.

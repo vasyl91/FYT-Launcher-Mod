@@ -33,7 +33,7 @@ public class LauncherAppState {
     private final ContentObserver mFavoritesObserver = new ContentObserver(new Handler(Looper.getMainLooper())) {
         @Override
         public void onChange(boolean selfChange) {
-            LauncherAppState.this.mModel.resetLoadedState(false, true);
+            LauncherAppState.this.mModel.resetLoadedState(false, true, "favorites changed");
             LauncherAppState.this.mModel.startLoaderFromBackground();
         }
     };
