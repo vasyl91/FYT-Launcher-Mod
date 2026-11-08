@@ -1567,23 +1567,37 @@ public class Workspace extends SmoothPagedView
     /** The box the pages fill, on the screen, as last measured; see barBoxOnScreen(). */
     private final Rect mBarBox = new Rect();
     private final Rect mBarBoxApplied = new Rect();
-    private final int[] mBarBoxAt = new int[2];
+    private final int[] mBarRootAt = new int[2];
     private boolean mBarBoxApplyPosted;
 
+    private final int[] mBarBoxPageAt = new int[2];
+    private View mBarBoxWatched;
+    private final View.OnLayoutChangeListener mBarBoxListener =
+            (v, l, t, r, b, ol, ot, or, ob) -> scheduleBarBoxCheck();
+
     /**
-     * The rectangle on the screen that the layouts of the pages fill. A bar at the top that belongs to a
-     * page starts at its top, below the status bar and the camera cut-out, and the windows of the auto-hide
-     * bar and of its handle start at the same place (see TopBarFrame). It is measured, not a fixed offset: the
-     * status bar is a different height on every device, and the cut-out may take the side of the screen too.
-     * While the workspace is not at rest (zoomed out, animating) the last rectangle measured at rest is kept.
-     * Before the first layout it comes from the insets of the launcher's window.
+     * The box of the first page on the screen, where a bar at the top that is part of that page starts: below the
+     * status bar and the camera cut-out, not in the cut-out at the side (see PageBox and TopBarFrame). The windows of
+     * the auto-hide bar and of its handle start at the same place, so that they lie where the page's own bar lies.
+     *
+     * <p>It is the root of the page's layout that is measured (workspaceView, the parent of the bar), not the
+     * workspace: the workspace is laid out from the very top of the launcher's window and only the layout of the
+     * page starts below the status bar. While the workspace is not at rest (zoomed out, animating) the last
+     * rectangle measured at rest is kept. Before the first layout it comes from the insets of the launcher's window.
      */
     Rect barBoxOnScreen() {
-        boolean measurable = isAttachedToWindow() && getWidth() > 0 && getHeight() > 0 && mState == State.NORMAL;
+        watchBarBox();
+        View root = workspaceView;
+        View page = customScreen[0];
+        boolean measurable = isAttachedToWindow() && root != null && page != null && root.isAttachedToWindow()
+                && page.isAttachedToWindow() && root.getWidth() > 0 && root.getHeight() > 0 && mState == State.NORMAL;
         if (measurable) {
-            getLocationOnScreen(mBarBoxAt);
-            mBarBox.set(mBarBoxAt[0] + getPaddingLeft(), mBarBoxAt[1] + getPaddingTop(),
-                    mBarBoxAt[0] + getWidth() - getPaddingRight(), mBarBoxAt[1] + getHeight() - getPaddingBottom());
+            root.getLocationOnScreen(mBarRootAt);
+            page.getLocationOnScreen(mBarBoxPageAt);
+            int[] workspaceAt = new int[2];
+            getLocationOnScreen(workspaceAt);
+            PageBox.Box box = PageBox.of(mBarRootAt[0] - mBarBoxPageAt[0], mBarRootAt[1], root.getWidth(), workspaceAt[0]);
+            mBarBox.set(box.left, box.top, box.right, box.top + root.getHeight());
         } else if (mBarBox.isEmpty()) {
             int left = 0;
             int top = mLauncher == null ? 0 : mLauncher.getStatusBarHeight();
@@ -1598,6 +1612,21 @@ public class Workspace extends SmoothPagedView
             mBarBox.set(left, top, Math.max(left, right), top);
         }
         return new Rect(mBarBox);
+    }
+
+    /** Asks for the box again after every layout of the page's layout root (and after the page is built again). */
+    private void watchBarBox() {
+        if (workspaceView == mBarBoxWatched) {
+            return;
+        }
+        if (mBarBoxWatched != null) {
+            mBarBoxWatched.removeOnLayoutChangeListener(mBarBoxListener);
+        }
+        mBarBoxWatched = workspaceView;
+        if (workspaceView != null) {
+            workspaceView.addOnLayoutChangeListener(mBarBoxListener);
+            scheduleBarBoxCheck();
+        }
     }
 
     @Override
@@ -1660,6 +1689,7 @@ public class Workspace extends SmoothPagedView
 
     /** The horizontal bar at the top and the vertical bar at the right, as chosen (BarConstraints). */
     private void applyBarConstraints(View layoutRoot, boolean verticalBarOn) {
+        watchBarBox();   // the page's layout root may be a new one: its layout moves the bar's windows
         if (!(layoutRoot instanceof androidx.constraintlayout.widget.ConstraintLayout)) {
             return;
         }
@@ -1956,6 +1986,7 @@ public class Workspace extends SmoothPagedView
                 isOverlayShowing = true;
                 final View addedBar = overlayHorizontalBar;
                 addedBar.post(addedBar::requestApplyInsets);
+                logTopBarRects(addedBar);
                 if (mOverlayPersistent && mBuildStandby) {
                     // Built and laid out in advance, invisible: showing it is a change of alpha
                     // (activatePersistentOverlay()).
@@ -2018,6 +2049,41 @@ public class Workspace extends SmoothPagedView
         setupOverlayWidgetBar();
         // The widgets of the bar belong to the page's own bar while the window is in standby
         refreshWidgetBarAfterWake("persistent bar standby");
+    }
+
+    private boolean mTopBarRectsLogged;
+
+    /**
+     * Once, when the bar at the top has been drawn for the first time: where the bar of the page lies and where
+     * the window's bar lies, on the screen. They must be the same rectangle; this is the line to look at when
+     * they are not.
+     */
+    private void logTopBarRects(View windowRoot) {
+        if (mTopBarRectsLogged || workspaceView == null || !mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false)) {
+            return;
+        }
+        final View windowBg = windowRoot.findViewById(R.id.iv_list_bg);
+        final View pageBg = workspaceView.findViewById(R.id.iv_list_bg);
+        if (windowBg == null || pageBg == null) {
+            return;
+        }
+        windowBg.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int l, int t, int r, int b, int ol, int ot, int or, int ob) {
+                if (r - l <= 0 || b - t <= 0 || !v.isAttachedToWindow() || !pageBg.isAttachedToWindow()) {
+                    return;
+                }
+                v.removeOnLayoutChangeListener(this);
+                mTopBarRectsLogged = true;
+                int[] page = new int[2];
+                int[] overlay = new int[2];
+                pageBg.getLocationOnScreen(page);
+                v.getLocationOnScreen(overlay);
+                Log.i(TAG, "Top bar: page " + page[0] + "," + page[1] + "," + (page[0] + pageBg.getWidth()) + ","
+                        + (page[1] + pageBg.getHeight()) + ", overlay " + overlay[0] + "," + overlay[1] + ","
+                        + (overlay[0] + v.getWidth()) + "," + (overlay[1] + v.getHeight()));
+            }
+        });
     }
 
     private void setupOverlayView(int screenWidth, int horizontalBarHeight) {
