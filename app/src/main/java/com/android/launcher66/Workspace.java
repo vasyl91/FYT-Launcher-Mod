@@ -59,6 +59,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.ViewTreeObserver;
+import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -1550,13 +1551,98 @@ public class Workspace extends SmoothPagedView
         Log.d(TAG, "Widget bar refreshed after wake: " + source);
     }
 
+    /** The box the pages fill, on the screen, as last measured; see barBoxOnScreen(). */
+    private final Rect mBarBox = new Rect();
+    private final Rect mBarBoxApplied = new Rect();
+    private final int[] mBarBoxAt = new int[2];
+    private boolean mBarBoxApplyPosted;
+
     /**
-     * Where the box of the home screen starts, from the top of the screen: the status bar in landscape (the same
-     * rule as the height of the box, see getHorizontalBarHeight()), nothing in portrait. A bar at the top starts there.
+     * The rectangle on the screen that the layouts of the pages fill. A bar at the top that belongs to a
+     * page starts at its top, below the status bar and the camera cut-out, and the windows of the auto-hide
+     * bar and of its handle start at the same place (see TopBarFrame). It is measured, not a fixed offset: the
+     * status bar is a different height on every device, and the cut-out may take the side of the screen too.
+     * While the workspace is not at rest (zoomed out, animating) the last rectangle measured at rest is kept.
+     * Before the first layout it comes from the insets of the launcher's window.
      */
-    int topBarOffset() {
-        boolean portrait = orientation == Configuration.ORIENTATION_PORTRAIT;
-        return portrait || mLauncher == null ? 0 : mLauncher.getStatusBarHeight();
+    Rect barBoxOnScreen() {
+        boolean measurable = isAttachedToWindow() && getWidth() > 0 && getHeight() > 0 && mState == State.NORMAL;
+        if (measurable) {
+            getLocationOnScreen(mBarBoxAt);
+            mBarBox.set(mBarBoxAt[0] + getPaddingLeft(), mBarBoxAt[1] + getPaddingTop(),
+                    mBarBoxAt[0] + getWidth() - getPaddingRight(), mBarBoxAt[1] + getHeight() - getPaddingBottom());
+        } else if (mBarBox.isEmpty()) {
+            int left = 0;
+            int top = mLauncher == null ? 0 : mLauncher.getStatusBarHeight();
+            int right = Launcher.screenWidth;
+            View decor = mLauncher == null ? null : mLauncher.getWindow().getDecorView();
+            WindowInsets insets = decor == null ? null : decor.getRootWindowInsets();
+            if (insets != null) {
+                left = insets.getSystemWindowInsetLeft();
+                top = insets.getSystemWindowInsetTop();
+                right = Launcher.screenWidth - insets.getSystemWindowInsetRight();
+            }
+            mBarBox.set(left, top, Math.max(left, right), top);
+        }
+        return new Rect(mBarBox);
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        scheduleBarBoxCheck();
+    }
+
+    /**
+     * The box can change without the workspace changing its own size (the insets, a cut-out at another
+     * side after a rotation), so every layout asks once; a change moves the windows of the bar at the top.
+     */
+    private void scheduleBarBoxCheck() {
+        if (mBarBoxApplyPosted) {
+            return;
+        }
+        mBarBoxApplyPosted = true;
+        post(() -> {
+            mBarBoxApplyPosted = false;
+            applyBarBoxChange();
+        });
+    }
+
+    private void applyBarBoxChange() {
+        Rect box = barBoxOnScreen();
+        if (box.equals(mBarBoxApplied)) {
+            return;
+        }
+        mBarBoxApplied.set(box);
+        if (mPrefs == null || !mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false)) {
+            return;
+        }
+        Log.i(TAG, "Horizontal bar at the top: box " + box.left + "," + box.top + "," + box.right + ","
+                + box.bottom + " on screen");
+        synchronized (overlayLock) {
+            if (overlayHorizontalBar != null && overlayWindowParams != null && overlayWindowManager != null
+                    && overlayHorizontalBar.isAttachedToWindow()) {
+                TopBarFrame.Overlay frame = TopBarFrame.overlay(box.left, box.top, box.right);
+                overlayWindowParams.x = frame.x;
+                overlayWindowParams.y = frame.y;
+                overlayWindowParams.width = frame.width;
+                // A copy with the height the window really has, as setOverlayTouchable() does
+                WindowManager.LayoutParams params = new WindowManager.LayoutParams();
+                params.copyFrom(overlayWindowParams);
+                int height = overlayHorizontalBar.getHeight();
+                if (height > 0) {
+                    params.height = height;
+                }
+                try {
+                    overlayWindowManager.updateViewLayout(overlayHorizontalBar, params);
+                } catch (Exception e) {
+                    Log.w(TAG, "The bar at the top could not follow the box", e);
+                }
+            }
+        }
+        if (mEdgeHandle != null) {
+            applyEdgeHandleGeometry();
+        }
     }
 
     /** The horizontal bar at the top and the vertical bar at the right, as chosen (BarConstraints). */
@@ -1747,6 +1833,10 @@ public class Workspace extends SmoothPagedView
             int screenWidth = Launcher.screenWidth;
             int screenHeight = Launcher.screenHeight;
             final int horizontalBarHeight = getHorizontalBarHeight(screenWidth, screenHeight);
+            // The content is sized from the width of the window: at the top that is the box, which a
+            // cut-out at the side makes narrower than the screen.
+            final boolean topBar = mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
+            final int barWidth = topBar ? Math.max(1, barBoxOnScreen().width()) : screenWidth;
 
             // Create overlay window parameters
             overlayWindowParams = new WindowManager.LayoutParams(
@@ -1770,8 +1860,24 @@ public class Workspace extends SmoothPagedView
 
             // At the top the bar sits below the status bar (the inset listener moves the window)
             boolean barAtTop = mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
-            overlayWindowParams.gravity = barAtTop ? Gravity.TOP : Gravity.BOTTOM;
-            overlayWindowParams.y = barAtTop ? topBarOffset() : 0;
+            if (barAtTop) {
+                // From the top of the box the pages fill, and as wide as it: not under the status bar
+                // and not in the cut-out at the side (TopBarFrame)
+                Rect box = barBoxOnScreen();
+                TopBarFrame.Overlay frame = TopBarFrame.overlay(box.left, box.top, box.right);
+                overlayWindowParams.gravity = Gravity.TOP | Gravity.LEFT;
+                overlayWindowParams.x = frame.x;
+                overlayWindowParams.y = frame.y;
+                overlayWindowParams.width = frame.width;
+                if (!box.equals(mBarBoxApplied)) {
+                    mBarBoxApplied.set(box);
+                    Log.i(TAG, "Horizontal bar at the top: box " + box.left + "," + box.top + "," + box.right
+                            + "," + box.bottom + " on screen");
+                }
+            } else {
+                overlayWindowParams.gravity = Gravity.BOTTOM;
+                overlayWindowParams.y = 0;
+            }
             // No system window animation: the bar slides itself, in step with the collapsed
             // button / edge handle (startOverlayShowTransition(), hideOverlayHorizontalBar()).
             overlayWindowParams.windowAnimations = 0;
@@ -1795,7 +1901,7 @@ public class Workspace extends SmoothPagedView
             final boolean barOnTop = mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
             overlayHorizontalBar.setOnApplyWindowInsetsListener((v, insets) -> {
                 if (barOnTop) {
-                    // Below the status bar: the window sits at y = topBarOffset(), nothing to extend
+                    // Below the status bar: the window starts at the top of the box (TopBarFrame), nothing to extend
                     return insets.consumeSystemWindowInsets();
                 }
                 int bottomInset = insets.getSystemWindowInsetBottom();
@@ -1823,7 +1929,7 @@ public class Workspace extends SmoothPagedView
             }
 
             // Setup the overlay view
-            setupOverlayView(screenWidth, horizontalBarHeight);
+            setupOverlayView(barWidth, horizontalBarHeight);
             prepareOverlayForShow();
 
             // Add to window manager
@@ -2799,7 +2905,13 @@ public class Workspace extends SmoothPagedView
                     + (handleOnTop ? "top" : "bottom") + ", strip " + stripWidth + " px, touch "
                     + touchWidth + " px");
         }
-        mEdgeHandle.setPlacement(handleOnTop, handleOnRight, topBarOffset());
+        if (handleOnTop) {
+            Rect box = barBoxOnScreen();
+            TopBarFrame.Handle at = TopBarFrame.handle(box.left, box.top, box.right, screenWidth, handleOnRight);
+            mEdgeHandle.setPlacement(true, handleOnRight, at.x, at.y);
+        } else {
+            mEdgeHandle.setPlacement(false, handleOnRight, 0, 0);
+        }
         mEdgeHandle.setGeometry(stripWidth, touchWidth,
                 barHeight,
                 mPrefs.getBoolean(Keys.BLACK_BAR, false));

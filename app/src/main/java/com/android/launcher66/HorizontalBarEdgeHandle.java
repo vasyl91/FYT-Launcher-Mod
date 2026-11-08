@@ -94,9 +94,11 @@ final class HorizontalBarEdgeHandle {
 
     private int touchWidth;
     private int barHeight;
-    /** The bar is at the top, below the status bar's {@code topOffset}; else at the bottom. */
+    /** The bar is at the top, from {@code topOffset} down; else at the bottom. */
     private boolean barOnTop;
     private boolean onRightEdge;
+    /** Offsets of the window from the edge it is on and, at the top, from the top of the screen. */
+    private int offsetX;
     private int topOffset;
 
     HorizontalBarEdgeHandle(Context context, Runnable onTrigger, TargetFinder finder) {
@@ -112,15 +114,21 @@ final class HorizontalBarEdgeHandle {
      * @param barHeight  height of the horizontal bar, which the strip matches
      * @param dark       black strip instead of a white one (the "black bar" setting)
      */
-    /** @param right the handle is on the right edge and opened with a swipe to the left */
-    void setPlacement(boolean top, boolean right, int topOffset) {
-        boolean changed = barOnTop != top || onRightEdge != right || this.topOffset != topOffset;
+    /**
+     * @param right the handle is on the right edge and opened with a swipe to the left
+     * @param x     distance of the window from the edge it is on (out of a cut-out at that side)
+     * @param y     at the top: where the window starts, the top of the box the pages fill (TopBarFrame)
+     */
+    void setPlacement(boolean top, boolean right, int x, int y) {
+        boolean changed = barOnTop != top || onRightEdge != right || offsetX != x || topOffset != y;
         barOnTop = top;
         onRightEdge = right;
-        this.topOffset = topOffset;
+        offsetX = x;
+        topOffset = y;
         view.setRightEdge(right);
         if (changed && params != null && attached) {
             params.gravity = (top ? Gravity.TOP : Gravity.BOTTOM) | (right ? Gravity.RIGHT : Gravity.LEFT);
+            params.x = offsetX;
             params.y = top ? topOffset : 0;
             try {
                 windowManager.updateViewLayout(view, params);
@@ -259,6 +267,7 @@ final class HorizontalBarEdgeHandle {
         }
         // Same flags, cutout mode and bottom gravity as the bar overlay window.
         params.gravity = (barOnTop ? Gravity.TOP : Gravity.BOTTOM) | (onRightEdge ? Gravity.RIGHT : Gravity.LEFT);
+        params.x = offsetX;
         params.y = barOnTop ? topOffset : 0;
         // No system window animation: the strip fades itself, in step with the bar.
         params.windowAnimations = 0;
