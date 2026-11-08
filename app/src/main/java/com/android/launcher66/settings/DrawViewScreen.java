@@ -554,7 +554,7 @@ public class DrawViewScreen extends View implements View.OnClickListener {
             RectF r = rectFromBallIds(ids[0], ids[1], ids[2], ids[3]);
             if (r.isEmpty()) continue;
 
-            RectF fitted = fitIntoCanvas(r, cfg);
+            RectF fitted = "stats".equals(cfg.key) ? moveStatsIntoCanvas(r) : fitIntoCanvas(r, cfg);
             if (fitted.equals(r)) continue;
 
             point[ids[0]].x = (int) fitted.left;  point[ids[0]].y = (int) fitted.top;
@@ -565,6 +565,16 @@ public class DrawViewScreen extends View implements View.OnClickListener {
             Log.i("Creator", "Rectangle " + cfg.key + " did not fit above the bar: " + r + " -> " + fitted);
         }
         return changed;
+    }
+
+    /**
+     * The statistics window is only moved out of the way of the bars, by the function the home screen's layout uses
+     * (StatsBarFit); the canvas is the room beside the bars.
+     */
+    private RectF moveStatsIntoCanvas(RectF r) {
+        int[] room = {margin, margin + topInset, getWidth() - margin, getHeight() - margin};
+        int[] moved = StatsBarFit.move(new int[] {(int) r.left, (int) r.top, (int) r.right, (int) r.bottom}, room);
+        return new RectF(moved[0], moved[1], moved[2], moved[3]);
     }
 
     /** The same rectangle moved (and if needed shrunk, never below its minimum) into the canvas. */
@@ -1296,7 +1306,7 @@ public class DrawViewScreen extends View implements View.OnClickListener {
             e.putInt(cfg.key + "BottomRightY", point[ids[2]].y);
             e.putInt(cfg.key + "BottomLeftX", point[ids[3]].x);
             e.putInt(cfg.key + "BottomLeftY", point[ids[3]].y);
-            if (touchedKeys.contains(cfg.key) && !"stats".equals(cfg.key)) {
+            if (touchedKeys.contains(cfg.key)) {
                 Helpers.putUserRect(e, cfg.key, point[ids[0]].x, point[ids[0]].y,
                         point[ids[2]].x, point[ids[2]].y);
             }
@@ -1363,6 +1373,9 @@ public class DrawViewScreen extends View implements View.OnClickListener {
             e.putInt(cfg.key + "BottomRightY", point[ids[2]].y);
             e.putInt(cfg.key + "BottomLeftX", point[ids[3]].x);
             e.putInt(cfg.key + "BottomLeftY", point[ids[3]].y);
+            // The user's rectangle of the window is where the user put it, as wide as the window: the bars move
+            // the window out of their way and it returns to this place when they leave
+            Helpers.putUserRect(e, cfg.key, point[ids[0]].x, point[ids[0]].y, point[ids[2]].x, point[ids[2]].y);
             // Save the computed width and selector
             e.putInt(Keys.STATS_WIDTH, desiredWidth);
             e.putInt(Keys.STATS_WIDTH_SELECTOR, widthSelector);

@@ -493,6 +493,9 @@ public class Helpers {
 
     // Rectangle configurations with their screen keys
     private static final String[] RECTANGLE_KEYS = {"pipDual", "pipFirst", "pipSecond", "pipThird", "pipFourth", "date", "music", "radio"};
+    /** The elements that have a rectangle of the user: the layout elements and the statistics window. */
+    private static final String[] USER_RECT_KEYS = {"pipDual", "pipFirst", "pipSecond", "pipThird", "pipFourth",
+            "date", "music", "radio", "stats"};
     private static final String[] SCREEN_KEYS = {Keys.PIP_DUAL_SCREEN, Keys.PIP_FIRST_SCREEN, Keys.PIP_SECOND_SCREEN,
                                                  Keys.PIP_THIRD_SCREEN, Keys.PIP_FOURTH_SCREEN, Keys.DATE_SCREEN,
                                                  Keys.MUSIC_SCREEN, Keys.RADIO_SCREEN};
@@ -618,7 +621,7 @@ public class Helpers {
                     // It has never been set before (app's fresh start)
                     Log.i(TAG, "Rectangle " + key + " is empty");
                     elements.add(new CustomLayoutResolver.Element(key, 0, 0, 0, 0, 0, 0,
-                            PipEdgeTrim.isPipKey(key), false, true));
+                            PipEdgeTrim.isPipKey(key), true));
                 } else {
                     int[] user = getUserRect(mPrefs, key);
                     if (user == null || user[2] <= user[0] || user[3] <= user[1]) {
@@ -626,21 +629,10 @@ public class Helpers {
                     }
                     int[] min = trimMinSize(key, firstPip, secondPip, thirdPip, fourthPip);
                     elements.add(new CustomLayoutResolver.Element(key, user[0], user[1], user[2], user[3],
-                            min[0], min[1], PipEdgeTrim.isPipKey(key), false, false));
+                            min[0], min[1], PipEdgeTrim.isPipKey(key), false));
                 }
                 indexes.add(i);
             }
-            // The stats window may overlap widgets, so it is no part of the overlap checks, but
-            // nothing is moved onto it.
-            if (mPrefs.getBoolean(Keys.USER_STATS, false) && mPrefs.getInt(Keys.STATS_SCREEN, 1) - 1 == screen) {
-                RectF stats = getRectangleBounds(mPrefs, "stats");
-                if (!stats.isEmpty()) {
-                    elements.add(new CustomLayoutResolver.Element("stats", (int) stats.left, (int) stats.top,
-                            (int) stats.right, (int) stats.bottom, 0, 0, false, true, false));
-                    indexes.add(-1);
-                }
-            }
-            if (elements.isEmpty()) continue;
 
             CustomLayoutResolver.Env env = new CustomLayoutResolver.Env();
             env.margin = margin;
@@ -662,6 +654,12 @@ public class Helpers {
                 // The page is shifted by the bar's width only when the bar is on its left
                 env.verticalBarOffset = BarLayouts.sides(mPrefs, true).right ? 0 : (int) verticalBarWidth;
             }
+            // The statistics window lies above everything on the page, so it is no part of the layout of the other
+            // elements (it is not cut and they do not avoid it); the bars only move it, out of their way
+            if (mPrefs.getBoolean(Keys.USER_STATS, false) && mPrefs.getInt(Keys.STATS_SCREEN, 1) - 1 == screen) {
+                changedAny |= moveStatsOutOfTheBars(env, bar);
+            }
+            if (elements.isEmpty()) continue;
             GridGeometry grid = GridGeometry.published();
             // Away from the bars the cells are only read from the model's in-memory copy: before it is
             // loaded they would cost two database queries on this (possibly main) thread.
@@ -766,6 +764,46 @@ public class Helpers {
         }
 
         return foundOverlap || changedAny;
+    }
+
+    /**
+     * The statistics window from the rectangle the user placed, moved (never resized) out of the way of the bars of
+     * its page by {@link StatsBarFit}, saved in the corners the launcher reads when that is not where they are.
+     * Without a user rectangle there is nothing to place yet.
+     *
+     * @return true if the corners changed
+     */
+    private boolean moveStatsOutOfTheBars(CustomLayoutResolver.Env env, BarGeometry bar) {
+        int[] user = getUserRect(mPrefs, "stats");
+        if (user == null || user[2] <= user[0] || user[3] <= user[1]) {
+            return false;
+        }
+        int margin = env.margin;
+        // The room beside the bars: the same bounds the PiPs and the widgets are fitted in
+        int[] room = {margin,
+                env.minTop != Integer.MIN_VALUE ? env.minTop : margin,
+                env.maxRight != CustomLayoutResolver.NO_LIMIT ? env.maxRight : bar.rootWidth - margin,
+                env.maxBottom != CustomLayoutResolver.NO_LIMIT ? env.maxBottom : bar.rootHeight - margin};
+        int[] fitted = StatsBarFit.move(user, room);
+        RectF current = getRectangleBounds(mPrefs, "stats");
+        if (current.left == fitted[0] && current.top == fitted[1]
+                && current.right == fitted[2] && current.bottom == fitted[3]) {
+            return false;
+        }
+        if (StatsBarFit.largerThanRoom(user, room)) {
+            Log.i(TAG, "Stats window larger than the room beside the bars, aligned to "
+                    + (user[2] - user[0] > room[2] - room[0] ? "the left" : "the top"));
+        }
+        mPrefs.edit()
+                .putInt("statsTopLeftX", fitted[0]).putInt("statsTopLeftY", fitted[1])
+                .putInt("statsTopRightX", fitted[2]).putInt("statsTopRightY", fitted[1])
+                .putInt("statsBottomRightX", fitted[2]).putInt("statsBottomRightY", fitted[3])
+                .putInt("statsBottomLeftX", fitted[0]).putInt("statsBottomLeftY", fitted[3])
+                .apply();
+        Log.i(TAG, "Stats window moved by the bars: " + (int) current.left + "," + (int) current.top + ","
+                + (int) current.right + "," + (int) current.bottom + " -> " + fitted[0] + "," + fitted[1] + ","
+                + fitted[2] + "," + fitted[3]);
+        return true;
     }
 
     /** What a screen looked like after the layout was resolved: the room, the ones that stay, the ones to reset. */
@@ -902,7 +940,8 @@ public class Helpers {
      */
     private static void ensureUserRects(SharedPreferences prefs) {
         SharedPreferences.Editor editor = null;
-        for (String key : RECTANGLE_KEYS) {
+        // The statistics window has a user rectangle too: the bars move it, and it returns when they leave
+        for (String key : USER_RECT_KEYS) {
             if (getUserRect(prefs, key) != null) continue;
             RectF rect = getRectangleBounds(prefs, key);
             if (rect.isEmpty()) continue;

@@ -355,11 +355,15 @@ public final class StatsWindowSize {
             return;
         }
         int[] fitted = fitRectangle(left, width, screenWidth, margin);
-        prefs.edit()
+        android.content.SharedPreferences.Editor editor = prefs.edit()
                 .putInt(key + "TopLeftX", fitted[0]).putInt(key + "BottomLeftX", fitted[0])
                 .putInt(key + "TopRightX", fitted[1]).putInt(key + "BottomRightX", fitted[1])
-                .putInt(app ? Keys.APP_STATS_WIDTH : Keys.STATS_WIDTH, width)
-                .apply();
+                .putInt(app ? Keys.APP_STATS_WIDTH : Keys.STATS_WIDTH, width);
+        if (!app && prefs.contains(key + "UserLeft") && prefs.contains(key + "UserRight")) {
+            // The user's rectangle of the window is as wide as the window (the bars move it, never resize it)
+            editor.putInt(key + "UserLeft", fitted[0]).putInt(key + "UserRight", fitted[1]);
+        }
+        editor.apply();
     }
 
     /**

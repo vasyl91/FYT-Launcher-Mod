@@ -81,6 +81,16 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
 
     // Bounds
     private int minBorderX, minBorderY, maxBorderX, maxBorderY;
+    /** A horizontal bar at the top takes this much of the canvas: the window is moved below it, never resized. */
+    private int topInset;
+    /** The button or the handle's strip of the page of the statistics, shown while the controls are hidden. */
+    private CreatorBarMarks mBarMarks;
+
+    /** @param marks the bars' marks of the page of the statistics; @param inset the horizontal bar at the top */
+    void setBars(CreatorBarMarks marks, int inset) {
+        mBarMarks = marks;
+        topInset = inset;
+    }
 
     private static boolean firstPip = false;
     private static boolean secondPip = false;
@@ -194,6 +204,9 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
                         creatorBar.setVisibility(View.GONE); 
                     } else {
                         creatorBar.setVisibility(View.VISIBLE); 
+                    }
+                    if (mBarMarks != null) {
+                        mBarMarks.setControlsShown(creatorBar.getVisibility() == View.VISIBLE);
                     }
                     return true; 
                 }
@@ -488,7 +501,7 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         }
 
         minBorderX = margin;
-        minBorderY = margin;
+        minBorderY = margin + topInset;
         maxBorderX = getWidth() - margin;
         maxBorderY = getHeight() - margin;
 
@@ -568,8 +581,12 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
     private void moveActiveRect(Integer[] ids, RectF before, float x, float y) {
         RectF after = new RectF();
         touchHelper.move(x, y, before, minBorderX, minBorderY, maxBorderX, maxBorderY, after);
-        int dx = Math.round(after.left - before.left);
-        int dy = Math.round(after.top - before.top);
+        // Out of the way of the bars by the rule of the home screen: moved, never resized
+        int[] fitted = StatsBarFit.move(new int[] {Math.round(after.left), Math.round(after.top),
+                Math.round(after.right), Math.round(after.bottom)},
+                new int[] {minBorderX, minBorderY, maxBorderX, maxBorderY});
+        int dx = fitted[0] - Math.round(before.left);
+        int dy = fitted[1] - Math.round(before.top);
         if (dx == 0 && dy == 0) return;
         for (int id : ids) {
             point[id].x += dx;

@@ -20,19 +20,15 @@ class CustomLayoutResolverTest {
     private static final int NO = CustomLayoutResolver.NO_LIMIT;
 
     private static Element widget(String key, int l, int t, int r, int b, int minW, int minH) {
-        return new Element(key, l, t, r, b, minW, minH, false, false, false);
+        return new Element(key, l, t, r, b, minW, minH, false, false);
     }
 
     private static Element pip(String key, int l, int t, int r, int b, int minW, int minH) {
-        return new Element(key, l, t, r, b, minW, minH, true, false, false);
-    }
-
-    private static Element stats(int l, int t, int r, int b) {
-        return new Element("stats", l, t, r, b, 0, 0, false, true, false);
+        return new Element(key, l, t, r, b, minW, minH, true, false);
     }
 
     private static Element empty(String key) {
-        return new Element(key, 0, 0, 0, 0, 100, 100, false, false, true);
+        return new Element(key, 0, 0, 0, 0, 100, 100, false, true);
     }
 
     /** Horizontal bar from y=1000 with a margin of 5. */
@@ -59,17 +55,6 @@ class CustomLayoutResolverTest {
         Result r = resolve(horizontalBar(true), pip("pipFirst", 100, 700, 400, 1040, 200, 200));
         assertFalse(r.reset[0]);
         assertArrayEquals(new int[] {100, 655, 400, 995}, r.rects[0]);
-    }
-
-    @Test
-    void partlyFreeSpaceMovesAsFarAsItGoesAndCutsTheRest() {
-        // the stats window above stops the move at its bottom edge + the gap
-        Result r = resolve(horizontalBar(true),
-                pip("pipFirst", 100, 700, 400, 1040, 200, 200),
-                stats(100, 300, 400, 680));
-        assertFalse(r.reset[0]);
-        assertArrayEquals(new int[] {100, 685, 400, 995}, r.rects[0]);
-        assertArrayEquals(new int[] {100, 300, 400, 680}, r.rects[1]); // stats never moves
     }
 
     @Test
@@ -201,14 +186,6 @@ class CustomLayoutResolverTest {
     }
 
     @Test
-    void anObstacleOnTheLeftStopsTheMoveAndTheRestIsCut() {
-        Result r = resolve(verticalBar(true, 0),
-                widget("radio", 800, 100, 1300, 300, 300, 100),
-                stats(100, 100, 720, 300));
-        assertArrayEquals(new int[] {725, 100, 1200, 300}, r.rects[0]);
-    }
-
-    @Test
     void anIconOnTheLeftStopsTheMoveAtTheColumnBoundaryOfTheScreen() {
         Env env = verticalBar(true, 142);
         env.occupied[5][1] = true;
@@ -227,22 +204,7 @@ class CustomLayoutResolverTest {
         assertArrayEquals(new int[] {700, 655, 1200, 995}, r.rects[0]);
     }
 
-    // ------------------------------------------------------------ stats, overlaps, resets
-
-    @Test
-    void statsIsNeverMovedOrCutEvenUnderTheBar() {
-        Result r = resolve(horizontalBar(true), stats(100, 900, 400, 1100));
-        assertFalse(r.reset[0]);
-        assertArrayEquals(new int[] {100, 900, 400, 1100}, r.rects[0]);
-    }
-
-    @Test
-    void statsBlocksTheMoveOfWhatIsBelowIt() {
-        Result r = resolve(horizontalBar(true),
-                stats(100, 600, 400, 690),
-                widget("music", 100, 700, 400, 1040, 200, 200));
-        assertArrayEquals(new int[] {100, 695, 400, 995}, r.rects[1]);
-    }
+    // ------------------------------------------------------------ overlaps, resets
 
     // The minimum of these widgets is their whole rectangle, so no part beside the PiP is big enough.
     @Test
@@ -336,17 +298,6 @@ class CustomLayoutResolverTest {
         assertTrue(Arrays.deepEquals(a.rects, b.rects));
         assertArrayEquals(a.cut, b.cut);
         assertArrayEquals(a.reset, b.reset);
-    }
-
-    @Test
-    void theStatsWindowIsNoConflict() {
-        Result r = resolve(new Env(),
-                widget("date", 100, 100, 500, 400, 200, 100),
-                stats(300, 200, 700, 500));
-        assertFalse(r.reset[0]);
-        assertFalse(r.cut[0]);
-        assertArrayEquals(new int[] {100, 100, 500, 400}, r.rects[0]);
-        assertArrayEquals(new int[] {300, 200, 700, 500}, r.rects[1]);
     }
 
     @Test

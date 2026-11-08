@@ -55,13 +55,11 @@ public final class CustomLayoutResolver {
         public final int minHeight;
         /** PiP: a reset restarts its app, so it wins against a widget. */
         public final boolean pip;
-        /** Stats window: never moved or cut, but nobody can move onto it. */
-        public final boolean fixed;
         /** Never set (fresh start): always reset. */
         public final boolean empty;
 
         public Element(String key, int left, int top, int right, int bottom, int minWidth, int minHeight,
-                       boolean pip, boolean fixed, boolean empty) {
+                       boolean pip, boolean empty) {
             this.key = key;
             this.left = left;
             this.top = top;
@@ -70,7 +68,6 @@ public final class CustomLayoutResolver {
             this.minWidth = minWidth;
             this.minHeight = minHeight;
             this.pip = pip;
-            this.fixed = fixed;
             this.empty = empty;
         }
     }
@@ -157,7 +154,7 @@ public final class CustomLayoutResolver {
         if (env.minTop == Integer.MIN_VALUE) return;
         for (int i = 0; i < r.length; i++) {
             Element el = els.get(i);
-            if (reset[i] || el.fixed || r[i][TOP] >= env.minTop) continue;
+            if (reset[i] || r[i][TOP] >= env.minTop) continue;
             int shift = env.minTop - r[i][TOP];
             int bottom = r[i][BOTTOM] + shift;
             int limit = env.minTopBottomLimit;
@@ -192,7 +189,7 @@ public final class CustomLayoutResolver {
 
         List<Integer> kept = new ArrayList<>();
         for (int e : order) {
-            if (reset[e] || els.get(e).fixed) continue;
+            if (reset[e]) continue;
             int first = -1;
             for (int k : kept) {
                 if (overlapsOrTouches(r[e], r[k])) {
@@ -314,7 +311,7 @@ public final class CustomLayoutResolver {
             computeReach(els, s, reset, env, vertical, canMove, keep, min);
             int worst = -1;
             for (int i = 0; i < n; i++) {
-                if (reset[i] || els.get(i).fixed || s[i][hi] <= trigger) continue;
+                if (reset[i] || s[i][hi] <= trigger) continue;
                 if (min[i] + minLength(els.get(i), s[i], vertical) <= limit) continue;
                 if (worst < 0 || s[i][hi] >= s[worst][hi]) {
                     worst = i;
@@ -339,7 +336,7 @@ public final class CustomLayoutResolver {
         }
         for (int e : order) {
             Element el = els.get(e);
-            if (reset[e] || el.fixed) continue;
+            if (reset[e]) continue;
 
             int allowed = s[e][hi] > trigger ? limit : NO_LIMIT;
             for (int a = 0; a < n; a++) {
@@ -367,7 +364,7 @@ public final class CustomLayoutResolver {
             newHi[e] = end;
         }
         for (int i = 0; i < n; i++) {
-            if (reset[i] || els.get(i).fixed) continue;
+            if (reset[i]) continue;
             r[i][lo] = newLo[i];
             r[i][hi] = newHi[i];
         }
@@ -391,7 +388,7 @@ public final class CustomLayoutResolver {
         for (int e : order) {
             if (reset[e]) continue;
             Element el = els.get(e);
-            if (el.fixed || !canMove) {
+            if (!canMove) {
                 keep[e] = s[e][lo];
                 min[e] = s[e][lo];
                 continue;
@@ -459,9 +456,6 @@ public final class CustomLayoutResolver {
 
     /** Minimum length along the axis; an element drawn smaller than its minimum keeps its size. */
     private static int minLength(Element el, int[] rect, boolean vertical) {
-        if (el.fixed) {
-            return vertical ? rect[BOTTOM] - rect[TOP] : rect[RIGHT] - rect[LEFT];
-        }
         return vertical ? Math.min(el.minHeight, rect[BOTTOM] - rect[TOP])
                 : Math.min(el.minWidth, rect[RIGHT] - rect[LEFT]);
     }
