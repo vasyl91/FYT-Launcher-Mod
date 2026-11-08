@@ -928,7 +928,7 @@ public class Workspace extends SmoothPagedView
                 mBarWeatherWidget = workspaceView.findViewById(R.id.bar_widget_weather);
             }
             // After the widget bar has chosen its variant: the bars to their edges
-            applyBarConstraints(workspaceView, verticalBar);
+            applyBarConstraints(workspaceView, verticalBar, true);
             
             horizontalBarAllApps = workspaceView.findViewById(R.id.rl_allapps);
             if (blackTintBar) {
@@ -1689,13 +1689,25 @@ public class Workspace extends SmoothPagedView
 
     /** The horizontal bar at the top and the vertical bar at the right, as chosen (BarConstraints). */
     private void applyBarConstraints(View layoutRoot, boolean verticalBarOn) {
+        applyBarConstraints(layoutRoot, verticalBarOn, false);
+    }
+
+    /**
+     * @param autoHideApplies the layout is the first page of the user layout, where the horizontal bar may be
+     *                        collapsed and then leave the corner of the vertical bar free
+     */
+    private void applyBarConstraints(View layoutRoot, boolean verticalBarOn, boolean autoHideApplies) {
         watchBarBox();   // the page's layout root may be a new one: its layout moves the bar's windows
         if (!(layoutRoot instanceof androidx.constraintlayout.widget.ConstraintLayout)) {
             return;
         }
         boolean top = mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
         boolean right = verticalBarOn && BarLayouts.sides(mPrefs, true).right;
-        BarConstraints.apply((androidx.constraintlayout.widget.ConstraintLayout) layoutRoot, R.id.iv_list_bg, 0, top, right);
+        // An auto-hide bar with no button in the corner leaves it free: the vertical bar fills it
+        boolean fullHeight = verticalBarOn && autoHideApplies && !BarLayouts.sides(mPrefs, true).cornerTaken();
+        int verticalWidth = Launcher.calculatedVerticalBarWidth;
+        BarConstraints.apply((androidx.constraintlayout.widget.ConstraintLayout) layoutRoot, R.id.iv_list_bg, 0, top,
+                right, fullHeight, verticalWidth);
         // The arrow of the collapsed button points to the middle of the screen: turned when the bar is on the right
         View arrow = layoutRoot.findViewById(R.id.show_bar);
         if (arrow != null) {

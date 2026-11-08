@@ -26,7 +26,7 @@ public final class BarLayouts {
                 prefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false),
                 prefs.getBoolean(Keys.VERTICAL_BAR_RIGHT, false),
                 prefs.getBoolean(Keys.EDGE_HANDLE_RIGHT, false),
-                verticalBar, horizontalOnPage);
+                verticalBar, horizontalOnPage, prefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false));
     }
 
     /** The layout for the rules that need the sides only, not a size. */

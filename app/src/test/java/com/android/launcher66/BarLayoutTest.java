@@ -9,11 +9,11 @@ class BarLayoutTest {
 
     // landscape box 1280 x 640, bar 100, vertical bar 91; portrait box 720 x 1200, bar 102, vertical bar 85
     private static BarLayout land(boolean top, boolean right, boolean vertical) {
-        return new BarLayout(1280, 640, 100, 91, top, right, right, vertical, true);
+        return new BarLayout(1280, 640, 100, 91, top, right, right, vertical, true, false);
     }
 
     private static BarLayout port(boolean top, boolean right, boolean vertical) {
-        return new BarLayout(720, 1200, 102, 85, top, right, right, vertical, true);
+        return new BarLayout(720, 1200, 102, 85, top, right, right, vertical, true, false);
     }
 
     @Test
@@ -103,10 +103,10 @@ class BarLayoutTest {
     @Test
     void theCornerCellIsOnTheHandlesSideAndTheButtonOnlyWhenTheSidesAgree() {
         // vertical bar side x handle side
-        BarLayout leftLeft = new BarLayout(1280, 640, 100, 91, false, false, false, true, true);
-        BarLayout rightRight = new BarLayout(1280, 640, 100, 91, false, true, true, true, true);
-        BarLayout barRightHandleLeft = new BarLayout(1280, 640, 100, 91, false, true, false, true, true);
-        BarLayout barLeftHandleRight = new BarLayout(1280, 640, 100, 91, false, false, true, true, true);
+        BarLayout leftLeft = new BarLayout(1280, 640, 100, 91, false, false, false, true, true, false);
+        BarLayout rightRight = new BarLayout(1280, 640, 100, 91, false, true, true, true, true, false);
+        BarLayout barRightHandleLeft = new BarLayout(1280, 640, 100, 91, false, true, false, true, true, false);
+        BarLayout barLeftHandleRight = new BarLayout(1280, 640, 100, 91, false, false, true, true, true, false);
         assertEquals(0, leftLeft.cornerCellX(8));
         assertEquals(7, rightRight.cornerCellX(8));
         // the handle is on the left: the left corner is reserved, the right one takes icons
@@ -117,13 +117,13 @@ class BarLayoutTest {
         assertEquals(false, barRightHandleLeft.buttonShown());
         assertEquals(false, barLeftHandleRight.buttonShown());
         // without the vertical bar there is never a button
-        assertEquals(false, new BarLayout(1280, 640, 100, 91, false, false, false, false, true).buttonShown());
+        assertEquals(false, new BarLayout(1280, 640, 100, 91, false, false, false, false, true, false).buttonShown());
         // the corner at the top
-        assertEquals(0, new BarLayout(1280, 640, 100, 91, true, true, false, true, true).cornerCellY(6));
+        assertEquals(0, new BarLayout(1280, 640, 100, 91, true, true, false, true, true, false).cornerCellY(6));
     }
 
     private static BarLayout page(boolean top, boolean right, boolean verticalOnPage, boolean horizontalOnPage) {
-        return new BarLayout(1280, 640, 100, 91, top, right, right, verticalOnPage, horizontalOnPage);
+        return new BarLayout(1280, 640, 100, 91, top, right, right, verticalOnPage, horizontalOnPage, false);
     }
 
     @Test
@@ -159,5 +159,41 @@ class BarLayoutTest {
         // no horizontal bar on the page, no corner
         assertArrayEquals(new int[] {0, 0, 91, 640}, page(false, false, true, false).verticalWindow(true));
         assertArrayEquals(new int[] {0, 0, 0, 0}, page(false, false, false, true).verticalWindow(true));
+    }
+
+    private static BarLayout autoHidden(boolean top, boolean right, boolean handleRight, boolean horizontalOnPage) {
+        return new BarLayout(1280, 640, 100, 91, top, right, handleRight, true, horizontalOnPage, true);
+    }
+
+    @Test
+    void theVerticalBarFillsTheCornerWhereTheCollapsedBarHasNoButton() {
+        for (boolean top : new boolean[] {false, true}) {
+            for (boolean right : new boolean[] {false, true}) {
+                int left = right ? 1280 - 91 : 0;
+                // the sides agree: the button is in the corner, the vertical bar ends at the bar
+                BarLayout agree = autoHidden(top, right, right, true);
+                assertEquals(true, agree.cornerTaken());
+                assertArrayEquals(new int[] {left, top ? 100 : 0, left + 91, top ? 640 : 540}, agree.verticalBarBand());
+                // the sides differ: nothing in the corner, the whole height
+                BarLayout apart = autoHidden(top, right, !right, true);
+                assertEquals(false, apart.cornerTaken());
+                assertArrayEquals(new int[] {left, 0, left + 91, 640}, apart.verticalBarBand());
+                assertArrayEquals(new int[] {left, 0, left + 91, 640}, apart.verticalWindow(false));
+                // no horizontal bar on the page: the whole height either way
+                assertEquals(false, autoHidden(top, right, right, false).cornerTaken());
+                assertArrayEquals(new int[] {left, 0, left + 91, 640}, autoHidden(top, right, right, false).verticalBarBand());
+                // without auto-hide the bar is there, whichever side the handle would be on
+                BarLayout fixed = new BarLayout(1280, 640, 100, 91, top, right, !right, true, true, false);
+                assertEquals(true, fixed.cornerTaken());
+                assertArrayEquals(new int[] {left, top ? 100 : 0, left + 91, top ? 640 : 540}, fixed.verticalBarBand());
+            }
+        }
+    }
+
+    @Test
+    void theWindowTakesTheCornerOnlyWhereTheButtonIs() {
+        BarLayout agree = autoHidden(false, true, true, true);
+        assertArrayEquals(new int[] {1189, 0, 1280, 540}, agree.verticalWindow(false));
+        assertArrayEquals(new int[] {1189, 0, 1280, 640}, agree.verticalWindow(true));
     }
 }

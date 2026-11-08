@@ -31,10 +31,12 @@ public final class BarLayout {
     public final boolean verticalBar;
     /** The horizontal bar (or the place it keeps while collapsed) is on this page. */
     public final boolean horizontalOnPage;
+    /** The horizontal bar is the auto-hide one: collapsed, it leaves the corner free unless it has a button there. */
+    public final boolean autoHide;
 
     public BarLayout(int rootWidth, int rootHeight, int barHeight, int verticalBarWidth,
                      boolean top, boolean right, boolean handleRight, boolean verticalBar,
-                     boolean horizontalOnPage) {
+                     boolean horizontalOnPage, boolean autoHide) {
         this.rootWidth = rootWidth;
         this.rootHeight = rootHeight;
         this.barHeight = barHeight;
@@ -44,6 +46,7 @@ public final class BarLayout {
         this.handleRight = handleRight;
         this.verticalBar = verticalBar;
         this.horizontalOnPage = horizontalOnPage;
+        this.autoHide = autoHide;
     }
 
     // ---------------------------------------------------------------- the bars
@@ -63,13 +66,28 @@ public final class BarLayout {
         return horizontalOnPage ? barHeight : 0;
     }
 
+    /**
+     * Whether the corner of the horizontal bar, on the vertical bar's side, is taken: by the bar itself, or by
+     * the collapsed bar's button. An auto-hide bar with no button there (the handle is on the other side)
+     * leaves nothing in the corner, so the vertical bar fills it.
+     */
+    public boolean cornerTaken() {
+        return horizontalOnPage && (!autoHide || buttonShown());
+    }
+
+    /** The height the vertical bar leaves to the horizontal bar. */
+    private int verticalBandHeight() {
+        return cornerTaken() ? barHeight : 0;
+    }
+
     /** {left, top, right, bottom} of the vertical bar; all zero without it. */
     public int[] verticalBarBand() {
         if (!verticalBar) {
             return new int[] {0, 0, 0, 0};
         }
         int left = right ? rootWidth - verticalBarWidth : 0;
-        return new int[] {left, top ? bandHeight() : 0, left + verticalBarWidth, top ? rootHeight : rootHeight - bandHeight()};
+        return new int[] {left, top ? verticalBandHeight() : 0, left + verticalBarWidth,
+                top ? rootHeight : rootHeight - verticalBandHeight()};
     }
 
     /**

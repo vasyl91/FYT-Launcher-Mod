@@ -36,7 +36,18 @@ public final class BarConstraints {
      * @param right         the vertical bar at the right edge
      */
     public static void apply(ConstraintLayout root, int barId, int fullHeightId, boolean top, boolean right) {
-        if (root == null || (!top && !right)) {
+        apply(root, barId, fullHeightId, top, right, false, 0);
+    }
+
+    /**
+     * @param verticalFullHeight the vertical bar reaches the edge of the layout on the horizontal bar's side
+     *                           instead of ending at the bar: the collapsed bar leaves nothing in the corner
+     * @param verticalWidthPx    the vertical bar's width in pixels, 0 to keep the layout's; a layout that gives
+     *                           the width as a ratio of the height (portrait) would make the longer bar wider
+     */
+    public static void apply(ConstraintLayout root, int barId, int fullHeightId, boolean top, boolean right,
+                             boolean verticalFullHeight, int verticalWidthPx) {
+        if (root == null || (!top && !right && !verticalFullHeight)) {
             return;
         }
         for (int i = 0; i < root.getChildCount(); i++) {
@@ -65,6 +76,9 @@ public final class BarConstraints {
                     flipVertically(lp);
                 }
             }
+            if (verticalFullHeight && child.getId() == R.id.rl_vertical_bar) {
+                fillVerticalBar(lp, top, verticalWidthPx);
+            }
             if (right && !bar) {
                 flipHorizontally(lp);
             } else if (right && child.getId() == barId) {
@@ -76,6 +90,22 @@ public final class BarConstraints {
             child.setLayoutParams(lp);
         }
         root.requestLayout();
+    }
+
+    /** The vertical bar to the edge of the layout on the horizontal bar's side (after the flip for the top). */
+    private static void fillVerticalBar(ConstraintLayout.LayoutParams lp, boolean top, int widthPx) {
+        if (top) {
+            lp.topToBottom = UNSET;
+            lp.topToTop = PARENT;
+        } else {
+            lp.bottomToTop = UNSET;
+            lp.bottomToBottom = PARENT;
+        }
+        if (lp.dimensionRatio != null && widthPx > 0) {
+            // Its width was a share of its height: keep it the width the rest of the launcher counts with
+            lp.dimensionRatio = null;
+            lp.width = widthPx;
+        }
     }
 
     /** The bar itself, or a view that hangs on the edge of the bar (not one that ends at its edge). */
