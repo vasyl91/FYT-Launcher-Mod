@@ -1221,14 +1221,9 @@ final class LauncherMusicWidget {
             musicSeekBar = musicWidgetView.findViewById(ResValue.getInstance().music_seekbar);
             musicProgress = musicWidgetView.findViewById(ResValue.getInstance().music_progress);
             widgetTint = mLauncher.mPrefs.getBoolean(Keys.BLACK_WIDGETS, false);
-            if (widgetTint && musicProgress != null) {
-                musicProgress.getProgressDrawable().setColorFilter(
-                    Color.BLACK, 
-                    PorterDuff.Mode.SRC_IN
-                );
-            } else if (musicProgress != null) {
-                musicProgress.getProgressDrawable().clearColorFilter();
-            }
+            ViewTint.tintProgress(musicProgress, widgetTint);
+            ViewTint.tintText(musicWidgetView.findViewById(ResValue.getInstance().tv_musicName), widgetTint);
+            ViewTint.tintText(musicWidgetView.findViewById(ResValue.getInstance().tv_artist), widgetTint);
             mLauncher.putCustomView(Config.WS_Music, musicWidgetView.findViewById(ResValue.getInstance().rl_music));
             if (mLauncher.getCustomView(Config.WS_Music) != null) {
                 mLauncher.getCustomView(Config.WS_Music).setOnClickListener(mLauncher);
@@ -1656,9 +1651,7 @@ final class LauncherMusicWidget {
             return;
         }
         barTint = mLauncher.mPrefs.getBoolean(Keys.BLACK_BAR, false);
-        if (barTint) {
-            mLauncher.helpers.applyColorFilterToButton(button);
-        }
+        ViewTint.tintBackground(button, barTint);
     }
 
     void setWidgetButtonsTint(Button button) {
@@ -1666,8 +1659,33 @@ final class LauncherMusicWidget {
             return;
         }
         widgetTint = mLauncher.mPrefs.getBoolean(Keys.BLACK_WIDGETS, false);
-        if (widgetTint) {
-            mLauncher.helpers.applyColorFilterToButton(button);
+        ViewTint.tintBackground(button, widgetTint);
+    }
+
+    /**
+     * The look of the music widget and of the music part of the bar on the views that are on the screen now
+     * (WidgetStyler): the buttons, the progress bar and the titles, each by the setting of its own, in both directions.
+     *
+     * @param count incremented by the views that were styled
+     */
+    void applyStyle(WidgetStyle style, int[] count) {
+        widgetTint = style.black(WidgetStyle.Role.WIDGET_BUTTON);
+        barTint = style.black(WidgetStyle.Role.BAR_BUTTON);
+        for (Button button : new Button[] {mPlayPauseButton, mMusicPrevButton, mMusicNextButton, mMusicFavoriteButton}) {
+            ViewTint.tintBackground(button, widgetTint);
+            count[0] += button != null ? 1 : 0;
         }
+        for (Button button : new Button[] {mPlayPauseButtonTwo, mMusicPrevButtonTwo, mMusicNextButtonTwo,
+                mMusicFavoriteButtonTwo}) {
+            ViewTint.tintBackground(button, barTint);
+            count[0] += button != null ? 1 : 0;
+        }
+        ViewTint.tintProgress(musicProgress, style.black(WidgetStyle.Role.WIDGET_PROGRESS));
+        ViewTint.tintText(tvMusicName, style.black(WidgetStyle.Role.WIDGET_TEXT));
+        ViewTint.tintText(tvAritst, style.black(WidgetStyle.Role.WIDGET_TEXT));
+        ViewTint.tintText(tvMusicNameTwo, style.black(WidgetStyle.Role.BAR_TEXT));
+        ViewTint.tintText(tvAritstTwo, style.black(WidgetStyle.Role.BAR_TEXT));
+        count[0] += (musicProgress != null ? 1 : 0) + (tvMusicName != null ? 1 : 0) + (tvAritst != null ? 1 : 0)
+                + (tvMusicNameTwo != null ? 1 : 0) + (tvAritstTwo != null ? 1 : 0);
     }
 }

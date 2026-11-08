@@ -1414,6 +1414,20 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private final Runnable mWorkspaceLoadingWatchdog = this::onWorkspaceLoadingWatchdog;
 
     /** Every bind step proves the load is alive, so the watchdog only fires after silence. */
+    /**
+     * R2: a setting of look works on the views that are on the screen, whatever the launcher is doing: this listener
+     * (kept in a field, registered in onCreate and removed in onDestroy, called on the main thread, also while the
+     * launcher is paused) is the one place that asks WidgetStyler to put the look on them. It does not wait for the
+     * rebuild after the settings, which can be skipped or late (see recreateView()).
+     */
+    private final SharedPreferences.OnSharedPreferenceChangeListener mWidgetStyleListener =
+            (prefs, key) -> {
+                if (Keys.BLACK_WIDGETS.equals(key) || Keys.BLACK_BAR.equals(key)
+                        || Keys.WIDGETS_SELECTED_BACKGROUND.equals(key)) {
+                    WidgetStyler.apply(Launcher.this, "setting " + key);
+                }
+            };
+
     private void noteWorkspaceBindProgress() {
         if (mWorkspaceLoading) {
             armWorkspaceLoadingWatchdog();
@@ -1765,6 +1779,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         // The application's context: the preferences are read there already (attachBaseContext),
         // where this activity's own context would look its folder up on disk first.
         mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());  
+        mPrefs.registerOnSharedPreferenceChangeListener(mWidgetStyleListener);
         markStartup("prefs");
 
         // Resolves the PiP packages' icons and launch intents on a worker thread, so the first
@@ -3160,6 +3175,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public void onDestroy() {
+        if (mPrefs != null) {
+            mPrefs.unregisterOnSharedPreferenceChangeListener(mWidgetStyleListener);
+        }
         super.onDestroy();
         mHandler.removeCallbacks(mStartWidgetSortRunnable);
         Log.d(TAG, "---->>> onDestroy");

@@ -96,12 +96,8 @@ public class WeekDayTwo extends AppCompatTextView implements SharedPreferences.O
 
     private void updateTextColor() {
         boolean blackTintWidgets = mPrefs.getBoolean(Keys.BLACK_BAR, false);
-        if (blackTintWidgets) {
-            setTextColor(Color.BLACK);
-        } else {
-            // Reset to default color (could be from XML or theme)
-            setTextColor(mDefaultTextColor);
-        }
+        // Black, or the colour the view had (ViewTint remembers it)
+        com.android.launcher66.ViewTint.tintText(this, blackTintWidgets);
     }
 
     public void setDateTwo() {

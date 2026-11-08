@@ -60,11 +60,18 @@ import java.util.concurrent.Executors;
 
 public class BackgroundSelectorDialog extends DialogFragment {
     private static final String TAG = "BgWidgetsSelector";
-    private static String backgrounds;
-    private static String name;
-    private static String key;
+    private static final String ARG_BACKGROUNDS = "backgrounds";
+    private static final String ARG_NAME = "name";
+    private static final String ARG_KEY = "key";
+    private static final String ARG_DEFAULT = "default_background";
+    // What the dialog shows and where it stores the choice: arguments of the fragment, set on the main thread before
+    // it is shown (they were statics written on the loader thread and read on the main one, so the key could be that
+    // of another selector), and read again if the system recreates the fragment.
+    private String backgrounds;
+    private String name;
+    private String key;
     /** The background the choice starts from when none was chosen; null = the name given to show(). */
-    private static String defaultBackground;
+    private String defaultBackground;
     private static final int REQ_PICK_WALLPAPER = 5001;
     private static final String PREF_KEY_SELECTED_BG_URI = "selected_background_uri";
 
@@ -86,19 +93,20 @@ public class BackgroundSelectorDialog extends DialogFragment {
     private static final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     public static void showWithLoadedBackground(@NonNull FragmentManager fm, @NonNull Context ctx, @NonNull String tag, @NonNull String bgs) {
+        final String choiceKey;
+        final String choiceDefault;
+        if (tag.equals("widgets")) {
+            choiceKey = Keys.WIDGETS_SELECTED_BACKGROUND;
+            choiceDefault = null;
+        } else if (tag.equals("vertical_bar")) {
+            // hotseat_bg (the one the bar has) and the backgrounds of the horizontal bar
+            choiceKey = Keys.VERTICAL_BAR_SELECTED_BACKGROUND;
+            choiceDefault = "hotseat_bg";
+        } else {
+            choiceKey = Keys.BAR_SELECTED_BACKGROUND;
+            choiceDefault = null;
+        }
         loaderExecutor.submit(() -> {
-            backgrounds = bgs;
-            name = tag;
-            defaultBackground = null;
-            if (tag.equals("widgets")) {
-                key = Keys.WIDGETS_SELECTED_BACKGROUND;
-            } else if (tag.equals("vertical_bar")) {
-                // hotseat_bg (the one the bar has) and the backgrounds of the horizontal bar
-                key = Keys.VERTICAL_BAR_SELECTED_BACKGROUND;
-                defaultBackground = "hotseat_bg";
-            } else {
-                key = Keys.BAR_SELECTED_BACKGROUND;
-            }
             Bitmap bmp = null;
             try {
                 WallpaperManager wm = WallpaperManager.getInstance(ctx);
@@ -157,6 +165,12 @@ public class BackgroundSelectorDialog extends DialogFragment {
             mainHandler.post(() -> {
                 try {
                     BackgroundSelectorDialog dlg = new BackgroundSelectorDialog();
+                    Bundle args = new Bundle();
+                    args.putString(ARG_BACKGROUNDS, bgs);
+                    args.putString(ARG_NAME, tag);
+                    args.putString(ARG_KEY, choiceKey);
+                    args.putString(ARG_DEFAULT, choiceDefault);
+                    dlg.setArguments(args);
                     if (finalBmp != null) dlg.setPreloadedBackground(finalBmp);
                     fm.beginTransaction().add(dlg, tag).commitAllowingStateLoss();
                 } catch (Throwable t) {
@@ -195,6 +209,11 @@ public class BackgroundSelectorDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         // Inflate and apply preloaded background synchronously so dialog appears with proper BG
+        Bundle args = getArguments();
+        backgrounds = args == null ? "" : args.getString(ARG_BACKGROUNDS, "");
+        name = args == null ? "" : args.getString(ARG_NAME, "");
+        key = args == null ? Keys.BAR_SELECTED_BACKGROUND : args.getString(ARG_KEY, Keys.BAR_SELECTED_BACKGROUND);
+        defaultBackground = args == null ? null : args.getString(ARG_DEFAULT);
         AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         int rootViewId = getResId(name + "_background_selector", R.layout.class);

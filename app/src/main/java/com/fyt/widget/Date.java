@@ -104,12 +104,8 @@ public class Date extends AppCompatTextView implements SharedPreferences.OnShare
 
     private void updateTextColor() {
         boolean blackTintWidgets = mPrefs.getBoolean(Keys.BLACK_WIDGETS, false);
-        if (blackTintWidgets) {
-            setTextColor(Color.BLACK);
-        } else {
-            // Reset to default color (could be from XML or theme)
-            setTextColor(mDefaultTextColor);
-        }
+        // Black, or the colour the view had (ViewTint remembers it)
+        com.android.launcher66.ViewTint.tintText(this, blackTintWidgets);
     }
 
     public void setDate() {

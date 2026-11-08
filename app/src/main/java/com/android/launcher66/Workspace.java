@@ -931,9 +931,7 @@ public class Workspace extends SmoothPagedView
             applyBarConstraints(workspaceView, verticalBar, true);
             
             horizontalBarAllApps = workspaceView.findViewById(R.id.rl_allapps);
-            if (blackTintBar) {
-                Helpers.applyColorFilterToImageView(horizontalBarAllApps);
-            }
+            ViewTint.tintImage(horizontalBarAllApps, blackTintBar);
 
             horizontalBarRecycler = workspaceView.findViewById(R.id.recycler_view);
             
@@ -1072,31 +1070,52 @@ public class Workspace extends SmoothPagedView
             adjustTextSize(tempText, weatherShare);
         }
         applyWeatherTextShares(barView, largeText);
-        if (blackTintBar) {
-            if (titleText != null) {
-                titleText.setTextColor(Color.BLACK);
-            }
-            if (artistText != null) {
-                artistText.setTextColor(Color.BLACK);
-            }
-            if (cityText != null) {
-                cityText.setTextColor(Color.BLACK);
-            }
-            if (weatherText != null) {
-                weatherText.setTextColor(Color.BLACK);
-            }
-            if (tempText != null) {
-                tempText.setTextColor(Color.BLACK);
-            }
-            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                if (dateText != null) {
-                    dateText.setTextColor(Color.BLACK);
+        applyBarTexts(blackTintBar);
+    }
+
+    /** The texts of the bar's widgets: black, or the colour they had (ViewTint). */
+    private void applyBarTexts(boolean black) {
+        ViewTint.tintText(titleText, black);
+        ViewTint.tintText(artistText, black);
+        ViewTint.tintText(cityText, black);
+        ViewTint.tintText(weatherText, black);
+        ViewTint.tintText(tempText, black);
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            ViewTint.tintText(dateText, black);
+            ViewTint.tintText(weekText, black);
+        }
+    }
+
+    /**
+     * The look of the bar on the views that are on the screen now (WidgetStyler): the buttons of the page's bar and of
+     * its window, the arrow of the collapsed button, the arrow in the corner of the vertical bar's window, and the
+     * texts of the bar's widgets.
+     */
+    void applyBarStyle(WidgetStyle style, int[] count) {
+        final boolean black = style.black(WidgetStyle.Role.BAR_BUTTON);
+        blackTintBar = black;
+        ViewTint.tintImage(horizontalBarAllApps, black);
+        ViewTint.tintImage(showBarIcon, black);
+        count[0] += (horizontalBarAllApps != null ? 1 : 0) + (showBarIcon != null ? 1 : 0);
+        synchronized (overlayLock) {
+            if (overlayHorizontalBar != null) {
+                View allApps = overlayHorizontalBar.findViewById(R.id.rl_allapps);
+                View showBar = overlayHorizontalBar.findViewById(R.id.show_bar);
+                if (allApps instanceof ImageView) {
+                    ViewTint.tintImage((ImageView) allApps, black);
+                    count[0]++;
                 }
-                if (weekText != null) {
-                    weekText.setTextColor(Color.BLACK);
+                if (showBar instanceof ImageView) {
+                    ViewTint.tintImage((ImageView) showBar, black);
+                    count[0]++;
                 }
             }
         }
+        if (mVerticalWindow != null) {
+            mVerticalWindow.setArrowTint(black);
+        }
+        applyBarTexts(style.black(WidgetStyle.Role.BAR_TEXT));
+        count[0] += 7;
     }
 
     /**
@@ -1864,11 +1883,7 @@ public class Workspace extends SmoothPagedView
                     showBarIcon.setAlpha(0f);
                     showBarIcon.setVisibility(View.VISIBLE);
                     blackTintBar = mPrefs.getBoolean(Keys.BLACK_BAR, false);
-                    if (blackTintBar) {
-                        Helpers.applyColorFilterToImageView(showBarIcon);
-                    } else {
-                        Helpers.removeColorFilterFromImageView(showBarIcon);
-                    }
+                    ViewTint.tintImage(showBarIcon, blackTintBar);
                     showBarIcon.animate().alpha(0.5f).setDuration(0).start();
                 })
                 .start();
@@ -2008,9 +2023,7 @@ public class Workspace extends SmoothPagedView
 
             ImageView overlayAllApps = overlayHorizontalBar.findViewById(R.id.rl_allapps);
             blackTintBar = mPrefs.getBoolean(Keys.BLACK_BAR, false);
-            if (blackTintBar) {
-                Helpers.applyColorFilterToImageView(overlayAllApps);
-            }
+            ViewTint.tintImage(overlayAllApps, blackTintBar);
 
             // Setup the overlay view
             setupOverlayView(barWidth, horizontalBarHeight);
@@ -2890,11 +2903,7 @@ public class Workspace extends SmoothPagedView
         }
         if (shown && showBarIcon != null) {
             blackTintBar = mPrefs.getBoolean(Keys.BLACK_BAR, false);
-            if (blackTintBar) {
-                Helpers.applyColorFilterToImageView(showBarIcon);
-            } else {
-                Helpers.removeColorFilterFromImageView(showBarIcon);
-            }
+            ViewTint.tintImage(showBarIcon, blackTintBar);
         }
         fadeView(horizontalBarBg, shown ? 1f : 0f, durationMs);
         fadeView(showBarIcon, shown ? COLLAPSED_BUTTON_ALPHA : 0f, durationMs);

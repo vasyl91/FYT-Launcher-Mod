@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import androidx.preference.PreferenceManager;
 
-import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
 import com.android.recycler.VerticalAppListAdapter;
 
@@ -186,9 +185,7 @@ final class VerticalBarWindow {
         arrow.setScaleType(ImageView.ScaleType.FIT_CENTER);
         arrow.setImageResource(R.drawable.show_bar);
         arrow.setAlpha(BUTTON_ALPHA);
-        if (prefs.getBoolean(Keys.BLACK_BAR, false)) {
-            Helpers.applyColorFilterToImageView(arrow);
-        }
+        ViewTint.tintImage(arrow, prefs.getBoolean(Keys.BLACK_BAR, false));
         FrameLayout.LayoutParams arrowParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER);
         int pad = Math.round(context.getResources().getDisplayMetrics().density * 8);
@@ -272,6 +269,11 @@ final class VerticalBarWindow {
             params.y += dy;
             update();
         }
+    }
+
+    /** The colour of the arrow follows "Bar text and button color" (WidgetStyler). */
+    void setArrowTint(boolean black) {
+        ViewTint.tintImage(arrow, black);
     }
 
     /** The button's arrow points to the middle of the screen: turned on the right. */

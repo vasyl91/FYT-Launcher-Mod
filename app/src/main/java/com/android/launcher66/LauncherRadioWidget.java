@@ -131,10 +131,12 @@ final class LauncherRadioWidget {
         if (radioWidgetView != null) {
             mRadioPrevButton = radioWidgetView.findViewById(ResValue.getInstance().Radiobutton_prev);
             mRadioNextButton = radioWidgetView.findViewById(ResValue.getInstance().Radiobutton_next);
-            mLauncher.mMusicWidget.setWidgetButtonsTint(mRadioPrevButton);
-            mLauncher.mMusicWidget.setWidgetButtonsTint(mRadioNextButton);
             mRadioPauseButton = radioWidgetView.findViewById(ResValue.getInstance().Radiobutton_pause);
             mRadioBandButton = radioWidgetView.findViewById(ResValue.getInstance().radio_btn_band);
+            mLauncher.mMusicWidget.setWidgetButtonsTint(mRadioPrevButton);
+            mLauncher.mMusicWidget.setWidgetButtonsTint(mRadioNextButton);
+            mLauncher.mMusicWidget.setWidgetButtonsTint(mRadioPauseButton);
+            mLauncher.mMusicWidget.setWidgetButtonsTint(mRadioBandButton);
             mLauncher.mRadioIcon = radioWidgetView.findViewById(ResValue.getInstance().mRadioIcon);
             tvBand = radioWidgetView.findViewById(ResValue.getInstance().tv_band);
             tvUnit = radioWidgetView.findViewById(ResValue.getInstance().tv_unit);
@@ -145,6 +147,23 @@ final class LauncherRadioWidget {
             if (mLauncher.getCustomView(Config.WS_Radio) != null) {
                 mLauncher.getCustomView(Config.WS_Radio).setOnClickListener(mLauncher);
             }
+        }
+    }
+
+    /**
+     * The look of the radio widget on the views that are on the screen now (WidgetStyler): the four buttons and the
+     * texts of the band, the unit and the frequency, in both directions.
+     */
+    void applyStyle(WidgetStyle style, int[] count) {
+        boolean buttons = style.black(WidgetStyle.Role.WIDGET_BUTTON);
+        for (Button button : new Button[] {mRadioPrevButton, mRadioNextButton, mRadioPauseButton, mRadioBandButton}) {
+            ViewTint.tintBackground(button, buttons);
+            count[0] += button != null ? 1 : 0;
+        }
+        boolean text = style.black(WidgetStyle.Role.WIDGET_TEXT);
+        for (TextView view : new TextView[] {tvBand, tvUnit, tvCurFreq}) {
+            ViewTint.tintText(view, text);
+            count[0] += view != null ? 1 : 0;
         }
     }
 

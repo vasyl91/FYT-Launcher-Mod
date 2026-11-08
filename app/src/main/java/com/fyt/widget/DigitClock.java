@@ -107,17 +107,6 @@ public class DigitClock extends RelativeLayout {
                 DigitClock.this.tv4.setBackgroundResource(DigitClock.this.images[Math.max(0, Math.min(index3, DigitClock.this.images.length - 1))]);
                 int index4 = Integer.parseInt(String.valueOf(times[3]));
                 DigitClock.this.tv5.setBackgroundResource(DigitClock.this.images[Math.max(0, Math.min(index4, DigitClock.this.images.length - 1))]);
-                if (blackTintWidgets) {
-                    applyColorFilter(DigitClock.this.tv1);
-                    applyColorFilter(DigitClock.this.tv2);
-                    applyColorFilter(DigitClock.this.tv4);
-                    applyColorFilter(DigitClock.this.tv5);
-                } else {
-                    removeColorFilter(DigitClock.this.tv1);
-                    removeColorFilter(DigitClock.this.tv2);
-                    removeColorFilter(DigitClock.this.tv4);
-                    removeColorFilter(DigitClock.this.tv5);
-                }
                 DigitClock.this.timeHandler.postDelayed(DigitClock.this.timeRunnable, 1000L);
             }
         };
@@ -217,12 +206,8 @@ public class DigitClock extends RelativeLayout {
         addView(this.tv5, params5);
         
         this.tv3.setBackgroundResource(ResValue.getInstance().timedot);
-        if (blackTintWidgets) {
-            applyColorFilter(DigitClock.this.tv3);
-        } else {
-            removeColorFilter(DigitClock.this.tv3);
-        }
-        
+        applyStyle(blackTintWidgets);
+
         timeRun();
     }
 
@@ -265,18 +250,16 @@ public class DigitClock extends RelativeLayout {
     private void init(Context context) {
     }
 
-    private void applyColorFilter(TextView textView) {
-        if (textView != null && textView.getBackground() != null) {
-            textView.getBackground().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
-        }
-    }
-
-    private void removeColorFilter(TextView textView) {
-        if (textView != null && textView.getBackground() != null) {
-            textView.getBackground().clearColorFilter();
-        }
-        if (textView != null) {
-            textView.invalidate();
+    /**
+     * The colour of the digits (R2): a tint of the views the digits are the background of, which the framework puts on
+     * every background they get, so the clock needs no call each second. It was a colour filter on the digits' drawables,
+     * which are shared with every other user of the resource, put on and taken off every second. Black, or the colours
+     * of the digits. Main thread only.
+     */
+    public void applyStyle(boolean black) {
+        blackTintWidgets = black;
+        for (TextView digit : new TextView[] {tv1, tv2, tv3, tv4, tv5}) {
+            com.android.launcher66.ViewTint.tintBackground(digit, black);
         }
     }
 }

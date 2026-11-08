@@ -1474,27 +1474,4 @@ public class Helpers {
         });
         return iconBitmap[0];
     }
-
-    public static void applyColorFilterToButton(Button button) {
-        Drawable buttonDrawable = button.getBackground();
-        if (buttonDrawable != null) {
-            buttonDrawable.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
-        }
-    }
-
-    public static void applyColorFilterToImageView(ImageView imageView) {
-        Drawable imageDrawable = imageView.getDrawable();
-        if (imageDrawable != null) {
-            imageDrawable.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
-        }
-    }
-
-    public static void removeColorFilterFromImageView(ImageView imageView) {
-        Drawable imageDrawable = imageView.getDrawable();
-        if (imageDrawable != null) {
-            imageDrawable.clearColorFilter();
-        }
-        imageView.clearColorFilter();
-        imageView.invalidate();
-    }
 }

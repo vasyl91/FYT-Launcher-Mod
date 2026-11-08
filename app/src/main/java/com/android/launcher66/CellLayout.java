@@ -3953,9 +3953,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         }
         selectedBackground = prefs.getString(Keys.WIDGETS_SELECTED_BACKGROUND, "bg_custom");
         View widget = mLauncher.getLayoutInflater().inflate(layout, null);
-        if (!selectedBackground.equals("bg_custom")) {
-            widget.setBackgroundResource(getResId(selectedBackground));
-        }
+        WidgetStyler.setBackground(widget, WidgetStyler.current(prefs));
         switch (element) {
             case DATE:
                 mUserDateWidget = widget;
@@ -4240,9 +4238,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             // Create placeholder view
             selectedBackground = prefs.getString(Keys.WIDGETS_SELECTED_BACKGROUND, "bg_custom");
             View placeholder = mLauncher.getLayoutInflater().inflate(R.layout.absolute_placeholder, null);
-            if (!selectedBackground.equals("bg_custom")) {
-                placeholder.setBackgroundResource(getResId(selectedBackground));
-            }
+            WidgetStyler.setBackground(placeholder, WidgetStyler.current(prefs));
 
             handleConflictingViews(startCell[0], startCell[1], spanX, spanY);
 
@@ -4539,10 +4535,34 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
     private void setCalculatedTextColor(View view, int viewId) {
         TextView textView = view.findViewById(viewId);
         if (textView != null) {
-            boolean blackTintWidgets = prefs.getBoolean(Keys.BLACK_WIDGETS, false);
-            if (blackTintWidgets) {
-                textView.setTextColor(Color.BLACK);
+            ViewTint.tintText(textView, WidgetStyler.current(prefs).black(WidgetStyle.Role.WIDGET_TEXT));
+        }
+    }
+
+    /**
+     * The look of the custom widgets and the PiP placeholders of this page on the views that are on it now
+     * (WidgetStyler): their background, and the texts of the music and radio widgets.
+     */
+    void applyWidgetStyle(WidgetStyle style, int[] count) {
+        View[] roots = {mUserDateWidget, mUserMusicWidget, mUserRadioWidget, mDualPipPlaceholder,
+                mFirstPipPlaceholder, mSecondPipPlaceholder, mThirdPipPlaceholder, mFourthPipPlaceholder};
+        for (View root : roots) {
+            if (root != null) {
+                WidgetStyler.setBackground(root, style);
+                count[0]++;
             }
+        }
+        boolean text = style.black(WidgetStyle.Role.WIDGET_TEXT);
+        if (mUserMusicWidget != null) {
+            ViewTint.tintText(mUserMusicWidget.findViewById(R.id.tv_musicName), text);
+            ViewTint.tintText(mUserMusicWidget.findViewById(R.id.tv_artist), text);
+            count[0] += 2;
+        }
+        if (mUserRadioWidget != null) {
+            ViewTint.tintText(mUserRadioWidget.findViewById(R.id.tv_unit), text);
+            ViewTint.tintText(mUserRadioWidget.findViewById(R.id.tv_band), text);
+            ViewTint.tintText(mUserRadioWidget.findViewById(R.id.tv_freq), text);
+            count[0] += 3;
         }
     }
 

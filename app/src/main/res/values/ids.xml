@@ -115,6 +115,7 @@
     <item type="id" name="user_layout" />
     <item type="id" name="user_layout_left" />    
     <item type="id" name="creator_screen" />
+    <item type="id" name="view_tint_default_color" />
     <item type="id" name="creator_bar" />
     <item type="id" name="rectangle_name" />
     <item type="id" name="top_up" />
