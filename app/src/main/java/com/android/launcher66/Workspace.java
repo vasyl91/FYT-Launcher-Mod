@@ -1598,6 +1598,7 @@ public class Workspace extends SmoothPagedView
             getLocationOnScreen(workspaceAt);
             PageBox.Box box = PageBox.of(mBarRootAt[0] - mBarBoxPageAt[0], mBarRootAt[1], root.getWidth(), workspaceAt[0]);
             mBarBox.set(box.left, box.top, box.right, box.top + root.getHeight());
+            measurePageVerticalBar(root, workspaceAt[0], mBarRootAt, mBarBoxPageAt);
         } else if (mBarBox.isEmpty()) {
             int left = 0;
             int top = mLauncher == null ? 0 : mLauncher.getStatusBarHeight();
@@ -1612,6 +1613,29 @@ public class Workspace extends SmoothPagedView
             mBarBox.set(left, top, Math.max(left, right), top);
         }
         return new Rect(mBarBox);
+    }
+
+    /**
+     * The vertical bar of the first page on the screen, {left, top, right, bottom}, as if that page were shown (the
+     * same way as the box: its place in the page plus the workspace's left edge). Null before it is measured or
+     * without that bar. The window of the vertical bar on the other pages lies on this rectangle.
+     */
+    private int[] mPageVerticalBar;
+    private final int[] mVerticalBarAt = new int[2];
+
+    private void measurePageVerticalBar(View root, int workspaceLeft, int[] rootAt, int[] pageAt) {
+        View bar = root.findViewById(R.id.rl_vertical_bar);
+        if (bar == null) {
+            mPageVerticalBar = null;
+            return;
+        }
+        if (!bar.isAttachedToWindow() || bar.getWidth() <= 0 || bar.getHeight() <= 0) {
+            return;   // not laid out yet: the last measurement stays
+        }
+        bar.getLocationOnScreen(mVerticalBarAt);
+        int left = workspaceLeft + (mVerticalBarAt[0] - pageAt[0]);
+        mPageVerticalBar = new int[] {left, mVerticalBarAt[1], left + bar.getWidth(),
+                mVerticalBarAt[1] + bar.getHeight()};
     }
 
     /** Asks for the box again after every layout of the page's layout root (and after the page is built again). */
@@ -3181,6 +3205,7 @@ public class Workspace extends SmoothPagedView
                 buildVerticalWindow(reason, false);
                 break;
             case ACTIVATE:
+                mVerticalFrameLogged = null;   // logged at each activation
                 placeVerticalWindow();
                 mVerticalWindow.setShown(true);
                 Log.d(TAG, "Persistent vertical bar: shown (" + reason + ") on page " + getCurrentPage());
@@ -3231,14 +3256,32 @@ public class Workspace extends SmoothPagedView
         BarLayout layout = BarLayouts.of(mPrefs, box.width(), box.height(), barHeight, Math.round(width), true,
                 horizontalOnPage);
         int[] w = layout.verticalWindow(withCorner[0]);
-        return new int[] {box.left + w[0], box.top + w[1], w[2] - w[0], w[3] - w[1]};
+        // The side and the width are those of the first page's bar, as measured (VerticalWindowFrame)
+        int[] pageBar = mPageVerticalBar == null ? null : new int[] {mPageVerticalBar[0], mPageVerticalBar[2]};
+        return VerticalWindowFrame.of(pageBar, w, box.left, box.top).toArray();
+    }
+
+    private String mVerticalFrameLogged;
+
+    /** The frame the window is put on, and the bar of the first page it must lie where. @param force log even if unchanged */
+    private void logVerticalFrame(int[] frame, boolean force) {
+        BarLayout sides = BarLayouts.sides(mPrefs, true);
+        int[] bar = mPageVerticalBar;
+        String line = "side " + (sides.right ? "right" : "left") + ", page bar "
+                + (bar == null ? "not measured" : bar[0] + "," + bar[1] + "," + bar[2] + "," + bar[3])
+                + ", frame " + frame[0] + "," + frame[1] + "," + frame[2] + "," + frame[3];
+        if (force || !line.equals(mVerticalFrameLogged)) {
+            mVerticalFrameLogged = line;
+            Log.i(TAG, "Persistent vertical bar frame: " + line);
+        }
     }
 
     private void placeVerticalWindow() {
         boolean[] corner = new boolean[1];
         int[] frame = verticalWindowFrame(corner);
         mVerticalWindow.rebindAdapter();
-        mVerticalWindow.setFrame(frame, corner[0]);
+        logVerticalFrame(frame, false);
+        mVerticalWindow.setFrame(frame, corner[0], BarLayouts.sides(mPrefs, true).right, Launcher.screenWidth);
     }
 
     private void buildVerticalWindow(String reason, boolean standby) {
@@ -3256,7 +3299,9 @@ public class Workspace extends SmoothPagedView
         if (frame[2] <= 0 || frame[3] <= 0) {
             return;
         }
-        if (!mVerticalWindow.build(frame, cornerSize, sides.top, corner[0], sides.right, standby)) {
+        logVerticalFrame(frame, true);
+        if (!mVerticalWindow.build(frame, cornerSize, sides.top, corner[0], sides.right, standby,
+                Launcher.screenWidth)) {
             mVerticalWindowFailed = true;   // typically no permission; asked again after the next rebuild
             return;
         }

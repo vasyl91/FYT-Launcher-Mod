@@ -54,6 +54,12 @@ final class VerticalBarWindow {
     private ImageView arrow;
     private WindowManager.LayoutParams params;
     private boolean shown;
+    /** {x, y, w, h} the window was put at, on the screen, and whether that is the right edge. */
+    private int[] expected;
+    private boolean expectedRight;
+    private boolean placementChecked;
+    /** The shift applied once because the window lay elsewhere than put (see checkPlacement()). */
+    private int correction;
     private boolean cornerOnTop;
 
     VerticalBarWindow(Launcher launcher, Runnable onButton) {
@@ -80,10 +86,11 @@ final class VerticalBarWindow {
      * @param cornerTop  the button part is above the bar (the horizontal bar is at the top)
      * @param withCorner the page has the button now, so the window takes the corner
      * @param right      the bar is at the right edge
+     * @param displayWidth the width of the display, for the offset from the right edge
      * @return false if it could not be added (no permission for windows over other apps)
      */
     boolean build(int[] frame, int cornerSize, boolean cornerTop, boolean withCorner, boolean right,
-                  boolean standby) {
+                  boolean standby, int displayWidth) {
         if (root != null) {
             return true;
         }
@@ -141,10 +148,16 @@ final class VerticalBarWindow {
             params.layoutInDisplayCutoutMode =
                     WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
         }
-        params.gravity = Gravity.TOP | Gravity.LEFT;
-        params.x = frame[0];
+        // From the edge the bar is on: the side is kept whatever the other edge's arithmetic is
+        params.gravity = Gravity.TOP | (right ? Gravity.RIGHT : Gravity.LEFT);
+        params.x = VerticalWindowFrame.offset(new VerticalWindowFrame.Frame(frame[0], frame[1], frame[2], frame[3]),
+                displayWidth, right);
         params.y = frame[1];
         params.windowAnimations = 0;
+        expected = frame.clone();
+        expectedRight = right;
+        placementChecked = false;
+        root.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> checkPlacement());
         params.setTitle(TAG);
         root.setAlpha(standby ? 0f : 1f);
         shown = !standby;
@@ -209,7 +222,7 @@ final class VerticalBarWindow {
      * @param frame      {x, y, width, height} on the screen
      * @param withCorner the page has the button now: the corner is part of the window
      */
-    void setFrame(int[] frame, boolean withCorner) {
+    void setFrame(int[] frame, boolean withCorner, boolean right, int displayWidth) {
         if (root == null || params == null) {
             return;
         }
@@ -219,14 +232,46 @@ final class VerticalBarWindow {
                 corner.setVisibility(visibility);
             }
         }
-        if (params.x == frame[0] && params.y == frame[1] && params.width == frame[2] && params.height == frame[3]) {
+        int gravity = Gravity.TOP | (right ? Gravity.RIGHT : Gravity.LEFT);
+        int x = VerticalWindowFrame.offset(new VerticalWindowFrame.Frame(frame[0], frame[1], frame[2], frame[3]),
+                displayWidth, right);
+        expected = frame.clone();
+        expectedRight = right;
+        if (params.gravity == gravity && params.x == x + correction && params.y == frame[1]
+                && params.width == frame[2] && params.height == frame[3]) {
             return;
         }
-        params.x = frame[0];
+        params.gravity = gravity;
+        params.x = x + correction;
         params.y = frame[1];
         params.width = frame[2];
         params.height = frame[3];
         update();
+    }
+
+    /**
+     * Once, after the first layout: where the window really is on the screen, against where it was put. A window
+     * that lies elsewhere (on the other side, say) is moved by the difference, once, and the log says so.
+     */
+    private void checkPlacement() {
+        if (placementChecked || root == null || params == null || expected == null || !root.isAttachedToWindow()
+                || root.getWidth() <= 0) {
+            return;
+        }
+        placementChecked = true;
+        int[] at = new int[2];
+        root.getLocationOnScreen(at);
+        int dx = expected[0] - at[0];
+        int dy = expected[1] - at[1];
+        Log.i(TAG, "Persistent vertical bar window is at " + at[0] + "," + at[1] + " on the screen");
+        if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
+            Log.w(TAG, "Persistent vertical bar window placed at " + at[0] + "," + at[1] + " instead of "
+                    + expected[0] + "," + expected[1] + ", moved by " + dx + "," + dy);
+            correction += expectedRight ? -dx : dx;
+            params.x += expectedRight ? -dx : dx;
+            params.y += dy;
+            update();
+        }
     }
 
     /** The button's arrow points to the middle of the screen: turned on the right. */
