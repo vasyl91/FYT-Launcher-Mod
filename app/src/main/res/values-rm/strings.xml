@@ -207,8 +207,6 @@
     <string name="layout_set">Il layout è fixà! Smatga il buttun Pagina principala per vesair il resultat.</string>
     <string name="stats_name">Statisticas en l\'app</string>
     <string name="overlapping">Ils widgets sa surlappan!</string>
-    <string name="wont_save">Il layout actual na vegn betg memorisà. Cuntinuar reinizialisescha il layout.</string>
-    <string name="proceed_and_reset">Cuntinuar e reinizialisar</string>
     <string name="dismiss">Serrar</string>
 
     <string name="instantaneous_consumption">\u0020Consum:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Ur sanester, s\'avra cun in zugar a dretga</string>
     <string name="edge_handle_side_right">Ur dretg, s\'avra cun in zugar a sanestra</string>
     <string name="vertical_bar_every_page">Bara verticala sin mintga pagina</string>
+    <string name="overlap_fit_message">Ils widgets che sa surpiglian vegnan spustads sco las bandas als spostan: be pli pitschens nua che i n\'ha betg plaz e be restituids sch\'els na chapan insumma betg.</string>
+    <string name="proceed_and_fit">Cuntinuar ed adattar</string>
 </resources>

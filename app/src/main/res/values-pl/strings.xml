@@ -207,8 +207,6 @@
     <string name="layout_set">Layout został ustawiony! Naciśnij przycisk Home, aby zobaczyć efekt.</string>
     <string name="stats_name">In-app stats</string>
     <string name="overlapping">Widgety nachodzą na siebie!</string>
-    <string name="wont_save">Obecny layout nie zostanie zapisany. Kontunuowanie zresetuje layout.</string>
-    <string name="proceed_and_reset">Kontynuuj i resetuj</string>
     <string name="dismiss">Odrzuć</string>
 
     <string name="instantaneous_consumption">\u0020Spalanie:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Lewa krawędź, otwierana przesunięciem w prawo</string>
     <string name="edge_handle_side_right">Prawa krawędź, otwierana przesunięciem w lewo</string>
     <string name="vertical_bar_every_page">Pasek pionowy na każdej stronie</string>
+    <string name="overlap_fit_message">Nachodzące widgety zostaną rozsunięte tak, jak przesuwają je paski: zmniejszone tylko tam, gdzie brakuje miejsca, i zresetowane tylko wtedy, gdy się nie zmieszczą.</string>
+    <string name="proceed_and_fit">Kontynuuj i dopasuj</string>
 </resources>

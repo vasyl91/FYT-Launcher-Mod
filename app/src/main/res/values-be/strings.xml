@@ -207,8 +207,6 @@
     <string name="layout_set">Макет усталяваны! Націсніце кнопку «Галоўная», каб убачыць вынік.</string>
     <string name="stats_name">Статыстыка ў праграме</string>
     <string name="overlapping">Віджэты перакрываюцца!</string>
-    <string name="wont_save">Бягучы макет не будзе захаваны. Калі працягнуць, макет будзе скінуты.</string>
-    <string name="proceed_and_reset">Працягнуць і скінуць</string>
     <string name="dismiss">Адхіліць</string>
 
     <string name="instantaneous_consumption">\u0020Расход:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Левы край, адкрываецца свайпам управа</string>
     <string name="edge_handle_side_right">Правы край, адкрываецца свайпам улева</string>
     <string name="vertical_bar_every_page">Вертыкальная панэль на кожнай старонцы</string>
+    <string name="overlap_fit_message">Віджэты, што перакрываюцца, будуць раздзелены так, як іх зрушваюць панэлі: памяншаюцца толькі там, дзе няма месца, і скідаюцца толькі калі зусім не змяшчаюцца.</string>
+    <string name="proceed_and_fit">Працягнуць і падагнаць</string>
 </resources>

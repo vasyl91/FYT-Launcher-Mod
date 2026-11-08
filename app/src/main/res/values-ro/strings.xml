@@ -207,8 +207,6 @@
     <string name="layout_set">Aspectul a fost setat! Apăsați butonul Acasă pentru a vedea rezultatul.</string>
     <string name="stats_name">Statistici în aplicație</string>
     <string name="overlapping">Widgeturile se suprapun!</string>
-    <string name="wont_save">Aspectul curent nu va fi salvat. Continuarea va reseta aspectul.</string>
-    <string name="proceed_and_reset">Continuă și resetează</string>
     <string name="dismiss">Închide</string>
 
     <string name="instantaneous_consumption">\u0020Consum:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Marginea din stânga, se deschide cu glisare spre dreapta</string>
     <string name="edge_handle_side_right">Marginea din dreapta, se deschide cu glisare spre stânga</string>
     <string name="vertical_bar_every_page">Bara verticală pe fiecare pagină</string>
+    <string name="overlap_fit_message">Widgeturile suprapuse vor fi îndepărtate așa cum le mută barele: micșorate doar unde nu este loc și resetate doar dacă nu încap deloc.</string>
+    <string name="proceed_and_fit">Continuă și ajustează</string>
 </resources>

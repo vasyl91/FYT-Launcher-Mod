@@ -207,8 +207,6 @@
     <string name="layout_set">レイアウトを設定しました。ホームボタンを押して結果を確認してください。</string>
     <string name="stats_name">アプリ内統計</string>
     <string name="overlapping">ウィジェットが重なっています。</string>
-    <string name="wont_save">現在のレイアウトは保存されません。続行するとレイアウトがリセットされます。</string>
-    <string name="proceed_and_reset">続行してリセット</string>
     <string name="dismiss">閉じる</string>
 
     <string name="instantaneous_consumption">\u0020燃費:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">左端、右にスワイプして開く</string>
     <string name="edge_handle_side_right">右端、左にスワイプして開く</string>
     <string name="vertical_bar_every_page">すべてのページに縦バーを表示</string>
+    <string name="overlap_fit_message">重なっているウィジェットは、バーが動かすときと同じ方法で離されます。小さくするのは場所がない場合だけで、まったく収まらない場合にのみリセットされます。</string>
+    <string name="proceed_and_fit">続行して調整</string>
 </resources>

@@ -395,4 +395,126 @@ class CustomLayoutResolverTest {
         Result reset = resolve(topBar(), widget("radio", 100, 20, 400, 980, 100, 900));
         assertTrue(reset.reset[0]);
     }
+
+    // ------------------------------------------------------------ step 1: overlapping user rectangles (R3)
+
+    private static Env room(int margin, int left, int top, int right, int bottom) {
+        Env env = new Env();
+        env.margin = margin;
+        env.bounds = new CustomLayoutResolver.Bounds(left, top, right, bottom);
+        return env;
+    }
+
+    @Test
+    void rectanglesThatOnlyTouchStayAsDrawnAtMarginZeroAndFive() {
+        for (int margin : new int[] {0, 5}) {
+            Env env = room(margin, 5, 5, 1995, 995);
+            Result r = resolve(env,
+                    pip("pipFirst", 100, 100, 348, 300, 100, 100),
+                    widget("music", 348, 100, 600, 300, 100, 100),
+                    widget("date", 100, 300, 348, 400, 100, 50));   // below the PiP, sharing its edge
+            for (int i = 0; i < 3; i++) {
+                assertFalse(r.reset[i]);
+                assertFalse(r.cut[i]);
+                assertFalse(r.moved[i]);
+            }
+            assertArrayEquals(new int[] {100, 100, 348, 300}, r.rects[0]);
+            assertArrayEquals(new int[] {348, 100, 600, 300}, r.rects[1]);
+            assertArrayEquals(new int[] {100, 300, 348, 400}, r.rects[2]);
+        }
+    }
+
+    @Test
+    void aWidgetOnAWidgetIsMovedByTheShortestWayInItsOwnSize() {
+        Env env = room(5, 5, 5, 1995, 995);
+        Result r = resolve(env,
+                widget("date", 100, 100, 500, 300, 200, 100),
+                widget("music", 400, 150, 800, 350, 200, 100));
+        assertFalse(r.reset[1]);
+        assertFalse(r.cut[1]);
+        assertTrue(r.moved[1]);
+        // to the right of the first one (dx = 105) is nearer than below it (dy = 155)
+        assertArrayEquals(new int[] {505, 150, 905, 350}, r.rects[1]);
+        assertArrayEquals(new int[] {100, 100, 500, 300}, r.rects[0]);
+    }
+
+    @Test
+    void aPipWinsAgainstAWidgetWhateverTheOrder() {
+        Env env = room(5, 5, 5, 1995, 995);
+        Result r = resolve(env,
+                widget("music", 100, 100, 500, 300, 200, 100),
+                pip("pipFirst", 300, 100, 700, 300, 200, 100));
+        assertArrayEquals(new int[] {300, 100, 700, 300}, r.rects[1]);
+        assertFalse(r.moved[1]);
+        assertTrue(r.moved[0]);
+        assertEquals(400, r.rects[0][2] - r.rects[0][0]);
+        assertEquals(200, r.rects[0][3] - r.rects[0][1]);
+    }
+
+    @Test
+    void withNowhereToGoItIsCutToTheRoomBesideTheOther() {
+        Env env = room(5, 5, 5, 800, 320);
+        Result r = resolve(env,
+                widget("date", 100, 100, 500, 300, 200, 100),
+                widget("music", 400, 120, 800, 320, 200, 100));
+        assertFalse(r.reset[1]);
+        assertFalse(r.moved[1]);
+        assertTrue(r.cut[1]);
+        assertArrayEquals(new int[] {505, 120, 800, 320}, r.rects[1]);
+    }
+
+    @Test
+    void whenItCannotBeCutItIsReset() {
+        Env env = room(5, 5, 5, 800, 320);
+        Result r = resolve(env,
+                widget("date", 100, 100, 500, 300, 400, 200),
+                widget("music", 400, 120, 800, 320, 400, 200));
+        assertTrue(r.reset[1]);
+        assertFalse(r.cut[1]);
+        assertFalse(r.moved[1]);
+    }
+
+    @Test
+    void aMovedElementStaysInTheRoomAndOutOfTheCellsOfTheDatabase() {
+        Env env = room(5, 5, 5, 1995, 995);
+        env.grid = new GridGeometry(0, 0, 100, 100, 20, 10);
+        env.occupied = new boolean[20][10];
+        // an icon in column 5, rows 1..3: the move to the right of the first widget (x = 505) would enter it
+        for (int row = 1; row <= 3; row++) {
+            env.occupied[5][row] = true;
+        }
+        Result r = resolve(env,
+                widget("date", 100, 100, 500, 300, 200, 100),
+                widget("music", 400, 150, 800, 350, 200, 100));
+        assertTrue(r.moved[1]);
+        int[] moved = r.rects[1];
+        assertEquals(400, moved[2] - moved[0]);
+        assertEquals(200, moved[3] - moved[1]);
+        assertTrue(moved[0] >= 5 && moved[1] >= 5 && moved[2] <= 1995 && moved[3] <= 995);
+        int[] cells = env.grid.cellsOf(moved[0], moved[1], moved[2], moved[3], 0);
+        for (int c = cells[0]; c <= cells[2]; c++) {
+            for (int row = cells[1]; row <= cells[3]; row++) {
+                assertFalse(env.occupied[c][row], "cell " + c + "," + row);
+            }
+        }
+        // and the gap to the first one is kept
+        assertTrue(moved[0] >= 505 || moved[1] >= 305);
+    }
+
+    @Test
+    void theSameInputGivesTheSameResult() {
+        Env env = room(5, 5, 5, 1995, 995);
+        Result a = resolve(env,
+                widget("date", 100, 100, 500, 300, 200, 100),
+                widget("music", 400, 150, 800, 350, 200, 100),
+                pip("pipFirst", 450, 200, 900, 400, 200, 100));
+        Result b = resolve(env,
+                widget("date", 100, 100, 500, 300, 200, 100),
+                widget("music", 400, 150, 800, 350, 200, 100),
+                pip("pipFirst", 450, 200, 900, 400, 200, 100));
+        assertTrue(Arrays.deepEquals(a.rects, b.rects));
+        assertArrayEquals(a.moved, b.moved);
+        assertArrayEquals(a.cut, b.cut);
+        assertArrayEquals(a.reset, b.reset);
+    }
 }

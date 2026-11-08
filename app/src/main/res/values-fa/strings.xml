@@ -207,8 +207,6 @@
     <string name="layout_set">چیدمان تنظیم شد! برای دیدن نتیجه دکمه صفحه اصلی را فشار دهید.</string>
     <string name="stats_name">آمار داخل برنامه</string>
     <string name="overlapping">ویجت‌ها هم‌پوشانی دارند!</string>
-    <string name="wont_save">چیدمان فعلی ذخیره نمی‌شود. ادامه دادن چیدمان را بازنشانی می‌کند.</string>
-    <string name="proceed_and_reset">ادامه و بازنشانی</string>
     <string name="dismiss">رد کردن</string>
 
     <string name="instantaneous_consumption">\u0020مصرف:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">لبه چپ، با کشیدن به راست باز می‌شود</string>
     <string name="edge_handle_side_right">لبه راست، با کشیدن به چپ باز می‌شود</string>
     <string name="vertical_bar_every_page">نوار عمودی در هر صفحه</string>
+    <string name="overlap_fit_message">ابزارک‌های هم‌پوشان همان‌طور که نوارها جابه‌جا می‌کنند از هم جدا می‌شوند: فقط جایی که فضا نیست کوچک می‌شوند و فقط اگر اصلاً جا نشوند بازنشانی می‌شوند.</string>
+    <string name="proceed_and_fit">ادامه و تنظیم</string>
 </resources>

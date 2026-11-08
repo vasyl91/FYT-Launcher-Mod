@@ -207,8 +207,6 @@
     <string name="layout_set">Paigutus on määratud! Tulemuse nägemiseks vajutage avalehe nuppu.</string>
     <string name="stats_name">Rakendusesisene statistika</string>
     <string name="overlapping">Vidinad kattuvad!</string>
-    <string name="wont_save">Praegust paigutust ei salvestata. Jätkamine lähtestab paigutuse.</string>
-    <string name="proceed_and_reset">Jätka ja lähtesta</string>
     <string name="dismiss">Loobu</string>
 
     <string name="instantaneous_consumption">\u0020Kulu:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Vasak serv, avatakse pühkides paremale</string>
     <string name="edge_handle_side_right">Parem serv, avatakse pühkides vasakule</string>
     <string name="vertical_bar_every_page">Vertikaalne riba igal lehel</string>
+    <string name="overlap_fit_message">Kattuvad vidinad nihutatakse lahku nii, nagu ribad neid nihutavad: väiksemaks tehakse ainult seal, kus pole ruumi, ja lähtestatakse ainult siis, kui need üldse ei mahu.</string>
+    <string name="proceed_and_fit">Jätka ja kohanda</string>
 </resources>

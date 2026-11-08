@@ -207,8 +207,6 @@
     <string name="layout_set">Mpangilio umewekwa! Bonyeza kitufe cha Mwanzo kuona matokeo.</string>
     <string name="stats_name">Takwimu ndani ya programu</string>
     <string name="overlapping">Wijeti zinaingiliana!</string>
-    <string name="wont_save">Mpangilio wa sasa hautahifadhiwa. Kuendelea kutaweka upya mpangilio.</string>
-    <string name="proceed_and_reset">Endelea na uweke upya</string>
     <string name="dismiss">Ondoa</string>
 
     <string name="instantaneous_consumption">\u0020Matumizi:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Ukingo wa kushoto, hufunguliwa kwa kutelezesha kulia</string>
     <string name="edge_handle_side_right">Ukingo wa kulia, hufunguliwa kwa kutelezesha kushoto</string>
     <string name="vertical_bar_every_page">Upau wima kwenye kila ukurasa</string>
+    <string name="overlap_fit_message">Wijeti zinazopishana zitatenganishwa kama pau zinavyozisogeza: zitapunguzwa tu pasipo na nafasi, na kuwekwa upya tu zikishindwa kutosha kabisa.</string>
+    <string name="proceed_and_fit">Endelea na ulinganishe</string>
 </resources>

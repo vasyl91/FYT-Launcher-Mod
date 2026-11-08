@@ -207,8 +207,6 @@
     <string name="layout_set">लेआउट सेट हो गया! नतीजा देखने के लिए होम बटन दबाएँ।</string>
     <string name="stats_name">ऐप में आँकड़े</string>
     <string name="overlapping">विजेट आपस में टकरा रहे हैं!</string>
-    <string name="wont_save">मौजूदा लेआउट सहेजा नहीं जाएगा। आगे बढ़ने पर लेआउट रीसेट हो जाएगा।</string>
-    <string name="proceed_and_reset">आगे बढ़ें और रीसेट करें</string>
     <string name="dismiss">खारिज करें</string>
 
     <string name="instantaneous_consumption">\u0020खपत:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">बायाँ किनारा, दाईं ओर स्वाइप करके खुलता है</string>
     <string name="edge_handle_side_right">दायाँ किनारा, बाईं ओर स्वाइप करके खुलता है</string>
     <string name="vertical_bar_every_page">हर पेज पर ऊर्ध्वाधर बार</string>
+    <string name="overlap_fit_message">ओवरलैप होने वाले विजेट उसी तरह अलग किए जाएँगे जैसे बार उन्हें हटाते हैं: केवल वहीं छोटे किए जाएँगे जहाँ जगह नहीं है, और केवल तब रीसेट होंगे जब वे बिल्कुल न समाएँ।</string>
+    <string name="proceed_and_fit">जारी रखें और समायोजित करें</string>
 </resources>

@@ -207,8 +207,6 @@
     <string name="layout_set">Rozloženie bolo nastavené! Výsledok zobrazíte stlačením tlačidla Domov.</string>
     <string name="stats_name">Štatistiky v aplikácii</string>
     <string name="overlapping">Widgety sa prekrývajú!</string>
-    <string name="wont_save">Aktuálne rozloženie sa neuloží. Pokračovaním sa rozloženie obnoví.</string>
-    <string name="proceed_and_reset">Pokračovať a obnoviť</string>
     <string name="dismiss">Zavrieť</string>
 
     <string name="instantaneous_consumption">\u0020Spotreba:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Ľavý okraj, otvorí sa ťahom doprava</string>
     <string name="edge_handle_side_right">Pravý okraj, otvorí sa ťahom doľava</string>
     <string name="vertical_bar_every_page">Zvislý panel na každej stránke</string>
+    <string name="overlap_fit_message">Prekrývajúce sa widgety sa odsunú od seba tak, ako ich posúvajú panely: zmenšia sa len tam, kde nie je miesto, a obnovia sa len vtedy, ak sa vôbec nezmestia.</string>
+    <string name="proceed_and_fit">Pokračovať a prispôsobiť</string>
 </resources>

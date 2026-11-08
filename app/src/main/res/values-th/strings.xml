@@ -207,8 +207,6 @@
     <string name="layout_set">ตั้งค่าเลย์เอาต์แล้ว! กดปุ่มหน้าหลักเพื่อดูผลลัพธ์</string>
     <string name="stats_name">สถิติในแอป</string>
     <string name="overlapping">วิดเจ็ตซ้อนทับกัน!</string>
-    <string name="wont_save">เลย์เอาต์ปัจจุบันจะไม่ถูกบันทึก การดำเนินการต่อจะรีเซ็ตเลย์เอาต์</string>
-    <string name="proceed_and_reset">ดำเนินการต่อและรีเซ็ต</string>
     <string name="dismiss">ปิด</string>
 
     <string name="instantaneous_consumption">\u0020อัตราสิ้นเปลือง:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">ขอบซ้าย เปิดด้วยการปัดไปทางขวา</string>
     <string name="edge_handle_side_right">ขอบขวา เปิดด้วยการปัดไปทางซ้าย</string>
     <string name="vertical_bar_every_page">แถบแนวตั้งในทุกหน้า</string>
+    <string name="overlap_fit_message">วิดเจ็ตที่ซ้อนทับกันจะถูกย้ายให้ห่างกันเหมือนที่แถบย้าย: ย่อเฉพาะที่ไม่มีที่ว่าง และรีเซ็ตเฉพาะเมื่อไม่สามารถใส่ได้เลย</string>
+    <string name="proceed_and_fit">ดำเนินการต่อและปรับ</string>
 </resources>

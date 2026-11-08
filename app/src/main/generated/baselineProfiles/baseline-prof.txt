@@ -7062,8 +7062,6 @@ PLcom/android/launcher66/settings/Helpers;->isPolarDay()Z
 HSPLcom/android/launcher66/settings/Helpers;->isWallpaperWindow()Z
 PLcom/android/launcher66/settings/Helpers;->onWidgetDropPipBool()Z
 PLcom/android/launcher66/settings/Helpers;->openedFromOverviewBoolean()Z
-PLcom/android/launcher66/settings/Helpers;->overlapsOrTouches(Landroid/graphics/RectF;Landroid/graphics/RectF;)Z
-PLcom/android/launcher66/settings/Helpers;->overlapsOrTouchesBorder(Landroid/graphics/RectF;FI)Z
 HSPLcom/android/launcher66/settings/Helpers;->pipsAdded()Z
 PLcom/android/launcher66/settings/Helpers;->setBarSettingsChanged(Z)V
 PLcom/android/launcher66/settings/Helpers;->setCountDownLogcat(I)V

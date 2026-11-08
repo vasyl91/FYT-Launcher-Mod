@@ -7,11 +7,17 @@ import java.util.List;
  * Works out the layout actually used for the PiPs and widgets of one screen, from the rectangles
  * the user drew and the bars.
  *
- * <p>Step 1, on every screen: two user rectangles that overlap or touch are not both kept as drawn.
- * The one that gives way (a widget gives way to a PiP, of two equals the later one) is <b>cut</b>
- * to the largest part that keeps the gap to everything that stays, never below its minimum size;
- * only if that is not possible it is reset, and the caller puts it into free space (first in its
- * own size, then in the size of a reset, at last on the default position).
+ * <p>Step 1, on every screen: two user rectangles that <b>overlap</b> (share an area, {@link RectOverlap}; a common
+ * edge or corner is no overlap, the rectangles stay as drawn) are fitted the way the bars fit an element. The one
+ * that gives way (a widget gives way to a PiP, of two equals the later one) is
+ * <ol>
+ *   <li><b>moved</b> by the shortest way, in its own size, into free space: inside the room beside the bars, at least
+ *       {@code gap} from every element that stays, and in no cell of the launcher database;</li>
+ *   <li>when there is nowhere to go, <b>cut</b> to the largest part that keeps the gap to everything that stays, never
+ *       below its minimum size;</li>
+ *   <li>only if that is not possible <b>reset</b>, and the caller puts it into free space (first in its own size, then
+ *       in the size of a reset, at last on the default position).</li>
+ * </ol>
  *
  * <p>Step 2, on the screen with the bars. The order in which the bars are given way to:
  * <ol>
@@ -26,7 +32,8 @@ import java.util.List;
  * </ol>
  * The result is always computed from the user rectangles, never from an earlier result, so it
  * goes back to them when the bar shrinks or the vertical bar disappears, and the same input always
- * gives the same output.
+ * gives the same output. The statistics window is no part of it: it lies above everything and only the bars move it
+ * (StatsBarFit).
  *
  * <p>Pure Java (no Android imports) so it is unit-tested on the JVM. Coordinates are the ones the
  * creator saves: the box the widgets live in, without the vertical bar and the status bar.
@@ -44,7 +51,7 @@ public final class CustomLayoutResolver {
     private CustomLayoutResolver() {
     }
 
-    /** One PiP, widget or stats window. {@code left..bottom} is the user rectangle. */
+    /** One PiP or widget. {@code left..bottom} is the user rectangle. */
     public static final class Element {
         public final String key;
         public final int left;
@@ -93,6 +100,8 @@ public final class CustomLayoutResolver {
         public int minTop = Integer.MIN_VALUE;
         /** The lowest bottom edge the moved elements may reach when {@link #minTop} is set. */
         public int minTopBottomLimit = NO_LIMIT;
+        /** The room beside the bars on this screen, for moving an overlapping element; null: it is cut, not moved. */
+        public Bounds bounds;
         /** The cell grid and the occupied cells ([column][row]) of this screen; null: do not move. */
         public GridGeometry grid;
         public boolean[][] occupied;
@@ -114,13 +123,16 @@ public final class CustomLayoutResolver {
         public final boolean[] reset;
         /** Elements whose rectangle was cut because it overlapped another one (step 1). */
         public final boolean[] cut;
+        /** Elements that were moved (by the shortest way, in their size) because they overlapped another one (step 1). */
+        public final boolean[] moved;
         /** Index of the element an element gave way to in step 1, or -1. */
         public final int[] conflictWith;
 
-        Result(int[][] rects, boolean[] reset, boolean[] cut, int[] conflictWith) {
+        Result(int[][] rects, boolean[] reset, boolean[] cut, boolean[] moved, int[] conflictWith) {
             this.rects = rects;
             this.reset = reset;
             this.cut = cut;
+            this.moved = moved;
             this.conflictWith = conflictWith;
         }
     }
@@ -139,13 +151,14 @@ public final class CustomLayoutResolver {
         }
 
         boolean[] cut = new boolean[n];
+        boolean[] moved = new boolean[n];
         int[] conflictWith = new int[n];
         java.util.Arrays.fill(conflictWith, -1);
         moveBelowTopBar(elements, r, reset, env);
-        fitOverlapping(elements, r, reset, cut, conflictWith, env);
+        fitOverlapping(elements, r, reset, cut, moved, conflictWith, env);
         resolveAxis(elements, r, reset, env, false);
         resolveAxis(elements, r, reset, env, true);
-        return new Result(r, reset, cut, conflictWith);
+        return new Result(r, reset, cut, moved, conflictWith);
     }
 
     // ---------------------------------------------------------------- step 0: the bar at the top
@@ -173,13 +186,12 @@ public final class CustomLayoutResolver {
     // ---------------------------------------------------------------- step 1: user rectangles
 
     /**
-     * Two user rectangles that overlap or touch: the one that gives way is cut to the room beside
-     * the other, or reset when it cannot be cut, never both of them. The elements are taken PiPs
-     * first (resetting a PiP restarts its app), of two equals the earlier one wins, and each is
-     * compared with what has been kept before it - so the cut one is judged by the rectangle it
-     * ends up with. The stats window is no conflict: it may lie under a widget on purpose.
+     * Two user rectangles that overlap: the one that gives way is moved by the shortest way, or cut to the room beside
+     * the other, or reset when it cannot be cut, never both of them. The elements are taken PiPs first (resetting a PiP
+     * restarts its app), of two equals the earlier one wins, and each is compared with what has been kept before it - so
+     * the moved or cut one is judged by the rectangle it ends up with. Rectangles that only touch stay as drawn.
      */
-    private static void fitOverlapping(List<Element> els, int[][] r, boolean[] reset, boolean[] cut,
+    private static void fitOverlapping(List<Element> els, int[][] r, boolean[] reset, boolean[] cut, boolean[] moved,
                                        int[] conflictWith, Env env) {
         final int n = els.size();
         Integer[] order = new Integer[n];
@@ -192,7 +204,7 @@ public final class CustomLayoutResolver {
             if (reset[e]) continue;
             int first = -1;
             for (int k : kept) {
-                if (overlapsOrTouches(r[e], r[k])) {
+                if (overlaps(r[e], r[k])) {
                     first = k;
                     break;
                 }
@@ -202,7 +214,15 @@ public final class CustomLayoutResolver {
                 continue;
             }
             conflictWith[e] = first;
-            int[] fitted = cutAway(els.get(e), r[e], keptRects(r, kept), env.gap());
+            List<int[]> obstacles = keptRects(r, kept);
+            int[] shifted = moveAway(r[e], obstacles, env);
+            if (shifted != null) {
+                r[e] = shifted;
+                moved[e] = true;
+                kept.add(e);
+                continue;
+            }
+            int[] fitted = cutAway(els.get(e), r[e], obstacles, env.gap());
             if (fitted != null) {
                 r[e] = fitted;
                 cut[e] = true;
@@ -211,6 +231,64 @@ public final class CustomLayoutResolver {
                 reset[e] = true;
             }
         }
+    }
+
+    /**
+     * The nearest free place for a rectangle of the same size: inside the room beside the bars, {@code gap} from the
+     * obstacles and in no occupied cell ({@link #fits}). The candidates are the corners the reset uses (the margins, the
+     * obstacles' edges moved by the gap, the lines of the cell grid), the place just beside each obstacle on its four
+     * sides and the rectangle's own column and row, so that a move along one axis is found. The nearest is the one
+     * with the smallest |dx| + |dy|; a tie goes to the move along x alone, then the smaller y, then the smaller x.
+     *
+     * @return {left, top, right, bottom}, or null when there is nowhere (or no room is known)
+     */
+    static int[] moveAway(int[] rect, List<int[]> obstacles, Env env) {
+        Bounds bounds = env.bounds;
+        if (bounds == null) {
+            return null;
+        }
+        final int width = rect[RIGHT] - rect[LEFT];
+        final int height = rect[BOTTOM] - rect[TOP];
+        final int[] size = {width, height};
+        final int gap = env.gap();
+        java.util.TreeSet<Integer> xs = new java.util.TreeSet<>();
+        java.util.TreeSet<Integer> ys = new java.util.TreeSet<>();
+        for (int[] at : candidates(obstacles, env, bounds)) {
+            xs.add(at[0]);
+            ys.add(at[1]);
+        }
+        xs.add(rect[LEFT]);
+        ys.add(rect[TOP]);
+        for (int[] o : obstacles) {
+            xs.add(o[LEFT] - gap - width);
+            ys.add(o[TOP] - gap - height);
+        }
+        int[] best = null;
+        long bestDistance = Long.MAX_VALUE;
+        for (int y : ys) {
+            for (int x : xs) {
+                if (!fits(x, y, size, obstacles, env, bounds)) continue;
+                long distance = (long) Math.abs(x - rect[LEFT]) + Math.abs(y - rect[TOP]);
+                boolean better = best == null || distance < bestDistance;
+                if (!better && distance == bestDistance) {
+                    // the move along x alone first, then the smaller y, then the smaller x
+                    boolean alongX = y == rect[TOP];
+                    boolean bestAlongX = best[TOP] == rect[TOP];
+                    if (alongX != bestAlongX) {
+                        better = alongX;
+                    } else if (y != best[TOP]) {
+                        better = y < best[TOP];
+                    } else {
+                        better = x < best[LEFT];
+                    }
+                }
+                if (better) {
+                    bestDistance = distance;
+                    best = new int[] {x, y, x + width, y + height};
+                }
+            }
+        }
+        return best;
     }
 
     private static List<int[]> keptRects(int[][] r, List<Integer> kept) {
@@ -278,8 +356,8 @@ public final class CustomLayoutResolver {
         return true;
     }
 
-    static boolean overlapsOrTouches(int[] a, int[] b) {
-        return !(a[RIGHT] < b[LEFT] || b[RIGHT] < a[LEFT] || a[BOTTOM] < b[TOP] || b[BOTTOM] < a[TOP]);
+    private static boolean overlaps(int[] a, int[] b) {
+        return RectOverlap.overlaps(a[LEFT], a[TOP], a[RIGHT], a[BOTTOM], b[LEFT], b[TOP], b[RIGHT], b[BOTTOM]);
     }
 
     // ---------------------------------------------------------------- step 2: one axis
@@ -485,8 +563,8 @@ public final class CustomLayoutResolver {
 
     /**
      * Where a reset element goes: the first free place, not the fixed default one. Free means
-     * inside the bounds, at least {@code gap} from the {@code obstacles} (the elements that stay,
-     * the ones reset before and the stats window) and in no cell of the launcher database.
+     * inside the bounds, at least {@code gap} from the {@code obstacles} (the elements that stay
+     * and the ones reset before) and in no cell of the launcher database.
      *
      * <p>The size it had is tried first, then the size of a reset. For each size the old default
      * position comes first, then the corners that touch the margins or the obstacles (and the

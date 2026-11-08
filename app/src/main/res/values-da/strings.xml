@@ -207,8 +207,6 @@
     <string name="layout_set">Layoutet er indstillet! Tryk på Hjem-knappen for at se resultatet.</string>
     <string name="stats_name">Statistik i appen</string>
     <string name="overlapping">Widgets overlapper!</string>
-    <string name="wont_save">Det aktuelle layout gemmes ikke. Hvis du fortsætter, nulstilles layoutet.</string>
-    <string name="proceed_and_reset">Fortsæt og nulstil</string>
     <string name="dismiss">Afvis</string>
 
     <string name="instantaneous_consumption">\u0020Forbrug:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Venstre kant, åbnes med et stryg mod højre</string>
     <string name="edge_handle_side_right">Højre kant, åbnes med et stryg mod venstre</string>
     <string name="vertical_bar_every_page">Lodret bjælke på hver side</string>
+    <string name="overlap_fit_message">Overlappende widgets flyttes fra hinanden, som bjælkerne flytter dem: kun gjort mindre, hvor der ikke er plads, og kun nulstillet, hvis de slet ikke kan være der.</string>
+    <string name="proceed_and_fit">Fortsæt og tilpas</string>
 </resources>

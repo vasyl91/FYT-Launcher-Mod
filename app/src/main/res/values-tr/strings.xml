@@ -207,8 +207,6 @@
     <string name="layout_set">Düzen ayarlandı! Sonucu görmek için Ana Sayfa düğmesine basın.</string>
     <string name="stats_name">Uygulama içi istatistikler</string>
     <string name="overlapping">Widget\'lar üst üste biniyor!</string>
-    <string name="wont_save">Geçerli düzen kaydedilmeyecek. Devam ederseniz düzen sıfırlanır.</string>
-    <string name="proceed_and_reset">Devam et ve sıfırla</string>
     <string name="dismiss">Kapat</string>
 
     <string name="instantaneous_consumption">\u0020Tüketim:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Sol kenar, sağa kaydırarak açılır</string>
     <string name="edge_handle_side_right">Sağ kenar, sola kaydırarak açılır</string>
     <string name="vertical_bar_every_page">Her sayfada dikey çubuk</string>
+    <string name="overlap_fit_message">Üst üste binen widget\'lar çubukların onları kaydırdığı gibi birbirinden ayrılacak: yalnızca yer olmayan yerde küçültülecek, hiç sığmıyorsa sıfırlanacak.</string>
+    <string name="proceed_and_fit">Devam et ve sığdır</string>
 </resources>

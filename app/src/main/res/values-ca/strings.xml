@@ -207,8 +207,6 @@
     <string name="layout_set">S\'ha definit la disposició! Prem el botó d\'inici per veure el resultat.</string>
     <string name="stats_name">Estadístiques de l\'aplicació</string>
     <string name="overlapping">Els widgets se superposen!</string>
-    <string name="wont_save">La disposició actual no es desarà. Si continues, es restablirà la disposició.</string>
-    <string name="proceed_and_reset">Continua i restableix</string>
     <string name="dismiss">Omet</string>
 
     <string name="instantaneous_consumption">\u0020Consum:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Vora esquerra, s\'obre lliscant cap a la dreta</string>
     <string name="edge_handle_side_right">Vora dreta, s\'obre lliscant cap a l\'esquerra</string>
     <string name="vertical_bar_every_page">Barra vertical a cada pàgina</string>
+    <string name="overlap_fit_message">Els ginys que se superposen se separaran com ho fan les barres: només es faran més petits on no hi hagi lloc i només es restabliran si no hi caben de cap manera.</string>
+    <string name="proceed_and_fit">Continua i ajusta</string>
 </resources>

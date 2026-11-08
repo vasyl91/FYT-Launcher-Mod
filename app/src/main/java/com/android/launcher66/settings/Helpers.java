@@ -682,11 +682,14 @@ public class Helpers {
                 Log.w(TAG, "The cell grid or the occupied cells are not known, elements are cut but not moved");
             }
 
-            CustomLayoutResolver.Result result = CustomLayoutResolver.resolve(elements, env);
-            ScreenResolution resolution = new ScreenResolution(screen, env, new CustomLayoutResolver.Bounds(margin,
+            // The room beside the bars: where an overlapping element may be moved to, and where a reset one is put
+            CustomLayoutResolver.Bounds room = new CustomLayoutResolver.Bounds(margin,
                     env.minTop != Integer.MIN_VALUE ? env.minTop : margin,
                     env.maxRight != CustomLayoutResolver.NO_LIMIT ? env.maxRight : bar.rootWidth - margin,
-                    env.maxBottom != CustomLayoutResolver.NO_LIMIT ? env.maxBottom : bar.rootHeight - margin));
+                    env.maxBottom != CustomLayoutResolver.NO_LIMIT ? env.maxBottom : bar.rootHeight - margin);
+            env.bounds = room;
+            CustomLayoutResolver.Result result = CustomLayoutResolver.resolve(elements, env);
+            ScreenResolution resolution = new ScreenResolution(screen, env, room);
             for (int k = 0; k < elements.size(); k++) {
                 int i = indexes.get(k);
                 if (!result.reset[k]) {
@@ -703,8 +706,8 @@ public class Helpers {
                             : new int[] {element.right - element.left, element.bottom - element.top});
                     int winner = result.conflictWith[k];
                     if (!result.cut[k] && winner >= 0) {
-                        Log.i(TAG, "Rectangle " + key + " overlaps " + elements.get(winner).key
-                                + " and cannot be cut, placing it elsewhere");
+                        Log.i(TAG, "Overlap on page " + (screen + 1) + ": " + key + " reset, beside "
+                                + elements.get(winner).key);
                     } else if (!element.empty) {
                         Log.i(TAG, "Rectangle " + key + " has no room beside the bars, resetting it");
                     }
@@ -712,14 +715,19 @@ public class Helpers {
                     continue;
                 }
                 int[] rect = result.rects[k];
-                if (result.cut[k]) {
-                    Log.i(TAG, "Rectangle " + key + " overlaps " + elements.get(result.conflictWith[k]).key
-                            + ", cut to " + rect[0] + "," + rect[1] + "," + rect[2] + "," + rect[3]);
-                }
                 CustomLayoutResolver.Element element = elements.get(k);
+                if (result.moved[k]) {
+                    Log.i(TAG, "Overlap on page " + (screen + 1) + ": " + key + " moved by "
+                            + (rect[0] - element.left) + "," + (rect[1] - element.top));
+                } else if (result.cut[k]) {
+                    Log.i(TAG, "Overlap on page " + (screen + 1) + ": " + key + " cut to " + rect[0] + ","
+                            + rect[1] + "," + rect[2] + "," + rect[3]);
+                }
                 String note = null;
                 if (result.cut[k]) {
                     note = "cut";
+                } else if (result.moved[k]) {
+                    note = "moved";
                 } else if (!element.empty && (rect[0] != element.left || rect[1] != element.top
                         || rect[2] != element.right || rect[3] != element.bottom)) {
                     boolean sameSize = rect[2] - rect[0] == element.right - element.left

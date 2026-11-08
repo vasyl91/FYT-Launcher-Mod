@@ -207,8 +207,6 @@
     <string name="layout_set">Raspored je postavljen! Pritisnite gumb Početna da biste vidjeli rezultat.</string>
     <string name="stats_name">Statistika u aplikaciji</string>
     <string name="overlapping">Widgeti se preklapaju!</string>
-    <string name="wont_save">Trenutni raspored neće biti spremljen. Nastavak će poništiti raspored.</string>
-    <string name="proceed_and_reset">Nastavi i poništi</string>
     <string name="dismiss">Odbaci</string>
 
     <string name="instantaneous_consumption">\u0020Potrošnja:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Lijevi rub, otvara se povlačenjem udesno</string>
     <string name="edge_handle_side_right">Desni rub, otvara se povlačenjem ulijevo</string>
     <string name="vertical_bar_every_page">Okomita traka na svakoj stranici</string>
+    <string name="overlap_fit_message">Widgeti koji se preklapaju bit će razmaknuti onako kako ih pomiču trake: smanjuju se samo ondje gdje nema mjesta, a vraćaju se na zadano samo ako se uopće ne mogu smjestiti.</string>
+    <string name="proceed_and_fit">Nastavi i prilagodi</string>
 </resources>

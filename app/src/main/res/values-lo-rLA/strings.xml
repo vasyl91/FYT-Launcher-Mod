@@ -207,8 +207,6 @@
     <string name="layout_set">ຕັ້ງຮູບແບບແລ້ວ! ກົດປຸ່ມໜ້າຫຼັກເພື່ອເບິ່ງຜົນ.</string>
     <string name="stats_name">ສະຖິຕິໃນແອັບ</string>
     <string name="overlapping">ວິດເຈັດຊ້ອນກັນ!</string>
-    <string name="wont_save">ຮູບແບບປັດຈຸບັນຈະບໍ່ຖືກບັນທຶກ. ການດຳເນີນການຕໍ່ຈະຣີເຊັດຮູບແບບ.</string>
-    <string name="proceed_and_reset">ດຳເນີນການຕໍ່ ແລະ ຣີເຊັດ</string>
     <string name="dismiss">ປິດ</string>
 
     <string name="instantaneous_consumption">ການໃຊ້ນ້ຳມັນ:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">ຂອບຊ້າຍ, ເປີດດ້ວຍການປັດໄປທາງຂວາ</string>
     <string name="edge_handle_side_right">ຂອບຂວາ, ເປີດດ້ວຍການປັດໄປທາງຊ້າຍ</string>
     <string name="vertical_bar_every_page">ແຖບແນວຕັ້ງໃນທຸກໜ້າ</string>
+    <string name="overlap_fit_message">ວິດເຈັດທີ່ຊ້ອນກັນຈະຖືກຍ້າຍຫ່າງກັນຄືກັບທີ່ແຖບຍ້າຍ: ຫຍໍ້ລົງສະເພາະບ່ອນທີ່ບໍ່ມີບ່ອນຫວ່າງ ແລະ ຣີເຊັດສະເພາະເມື່ອບໍ່ໃສ່ໄດ້ເລີຍ.</string>
+    <string name="proceed_and_fit">ສືບຕໍ່ ແລະ ປັບ</string>
 </resources>

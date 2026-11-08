@@ -207,8 +207,6 @@
     <string name="layout_set">Η διάταξη ορίστηκε! Πατήστε το κουμπί Αρχικής για να δείτε το αποτέλεσμα.</string>
     <string name="stats_name">Στατιστικά στην εφαρμογή</string>
     <string name="overlapping">Τα γραφικά στοιχεία επικαλύπτονται!</string>
-    <string name="wont_save">Η τρέχουσα διάταξη δεν θα αποθηκευτεί. Η συνέχεια θα επαναφέρει τη διάταξη.</string>
-    <string name="proceed_and_reset">Συνέχεια και επαναφορά</string>
     <string name="dismiss">Παράβλεψη</string>
 
     <string name="instantaneous_consumption">\u0020Κατανάλωση:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Αριστερή άκρη, ανοίγει με σύρσιμο προς τα δεξιά</string>
     <string name="edge_handle_side_right">Δεξιά άκρη, ανοίγει με σύρσιμο προς τα αριστερά</string>
     <string name="vertical_bar_every_page">Κάθετη γραμμή σε κάθε σελίδα</string>
+    <string name="overlap_fit_message">Τα γραφικά στοιχεία που επικαλύπτονται θα απομακρυνθούν όπως τα μετακινούν οι γραμμές: θα μικρύνουν μόνο όπου δεν υπάρχει χώρος και θα επαναφερθούν μόνο αν δεν χωρούν καθόλου.</string>
+    <string name="proceed_and_fit">Συνέχεια και προσαρμογή</string>
 </resources>

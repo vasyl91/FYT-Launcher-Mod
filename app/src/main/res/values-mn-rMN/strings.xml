@@ -207,8 +207,6 @@
     <string name="layout_set">Зохион байгуулалтыг тохирууллаа! Үр дүнг харахын тулд Нүүр товчийг дарна уу.</string>
     <string name="stats_name">Аппын доторх статистик</string>
     <string name="overlapping">Виджетүүд давхцаж байна!</string>
-    <string name="wont_save">Одоогийн зохион байгуулалт хадгалагдахгүй. Үргэлжлүүлбэл зохион байгуулалт дахин тохируулагдана.</string>
-    <string name="proceed_and_reset">Үргэлжлүүлж дахин тохируулах</string>
     <string name="dismiss">Хаах</string>
 
     <string name="instantaneous_consumption">Түлшний зарцуулалт:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Зүүн ирмэг, баруун тийш шудрахад нээгдэнэ</string>
     <string name="edge_handle_side_right">Баруун ирмэг, зүүн тийш шудрахад нээгдэнэ</string>
     <string name="vertical_bar_every_page">Хуудас бүр дээр босоо самбар</string>
+    <string name="overlap_fit_message">Давхцсан виджетүүдийг самбар шиг зөөж салгана: зөвхөн зай байхгүй газарт жижигрүүлж, огт багтахгүй бол л анхны төлөвт оруулна.</string>
+    <string name="proceed_and_fit">Үргэлжлүүлж тохируулах</string>
 </resources>

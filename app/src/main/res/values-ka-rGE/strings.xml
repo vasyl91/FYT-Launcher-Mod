@@ -207,8 +207,6 @@
     <string name="layout_set">განლაგება დაყენებულია! შედეგის სანახავად დააჭირეთ მთავარი ეკრანის ღილაკს.</string>
     <string name="stats_name">სტატისტიკა აპში</string>
     <string name="overlapping">ვიჯეტები ერთმანეთს გადაფარავს!</string>
-    <string name="wont_save">მიმდინარე განლაგება არ შეინახება. გაგრძელების შემთხვევაში განლაგება გადაიტვირთება.</string>
-    <string name="proceed_and_reset">გაგრძელება და გადატვირთვა</string>
     <string name="dismiss">დახურვა</string>
 
     <string name="instantaneous_consumption">\u0020ხარჯი:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">მარცხენა კიდე, იხსნება მარჯვნივ გადასმით</string>
     <string name="edge_handle_side_right">მარჯვენა კიდე, იხსნება მარცხნივ გადასმით</string>
     <string name="vertical_bar_every_page">ვერტიკალური ზოლი ყველა გვერდზე</string>
+    <string name="overlap_fit_message">გადაფარული ვიჯეტები გაიმიჯნება ისე, როგორც მათ ზოლები გადააადგილებს: დაპატარავდება მხოლოდ იქ, სადაც ადგილი არ არის, და გადაიტვირთება მხოლოდ თუ საერთოდ ვერ ეტევა.</string>
+    <string name="proceed_and_fit">გაგრძელება და მორგება</string>
 </resources>

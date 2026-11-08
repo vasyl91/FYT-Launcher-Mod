@@ -207,8 +207,6 @@
     <string name="layout_set">Макет установлено! Натисніть кнопку «Головна», щоб побачити результат.</string>
     <string name="stats_name">Статистика в застосунку</string>
     <string name="overlapping">Віджети перекриваються!</string>
-    <string name="wont_save">Поточний макет не буде збережено. Якщо продовжити, макет буде скинуто.</string>
-    <string name="proceed_and_reset">Продовжити й скинути</string>
     <string name="dismiss">Закрити</string>
 
     <string name="instantaneous_consumption">\u0020Витрата:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Лівий край, відкривається свайпом праворуч</string>
     <string name="edge_handle_side_right">Правий край, відкривається свайпом ліворуч</string>
     <string name="vertical_bar_every_page">Вертикальна панель на кожній сторінці</string>
+    <string name="overlap_fit_message">Віджети, що перекриваються, буде розсунуто так, як їх зсувають панелі: зменшено лише там, де немає місця, і скинуто лише якщо вони зовсім не вміщаються.</string>
+    <string name="proceed_and_fit">Продовжити й підігнати</string>
 </resources>

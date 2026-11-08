@@ -207,8 +207,6 @@
     <string name="layout_set">Layouten er angitt! Trykk på Hjem-knappen for å se resultatet.</string>
     <string name="stats_name">Statistikk i appen</string>
     <string name="overlapping">Widgeter overlapper!</string>
-    <string name="wont_save">Gjeldende layout lagres ikke. Hvis du fortsetter, tilbakestilles layouten.</string>
-    <string name="proceed_and_reset">Fortsett og tilbakestill</string>
     <string name="dismiss">Lukk</string>
 
     <string name="instantaneous_consumption">\u0020Forbruk:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Venstre kant, åpnes med et sveip mot høyre</string>
     <string name="edge_handle_side_right">Høyre kant, åpnes med et sveip mot venstre</string>
     <string name="vertical_bar_every_page">Vertikalt felt på hver side</string>
+    <string name="overlap_fit_message">Overlappende widgeter flyttes fra hverandre slik feltene flytter dem: gjøres bare mindre der det ikke er plass, og tilbakestilles bare hvis de ikke får plass i det hele tatt.</string>
+    <string name="proceed_and_fit">Fortsett og tilpass</string>
 </resources>

@@ -207,8 +207,6 @@
     <string name="layout_set">Распоред је подешен! Притисните дугме Почетна да видите резултат.</string>
     <string name="stats_name">Статистика у апликацији</string>
     <string name="overlapping">Виџети се преклапају!</string>
-    <string name="wont_save">Тренутни распоред неће бити сачуван. Ако наставите, распоред ће бити ресетован.</string>
-    <string name="proceed_and_reset">Настави и ресетуј</string>
     <string name="dismiss">Одбаци</string>
 
     <string name="instantaneous_consumption">\u0020Потрошња:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Леви руб, отвара се превлачењем удесно</string>
     <string name="edge_handle_side_right">Десни руб, отвара се превлачењем улево</string>
     <string name="vertical_bar_every_page">Вертикална трака на свакој страници</string>
+    <string name="overlap_fit_message">Виџети који се преклапају биће раздвојени онако како их померају траке: смањују се само тамо где нема места, а ресетују само ако се уопште не могу сместити.</string>
+    <string name="proceed_and_fit">Настави и прилагоди</string>
 </resources>

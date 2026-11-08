@@ -207,8 +207,6 @@
     <string name="layout_set">La disposition a été définie ! Appuyez sur le bouton Accueil pour voir le résultat.</string>
     <string name="stats_name">Statistiques dans l\'application</string>
     <string name="overlapping">Les widgets se chevauchent !</string>
-    <string name="wont_save">La disposition actuelle ne sera pas enregistrée. Si vous continuez, la disposition sera réinitialisée.</string>
-    <string name="proceed_and_reset">Continuer et réinitialiser</string>
     <string name="dismiss">Ignorer</string>
 
     <string name="instantaneous_consumption">\u0020Conso. :</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Bord gauche, s\'ouvre en glissant vers la droite</string>
     <string name="edge_handle_side_right">Bord droit, s\'ouvre en glissant vers la gauche</string>
     <string name="vertical_bar_every_page">Barre verticale sur chaque page</string>
+    <string name="overlap_fit_message">Les widgets qui se chevauchent seront écartés comme le font les barres : réduits seulement là où il n\'y a pas de place, et réinitialisés seulement s\'ils ne tiennent pas du tout.</string>
+    <string name="proceed_and_fit">Continuer et ajuster</string>
 </resources>

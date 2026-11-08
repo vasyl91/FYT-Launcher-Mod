@@ -207,8 +207,6 @@
     <string name="layout_set">Das Layout wurde festgelegt! Drücken Sie die Home-Taste, um das Ergebnis zu sehen.</string>
     <string name="stats_name">Statistik in der App</string>
     <string name="overlapping">Widgets überlappen sich!</string>
-    <string name="wont_save">Das aktuelle Layout wird nicht gespeichert. Wenn Sie fortfahren, wird das Layout zurückgesetzt.</string>
-    <string name="proceed_and_reset">Fortfahren und zurücksetzen</string>
     <string name="dismiss">Schließen</string>
 
     <string name="instantaneous_consumption">\u0020Verbrauch:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Linker Rand, mit Wischen nach rechts öffnen</string>
     <string name="edge_handle_side_right">Rechter Rand, mit Wischen nach links öffnen</string>
     <string name="vertical_bar_every_page">Vertikale Leiste auf jeder Seite</string>
+    <string name="overlap_fit_message">Sich überlappende Widgets werden so auseinandergeschoben, wie die Leisten sie verschieben: nur dort verkleinert, wo kein Platz ist, und nur zurückgesetzt, wenn sie gar nicht passen.</string>
+    <string name="proceed_and_fit">Weiter und anpassen</string>
 </resources>

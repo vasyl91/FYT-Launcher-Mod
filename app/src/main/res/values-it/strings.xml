@@ -207,8 +207,6 @@
     <string name="layout_set">Il layout è stato impostato! Premi il pulsante Home per vedere il risultato.</string>
     <string name="stats_name">Statistiche nell\'app</string>
     <string name="overlapping">I widget si sovrappongono!</string>
-    <string name="wont_save">Il layout attuale non verrà salvato. Se continui, il layout verrà reimpostato.</string>
-    <string name="proceed_and_reset">Continua e reimposta</string>
     <string name="dismiss">Chiudi</string>
 
     <string name="instantaneous_consumption">\u0020Consumo:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Bordo sinistro, si apre con uno scorrimento verso destra</string>
     <string name="edge_handle_side_right">Bordo destro, si apre con uno scorrimento verso sinistra</string>
     <string name="vertical_bar_every_page">Barra verticale su ogni pagina</string>
+    <string name="overlap_fit_message">I widget sovrapposti verranno separati come li spostano le barre: rimpiccioliti solo dove non c\'è spazio e reimpostati solo se non entrano affatto.</string>
+    <string name="proceed_and_fit">Continua e adatta</string>
 </resources>

@@ -207,8 +207,6 @@
     <string name="layout_set">Đã đặt bố cục! Nhấn nút Màn hình chính để xem kết quả.</string>
     <string name="stats_name">Thống kê trong ứng dụng</string>
     <string name="overlapping">Các widget đang chồng lên nhau!</string>
-    <string name="wont_save">Bố cục hiện tại sẽ không được lưu. Tiếp tục sẽ đặt lại bố cục.</string>
-    <string name="proceed_and_reset">Tiếp tục và đặt lại</string>
     <string name="dismiss">Đóng</string>
 
     <string name="instantaneous_consumption">\u0020Mức tiêu thụ:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Cạnh trái, mở bằng cách vuốt sang phải</string>
     <string name="edge_handle_side_right">Cạnh phải, mở bằng cách vuốt sang trái</string>
     <string name="vertical_bar_every_page">Thanh dọc ở mọi trang</string>
+    <string name="overlap_fit_message">Các tiện ích chồng lên nhau sẽ được đẩy ra xa như cách các thanh di chuyển chúng: chỉ thu nhỏ khi không đủ chỗ và chỉ đặt lại khi hoàn toàn không vừa.</string>
+    <string name="proceed_and_fit">Tiếp tục và điều chỉnh</string>
 </resources>

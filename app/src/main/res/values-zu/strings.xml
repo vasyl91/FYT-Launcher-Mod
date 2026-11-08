@@ -207,8 +207,6 @@
     <string name="layout_set">Isakhiwo sisethiwe! Cindezela inkinobho yasekhaya ukuze ubone umphumela.</string>
     <string name="stats_name">Izibalo ngaphakathi kohlelo lokusebenza</string>
     <string name="overlapping">Amawijethi ayaphindaphindana!</string>
-    <string name="wont_save">Isakhiwo samanje ngeke sigcinwe. Ukuqhubeka kuzosetha kabusha isakhiwo.</string>
-    <string name="proceed_and_reset">Qhubeka futhi usethe kabusha</string>
     <string name="dismiss">Chitha</string>
 
     <string name="instantaneous_consumption">\u0020Ukusetshenziswa:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Onqenqemeni lwesobunxele, kuvulwa ngokuswayipha kwesokudla</string>
     <string name="edge_handle_side_right">Onqenqemeni lwesokudla, kuvulwa ngokuswayipha kwesobunxele</string>
     <string name="vertical_bar_every_page">Ibha eqondile ekhasini ngalinye</string>
+    <string name="overlap_fit_message">Amawijethi ahlanganayo azohlukaniswa ngendlela amabha awasusa ngayo: encishiswa kuphela lapho kungekho ndawo, futhi asethwe kabusha kuphela uma engangeni nhlobo.</string>
+    <string name="proceed_and_fit">Qhubeka futhi ulungise</string>
 </resources>

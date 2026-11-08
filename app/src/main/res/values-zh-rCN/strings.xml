@@ -207,8 +207,6 @@
     <string name="layout_set">布局已设置！按 Home 键查看效果。</string>
     <string name="stats_name">应用内统计</string>
     <string name="overlapping">小部件重叠了！</string>
-    <string name="wont_save">当前布局将不会被保存。继续将重置布局。</string>
-    <string name="proceed_and_reset">继续并重置</string>
     <string name="dismiss">关闭</string>
 
     <string name="instantaneous_consumption">\u0020油耗：</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">左边缘，向右滑动打开</string>
     <string name="edge_handle_side_right">右边缘，向左滑动打开</string>
     <string name="vertical_bar_every_page">每页都显示纵栏</string>
+    <string name="overlap_fit_message">重叠的小部件会像栏一样被推开：只有在没有空间时才会缩小，只有完全放不下时才会重置。</string>
+    <string name="proceed_and_fit">继续并调整</string>
 </resources>

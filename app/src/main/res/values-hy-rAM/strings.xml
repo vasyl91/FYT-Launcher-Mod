@@ -207,8 +207,6 @@
     <string name="layout_set">Դասավորությունը սահմանվեց։ Արդյունքը տեսնելու համար սեղմեք «Գլխավոր» կոճակը։</string>
     <string name="stats_name">Վիճակագրություն հավելվածում</string>
     <string name="overlapping">Վիջեթները համընկնում են։</string>
-    <string name="wont_save">Ընթացիկ դասավորությունը չի պահպանվի։ Շարունակելու դեպքում դասավորությունը կվերակայվի։</string>
-    <string name="proceed_and_reset">Շարունակել և վերակայել</string>
     <string name="dismiss">Փակել</string>
 
     <string name="instantaneous_consumption">\u0020Ծախս՝</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Ձախ եզր, բացվում է աջ սահեցմամբ</string>
     <string name="edge_handle_side_right">Աջ եզր, բացվում է ձախ սահեցմամբ</string>
     <string name="vertical_bar_every_page">Ուղղահայաց գոտին յուրաքանչյուր էջում</string>
+    <string name="overlap_fit_message">Համընկնող վիջեթները կբաժանվեն այնպես, ինչպես դրանք տեղափոխում են գոտիները՝ կփոքրացվեն միայն այնտեղ, որտեղ տեղ չկա, և կվերականգնվեն միայն եթե ընդհանրապես չեն տեղավորվում։</string>
+    <string name="proceed_and_fit">Շարունակել և հարմարեցնել</string>
 </resources>

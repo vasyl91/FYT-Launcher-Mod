@@ -207,8 +207,6 @@
     <string name="layout_set">Naitakda na ang layout! Pindutin ang Home button para makita ang resulta.</string>
     <string name="stats_name">Mga istatistika sa loob ng app</string>
     <string name="overlapping">Nagsasapawan ang mga widget!</string>
-    <string name="wont_save">Hindi ise-save ang kasalukuyang layout. Ire-reset ang layout kapag nagpatuloy.</string>
-    <string name="proceed_and_reset">Magpatuloy at i-reset</string>
     <string name="dismiss">I-dismiss</string>
 
     <string name="instantaneous_consumption">\u0020Konsumo:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Kaliwang gilid, bubuksan sa pag-swipe pakanan</string>
     <string name="edge_handle_side_right">Kanang gilid, bubuksan sa pag-swipe pakaliwa</string>
     <string name="vertical_bar_every_page">Patayong bar sa bawat pahina</string>
+    <string name="overlap_fit_message">Ang magkakapatong na mga widget ay ilalayo sa isa\'t isa tulad ng paglipat ng mga bar sa mga ito: paliliitin lang kung walang espasyo, at ire-reset lang kung hindi talaga kasya.</string>
+    <string name="proceed_and_fit">Magpatuloy at isaayos</string>
 </resources>

@@ -207,8 +207,6 @@
     <string name="layout_set">Изгледът е зададен! Натиснете бутона за начало, за да видите резултата.</string>
     <string name="stats_name">Статистика в приложението</string>
     <string name="overlapping">Приспособленията се припокриват!</string>
-    <string name="wont_save">Текущият изглед няма да бъде запазен. Ако продължите, изгледът ще бъде нулиран.</string>
-    <string name="proceed_and_reset">Продължаване и нулиране</string>
     <string name="dismiss">Отхвърляне</string>
 
     <string name="instantaneous_consumption">\u0020Разход:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Ляв край, отваря се с плъзгане надясно</string>
     <string name="edge_handle_side_right">Десен край, отваря се с плъзгане наляво</string>
     <string name="vertical_bar_every_page">Вертикална лента на всяка страница</string>
+    <string name="overlap_fit_message">Припокриващите се уиджети ще бъдат раздалечени така, както ги премествлентите: ще се смаляват само където няма място и ще се нулират само ако изобщо не се побират.</string>
+    <string name="proceed_and_fit">Продължи и нагласи</string>
 </resources>

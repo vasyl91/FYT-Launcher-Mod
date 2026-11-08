@@ -45,7 +45,7 @@ class PipEdgeTrimTest {
 
     @Test
     void zeroMarginKeepsTheBottomEdgeStrictlyAboveTheBar() {
-        // overlapsOrTouches() counts a shared edge as a collision.
+        // the bar rule counts a shared edge as a collision.
         assertEquals(999, PipEdgeTrim.maxBottom(1000, 0));
         assertEquals(995, PipEdgeTrim.maxBottom(1000, 5));
     }

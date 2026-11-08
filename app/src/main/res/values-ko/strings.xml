@@ -207,8 +207,6 @@
     <string name="layout_set">레이아웃이 설정되었습니다! 홈 버튼을 눌러 결과를 확인하세요.</string>
     <string name="stats_name">앱 내 통계</string>
     <string name="overlapping">위젯이 겹쳐 있습니다!</string>
-    <string name="wont_save">현재 레이아웃은 저장되지 않습니다. 계속하면 레이아웃이 초기화됩니다.</string>
-    <string name="proceed_and_reset">계속 및 초기화</string>
     <string name="dismiss">닫기</string>
 
     <string name="instantaneous_consumption">\u0020연비:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">왼쪽 가장자리, 오른쪽으로 스와이프하여 열기</string>
     <string name="edge_handle_side_right">오른쪽 가장자리, 왼쪽으로 스와이프하여 열기</string>
     <string name="vertical_bar_every_page">모든 페이지에 세로 바 표시</string>
+    <string name="overlap_fit_message">겹치는 위젯은 바가 밀어내는 방식과 같이 떨어뜨려 놓습니다. 공간이 없는 곳에서만 작게 만들고, 전혀 들어가지 않을 때만 초기화합니다.</string>
+    <string name="proceed_and_fit">계속 및 맞춤</string>
 </resources>

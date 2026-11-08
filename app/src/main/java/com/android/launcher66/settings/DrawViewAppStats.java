@@ -367,7 +367,10 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
                 Integer[] oids = rectangleBallIds.get(other.key);
                 if (oids == null) continue;
                 RectF or = rectFromBallIds(oids[0], oids[1], oids[2], oids[3]);
-                if (!or.isEmpty() && RectF.intersects(r, or)) { overlapsWithOptIn = true; break; }
+                if (!or.isEmpty() && RectOverlap.overlaps(r.left, r.top, r.right, r.bottom, or.left, or.top, or.right, or.bottom)) {
+                    overlapsWithOptIn = true;
+                    break;
+                }
             }
             if (overlapsWithOptIn) {
                 Paint overlay = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -666,7 +669,7 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
 
         } else if (viewId == R.id.confirm_layout) {
             if (hasAnyIntersection()) {
-                displayDialog();
+                displayDialog(this::showLayoutSetToastAfterFit);
             } else {
                 savePrefs();
                 String message = getSafeContext().getString(R.string.layout_set);
@@ -737,7 +740,8 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
                 if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK){
                     // handle back button's click listener
                     if (hasAnyIntersection()) {
-                        displayDialog();
+                        displayDialog(() -> getActivity().getSupportFragmentManager().beginTransaction()
+                                .replace(android.R.id.content, new SettingsFragmentSecond()).commit());
                     } else {
                         savePrefs();
                         getActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragmentSecond()).commit();
@@ -766,15 +770,27 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         mRootView = null;
     }
 
-    private void displayDialog() {
+    private void showLayoutSetToastAfterFit() {
+        Toast.makeText(getSafeContext(), getSafeContext().getString(R.string.layout_set), Toast.LENGTH_LONG).show();
+    }
+
+    /** Same rule and same choice as the creator of the pages (DrawViewScreen.displayDialog()). */
+    private void displayDialog(final Runnable afterFit) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getSafeContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
         builder.setTitle(getSafeContext().getString(R.string.overlapping));
-        builder.setMessage(getSafeContext().getString(R.string.wont_save));
-        builder.setPositiveButton(getSafeContext().getString(R.string.proceed_and_reset), new DialogInterface.OnClickListener() {
+        builder.setMessage(getSafeContext().getString(R.string.overlap_fit_message));
+        builder.setPositiveButton(getSafeContext().getString(R.string.proceed_and_fit), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                savePrefs();
                 helpers.checkAndResetIfOverlappingOnScreen(-1);
-                getActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragmentSecond()).commit();
+                for (RectangleConfig cfg : rectangleConfigs) {
+                    if (cfg.enabled) {
+                        initRectangle(cfg);
+                    }
+                }
+                invalidate();
+                afterFit.run();
             }
         });
         builder.setNegativeButton(getSafeContext().getString(R.string.dismiss), new DialogInterface.OnClickListener() {
@@ -899,7 +915,7 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         e.apply();
     }
 
-    /** Returns true if any two enabled rectangles intersect (overlap or touch). */
+    /** Returns true if any two enabled rectangles overlap (share an area: a common edge or corner is no overlap). */
     public boolean hasAnyIntersection() {
         for (int i = 0; i < rectangleConfigs.size(); i++) {
             RectangleConfig a = rectangleConfigs.get(i);
@@ -922,18 +938,12 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
                 RectF rb = rectFromBallIds(ib[0], ib[1], ib[2], ib[3]);
                 if (rb.isEmpty()) continue;
 
-                if (overlapsOrTouches(ra, rb)) {
+                if (RectOverlap.overlaps(ra.left, ra.top, ra.right, ra.bottom, rb.left, rb.top, rb.right, rb.bottom)) {
                     return true;
                 }
             }
         }
         return false;
-    }
-
-    /** Inclusive overlap check: counts edge/corner touching as intersection. */
-    private static boolean overlapsOrTouches(RectF a, RectF b) {
-        // If there is any separating gap, they don't intersect.
-        return !(a.right < b.left || b.right < a.left || a.bottom < b.top || b.bottom < a.top);
     }
 
     /**

@@ -685,7 +685,10 @@ public class DrawViewScreen extends View implements View.OnClickListener {
                 Integer[] oids = rectangleBallIds.get(other.key);
                 if (oids == null) continue;
                 RectF or = rectFromBallIds(oids[0], oids[1], oids[2], oids[3]);
-                if (!or.isEmpty() && RectF.intersects(r, or)) { overlapsWithOptIn = true; break; }
+                if (!or.isEmpty() && RectOverlap.overlaps(r.left, r.top, r.right, r.bottom, or.left, or.top, or.right, or.bottom)) {
+                    overlapsWithOptIn = true;
+                    break;
+                }
             }
             if (overlapsWithOptIn) {
                 Paint overlay = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -1007,22 +1010,10 @@ public class DrawViewScreen extends View implements View.OnClickListener {
 
         } else if (viewId == R.id.confirm_layout) {
             if (hasAnyIntersection()) {
-                displayDialog();
+                displayDialog(this::showLayoutSetToast);
             } else {
                 savePrefs();
-                String message = getSafeContext().getString(R.string.layout_set);
-                if (mInflater != null && mRootView != null) {
-                    View toastLayout = mInflater.inflate(R.layout.toast, mRootView.findViewById(R.id.toast_layout));
-                    TextView text = toastLayout.findViewById(R.id.toast_text);
-                    text.setText(message);
-                    text.setTextSize(30);
-                    Toast toast = Toast.makeText(getSafeContext(), message, Toast.LENGTH_LONG);
-                    toast.setGravity(Gravity.CENTER, 0, 0);
-                    toast.setView(toastLayout);
-                    toast.show();
-                } else {
-                    Toast.makeText(getSafeContext(), message, Toast.LENGTH_LONG).show();
-                }
+                showLayoutSetToast();
             }
             // Kept from the original: confirm_layout ends the method and does not
             // fall through to the block below that applies the step.
@@ -1214,7 +1205,8 @@ public class DrawViewScreen extends View implements View.OnClickListener {
                 if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK){
                     // handle back button's click listener
                     if (hasAnyIntersection()) {
-                        displayDialog();
+                        displayDialog(() -> getActivity().getSupportFragmentManager().beginTransaction()
+                                .replace(android.R.id.content, new SettingsFragmentSecond()).commit());
                     } else {
                         savePrefs();
                         getActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragmentSecond()).commit();
@@ -1243,15 +1235,47 @@ public class DrawViewScreen extends View implements View.OnClickListener {
         mRootView = null;
     }
 
-    private void displayDialog() {
+    private void showLayoutSetToast() {
+        String message = getSafeContext().getString(R.string.layout_set);
+        if (mInflater != null && mRootView != null) {
+            View toastLayout = mInflater.inflate(R.layout.toast, mRootView.findViewById(R.id.toast_layout));
+            TextView text = toastLayout.findViewById(R.id.toast_text);
+            text.setText(message);
+            text.setTextSize(30);
+            Toast toast = Toast.makeText(getSafeContext(), message, Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.setView(toastLayout);
+            toast.show();
+        } else {
+            Toast.makeText(getSafeContext(), message, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /**
+     * Asked when rectangles overlap (R3: a shared area, not a shared edge). "Proceed and fit" saves what is drawn, as
+     * a plain save does, lets Helpers fit the overlapping rectangles the way the bars fit them (moved by the shortest
+     * way, cut only where there is no room, reset only if they cannot fit), shows the result and then goes on as the
+     * path that asked.
+     *
+     * @param afterFit what that path does next: the toast of a saved layout, or the way back to the settings
+     */
+    private void displayDialog(final Runnable afterFit) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getSafeContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
         builder.setTitle(getSafeContext().getString(R.string.overlapping));
-        builder.setMessage(getSafeContext().getString(R.string.wont_save));
-        builder.setPositiveButton(getSafeContext().getString(R.string.proceed_and_reset), new DialogInterface.OnClickListener() {
+        builder.setMessage(getSafeContext().getString(R.string.overlap_fit_message));
+        builder.setPositiveButton(getSafeContext().getString(R.string.proceed_and_fit), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                helpers.checkAndResetIfOverlappingOnScreen(-1); 
-                getActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragmentSecond()).commit();
+                savePrefs();
+                helpers.checkAndResetIfOverlappingOnScreen(-1);
+                // What Helpers made of it, read again from the saved corners
+                for (RectangleConfig cfg : rectangleConfigs) {
+                    if (cfg.enabled) {
+                        initRectangle(cfg);
+                    }
+                }
+                invalidate();
+                afterFit.run();
             }
         });
         builder.setNegativeButton(getSafeContext().getString(R.string.dismiss), new DialogInterface.OnClickListener() {
@@ -1384,7 +1408,7 @@ public class DrawViewScreen extends View implements View.OnClickListener {
         e.apply();
     }
 
-    /** Returns true if any two enabled rectangles intersect (overlap or touch). */
+    /** Returns true if any two enabled rectangles overlap (share an area: a common edge or corner is no overlap). */
     public boolean hasAnyIntersection() {
         for (int i = 0; i < rectangleConfigs.size(); i++) {
             RectangleConfig a = rectangleConfigs.get(i);
@@ -1407,18 +1431,12 @@ public class DrawViewScreen extends View implements View.OnClickListener {
                 RectF rb = rectFromBallIds(ib[0], ib[1], ib[2], ib[3]);
                 if (rb.isEmpty()) continue;
 
-                if (overlapsOrTouches(ra, rb)) {
+                if (RectOverlap.overlaps(ra.left, ra.top, ra.right, ra.bottom, rb.left, rb.top, rb.right, rb.bottom)) {
                     return true;
                 }
             }
         }
         return false;
-    }
-
-    /** Inclusive overlap check: counts edge/corner touching as intersection. */
-    private static boolean overlapsOrTouches(RectF a, RectF b) {
-        // If there is any separating gap, they don't intersect.
-        return !(a.right < b.left || b.right < a.left || a.bottom < b.top || b.bottom < a.top);
     }
 
     private boolean compareScreens(String pipScreenKey) {

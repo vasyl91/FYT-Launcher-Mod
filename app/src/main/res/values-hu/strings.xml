@@ -207,8 +207,6 @@
     <string name="layout_set">Az elrendezés beállítva! Az eredmény megtekintéséhez nyomja meg a Kezdőlap gombot.</string>
     <string name="stats_name">Alkalmazáson belüli statisztika</string>
     <string name="overlapping">A widgetek átfedik egymást!</string>
-    <string name="wont_save">A jelenlegi elrendezés nem lesz mentve. A folytatás visszaállítja az elrendezést.</string>
-    <string name="proceed_and_reset">Folytatás és visszaállítás</string>
     <string name="dismiss">Elvetés</string>
 
     <string name="instantaneous_consumption">\u0020Fogyasztás:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Bal szél, jobbra húzással nyílik</string>
     <string name="edge_handle_side_right">Jobb szél, balra húzással nyílik</string>
     <string name="vertical_bar_every_page">Függőleges sáv minden oldalon</string>
+    <string name="overlap_fit_message">Az átfedő widgeteket úgy tolja szét, ahogy a sávok mozgatják őket: csak ott kicsinyíti, ahol nincs hely, és csak akkor állítja vissza, ha egyáltalán nem férnek el.</string>
+    <string name="proceed_and_fit">Folytatás és igazítás</string>
 </resources>

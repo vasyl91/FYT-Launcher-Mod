@@ -207,8 +207,6 @@
     <string name="layout_set">Reka letak telah ditetapkan! Tekan butang Utama untuk melihat hasilnya.</string>
     <string name="stats_name">Statistik dalam apl</string>
     <string name="overlapping">Widget bertindih!</string>
-    <string name="wont_save">Reka letak semasa tidak akan disimpan. Meneruskan akan menetapkan semula reka letak.</string>
-    <string name="proceed_and_reset">Teruskan dan tetapkan semula</string>
     <string name="dismiss">Tolak</string>
 
     <string name="instantaneous_consumption">\u0020Penggunaan:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Tepi kiri, dibuka dengan leretan ke kanan</string>
     <string name="edge_handle_side_right">Tepi kanan, dibuka dengan leretan ke kiri</string>
     <string name="vertical_bar_every_page">Bar menegak pada setiap halaman</string>
+    <string name="overlap_fit_message">Widget yang bertindih akan dialihkan berjauhan seperti bar mengalihkannya: dikecilkan hanya jika tiada ruang, dan ditetapkan semula hanya jika langsung tidak muat.</string>
+    <string name="proceed_and_fit">Teruskan dan laraskan</string>
 </resources>

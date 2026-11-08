@@ -207,8 +207,6 @@
     <string name="layout_set">አቀማመጡ ተቀናብሯል! ውጤቱን ለማየት የመነሻ አዝራሩን ይጫኑ።</string>
     <string name="stats_name">በመተግበሪያ ውስጥ ያለ ስታቲስቲክስ</string>
     <string name="overlapping">ምግቦች እየተደራረቡ ነው!</string>
-    <string name="wont_save">የአሁኑ አቀማመጥ አይቀመጥም። መቀጠል አቀማመጡን ዳግም ያስጀምረዋል።</string>
-    <string name="proceed_and_reset">ቀጥል እና ዳግም አስጀምር</string>
     <string name="dismiss">አሰናብት</string>
 
     <string name="instantaneous_consumption">\u0020ፍጆታ፦</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">የግራ ጠርዝ፣ ወደ ቀኝ በማንሸራተት ይከፈታል</string>
     <string name="edge_handle_side_right">የቀኝ ጠርዝ፣ ወደ ግራ በማንሸራተት ይከፈታል</string>
     <string name="vertical_bar_every_page">የቀጥ ያለ አሞሌ በእያንዳንዱ ገጽ ላይ</string>
+    <string name="overlap_fit_message">የሚደራረቡ ምግብሮች አሞሌዎች እንደሚያንቀሳቅሷቸው ይለያያሉ፦ ቦታ በሌለበት ብቻ ይቀነሳሉ፣ ጨርሶ ካልገቡ ብቻ ዳግም ይጀመራሉ።</string>
+    <string name="proceed_and_fit">ቀጥል እና አስተካክል</string>
 </resources>

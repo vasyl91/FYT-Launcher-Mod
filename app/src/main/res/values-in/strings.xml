@@ -207,8 +207,6 @@
     <string name="layout_set">Tata letak telah diatur! Tekan tombol Layar Utama untuk melihat hasilnya.</string>
     <string name="stats_name">Statistik dalam aplikasi</string>
     <string name="overlapping">Widget saling tumpang tindih!</string>
-    <string name="wont_save">Tata letak saat ini tidak akan disimpan. Melanjutkan akan mereset tata letak.</string>
-    <string name="proceed_and_reset">Lanjutkan dan reset</string>
     <string name="dismiss">Tutup</string>
 
     <string name="instantaneous_consumption">\u0020Konsumsi:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Tepi kiri, dibuka dengan menggeser ke kanan</string>
     <string name="edge_handle_side_right">Tepi kanan, dibuka dengan menggeser ke kiri</string>
     <string name="vertical_bar_every_page">Bilah vertikal di setiap halaman</string>
+    <string name="overlap_fit_message">Widget yang saling tumpang tindih akan digeser menjauh seperti bilah menggesernya: diperkecil hanya jika tidak ada ruang, dan direset hanya jika sama sekali tidak muat.</string>
+    <string name="proceed_and_fit">Lanjutkan dan sesuaikan</string>
 </resources>

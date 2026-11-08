@@ -207,8 +207,6 @@
     <string name="layout_set">Asettelu on asetettu! Näet tuloksen painamalla Koti-painiketta.</string>
     <string name="stats_name">Sovelluksen sisäiset tilastot</string>
     <string name="overlapping">Widgetit menevät päällekkäin!</string>
-    <string name="wont_save">Nykyistä asettelua ei tallenneta. Jos jatkat, asettelu nollataan.</string>
-    <string name="proceed_and_reset">Jatka ja nollaa</string>
     <string name="dismiss">Ohita</string>
 
     <string name="instantaneous_consumption">\u0020Kulutus:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Vasen reuna, avataan pyyhkäisemällä oikealle</string>
     <string name="edge_handle_side_right">Oikea reuna, avataan pyyhkäisemällä vasemmalle</string>
     <string name="vertical_bar_every_page">Pystypalkki joka sivulla</string>
+    <string name="overlap_fit_message">Päällekkäiset vimpaimet siirretään erilleen samalla tavalla kuin palkit ne siirtävät: pienennetään vain, jos tilaa ei ole, ja nollataan vain, jos ne eivät mahdu lainkaan.</string>
+    <string name="proceed_and_fit">Jatka ja sovita</string>
 </resources>

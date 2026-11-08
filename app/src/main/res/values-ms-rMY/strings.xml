@@ -67,4 +67,6 @@
     <string name="edge_handle_side_left">Tepi kiri, dibuka dengan leretan ke kanan</string>
     <string name="edge_handle_side_right">Tepi kanan, dibuka dengan leretan ke kiri</string>
     <string name="vertical_bar_every_page">Bar menegak pada setiap halaman</string>
+    <string name="overlap_fit_message">Widget yang bertindih akan dialihkan berjauhan seperti bar mengalihkannya: dikecilkan hanya jika tiada ruang, dan ditetapkan semula hanya jika langsung tidak muat.</string>
+    <string name="proceed_and_fit">Teruskan dan laraskan</string>
 </resources>

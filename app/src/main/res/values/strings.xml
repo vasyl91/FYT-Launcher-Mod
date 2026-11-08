@@ -213,8 +213,6 @@
     <string name="layout_set">The layout has been set! Press the Home button to see the result.</string>
     <string name="stats_name">In-app stats</string>
     <string name="overlapping">Widgets are overlapping!</string>
-    <string name="wont_save">The current layout will not be saved. Proceeding will reset the layout.</string>
-    <string name="proceed_and_reset">Proceed and reset</string>
     <string name="dismiss">Dismiss</string>
 
     <string name="instantaneous_consumption">\u0020Fuel consumption:</string>
@@ -552,4 +550,6 @@
     <string name="edge_handle_side_left">Left edge, opened with a swipe to the right</string>
     <string name="edge_handle_side_right">Right edge, opened with a swipe to the left</string>
     <string name="vertical_bar_every_page">Vertical bar on every page</string>
+    <string name="overlap_fit_message">Overlapping widgets will be moved apart the way the bars move them: made smaller only where there is no room, and reset only if they cannot fit at all.</string>
+    <string name="proceed_and_fit">Proceed and fit</string>
 </resources>

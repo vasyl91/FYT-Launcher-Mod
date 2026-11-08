@@ -77,4 +77,6 @@
     <string name="edge_handle_side_left">左邊緣，向右滑動開啟</string>
     <string name="edge_handle_side_right">右邊緣，向左滑動開啟</string>
     <string name="vertical_bar_every_page">每頁都顯示縱欄</string>
+    <string name="overlap_fit_message">重疊的小工具會像欄一樣被推開：只有在沒有空間時才會縮小，只有完全放不下時才會重設。</string>
+    <string name="proceed_and_fit">繼續並調整</string>
 </resources>

@@ -74,4 +74,6 @@
     <string name="edge_handle_side_left">Bord gauche, s\'ouvre en glissant vers la droite</string>
     <string name="edge_handle_side_right">Bord droit, s\'ouvre en glissant vers la gauche</string>
     <string name="vertical_bar_every_page">Barre verticale sur chaque page</string>
+    <string name="overlap_fit_message">Les widgets qui se chevauchent seront écartés comme le font les barres : réduits seulement là où il n\'y a pas de place, et réinitialisés seulement s\'ils ne tiennent pas du tout.</string>
+    <string name="proceed_and_fit">Continuer et ajuster</string>
 </resources>

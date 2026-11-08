@@ -207,8 +207,6 @@
     <string name="layout_set">បានកំណត់ប្លង់ហើយ! ចុចប៊ូតុងដើម ដើម្បីមើលលទ្ធផល។</string>
     <string name="stats_name">ស្ថិតិក្នុងកម្មវិធី</string>
     <string name="overlapping">ធាតុក្រាហ្វិកកំពុងត្រួតគ្នា!</string>
-    <string name="wont_save">ប្លង់បច្ចុប្បន្ននឹងមិនត្រូវបានរក្សាទុកទេ។ ការបន្តនឹងកំណត់ប្លង់ឡើងវិញ។</string>
-    <string name="proceed_and_reset">បន្ត និងកំណត់ឡើងវិញ</string>
     <string name="dismiss">បដិសេធ</string>
 
     <string name="instantaneous_consumption">ការប្រើប្រាស់ឥន្ធនៈ៖</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">គែមខាងឆ្វេង បើកដោយអូសទៅស្តាំ</string>
     <string name="edge_handle_side_right">គែមខាងស្តាំ បើកដោយអូសទៅឆ្វេង</string>
     <string name="vertical_bar_every_page">របារបញ្ឈរនៅគ្រប់ទំព័រ</string>
+    <string name="overlap_fit_message">ធាតុក្រាហ្វិកដែលត្រួតគ្នានឹងត្រូវផ្លាស់ទីឱ្យឆ្ងាយពីគ្នា ដូចរបារផ្លាស់ទីវា៖ តូចជាងតែកន្លែងដែលគ្មានទំហំ ហើយកំណត់ឡើងវិញតែនៅពេលវាមិនអាចដាក់ចូលបានទាល់តែសោះ។</string>
+    <string name="proceed_and_fit">បន្ត និងកែសម្រួល</string>
 </resources>

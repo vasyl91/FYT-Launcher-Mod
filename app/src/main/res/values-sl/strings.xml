@@ -207,8 +207,6 @@
     <string name="layout_set">Razporeditev je nastavljena! Pritisnite gumb Domov, da vidite rezultat.</string>
     <string name="stats_name">Statistika v aplikaciji</string>
     <string name="overlapping">Gradniki se prekrivajo!</string>
-    <string name="wont_save">Trenutna razporeditev ne bo shranjena. Če nadaljujete, se razporeditev ponastavi.</string>
-    <string name="proceed_and_reset">Nadaljuj in ponastavi</string>
     <string name="dismiss">Opusti</string>
 
     <string name="instantaneous_consumption">\u0020Poraba:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Levi rob, odpre se z vlekom v desno</string>
     <string name="edge_handle_side_right">Desni rob, odpre se z vlekom v levo</string>
     <string name="vertical_bar_every_page">Navpična vrstica na vsaki strani</string>
+    <string name="overlap_fit_message">Prekrivajoči se pripomočki bodo razmaknjeni, kot jih premikajo vrstice: zmanjšani le, kjer ni prostora, in ponastavljeni le, če se sploh ne prilegajo.</string>
+    <string name="proceed_and_fit">Nadaljuj in prilagodi</string>
 </resources>

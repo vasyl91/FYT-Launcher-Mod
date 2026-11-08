@@ -207,8 +207,6 @@
     <string name="layout_set">Die uitleg is gestel! Druk die Tuis-knoppie om die resultaat te sien.</string>
     <string name="stats_name">Statistiek in die program</string>
     <string name="overlapping">Legstukke oorvleuel!</string>
-    <string name="wont_save">Die huidige uitleg sal nie gestoor word nie. As jy voortgaan, word die uitleg teruggestel.</string>
-    <string name="proceed_and_reset">Gaan voort en stel terug</string>
     <string name="dismiss">Maak toe</string>
 
     <string name="instantaneous_consumption">\u0020Verbruik:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Linkerrand, oopgemaak met \'n veeg na regs</string>
     <string name="edge_handle_side_right">Regterrand, oopgemaak met \'n veeg na links</string>
     <string name="vertical_bar_every_page">Vertikale balk op elke bladsy</string>
+    <string name="overlap_fit_message">Oorvleuelende legstukke sal uitmekaar geskuif word soos die balke dit skuif: slegs kleiner gemaak waar daar nie plek is nie, en slegs teruggestel as hulle glad nie pas nie.</string>
+    <string name="proceed_and_fit">Gaan voort en pas aan</string>
 </resources>

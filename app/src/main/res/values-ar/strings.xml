@@ -207,8 +207,6 @@
     <string name="layout_set">تم ضبط التخطيط! اضغط على زر الصفحة الرئيسية لرؤية النتيجة.</string>
     <string name="stats_name">الإحصاءات داخل التطبيق</string>
     <string name="overlapping">عناصر الواجهة متداخلة!</string>
-    <string name="wont_save">لن يتم حفظ التخطيط الحالي. ستؤدي المتابعة إلى إعادة ضبط التخطيط.</string>
-    <string name="proceed_and_reset">المتابعة وإعادة الضبط</string>
     <string name="dismiss">إغلاق</string>
 
     <string name="instantaneous_consumption">\u0020الاستهلاك:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">الحافة اليسرى، تُفتح بالسحب نحو اليمين</string>
     <string name="edge_handle_side_right">الحافة اليمنى، تُفتح بالسحب نحو اليسار</string>
     <string name="vertical_bar_every_page">الشريط العمودي في كل صفحة</string>
+    <string name="overlap_fit_message">ستُباعَد الأدوات المتداخلة بالطريقة التي تزيحها بها الأشرطة: لا تُصغَّر إلا حيث لا توجد مساحة، ولا تُعاد ضبطها إلا إذا لم تتسع إطلاقًا.</string>
+    <string name="proceed_and_fit">متابعة وملاءمة</string>
 </resources>

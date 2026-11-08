@@ -207,8 +207,6 @@
     <string name="layout_set">版面配置已設定！按 Home 鍵檢視效果。</string>
     <string name="stats_name">應用程式內統計</string>
     <string name="overlapping">小工具重疊了！</string>
-    <string name="wont_save">目前版面配置將不會被儲存。繼續將重置版面配置。</string>
-    <string name="proceed_and_reset">繼續並重置</string>
     <string name="dismiss">關閉</string>
 
     <string name="instantaneous_consumption">\u0020油耗：</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">左邊緣，向右滑動開啟</string>
     <string name="edge_handle_side_right">右邊緣，向左滑動開啟</string>
     <string name="vertical_bar_every_page">每頁都顯示縱欄</string>
+    <string name="overlap_fit_message">重疊的小工具會像欄一樣被推開：只有在沒有空間時才會縮小，只有完全放不下時才會重設。</string>
+    <string name="proceed_and_fit">繼續並調整</string>
 </resources>

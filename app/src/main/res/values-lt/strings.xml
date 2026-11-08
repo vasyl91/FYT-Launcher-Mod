@@ -207,8 +207,6 @@
     <string name="layout_set">Išdėstymas nustatytas! Paspauskite pagrindinio ekrano mygtuką, kad pamatytumėte rezultatą.</string>
     <string name="stats_name">Statistika programoje</string>
     <string name="overlapping">Valdikliai persidengia!</string>
-    <string name="wont_save">Dabartinis išdėstymas nebus išsaugotas. Tęsiant išdėstymas bus atstatytas.</string>
-    <string name="proceed_and_reset">Tęsti ir atstatyti</string>
     <string name="dismiss">Atmesti</string>
 
     <string name="instantaneous_consumption">\u0020Sąnaudos:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Kairysis kraštas, atidaroma braukiant į dešinę</string>
     <string name="edge_handle_side_right">Dešinysis kraštas, atidaroma braukiant į kairę</string>
     <string name="vertical_bar_every_page">Vertikalioji juosta kiekviename puslapyje</string>
+    <string name="overlap_fit_message">Persidengiantys valdikliai bus atitolinti taip, kaip juos stumia juostos: mažinami tik ten, kur nėra vietos, ir atkuriami tik jei visai netelpa.</string>
+    <string name="proceed_and_fit">Tęsti ir pritaikyti</string>
 </resources>

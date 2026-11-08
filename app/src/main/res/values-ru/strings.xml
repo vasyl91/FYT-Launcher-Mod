@@ -207,8 +207,6 @@
     <string name="layout_set">Макет установлен! Нажмите кнопку «Домой», чтобы увидеть результат.</string>
     <string name="stats_name">Статистика в приложении</string>
     <string name="overlapping">Виджеты перекрываются!</string>
-    <string name="wont_save">Текущий макет не будет сохранён. При продолжении макет будет сброшен.</string>
-    <string name="proceed_and_reset">Продолжить и сбросить</string>
     <string name="dismiss">Закрыть</string>
 
     <string name="instantaneous_consumption">\u0020Расход:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Левый край, открывается свайпом вправо</string>
     <string name="edge_handle_side_right">Правый край, открывается свайпом влево</string>
     <string name="vertical_bar_every_page">Вертикальная панель на каждой странице</string>
+    <string name="overlap_fit_message">Перекрывающиеся виджеты будут раздвинуты так, как их сдвигают панели: уменьшены только там, где нет места, и сброшены только если совсем не помещаются.</string>
+    <string name="proceed_and_fit">Продолжить и подогнать</string>
 </resources>

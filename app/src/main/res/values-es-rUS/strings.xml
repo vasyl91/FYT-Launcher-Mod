@@ -98,4 +98,6 @@
     <string name="edge_handle_side_left">Borde izquierdo, se abre deslizando hacia la derecha</string>
     <string name="edge_handle_side_right">Borde derecho, se abre deslizando hacia la izquierda</string>
     <string name="vertical_bar_every_page">Barra vertical en todas las páginas</string>
+    <string name="overlap_fit_message">Los widgets superpuestos se separarán como lo hacen las barras: solo se reducirán donde no haya espacio y solo se restablecerán si no caben de ningún modo.</string>
+    <string name="proceed_and_fit">Continuar y ajustar</string>
 </resources>

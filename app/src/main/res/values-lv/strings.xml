@@ -207,8 +207,6 @@
     <string name="layout_set">Izkārtojums ir iestatīts! Nospiediet pogu Sākums, lai redzētu rezultātu.</string>
     <string name="stats_name">Statistika lietotnē</string>
     <string name="overlapping">Logrīki pārklājas!</string>
-    <string name="wont_save">Pašreizējais izkārtojums netiks saglabāts. Turpinot izkārtojums tiks atiestatīts.</string>
-    <string name="proceed_and_reset">Turpināt un atiestatīt</string>
     <string name="dismiss">Aizvērt</string>
 
     <string name="instantaneous_consumption">\u0020Patēriņš:</string>
@@ -542,4 +540,6 @@
     <string name="edge_handle_side_left">Kreisā mala, atver ar pavilkšanu pa labi</string>
     <string name="edge_handle_side_right">Labā mala, atver ar pavilkšanu pa kreisi</string>
     <string name="vertical_bar_every_page">Vertikālā josla katrā lapā</string>
+    <string name="overlap_fit_message">Pārklājošies logrīki tiks atvirzīti viens no otra tāpat, kā tos pārvieto joslas: samazināti tikai tur, kur nav vietas, un atiestatīti tikai tad, ja tie nemaz neietilpst.</string>
+    <string name="proceed_and_fit">Turpināt un pielāgot</string>
 </resources>
