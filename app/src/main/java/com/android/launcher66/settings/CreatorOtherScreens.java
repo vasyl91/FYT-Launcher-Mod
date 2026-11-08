@@ -19,6 +19,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
+import com.android.launcher66.HorizontalBarPlacement;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 
@@ -123,8 +124,22 @@ public class CreatorOtherScreens extends Fragment {
         if (topInset > 0) {
             canvas.setTopInset(topInset);
         }
-        if (BarLayouts.verticalOnPage(sharedPrefs, mSelectedScreen) && rootView instanceof ConstraintLayout) {
-            addVerticalBarBand((ConstraintLayout) rootView, layout, topInset);
+        // The bars of this page, by the rules of the home screen
+        final boolean autoHide = sharedPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false);
+        final boolean horizontalOnPage = HorizontalBarPlacement.reserve(mSelectedScreen,
+                sharedPrefs.getBoolean(Keys.HORIZONTAL_BAR_EVERY_PAGE, false), autoHide,
+                sharedPrefs.getBoolean(Keys.USER_LAYOUT, false)) != HorizontalBarPlacement.Reserve.NONE;
+        final boolean verticalOnPage = BarLayouts.verticalOnPage(sharedPrefs, mSelectedScreen);
+        final com.android.launcher66.CreatorBars bars = com.android.launcher66.CreatorBars.of(
+                BarLayouts.of(sharedPrefs, 0, 0, 0, 0, verticalOnPage, horizontalOnPage), autoHide);
+        int bandWidth = 0;
+        if (verticalOnPage && rootView instanceof ConstraintLayout) {
+            bandWidth = addVerticalBarBand((ConstraintLayout) rootView, layout, topInset, bars.verticalFullHeight);
+        }
+        if (rootView instanceof ConstraintLayout) {
+            // The collapsed bar's button or the handle's strip, shown while the controls are hidden
+            canvas.setBarMarks(CreatorBarMarks.install((ConstraintLayout) rootView,
+                    rootView.findViewById(R.id.creator_bar), bars, true, bandWidth));
         }
         if (pip && dualPip && !firstPip && !secondPip && compareScreens(Keys.PIP_DUAL_SCREEN)) {
             String pipDualName;
@@ -184,9 +199,9 @@ public class CreatorOtherScreens extends Fragment {
      * the side it is on, so that the canvas is the launcher's area beside the bar (x = 0 is the bar's inner
      * edge, as on the first page), and it is drawn as a band that nothing can be put into.
      */
-    private void addVerticalBarBand(ConstraintLayout root, View canvasArea, int topInset) {
+    private int addVerticalBarBand(ConstraintLayout root, View canvasArea, int topInset, boolean fullHeight) {
         if (canvasArea == null) {
-            return;
+            return 0;
         }
         android.util.DisplayMetrics metrics = getResources().getDisplayMetrics();
         boolean portrait = metrics.heightPixels > metrics.widthPixels;
@@ -201,9 +216,15 @@ public class CreatorOtherScreens extends Fragment {
         int backgroundRes = "hotseat_bg".equals(chosen) ? 0 : BackgroundSelectorDialog.getResId(chosen, R.drawable.class);
         band.setBackgroundResource(backgroundRes > 0 ? backgroundRes : R.drawable.hotseat_bg);
         ConstraintLayout.LayoutParams bandParams = new ConstraintLayout.LayoutParams(width, 0);
-        bandParams.topToTop = canvasArea.getId();
-        bandParams.bottomToBottom = canvasArea.getId();
-        bandParams.topMargin = topInset;
+        if (fullHeight) {
+            // Nothing in the corner of the horizontal bar: the bar has the whole height
+            bandParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
+            bandParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
+        } else {
+            bandParams.topToTop = canvasArea.getId();
+            bandParams.bottomToBottom = canvasArea.getId();
+            bandParams.topMargin = topInset;
+        }
         if (right) {
             bandParams.rightToRight = ConstraintLayout.LayoutParams.PARENT_ID;
         } else {
@@ -221,7 +242,8 @@ public class CreatorOtherScreens extends Fragment {
             canvasArea.setLayoutParams(area);
         }
         Log.d("CreatorOtherScreens", "Vertical bar on page " + (mSelectedScreen + 1) + ": " + width + " px on the "
-                + (right ? "right" : "left"));
+                + (right ? "right" : "left") + (fullHeight ? ", whole height" : ""));
+        return width;
     }
 
     @Override

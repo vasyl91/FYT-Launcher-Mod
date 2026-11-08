@@ -95,6 +95,13 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
      */
     private int topInset;
 
+    private CreatorBarMarks mBarMarks;
+
+    /** The button or the handle's strip of this page, shown while the controls are hidden. */
+    void setBarMarks(CreatorBarMarks marks) {
+        mBarMarks = marks;
+    }
+
     public void setTopInset(int inset) {
         if (inset != topInset) {
             topInset = inset;
@@ -305,6 +312,9 @@ public class DrawViewOtherScreens extends View implements View.OnClickListener {
                         creatorBar.setVisibility(View.GONE); 
                     } else {
                         creatorBar.setVisibility(View.VISIBLE); 
+                    }
+                    if (mBarMarks != null) {
+                        mBarMarks.setControlsShown(creatorBar.getVisibility() == View.VISIBLE);
                     }
                     return true; 
                 }

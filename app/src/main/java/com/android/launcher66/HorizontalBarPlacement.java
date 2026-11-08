@@ -21,13 +21,13 @@ package com.android.launcher66;
  *       bar), and the bar that the handle reveals is the overlay with its timer, as today.</li>
  * </ul>
  */
-final class HorizontalBarPlacement {
+public final class HorizontalBarPlacement {
 
     /** What is on screen for the bar on a page. */
-    enum Bar { EMBEDDED, PERSISTENT_OVERLAY, HANDLE, BUTTON, NONE }
+    public enum Bar { EMBEDDED, PERSISTENT_OVERLAY, HANDLE, BUTTON, NONE }
 
     /** What the bar takes from the page's cells. */
-    enum Reserve { ROW, CELL, NONE }
+    public enum Reserve { ROW, CELL, NONE }
 
     private HorizontalBarPlacement() {
     }
@@ -43,7 +43,7 @@ final class HorizontalBarPlacement {
      * @param userLayout whether the user layout is on: the persistent overlay and the handles of the
      *                   other pages exist only there, so without it 'every page' means nothing
      */
-    static Bar bar(int page, boolean everyPage, boolean autoHide, boolean verticalBar, boolean buttonSide,
+    public static Bar bar(int page, boolean everyPage, boolean autoHide, boolean verticalBar, boolean buttonSide,
                    boolean pageMoving, boolean userLayout) {
         everyPage &= userLayout;
         if (!everyPage && page != 0) {
@@ -67,7 +67,7 @@ final class HorizontalBarPlacement {
      * Without the user layout there is no bar on the other pages (see {@link #bar}), so they must
      * not lose their last row or cell to one that is never there.
      */
-    static Reserve reserve(int page, boolean everyPage, boolean autoHide, boolean userLayout) {
+    public static Reserve reserve(int page, boolean everyPage, boolean autoHide, boolean userLayout) {
         everyPage &= userLayout;
         if (!everyPage && page != 0) {
             return Reserve.NONE;

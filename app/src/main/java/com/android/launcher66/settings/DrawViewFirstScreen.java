@@ -32,6 +32,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
+
+import com.android.launcher66.CreatorBars;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 
@@ -121,6 +124,9 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
     // Without it the launcher shows a thin edge handle on top of the widgets instead, so the
     // creator has nothing to reserve and a double tap only toggles the controls bar.
     private boolean mCollapsedBarReserved = false;
+    /** The horizontal bar is at the top: the collapsed bar's rectangle hangs from the top edge. */
+    private boolean mBarOnTop = false;
+    private CreatorBarMarks mBarMarks;
     private final int[] mAutoHideBarLocation = new int[2];
     private final int[] mCanvasLocation = new int[2];
 
@@ -299,10 +305,20 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
             View creatorBar = rootView.findViewById(R.id.creator_bar); 
             View creatorBarAutoHide = rootView.findViewById(R.id.creator_bar_auto_hide); 
             View creatorView = rootView.findViewById(R.id.creator_first_screen);   
-            mCollapsedBarReserved = sharedPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false)
-                    && sharedPrefs.getBoolean(Keys.VERTICAL_BAR, false);
+            // What the home screen shows of the bars on its first page: the button only where the vertical bar and the
+            // handle are on the same side, else the handle's strip (a picture; it reserves nothing)
+            final boolean autoHide = sharedPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false);
+            final CreatorBars bars = CreatorBars.of(
+                    BarLayouts.sides(sharedPrefs, sharedPrefs.getBoolean(Keys.VERTICAL_BAR, false)), autoHide);
+            mBarOnTop = bars.top;
+            mCollapsedBarReserved = bars.button != null;
             if (!mCollapsedBarReserved && creatorBarAutoHide != null) {
                 creatorBarAutoHide.setVisibility(View.GONE);
+            } else if (creatorBarAutoHide != null) {
+                CreatorBarMarks.addArrow(creatorBarAutoHide, bars.arrowRotation);
+            }
+            if (rootView instanceof ConstraintLayout) {
+                mBarMarks = CreatorBarMarks.install((ConstraintLayout) rootView, creatorBar, bars, false, 0);
             }
             gestureDetector = new GestureDetector(getSafeContext(), new GestureDetector.SimpleOnGestureListener() {
                 @Override
@@ -322,6 +338,9 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
                     }
                     boolean showControls = creatorBar.getVisibility() != View.VISIBLE;
                     creatorBar.setVisibility(showControls ? View.VISIBLE : View.GONE);
+                    if (mBarMarks != null) {
+                        mBarMarks.setControlsShown(showControls);
+                    }
                     // The collapsed button replaces the controls only with the vertical bar.
                     if (mCollapsedBarReserved && creatorBarAutoHide != null) {
                         creatorBarAutoHide.setVisibility(showControls ? View.GONE : View.VISIBLE);
@@ -1003,7 +1022,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
      * XML size (height percent / dimension ratio) when the feature is off. No hardcoded offsets.
      *
      * If a new exact height is applied but not laid out yet, the pending LayoutParams height is
-     * used, anchored at the bar's bottom edge (the bar is bottom-aligned in every creator layout).
+     * used, anchored at the edge the bar is at (the top or the bottom of the creator).
      *
      * @return false if there is no laid-out auto-hide bar to keep away from.
      */
@@ -1038,9 +1057,17 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
         float scaleY = getScaleY() > 0f ? getScaleY() : 1f;
 
         float barLeft = (mAutoHideBarLocation[0] - mCanvasLocation[0]) / scaleX;
-        float barBottom = (mAutoHideBarLocation[1] - mCanvasLocation[1]
-                + creatorBarAutoHide.getHeight()) / scaleY;
-        float barTop = barBottom - barHeight / scaleY;
+        float barBottom;
+        float barTop;
+        if (mBarOnTop) {
+            // The bar hangs from the top edge: a height that is not laid out yet grows downwards from it
+            barTop = (mAutoHideBarLocation[1] - mCanvasLocation[1]) / scaleY;
+            barBottom = barTop + barHeight / scaleY;
+        } else {
+            barBottom = (mAutoHideBarLocation[1] - mCanvasLocation[1]
+                    + creatorBarAutoHide.getHeight()) / scaleY;
+            barTop = barBottom - barHeight / scaleY;
+        }
         float barRight = barLeft + barWidth / scaleX;
 
         // Add margins around the auto-hide bar

@@ -113,10 +113,15 @@ public class CreatorFirstScreen extends Fragment {
         }
         final boolean barAtTop = sharedPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
         final boolean verticalBarAtRight = verticalBar && BarLayouts.sides(sharedPrefs, true).right;
-        if ((barAtTop || verticalBarAtRight) && rootView instanceof ConstraintLayout) {
+        // An auto-hide bar with no button in the corner leaves it free: the vertical bar has the whole height
+        final boolean verticalFullHeight = verticalBar
+                && com.android.launcher66.CreatorBars.of(BarLayouts.sides(sharedPrefs, true),
+                        sharedPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false)).verticalFullHeight;
+        if ((barAtTop || verticalBarAtRight || verticalFullHeight) && rootView instanceof ConstraintLayout) {
             // The bars to their edges; the canvas keeps the whole height with the bar at the top
             com.android.launcher66.BarConstraints.apply((ConstraintLayout) rootView, R.id.creator_bar,
-                    R.id.creator_first_screen, barAtTop, verticalBarAtRight);
+                    R.id.creator_first_screen, barAtTop, verticalBarAtRight, verticalFullHeight,
+                    verticalBarWidthPx(mContext));
         }
         layout = rootView.findViewById(R.id.creator_first_screen);
         canvas = new DrawViewFirstScreen(inflater, rootView, mContext);
@@ -174,6 +179,17 @@ public class CreatorFirstScreen extends Fragment {
             layout.addView(canvas);
         }
         return rootView;
+    }
+
+    /** The vertical bar's width: the one the launcher counts with, else the formula of the layouts. */
+    private int verticalBarWidthPx(Context context) {
+        if (com.android.launcher66.Launcher.calculatedVerticalBarWidth > 0) {
+            return com.android.launcher66.Launcher.calculatedVerticalBarWidth;
+        }
+        android.util.DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        boolean portrait = metrics.heightPixels > metrics.widthPixels;
+        return (int) HorizontalBarDimensions.computeVerticalBarWidth(portrait, metrics.widthPixels,
+                metrics.heightPixels, HorizontalBarDimensions.boxBarHeight(context, sharedPrefs));
     }
 
     @Override
