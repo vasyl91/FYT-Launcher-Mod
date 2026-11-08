@@ -148,33 +148,39 @@ CI jest zielone, a właściciel potwierdza, że zmiany działają. Wyjątki to �
 7. **`DrawViewAppStats` / `CreatorAppStats`** bez zmian w F2. Paski dostają w F3.
 
 ## F3 — `Stats window: the bars move it out of their way, never resize it`
-1. **Reguła:** paski, poziomy i pionowy, przesuwają okno statystyk tak, żeby na nie nie nachodziło, jak przesuwają PiP i widżety. **Rozmiaru okna statystyk nigdy nie zmieniają.** Bez przycinania i bez resetu.
-2. **`CustomLayoutResolver`:** nowy krok 0 `moveFixedIntoBounds`, przed `moveBelowTopBar`.
-   - Element `fixed` jest przesuwany o najmniejszy możliwy odcinek w każdej osi, z zachowaniem szerokości i wysokości, tak żeby leżał w granicach `Env`:
-     - `margin` ≤ lewa;
-     - prawa ≤ `maxRight` (pasek pionowy);
-     - `minTop` ≤ góra (pasek u góry);
-     - dół ≤ `maxBottom` (pasek na dole).
-     Dotknięcie paska liczy się jako nachodzenie, jak dla innych elementów (`bottomTrigger`, `rightTrigger`, `minTop` z `Math.max(margin, 1)`).
-   - Gdy okno jest w jakiejś osi większe niż wolne miejsce, staje przy wewnętrznej krawędzi miejsca (u góry pod paskiem u góry, przy lewej krawędzi obszaru). Też bez zmiany rozmiaru. Log: `Stats window larger than the room beside the bars, aligned to <edge>`.
-   - Po przesunięciu dalsze kroki traktują je jak dziś: nie przesuwają go, a inne elementy nie wchodzą na nie (z nowym położeniem). Może dalej leżeć pod widżetem.
-   - Test w `CustomLayoutResolverTest`:
-     - pasek u góry, na dole, po lewej i po prawej, każdy osobno i razem;
-     - rozmiar statystyk zawsze bez zmian;
-     - okno większe niż miejsce;
-     - inny element nie wchodzi na przesunięte statystyki;
-     - bez pasków statystyki stoją w miejscu.
-3. **Prostokąt użytkownika dla statystyk**, jak dla PiP i widżetów, żeby po cofnięciu pasków okno wracało tam, gdzie je postawił użytkownik:
+1. **Reguła właściciela:** okno statystyk leży zawsze nad wszystkimi elementami siatki launchera, więc z nimi nigdy nie koliduje. Paski, poziomy i pionowy, tylko je **przesuwają**, tak żeby na nie nie nachodziło.
+   - Bez zmiany rozmiaru, bez przycinania i bez resetu.
+   - Żadnej logiki kolizji z PiP, widżetami ani ikonami: nie ma skracania, przestawiania innych elementów ani szukania wolnego miejsca.
+2. **Okno statystyk wychodzi z `CustomLayoutResolver`.**
+   - `Helpers.checkAndResetIfOverlappingOnScreen` nie dodaje już elementu `"stats"` (≈635–641) ani do listy, ani do `resolution.obstacles`.
+   - Inne elementy przestają go omijać, bo okno leży nad nimi. Opisz to w commicie.
+   - Gdy nic innego nie używa `Element.fixed`, usuń je po `rg`.
+   - Testy resolvera, które dotyczą statystyk, dostosuj albo usuń.
+3. **Czysta klasa `StatsBarFit.move(rect, bounds)`** → nowy prostokąt tej samej szerokości i wysokości.
+   - `bounds` to wolny obszar strony statystyk poza paskami. Liczysz go z tego samego `Env`, który `Helpers` buduje dla tej strony (≈646–664):
+     - lewa = `margin`;
+     - góra = `minTop` przy pasku u góry, inaczej `margin`;
+     - prawa = `maxRight` przy pasku pionowym, inaczej `rootWidth − margin`;
+     - dół = `maxBottom` przy pasku na dole, inaczej `rootHeight − margin`.
+     Dotknięcie paska liczy się jako nachodzenie, jak dla innych elementów.
+   - **Przesunięcie:** w każdej osi o najmniejszy odcinek, który wprowadza okno w `bounds`. Okno, które nie nachodzi na pasek, zostaje dokładnie na miejscu.
+   - **Okno większe niż `bounds` w danej osi:** staje przy wewnętrznej krawędzi, bez zmiany rozmiaru, czyli lewa = lewa `bounds`, a w pionie góra = góra `bounds`. Log: `Stats window larger than the room beside the bars, aligned to <edge>`.
+   - **Test `StatsBarFitTest`:**
+     - pasek u góry, na dole, pionowy po lewej i po prawej, każdy osobno i razem;
+     - rozmiar zawsze bez zmian;
+     - okno większe niż obszar;
+     - okno poza paskami stoi w miejscu.
+4. **Prostokąt użytkownika dla statystyk**, jak dla PiP i widżetów, żeby po cofnięciu pasków okno wracało tam, gdzie je postawił użytkownik:
    - klucz `"stats"` w `putUserRect` / `getUserRect` i w migracji `ensureUserRects` (dziś obecne narożniki);
    - kreator statystyk (`DrawViewAppStats`) i kreator stron (F2) zapisują go przy zmianie położenia przez użytkownika, jak `touchedKeys` dla innych;
-   - `Helpers` buduje element statystyk z prostokąta użytkownika i **zapisuje wynik** w narożnikach `stats…` (dziś pomijany, `i < 0`).
-4. **Okno na ekranie:** po zmianie narożników `stats…` okno w `CanbusService` staje w nowym miejscu tak, jak dziś po zapisie kreatora statystyk.
+   - `Helpers` bierze prostokąt użytkownika statystyk, przepuszcza go przez `StatsBarFit.move` i zapisuje wynik w narożnikach `stats…`, tylko gdy się zmienił.
+5. **Okno na ekranie:** po zmianie narożników `stats…` okno w `CanbusService` staje w nowym miejscu tak, jak dziś po zapisie kreatora statystyk.
    - Przesunięcie o pasek pionowy po lewej (≈840) zostaje, bo współrzędne prostokątów są w pudełku bez paska.
    - Log raz na zmianę: `Stats window moved by the bars: <l,t,r,b> -> <l,t,r,b>`.
-5. **Kreatory:**
-   - W kreatorze stron (F2) prostokąt `"stats"` jest odsuwany od pasków tą samą regułą (tylko przesunięcie).
-   - Kreator statystyk (`DrawViewAppStats`) rysuje paski strony statystyk z `CreatorBars` (pasy poziomy i pionowy, przycisk, pasek uchwytu, jak F2) i przy przeciąganiu odsuwa od nich okno, bez zmiany rozmiaru.
-6. **Bez zmian:** rozmiar okna statystyk i jego ustawienia, przezroczystość, czcionka, nakładanie się z widżetami (dozwolone jak dziś).
+6. **Kreatory:**
+   - W kreatorze stron (F2) prostokąt `"stats"` jest odsuwany od pasków tą samą funkcją `StatsBarFit.move` (tylko przesunięcie). Inne prostokąty go nie omijają ani on ich.
+   - Kreator statystyk (`DrawViewAppStats`) rysuje paski strony statystyk z `CreatorBars` (pasy poziomy i pionowy, przycisk, pasek uchwytu, jak F2) i przy przeciąganiu odsuwa od nich okno funkcją `StatsBarFit.move`, bez zmiany rozmiaru.
+7. **Bez zmian:** rozmiar okna statystyk i jego ustawienia, przezroczystość, czcionka. Nakładanie się na widżety jest dozwolone jak dziś.
 
 ## 3. Czego NIE zmieniać
 - Ekranu głównego poza F1 i F3: pasków, uchwytu, D4, E1, E2.
@@ -182,7 +188,7 @@ CI jest zielone, a właściciel potwierdza, że zmiany działają. Wyjątki to �
 - Zachowania kreatora strony 0, które właściciel potwierdza: pasek poziomy, odsuwanie prostokątów, napis, dwuklik.
 
 ## 4. Weryfikacja
-1. CI zielone po każdym commicie, a nowe testy przechodzą: `VerticalWindowFrameTest`, `CreatorPageTest`, rozszerzony `CustomLayoutResolverTest`.
+1. CI zielone po każdym commicie, a nowe testy przechodzą: `VerticalWindowFrameTest`, `CreatorPageTest`, `StatsBarFitTest`.
 2. `rg -n 'CreatorFirstScreen|CreatorOtherScreens|DrawViewFirstScreen|DrawViewOtherScreens|creator_bar_auto_hide|R\.layout\.creator(_vertical|_other)?\b' app/src` → zero.
 3. **Scenariusze dla testera.** Wypisz je w raporcie po angielsku, w stylu instrukcji testera:
    - a) Pasek pionowy po prawej + „na każdej stronie” (z auto-hide i bez):
