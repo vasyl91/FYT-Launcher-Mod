@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Stran navpične vrstice</string>
     <string name="vertical_bar_side_left">Na levi strani zaslona</string>
     <string name="vertical_bar_side_right">Na desni strani zaslona</string>
+    <string name="edge_handle_side">Ročaj samodejnega skrivanja</string>
+    <string name="edge_handle_side_left">Levi rob, odpre se z vlekom v desno</string>
+    <string name="edge_handle_side_right">Desni rob, odpre se z vlekom v levo</string>
 </resources>

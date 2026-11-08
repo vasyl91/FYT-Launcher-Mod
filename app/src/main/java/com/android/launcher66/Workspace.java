@@ -2765,6 +2765,8 @@ public class Workspace extends SmoothPagedView
     /** The geometry last logged, so that the log line comes once per change. */
     private int mEdgeHandleStripLogged = -1;
     private int mEdgeHandleTouchLogged = -1;
+    private boolean mEdgeHandleTopLogged;
+    private boolean mEdgeHandleRightLogged;
 
     private void applyEdgeHandleGeometry() {
         if (mPrefs == null) {
@@ -2776,7 +2778,7 @@ public class Workspace extends SmoothPagedView
         int stripWidth = Math.max(1, Math.round(longerEdge * HorizontalBarEdgeHandle.STRIP_WIDTH_FRACTION));
         // The window that catches the swipe is as wide as the vertical bar and computed like it, as a
         // share of the screen, so the swipe starts where the bar would be on any display. Only a
-        // swipe to the right is taken there; a tap or a drag is handed to what is below, so it does
+        // swipe inwards (to the right from the left edge, to the left from the right one) is taken there; a tap or a drag is handed to what is below, so it does
         // not have to stop short of a widget next to the strip. The width is the one Helpers uses
         // for the first page: what the launcher measured, else the formula of the layouts.
         int barHeight = getHorizontalBarHeight(screenWidth, screenHeight);
@@ -2785,13 +2787,19 @@ public class Workspace extends SmoothPagedView
                 ? Launcher.calculatedVerticalBarWidth
                 : PipEdgeTrim.computeVerticalBarWidth(portrait, screenWidth, screenHeight, barHeight);
         int touchWidth = EdgeHandleGeometry.touchWidth(stripWidth, verticalBarWidth);
-        if (stripWidth != mEdgeHandleStripLogged || touchWidth != mEdgeHandleTouchLogged) {
+        final boolean handleOnTop = mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
+        final boolean handleOnRight = mPrefs.getBoolean(Keys.EDGE_HANDLE_RIGHT, false);
+        if (stripWidth != mEdgeHandleStripLogged || touchWidth != mEdgeHandleTouchLogged
+                || handleOnTop != mEdgeHandleTopLogged || handleOnRight != mEdgeHandleRightLogged) {
             mEdgeHandleStripLogged = stripWidth;
             mEdgeHandleTouchLogged = touchWidth;
-            Log.i(TAG, "Edge handle geometry: strip " + stripWidth + " px, touch " + touchWidth
-                    + " px (vertical bar width)");
+            mEdgeHandleTopLogged = handleOnTop;
+            mEdgeHandleRightLogged = handleOnRight;
+            Log.i(TAG, "Edge handle geometry: " + (handleOnRight ? "right" : "left") + " "
+                    + (handleOnTop ? "top" : "bottom") + ", strip " + stripWidth + " px, touch "
+                    + touchWidth + " px");
         }
-        mEdgeHandle.setPlacement(mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false), topBarOffset());
+        mEdgeHandle.setPlacement(handleOnTop, handleOnRight, topBarOffset());
         mEdgeHandle.setGeometry(stripWidth, touchWidth,
                 barHeight,
                 mPrefs.getBoolean(Keys.BLACK_BAR, false));

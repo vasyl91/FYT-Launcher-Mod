@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Vertikaalse riba külg</string>
     <string name="vertical_bar_side_left">Ekraani vasakul küljel</string>
     <string name="vertical_bar_side_right">Ekraani paremal küljel</string>
+    <string name="edge_handle_side">Automaatse peitmise käepide</string>
+    <string name="edge_handle_side_left">Vasak serv, avatakse pühkides paremale</string>
+    <string name="edge_handle_side_right">Parem serv, avatakse pühkides vasakule</string>
 </resources>

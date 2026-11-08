@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Πλευρά κάθετης γραμμής</string>
     <string name="vertical_bar_side_left">Στην αριστερή πλευρά της οθόνης</string>
     <string name="vertical_bar_side_right">Στη δεξιά πλευρά της οθόνης</string>
+    <string name="edge_handle_side">Λαβή αυτόματης απόκρυψης</string>
+    <string name="edge_handle_side_left">Αριστερή άκρη, ανοίγει με σύρσιμο προς τα δεξιά</string>
+    <string name="edge_handle_side_right">Δεξιά άκρη, ανοίγει με σύρσιμο προς τα αριστερά</string>
 </resources>

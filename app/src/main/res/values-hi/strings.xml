@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">ऊर्ध्वाधर बार का पक्ष</string>
     <string name="vertical_bar_side_left">स्क्रीन के बाईं ओर</string>
     <string name="vertical_bar_side_right">स्क्रीन के दाईं ओर</string>
+    <string name="edge_handle_side">ऑटो-हाइड हैंडल</string>
+    <string name="edge_handle_side_left">बायाँ किनारा, दाईं ओर स्वाइप करके खुलता है</string>
+    <string name="edge_handle_side_right">दायाँ किनारा, बाईं ओर स्वाइप करके खुलता है</string>
 </resources>

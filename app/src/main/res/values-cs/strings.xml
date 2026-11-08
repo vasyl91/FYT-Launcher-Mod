@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Strana svislého panelu</string>
     <string name="vertical_bar_side_left">Na levé straně obrazovky</string>
     <string name="vertical_bar_side_right">Na pravé straně obrazovky</string>
+    <string name="edge_handle_side">Úchyt automatického skrytí</string>
+    <string name="edge_handle_side_left">Levý okraj, otevře se tažením doprava</string>
+    <string name="edge_handle_side_right">Pravý okraj, otevře se tažením doleva</string>
 </resources>

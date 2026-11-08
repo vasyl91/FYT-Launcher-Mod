@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Ուղղահայաց գոտու կողմը</string>
     <string name="vertical_bar_side_left">Էկրանի ձախ կողմում</string>
     <string name="vertical_bar_side_right">Էկրանի աջ կողմում</string>
+    <string name="edge_handle_side">Ավտոմատ թաքցման բռնակ</string>
+    <string name="edge_handle_side_left">Ձախ եզր, բացվում է աջ սահեցմամբ</string>
+    <string name="edge_handle_side_right">Աջ եզր, բացվում է ձախ սահեցմամբ</string>
 </resources>

@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Сторона вертикальної панелі</string>
     <string name="vertical_bar_side_left">З лівого боку екрана</string>
     <string name="vertical_bar_side_right">З правого боку екрана</string>
+    <string name="edge_handle_side">Ручка автоприховування</string>
+    <string name="edge_handle_side_left">Лівий край, відкривається свайпом праворуч</string>
+    <string name="edge_handle_side_right">Правий край, відкривається свайпом ліворуч</string>
 </resources>

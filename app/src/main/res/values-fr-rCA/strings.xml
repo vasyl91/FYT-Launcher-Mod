@@ -70,4 +70,7 @@
     <string name="vertical_bar_side">Côté de la barre verticale</string>
     <string name="vertical_bar_side_left">Sur le côté gauche de l\'écran</string>
     <string name="vertical_bar_side_right">Sur le côté droit de l\'écran</string>
+    <string name="edge_handle_side">Poignée de masquage automatique</string>
+    <string name="edge_handle_side_left">Bord gauche, s\'ouvre en glissant vers la droite</string>
+    <string name="edge_handle_side_right">Bord droit, s\'ouvre en glissant vers la gauche</string>
 </resources>

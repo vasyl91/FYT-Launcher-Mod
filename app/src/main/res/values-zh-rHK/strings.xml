@@ -73,4 +73,7 @@
     <string name="vertical_bar_side">縱欄所在側</string>
     <string name="vertical_bar_side_left">在螢幕左側</string>
     <string name="vertical_bar_side_right">在螢幕右側</string>
+    <string name="edge_handle_side">自動隱藏把手</string>
+    <string name="edge_handle_side_left">左邊緣，向右滑動開啟</string>
+    <string name="edge_handle_side_right">右邊緣，向左滑動開啟</string>
 </resources>

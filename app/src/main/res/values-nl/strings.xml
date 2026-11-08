@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Kant van verticale balk</string>
     <string name="vertical_bar_side_left">Aan de linkerkant van het scherm</string>
     <string name="vertical_bar_side_right">Aan de rechterkant van het scherm</string>
+    <string name="edge_handle_side">Greep voor automatisch verbergen</string>
+    <string name="edge_handle_side_left">Linkerrand, openen met een veeg naar rechts</string>
+    <string name="edge_handle_side_right">Rechterrand, openen met een veeg naar links</string>
 </resources>

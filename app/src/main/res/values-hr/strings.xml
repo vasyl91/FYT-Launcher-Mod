@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Strana okomite trake</string>
     <string name="vertical_bar_side_left">Na lijevoj strani zaslona</string>
     <string name="vertical_bar_side_right">Na desnoj strani zaslona</string>
+    <string name="edge_handle_side">Ručka za automatsko skrivanje</string>
+    <string name="edge_handle_side_left">Lijevi rub, otvara se povlačenjem udesno</string>
+    <string name="edge_handle_side_right">Desni rub, otvara se povlačenjem ulijevo</string>
 </resources>

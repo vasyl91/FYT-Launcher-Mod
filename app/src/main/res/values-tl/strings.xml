@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Gilid ng patayong bar</string>
     <string name="vertical_bar_side_left">Sa kaliwang bahagi ng screen</string>
     <string name="vertical_bar_side_right">Sa kanang bahagi ng screen</string>
+    <string name="edge_handle_side">Hawakan sa awtomatikong pagtatago</string>
+    <string name="edge_handle_side_left">Kaliwang gilid, bubuksan sa pag-swipe pakanan</string>
+    <string name="edge_handle_side_right">Kanang gilid, bubuksan sa pag-swipe pakaliwa</string>
 </resources>

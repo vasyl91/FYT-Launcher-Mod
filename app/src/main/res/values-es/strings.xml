@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Lado de la barra vertical</string>
     <string name="vertical_bar_side_left">En el lado izquierdo de la pantalla</string>
     <string name="vertical_bar_side_right">En el lado derecho de la pantalla</string>
+    <string name="edge_handle_side">Asa de ocultación automática</string>
+    <string name="edge_handle_side_left">Borde izquierdo, se abre deslizando hacia la derecha</string>
+    <string name="edge_handle_side_right">Borde derecho, se abre deslizando hacia la izquierda</string>
 </resources>

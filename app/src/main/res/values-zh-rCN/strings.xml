@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">纵栏所在侧</string>
     <string name="vertical_bar_side_left">在屏幕左侧</string>
     <string name="vertical_bar_side_right">在屏幕右侧</string>
+    <string name="edge_handle_side">自动隐藏手柄</string>
+    <string name="edge_handle_side_left">左边缘，向右滑动打开</string>
+    <string name="edge_handle_side_right">右边缘，向左滑动打开</string>
 </resources>

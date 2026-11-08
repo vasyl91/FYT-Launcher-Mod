@@ -26,7 +26,7 @@ import java.util.List;
 
 /**
  * Handle of the auto-hide horizontal bar when the vertical bar is off: a thin, semi-transparent strip on
- * the left screen edge, as tall as the horizontal bar and level with it, with its two corners facing
+ * the left or the right screen edge, as tall as the horizontal bar and level with it, with its two corners facing
  * the middle of the screen slightly rounded. A swipe to the right, or a tap on the strip itself,
  * reveals the bar.
  *
@@ -96,6 +96,7 @@ final class HorizontalBarEdgeHandle {
     private int barHeight;
     /** The bar is at the top, below the status bar's {@code topOffset}; else at the bottom. */
     private boolean barOnTop;
+    private boolean onRightEdge;
     private int topOffset;
 
     HorizontalBarEdgeHandle(Context context, Runnable onTrigger, TargetFinder finder) {
@@ -111,12 +112,15 @@ final class HorizontalBarEdgeHandle {
      * @param barHeight  height of the horizontal bar, which the strip matches
      * @param dark       black strip instead of a white one (the "black bar" setting)
      */
-    void setPlacement(boolean top, int topOffset) {
-        boolean changed = barOnTop != top || this.topOffset != topOffset;
+    /** @param right the handle is on the right edge and opened with a swipe to the left */
+    void setPlacement(boolean top, boolean right, int topOffset) {
+        boolean changed = barOnTop != top || onRightEdge != right || this.topOffset != topOffset;
         barOnTop = top;
+        onRightEdge = right;
         this.topOffset = topOffset;
+        view.setRightEdge(right);
         if (changed && params != null && attached) {
-            params.gravity = (top ? Gravity.TOP : Gravity.BOTTOM) | Gravity.LEFT;
+            params.gravity = (top ? Gravity.TOP : Gravity.BOTTOM) | (right ? Gravity.RIGHT : Gravity.LEFT);
             params.y = top ? topOffset : 0;
             try {
                 windowManager.updateViewLayout(view, params);
@@ -254,7 +258,7 @@ final class HorizontalBarEdgeHandle {
                     WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
         }
         // Same flags, cutout mode and bottom gravity as the bar overlay window.
-        params.gravity = (barOnTop ? Gravity.TOP : Gravity.BOTTOM) | Gravity.LEFT;
+        params.gravity = (barOnTop ? Gravity.TOP : Gravity.BOTTOM) | (onRightEdge ? Gravity.RIGHT : Gravity.LEFT);
         params.y = barOnTop ? topOffset : 0;
         // No system window animation: the strip fades itself, in step with the bar.
         params.windowAnimations = 0;
@@ -334,6 +338,7 @@ final class HorizontalBarEdgeHandle {
         private final int[] targetAt = new int[2];
 
         private int stripWidth;
+        private boolean rightEdge;
         private int rgb = 0xFFFFFF;
         private boolean pressed;
 
@@ -352,6 +357,14 @@ final class HorizontalBarEdgeHandle {
             this.gesture = new HorizontalBarEdgeGesture(
                     ViewConfiguration.get(context).getScaledTouchSlop(), ViewConfiguration.getTapTimeout());
             paint.setStyle(Paint.Style.FILL);
+        }
+
+        void setRightEdge(boolean right) {
+            if (rightEdge != right) {
+                rightEdge = right;
+                gesture.setRightEdge(right);
+                invalidate();
+            }
         }
 
         void setStrip(int width, boolean dark) {
@@ -420,12 +433,14 @@ final class HorizontalBarEdgeHandle {
                 return;
             }
             float radius = Math.min(stripWidth * CORNER_RADIUS_FRACTION, stripHeight / 2f);
-            // Clockwise from top-left: only the top-right and bottom-right corners are rounded.
-            radii[0] = 0f;     radii[1] = 0f;
-            radii[2] = radius; radii[3] = radius;
-            radii[4] = radius; radii[5] = radius;
-            radii[6] = 0f;     radii[7] = 0f;
-            rect.set(0f, 0f, stripWidth, stripHeight);
+            // Clockwise from top-left: the two corners that face the middle of the screen are rounded
+            float outer = rightEdge ? radius : 0f;
+            float inner = rightEdge ? 0f : radius;
+            radii[0] = outer;  radii[1] = outer;
+            radii[2] = inner;  radii[3] = inner;
+            radii[4] = inner;  radii[5] = inner;
+            radii[6] = outer;  radii[7] = outer;
+            rect.set(rightEdge ? getWidth() - stripWidth : 0f, 0f, rightEdge ? getWidth() : stripWidth, stripHeight);
             path.reset();
             path.addRoundRect(rect, radii, Path.Direction.CW);
             paint.setColor(((pressed ? PRESSED_ALPHA : IDLE_ALPHA) << 24) | rgb);
@@ -439,7 +454,7 @@ final class HorizontalBarEdgeHandle {
                 case MotionEvent.ACTION_DOWN: {
                     endGesture();
                     removeCallbacks(timeout);
-                    boolean onStrip = event.getX() < stripWidth;
+                    boolean onStrip = rightEdge ? event.getX() >= getWidth() - stripWidth : event.getX() < stripWidth;
                     gesture.onDown(event.getX(), event.getY(), event.getEventTime(), onStrip);
                     held.add(MotionEvent.obtain(event));
                     tracking = true;

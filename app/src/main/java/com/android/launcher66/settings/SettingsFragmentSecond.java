@@ -94,6 +94,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private Preference verticalBarBackground;
     /** "Vertical bar side": only with the vertical bar on. */
     private Preference verticalBarSide;
+    /** "Auto-hide handle": only with auto-hide on. */
+    private Preference edgeHandleSide;
 
     private int defaultColorR = 255;
     private int defaultColorG = 255;
@@ -534,6 +536,11 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (horizontalBarTop != null) {
             horizontalBarTop.setOnPreferenceClickListener(this);
         }
+        edgeHandleSide = findPreference(Keys.EDGE_HANDLE_RIGHT);
+        if (edgeHandleSide != null) {
+            edgeHandleSide.setVisible(sharedPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false));
+            edgeHandleSide.setOnPreferenceClickListener(this);
+        }
         verticalBarSide = findPreference(Keys.VERTICAL_BAR_RIGHT);
         if (verticalBarSide != null) {
             verticalBarSide.setVisible(sharedPrefs.getBoolean(Keys.VERTICAL_BAR, false));
@@ -788,6 +795,9 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                     autoHidePreference.setSummary(null);    
                 }                
                 autoHideSeekBar.setVisible(autoHideBool);
+                if (edgeHandleSide != null) {
+                    edgeHandleSide.setVisible(autoHideBool);
+                }
                 helpers.setBarSettingsChanged(true);
                 break;
             case Keys.RESIZABLE_HORIZONTAL_BAR:
@@ -802,6 +812,10 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                     barHeightSeekBar.setVisible(resizableBarBool);
                 }
                 // On or off, the launcher has to rebuild the bar (dynamic height <-> XML height).
+                helpers.setBarSettingsChanged(true);
+                break;
+            case Keys.EDGE_HANDLE_RIGHT:
+                // The handle's window is placed again at the next update; no rebuild of the page
                 helpers.setBarSettingsChanged(true);
                 break;
             case Keys.HORIZONTAL_BAR_TOP:

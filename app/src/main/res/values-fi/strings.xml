@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Pystypalkin puoli</string>
     <string name="vertical_bar_side_left">Näytön vasemmalla puolella</string>
     <string name="vertical_bar_side_right">Näytön oikealla puolella</string>
+    <string name="edge_handle_side">Automaattisen piilotuksen kahva</string>
+    <string name="edge_handle_side_left">Vasen reuna, avataan pyyhkäisemällä oikealle</string>
+    <string name="edge_handle_side_right">Oikea reuna, avataan pyyhkäisemällä vasemmalle</string>
 </resources>

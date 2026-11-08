@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Vertikaliosios juostos pusė</string>
     <string name="vertical_bar_side_left">Kairėje ekrano pusėje</string>
     <string name="vertical_bar_side_right">Dešinėje ekrano pusėje</string>
+    <string name="edge_handle_side">Automatinio slėpimo rankenėlė</string>
+    <string name="edge_handle_side_left">Kairysis kraštas, atidaroma braukiant į dešinę</string>
+    <string name="edge_handle_side_right">Dešinysis kraštas, atidaroma braukiant į kairę</string>
 </resources>

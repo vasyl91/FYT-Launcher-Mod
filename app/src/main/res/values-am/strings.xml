@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">የቀጥ ያለ አሞሌ ጎን</string>
     <string name="vertical_bar_side_left">በማያ ገጹ ግራ በኩል</string>
     <string name="vertical_bar_side_right">በማያ ገጹ ቀኝ በኩል</string>
+    <string name="edge_handle_side">ራስ-ሰር መደበቂያ እጀታ</string>
+    <string name="edge_handle_side_left">የግራ ጠርዝ፣ ወደ ቀኝ በማንሸራተት ይከፈታል</string>
+    <string name="edge_handle_side_right">የቀኝ ጠርዝ፣ ወደ ግራ በማንሸራተት ይከፈታል</string>
 </resources>

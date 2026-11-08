@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Seite der vertikalen Leiste</string>
     <string name="vertical_bar_side_left">Auf der linken Bildschirmseite</string>
     <string name="vertical_bar_side_right">Auf der rechten Bildschirmseite</string>
+    <string name="edge_handle_side">Griff zum automatischen Ausblenden</string>
+    <string name="edge_handle_side_left">Linker Rand, mit Wischen nach rechts öffnen</string>
+    <string name="edge_handle_side_right">Rechter Rand, mit Wischen nach links öffnen</string>
 </resources>

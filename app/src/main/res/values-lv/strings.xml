@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Vertikālās joslas puse</string>
     <string name="vertical_bar_side_left">Ekrāna kreisajā pusē</string>
     <string name="vertical_bar_side_right">Ekrāna labajā pusē</string>
+    <string name="edge_handle_side">Automātiskās slēpšanas rokturis</string>
+    <string name="edge_handle_side_left">Kreisā mala, atver ar pavilkšanu pa labi</string>
+    <string name="edge_handle_side_right">Labā mala, atver ar pavilkšanu pa kreisi</string>
 </resources>

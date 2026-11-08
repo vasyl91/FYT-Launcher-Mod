@@ -66,4 +66,7 @@
     <string name="vertical_bar_side">Vertical bar side</string>
     <string name="vertical_bar_side_left">On the left side of the screen</string>
     <string name="vertical_bar_side_right">On the right side of the screen</string>
+    <string name="edge_handle_side">Auto-hide handle</string>
+    <string name="edge_handle_side_left">Left edge, opened with a swipe to the right</string>
+    <string name="edge_handle_side_right">Right edge, opened with a swipe to the left</string>
 </resources>

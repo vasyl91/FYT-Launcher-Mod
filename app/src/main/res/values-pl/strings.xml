@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Strona paska pionowego</string>
     <string name="vertical_bar_side_left">Po lewej stronie ekranu</string>
     <string name="vertical_bar_side_right">Po prawej stronie ekranu</string>
+    <string name="edge_handle_side">Uchwyt automatycznego ukrywania</string>
+    <string name="edge_handle_side_left">Lewa krawędź, otwierana przesunięciem w prawo</string>
+    <string name="edge_handle_side_right">Prawa krawędź, otwierana przesunięciem w lewo</string>
 </resources>

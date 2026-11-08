@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Partea barei verticale</string>
     <string name="vertical_bar_side_left">În partea stângă a ecranului</string>
     <string name="vertical_bar_side_right">În partea dreaptă a ecranului</string>
+    <string name="edge_handle_side">Mâner de ascundere automată</string>
+    <string name="edge_handle_side_left">Marginea din stânga, se deschide cu glisare spre dreapta</string>
+    <string name="edge_handle_side_right">Marginea din dreapta, se deschide cu glisare spre stânga</string>
 </resources>

@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">縦バーの側</string>
     <string name="vertical_bar_side_left">画面の左側</string>
     <string name="vertical_bar_side_right">画面の右側</string>
+    <string name="edge_handle_side">自動非表示のハンドル</string>
+    <string name="edge_handle_side_left">左端、右にスワイプして開く</string>
+    <string name="edge_handle_side_right">右端、左にスワイプして開く</string>
 </resources>

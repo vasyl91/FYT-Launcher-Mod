@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Сторона вертикальной панели</string>
     <string name="vertical_bar_side_left">С левой стороны экрана</string>
     <string name="vertical_bar_side_right">С правой стороны экрана</string>
+    <string name="edge_handle_side">Ручка автоскрытия</string>
+    <string name="edge_handle_side_left">Левый край, открывается свайпом вправо</string>
+    <string name="edge_handle_side_right">Правый край, открывается свайпом влево</string>
 </resources>

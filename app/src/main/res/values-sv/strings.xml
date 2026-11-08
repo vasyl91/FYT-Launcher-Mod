@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Sida för vertikalt fält</string>
     <string name="vertical_bar_side_left">På skärmens vänstra sida</string>
     <string name="vertical_bar_side_right">På skärmens högra sida</string>
+    <string name="edge_handle_side">Handtag för automatisk döljning</string>
+    <string name="edge_handle_side_left">Vänster kant, öppnas med ett svep åt höger</string>
+    <string name="edge_handle_side_right">Höger kant, öppnas med ett svep åt vänster</string>
 </resources>

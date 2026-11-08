@@ -144,6 +144,13 @@
         <com.android.launcher66.settings.AutoHideSeekBarPreference
             android:key="auto_hide_timeout"
             android:defaultValue="5" /> 
+        <com.android.launcher66.settings.CustomNoSwitchPreference
+            android:key="edge_handle_right"
+            android:defaultValue="false"
+            android:title="@string/edge_handle_side"
+            android:summaryOn="@string/edge_handle_side_right"
+            android:summaryOff="@string/edge_handle_side_left"
+            app:layout="@layout/preference_no_switch" />
         <SwitchPreferenceCompat
             android:key="resizable_bottom_bar"
             android:defaultValue="false"

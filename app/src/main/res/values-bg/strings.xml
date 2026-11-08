@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Страна на вертикалната лента</string>
     <string name="vertical_bar_side_left">От лявата страна на екрана</string>
     <string name="vertical_bar_side_right">От дясната страна на екрана</string>
+    <string name="edge_handle_side">Дръжка за автоматично скриване</string>
+    <string name="edge_handle_side_left">Ляв край, отваря се с плъзгане надясно</string>
+    <string name="edge_handle_side_right">Десен край, отваря се с плъзгане наляво</string>
 </resources>

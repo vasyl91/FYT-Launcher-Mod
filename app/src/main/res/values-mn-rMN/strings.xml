@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Босоо самбарын тал</string>
     <string name="vertical_bar_side_left">Дэлгэцийн зүүн талд</string>
     <string name="vertical_bar_side_right">Дэлгэцийн баруун талд</string>
+    <string name="edge_handle_side">Автоматаар нуух бариул</string>
+    <string name="edge_handle_side_left">Зүүн ирмэг, баруун тийш шудрахад нээгдэнэ</string>
+    <string name="edge_handle_side_right">Баруун ирмэг, зүүн тийш шудрахад нээгдэнэ</string>
 </resources>

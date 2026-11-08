@@ -180,6 +180,8 @@ public final class Keys {
     /** The horizontal bar is on every page of the home screen, not only on the first (HorizontalBarPlacement). */
     /** The horizontal bar is at the top of the screen (the stored key is new, it has no former name). */
     public static final String HORIZONTAL_BAR_TOP = "horizontal_bar_top";
+    /** The auto-hide handle is on the right edge of the screen (opened with a swipe to the left). */
+    public static final String EDGE_HANDLE_RIGHT = "edge_handle_right";
     /** The vertical bar is at the right edge of the screen. */
     public static final String VERTICAL_BAR_RIGHT = "vertical_bar_right";
     public static final String HORIZONTAL_BAR_EVERY_PAGE = "bottom_bar_every_page";

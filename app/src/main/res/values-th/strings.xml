@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">ด้านของแถบแนวตั้ง</string>
     <string name="vertical_bar_side_left">ที่ด้านซ้ายของหน้าจอ</string>
     <string name="vertical_bar_side_right">ที่ด้านขวาของหน้าจอ</string>
+    <string name="edge_handle_side">มือจับซ่อนอัตโนมัติ</string>
+    <string name="edge_handle_side_left">ขอบซ้าย เปิดด้วยการปัดไปทางขวา</string>
+    <string name="edge_handle_side_right">ขอบขวา เปิดด้วยการปัดไปทางซ้าย</string>
 </resources>

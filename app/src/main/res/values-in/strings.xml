@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Sisi bilah vertikal</string>
     <string name="vertical_bar_side_left">Di sisi kiri layar</string>
     <string name="vertical_bar_side_right">Di sisi kanan layar</string>
+    <string name="edge_handle_side">Gagang sembunyi otomatis</string>
+    <string name="edge_handle_side_left">Tepi kiri, dibuka dengan menggeser ke kanan</string>
+    <string name="edge_handle_side_right">Tepi kanan, dibuka dengan menggeser ke kiri</string>
 </resources>

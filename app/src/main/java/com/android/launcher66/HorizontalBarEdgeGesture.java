@@ -8,9 +8,11 @@ package com.android.launcher66;
  * and acts on the answer.
  *
  * <ul>
- *   <li>a swipe to the right (at least the touch slop, and at least 1.5 times as far as it went
- *       up or down) opens the bar: {@link Decision#OPEN_BAR}, the rest of the gesture is eaten;</li>
- *   <li>a mostly vertical move, or a move to the left, is not ours: {@link Decision#PASS};</li>
+ *   <li>a swipe inwards, away from the screen edge the handle is on (to the right from the left
+ *       edge, to the left from the right edge; at least the touch slop, and at least 1.5 times as
+ *       far as it went up or down) opens the bar: {@link Decision#OPEN_BAR}, the rest of the
+ *       gesture is eaten;</li>
+ *   <li>a mostly vertical move, or a move towards the edge, is not ours: {@link Decision#PASS};</li>
  *   <li>a touch in the margin that is undecided for longer than the tap timeout is a press for
  *       the thing below: {@link Decision#PASS}. On the visible strip itself there is no such
  *       timeout, because a slow tap on the strip has to open the bar as it always did;</li>
@@ -30,6 +32,8 @@ final class HorizontalBarEdgeGesture {
     private final float touchSlop;
     private final long tapTimeoutMs;
 
+    /** The handle is on the right edge of the screen: inwards is to the left. */
+    private boolean rightEdge;
     private float downX;
     private float downY;
     private long downTimeMs;
@@ -39,6 +43,10 @@ final class HorizontalBarEdgeGesture {
     HorizontalBarEdgeGesture(float touchSlop, long tapTimeoutMs) {
         this.touchSlop = touchSlop;
         this.tapTimeoutMs = tapTimeoutMs;
+    }
+
+    void setRightEdge(boolean right) {
+        rightEdge = right;
     }
 
     void onDown(float x, float y, long timeMs, boolean onVisibleStrip) {
@@ -54,7 +62,8 @@ final class HorizontalBarEdgeGesture {
         if (decision != Decision.UNDECIDED) {
             return decision;
         }
-        float dx = x - downX;
+        // Inwards is positive, whichever edge the handle is on
+        float dx = rightEdge ? downX - x : x - downX;
         float dy = y - downY;
         if (dx >= touchSlop && dx >= HORIZONTAL_DOMINANCE * Math.abs(dy)) {
             decision = Decision.OPEN_BAR;

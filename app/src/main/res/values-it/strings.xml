@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Lato della barra verticale</string>
     <string name="vertical_bar_side_left">Sul lato sinistro dello schermo</string>
     <string name="vertical_bar_side_right">Sul lato destro dello schermo</string>
+    <string name="edge_handle_side">Maniglia di nascondimento automatico</string>
+    <string name="edge_handle_side_left">Bordo sinistro, si apre con uno scorrimento verso destra</string>
+    <string name="edge_handle_side_right">Bordo destro, si apre con uno scorrimento verso sinistra</string>
 </resources>

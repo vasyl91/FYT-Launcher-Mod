@@ -92,4 +92,45 @@ class HorizontalBarEdgeGestureTest {
         down(true);
         assertEquals(OPEN_BAR, gesture.onMove(30f, 100f, 15L));
     }
+
+    // ---- the handle on the right edge: the same rules, inwards is to the left
+
+    private final HorizontalBarEdgeGesture rightGesture = rightEdgeGesture();
+
+    private static HorizontalBarEdgeGesture rightEdgeGesture() {
+        HorizontalBarEdgeGesture g = new HorizontalBarEdgeGesture(SLOP, TAP);
+        g.setRightEdge(true);
+        return g;
+    }
+
+    @org.junit.jupiter.api.Test
+    void aSwipeToTheLeftFromTheRightEdgeOpensTheBar() {
+        rightGesture.onDown(100f, 50f, 0L, false);
+        org.junit.jupiter.api.Assertions.assertEquals(HorizontalBarEdgeGesture.Decision.OPEN_BAR,
+                rightGesture.onMove(100f - SLOP - 1f, 50f, 20L));
+    }
+
+    @org.junit.jupiter.api.Test
+    void aMoveTowardsTheRightEdgeIsPassed() {
+        rightGesture.onDown(100f, 50f, 0L, false);
+        org.junit.jupiter.api.Assertions.assertEquals(HorizontalBarEdgeGesture.Decision.PASS,
+                rightGesture.onMove(100f + SLOP + 1f, 50f, 20L));
+    }
+
+    @org.junit.jupiter.api.Test
+    void aVerticalDragFromTheRightEdgeIsPassed() {
+        rightGesture.onDown(100f, 50f, 0L, false);
+        org.junit.jupiter.api.Assertions.assertEquals(HorizontalBarEdgeGesture.Decision.PASS,
+                rightGesture.onMove(98f, 50f + SLOP + 5f, 20L));
+    }
+
+    @org.junit.jupiter.api.Test
+    void aTapOnTheRightStripOpensTheBarAndOnTheMarginIsPassed() {
+        rightGesture.onDown(100f, 50f, 0L, true);
+        org.junit.jupiter.api.Assertions.assertEquals(HorizontalBarEdgeGesture.Decision.OPEN_BAR,
+                rightGesture.onUp(100f, 50f, 600L));
+        rightGesture.onDown(100f, 50f, 0L, false);
+        org.junit.jupiter.api.Assertions.assertEquals(HorizontalBarEdgeGesture.Decision.PASS,
+                rightGesture.onUp(100f, 50f, 50L));
+    }
 }

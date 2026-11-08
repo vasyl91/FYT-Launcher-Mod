@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Upande wa upau wima</string>
     <string name="vertical_bar_side_left">Upande wa kushoto wa skrini</string>
     <string name="vertical_bar_side_right">Upande wa kulia wa skrini</string>
+    <string name="edge_handle_side">Kishikio cha kuficha kiotomatiki</string>
+    <string name="edge_handle_side_left">Ukingo wa kushoto, hufunguliwa kwa kutelezesha kulia</string>
+    <string name="edge_handle_side_right">Ukingo wa kulia, hufunguliwa kwa kutelezesha kushoto</string>
 </resources>

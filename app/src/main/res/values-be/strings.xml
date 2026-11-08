@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Бок вертыкальнай панэлі</string>
     <string name="vertical_bar_side_left">Злева на экране</string>
     <string name="vertical_bar_side_right">Справа на экране</string>
+    <string name="edge_handle_side">Ручка аўтаматычнага хавання</string>
+    <string name="edge_handle_side_left">Левы край, адкрываецца свайпам управа</string>
+    <string name="edge_handle_side_right">Правы край, адкрываецца свайпам улева</string>
 </resources>

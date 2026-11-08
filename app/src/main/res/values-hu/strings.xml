@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Függőleges sáv oldala</string>
     <string name="vertical_bar_side_left">A képernyő bal oldalán</string>
     <string name="vertical_bar_side_right">A képernyő jobb oldalán</string>
+    <string name="edge_handle_side">Automatikus elrejtés fogantyúja</string>
+    <string name="edge_handle_side_left">Bal szél, jobbra húzással nyílik</string>
+    <string name="edge_handle_side_right">Jobb szél, balra húzással nyílik</string>
 </resources>

@@ -63,4 +63,7 @@
     <string name="vertical_bar_side">Sisi bar menegak</string>
     <string name="vertical_bar_side_left">Di sebelah kiri skrin</string>
     <string name="vertical_bar_side_right">Di sebelah kanan skrin</string>
+    <string name="edge_handle_side">Pemegang sembunyi automatik</string>
+    <string name="edge_handle_side_left">Tepi kiri, dibuka dengan leretan ke kanan</string>
+    <string name="edge_handle_side_right">Tepi kanan, dibuka dengan leretan ke kiri</string>
 </resources>

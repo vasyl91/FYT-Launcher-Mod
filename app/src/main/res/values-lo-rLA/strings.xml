@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">ດ້ານຂອງແຖບແນວຕັ້ງ</string>
     <string name="vertical_bar_side_left">ຢູ່ດ້ານຊ້າຍຂອງໜ້າຈໍ</string>
     <string name="vertical_bar_side_right">ຢູ່ດ້ານຂວາຂອງໜ້າຈໍ</string>
+    <string name="edge_handle_side">ມືຈັບເຊື່ອງອັດຕະໂນມັດ</string>
+    <string name="edge_handle_side_left">ຂອບຊ້າຍ, ເປີດດ້ວຍການປັດໄປທາງຂວາ</string>
+    <string name="edge_handle_side_right">ຂອບຂວາ, ເປີດດ້ວຍການປັດໄປທາງຊ້າຍ</string>
 </resources>

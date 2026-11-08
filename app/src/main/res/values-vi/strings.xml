@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Phía của thanh dọc</string>
     <string name="vertical_bar_side_left">Ở bên trái màn hình</string>
     <string name="vertical_bar_side_right">Ở bên phải màn hình</string>
+    <string name="edge_handle_side">Tay nắm tự động ẩn</string>
+    <string name="edge_handle_side_left">Cạnh trái, mở bằng cách vuốt sang phải</string>
+    <string name="edge_handle_side_right">Cạnh phải, mở bằng cách vuốt sang trái</string>
 </resources>

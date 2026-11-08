@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">ចំហៀងរបារបញ្ឈរ</string>
     <string name="vertical_bar_side_left">នៅខាងឆ្វេងនៃអេក្រង់</string>
     <string name="vertical_bar_side_right">នៅខាងស្តាំនៃអេក្រង់</string>
+    <string name="edge_handle_side">ដងចាប់លាក់ដោយស្វ័យប្រវត្តិ</string>
+    <string name="edge_handle_side_left">គែមខាងឆ្វេង បើកដោយអូសទៅស្តាំ</string>
+    <string name="edge_handle_side_right">គែមខាងស្តាំ បើកដោយអូសទៅឆ្វេង</string>
 </resources>

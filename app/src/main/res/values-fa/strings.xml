@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">سمت نوار عمودی</string>
     <string name="vertical_bar_side_left">در سمت چپ صفحه</string>
     <string name="vertical_bar_side_right">در سمت راست صفحه</string>
+    <string name="edge_handle_side">دستگیره پنهان‌سازی خودکار</string>
+    <string name="edge_handle_side_left">لبه چپ، با کشیدن به راست باز می‌شود</string>
+    <string name="edge_handle_side_right">لبه راست، با کشیدن به چپ باز می‌شود</string>
 </resources>

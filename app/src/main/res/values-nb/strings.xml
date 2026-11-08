@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Side for vertikalt felt</string>
     <string name="vertical_bar_side_left">På venstre side av skjermen</string>
     <string name="vertical_bar_side_right">På høyre side av skjermen</string>
+    <string name="edge_handle_side">Håndtak for automatisk skjuling</string>
+    <string name="edge_handle_side_left">Venstre kant, åpnes med et sveip mot høyre</string>
+    <string name="edge_handle_side_right">Høyre kant, åpnes med et sveip mot venstre</string>
 </resources>

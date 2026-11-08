@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Kant van vertikale balk</string>
     <string name="vertical_bar_side_left">Aan die linkerkant van die skerm</string>
     <string name="vertical_bar_side_right">Aan die regterkant van die skerm</string>
+    <string name="edge_handle_side">Outomatiese versteekhandvatsel</string>
+    <string name="edge_handle_side_left">Linkerrand, oopgemaak met \'n veeg na regs</string>
+    <string name="edge_handle_side_right">Regterrand, oopgemaak met \'n veeg na links</string>
 </resources>

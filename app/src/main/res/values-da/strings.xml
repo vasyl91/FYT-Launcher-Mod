@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Side for lodret bjælke</string>
     <string name="vertical_bar_side_left">I venstre side af skærmen</string>
     <string name="vertical_bar_side_right">I højre side af skærmen</string>
+    <string name="edge_handle_side">Håndtag til automatisk skjul</string>
+    <string name="edge_handle_side_left">Venstre kant, åbnes med et stryg mod højre</string>
+    <string name="edge_handle_side_right">Højre kant, åbnes med et stryg mod venstre</string>
 </resources>

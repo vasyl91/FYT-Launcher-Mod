@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Uhlangothi lwebha eqondile</string>
     <string name="vertical_bar_side_left">Ohlangothini lwesobunxele lwesikrini</string>
     <string name="vertical_bar_side_right">Ohlangothini lwesokudla lwesikrini</string>
+    <string name="edge_handle_side">Isibambo sokufihla ngokuzenzakalelayo</string>
+    <string name="edge_handle_side_left">Onqenqemeni lwesobunxele, kuvulwa ngokuswayipha kwesokudla</string>
+    <string name="edge_handle_side_right">Onqenqemeni lwesokudla, kuvulwa ngokuswayipha kwesobunxele</string>
 </resources>

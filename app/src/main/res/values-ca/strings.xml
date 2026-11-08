@@ -538,4 +538,7 @@
     <string name="vertical_bar_side">Costat de la barra vertical</string>
     <string name="vertical_bar_side_left">Al costat esquerre de la pantalla</string>
     <string name="vertical_bar_side_right">Al costat dret de la pantalla</string>
+    <string name="edge_handle_side">Nansa d\'amagament automàtic</string>
+    <string name="edge_handle_side_left">Vora esquerra, s\'obre lliscant cap a la dreta</string>
+    <string name="edge_handle_side_right">Vora dreta, s\'obre lliscant cap a l\'esquerra</string>
 </resources>
