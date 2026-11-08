@@ -2592,13 +2592,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         int selectedScreen = sharedPrefs.getInt(pipScreenKey, 1) - 1;
         Log.i("PipPositioner", "Adjust: " + pipScreenKey + " screen: " + selectedScreen);
         helpers.checkAndResetIfOverlappingOnScreen(-1);
-        if (selectedScreen == 0) {
-            requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(android.R.id.content, new CreatorFirstScreen()).commit();
-        } else {
-            requireActivity().getSupportFragmentManager().beginTransaction()
-                    .replace(android.R.id.content, CreatorOtherScreens.newInstance(selectedScreen))
-                    .commit();
-        }
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(android.R.id.content, CreatorScreen.newInstance(selectedScreen)).commit();
     }
 }

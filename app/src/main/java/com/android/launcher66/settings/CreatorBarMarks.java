@@ -34,18 +34,27 @@ final class CreatorBarMarks {
     }
 
     /**
-     * @param withButtonView add the button too (the creator of the first page has its own, in its layout)
-     * @param buttonWidthPx  the button's width, the vertical bar's
+     * Adds the marks under the controls (before them in the layout), so that the horizontal bar of the creator is
+     * always drawn over the button and the strip.
+     *
+     * @param buttonWidthShare the button's width as a share of the creator's width: the vertical bar's, which the
+     *                         preview keeps in proportion to the launcher's box whatever the room it has
      */
-    static CreatorBarMarks install(ConstraintLayout root, View controls, CreatorBars bars, boolean withButtonView,
-                                   int buttonWidthPx) {
+    static CreatorBarMarks install(ConstraintLayout root, View controls, CreatorBars bars, float buttonWidthShare) {
         Context context = root.getContext();
         View button = null;
         View strip = null;
-        if (withButtonView && bars.button != null) {
+        int index = controls != null && controls.getParent() == root ? root.indexOfChild(controls) : -1;
+        if (bars.button != null) {
             button = buildButton(context, bars.arrowRotation);
             boolean right = bars.arrowRotation == 180f;
-            root.addView(button, anchored(buttonWidthPx, bars.top, right));
+            ConstraintLayout.LayoutParams params = anchored(0, bars.top, right);
+            params.matchConstraintPercentWidth = Math.max(0.01f, buttonWidthShare);
+            params.matchConstraintDefaultWidth = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT_PERCENT;
+            root.addView(button, index, params);
+            if (index >= 0) {
+                index++;
+            }
         }
         if (bars.handle != null) {
             DisplayMetrics metrics = context.getResources().getDisplayMetrics();
@@ -54,7 +63,7 @@ final class CreatorBarMarks {
                     * com.android.launcher66.CreatorBars.STRIP_WIDTH_FRACTION));
             strip = new View(context);
             strip.setBackgroundColor(STRIP_COLOR);
-            root.addView(strip, anchored(width, bars.top, bars.handleRight));
+            root.addView(strip, index, anchored(width, bars.top, bars.handleRight));
         }
         CreatorBarMarks marks = new CreatorBarMarks(button, strip);
         marks.follow(root, controls);
@@ -62,30 +71,20 @@ final class CreatorBarMarks {
         return marks;
     }
 
-    /** Adds the arrow to the creator's own collapsed bar (a coloured rectangle in its layout). */
-    static void addArrow(View collapsedBar, float rotation) {
-        if (!(collapsedBar instanceof ViewGroup) || collapsedBar.findViewWithTag("creator_arrow") != null) {
-            return;
-        }
-        ViewGroup group = (ViewGroup) collapsedBar;
-        ImageView arrow = buildArrow(group.getContext(), rotation);
-        arrow.setTag("creator_arrow");
-        ConstraintLayout.LayoutParams params = new ConstraintLayout.LayoutParams(0, 0);
-        params.leftToLeft = ConstraintLayout.LayoutParams.PARENT_ID;
-        params.rightToRight = ConstraintLayout.LayoutParams.PARENT_ID;
-        params.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
-        params.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
-        group.addView(arrow, params);
-    }
-
     void setControlsShown(boolean controlsShown) {
-        int visibility = controlsShown ? View.GONE : View.VISIBLE;
+        // The button stays laid out while the controls cover it: the rectangles keep clear of its corner
+        // either way (DrawViewScreen); the strip is only a picture
         if (button != null) {
-            button.setVisibility(visibility);
+            button.setVisibility(controlsShown ? View.INVISIBLE : View.VISIBLE);
         }
         if (strip != null) {
-            strip.setVisibility(visibility);
+            strip.setVisibility(controlsShown ? View.GONE : View.VISIBLE);
         }
+    }
+
+    /** The button in the corner of the vertical bar, or null where the page has none. */
+    View buttonView() {
+        return button;
     }
 
     private static ConstraintLayout.LayoutParams anchored(int widthPx, boolean top, boolean right) {

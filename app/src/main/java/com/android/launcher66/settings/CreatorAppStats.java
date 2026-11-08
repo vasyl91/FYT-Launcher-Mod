@@ -29,8 +29,8 @@ public class CreatorAppStats extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
         mContext = container.getContext();
-        View rootView = inflater.inflate(R.layout.creator_other, container, false);
-        ConstraintLayout layout = rootView.findViewById(R.id.creator_other_screens);
+        View rootView = inflater.inflate(R.layout.creator_screen, container, false);
+        ConstraintLayout layout = rootView.findViewById(R.id.creator_screen);
         DrawViewAppStats canvas = new DrawViewAppStats(inflater, rootView, mContext);
         canvas.addRectangle("AppStats", "appStats", "#0ca7f5", false);
         if (layout != null) {

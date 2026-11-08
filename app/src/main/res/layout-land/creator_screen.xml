@@ -7,7 +7,7 @@
 
     <!-- Workspace -->
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/creator_first_screen"
+        android:id="@+id/creator_screen"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="parent"
@@ -257,16 +257,5 @@
             android:gravity="center" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <!-- Horizontal Bar Auto Hide -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/creator_bar_auto_hide"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintHeight_percent="0.1638"
-        app:layout_constraintWidth_percent="0.071"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:background="@color/colorPrimaryDark"      
-        android:visibility="invisible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

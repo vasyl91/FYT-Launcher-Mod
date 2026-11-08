@@ -9,8 +9,8 @@ import android.view.ViewParent;
 import java.util.ArrayList;
 
 /**
- * Touch handling shared by the layout creator canvases (DrawViewFirstScreen,
- * DrawViewOtherScreens and DrawViewAppStats).
+ * Touch handling shared by the layout creator canvases (DrawViewScreen,
+ * DrawViewAppStats).
  *
  * <p>On ACTION_DOWN it decides once what the finger grabbed: a whole rectangle (move) or one or
  * two of its edges (resize; two edges make a corner). The rules:
@@ -28,7 +28,7 @@ import java.util.ArrayList;
  *       outer band they are moved.</li>
  * </ul>
  * All sizes are physical: dp values are divided by the effective scale of the view, because
- * DrawViewFirstScreen scales itself down to fit the creator.
+ * DrawViewScreen scales itself down to fit the creator.
  *
  * <p>While dragging, the grabbed edge (or the moved rectangle) keeps the offset it had to the
  * finger on ACTION_DOWN, so nothing jumps under the finger. The grabbed edges are highlighted from

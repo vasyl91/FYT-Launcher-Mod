@@ -46,9 +46,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class DrawViewFirstScreen extends View implements View.OnClickListener {
+/**
+ * The canvas of the layout creator, for every page of the home screen. Everything is the same on every page
+ * (the proportions of the launcher's area, the exact height of the horizontal bar, keeping the rectangles clear
+ * of the bars and of the collapsed bar's button, the arrow steps) except what differs on the home screen itself:
+ * <ul>
+ *   <li>the elements on the page (data, music, radio, statistics, PiPs): the page each is set to;</li>
+ *   <li>the bars on the page: {@link CreatorPage} and {@link CreatorBars} say which, by the rules the home screen
+ *       follows (the vertical bar on the first page, and with its option on the others; the horizontal bar on
+ *       the first page, and with its option on the others);</li>
+ *   <li>the hint and the double tap: the first page toggles the controls only with auto-hide, the other pages also
+ *       when no bar takes the strip ({@link CreatorBarToggle}).</li>
+ * </ul>
+ * The keys the rectangles are saved under, the user rectangles and the touched ones are the same for every page.
+ */
+public class DrawViewScreen extends View implements View.OnClickListener {
 
-    private static final String TAG = "DrawViewFirstScreen";
+    private static final String TAG = "DrawViewScreen";
 
     // Core
     private final SharedPreferences sharedPrefs;
@@ -104,6 +118,16 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
      */
     private int topInset;
 
+    /**
+     * The button or the handle's strip of this page (see CreatorBars), shown while the controls are hidden. The
+     * rectangles keep clear of the button.
+     */
+    void setBarMarks(CreatorBarMarks marks, CreatorBars bars) {
+        mBarMarks = marks;
+        mBarOnTop = bars.top;
+        mCollapsedBarReserved = bars.button != null;
+    }
+
     public void setTopInset(int inset) {
         if (inset != topInset) {
             topInset = inset;
@@ -126,6 +150,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
     private boolean mCollapsedBarReserved = false;
     /** The horizontal bar is at the top: the collapsed bar's rectangle hangs from the top edge. */
     private boolean mBarOnTop = false;
+    private final int mPage;
     private CreatorBarMarks mBarMarks;
     private final int[] mAutoHideBarLocation = new int[2];
     private final int[] mCanvasLocation = new int[2];
@@ -135,8 +160,10 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
     private static boolean thirdPip = false;
     private static boolean fourthPip = false;
 
-    public DrawViewFirstScreen(LayoutInflater inflater, View rootView, Context context) {
+    /** @param page the page the creator is for, 0 for the first */
+    public DrawViewScreen(LayoutInflater inflater, View rootView, Context context, int page) {
         super(context);
+        this.mPage = page;
         this.mContextWeakRef = new WeakReference<>(context);
         this.mInflater = inflater;
         this.mRootView = rootView;
@@ -150,8 +177,9 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
         initUi(rootView);
     }
 
-    public DrawViewFirstScreen(Context context, AttributeSet attrs) {
+    public DrawViewScreen(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.mPage = 0;
         this.mContextWeakRef = new WeakReference<>(context);
         this.sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         this.margin = Integer.parseInt(sharedPrefs.getString(Keys.LAYOUT_MARGIN, "5"));
@@ -163,8 +191,9 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
         initUi(null);
     }
 
-    public DrawViewFirstScreen(Context context, AttributeSet attrs, int defStyle) {
+    public DrawViewScreen(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        this.mPage = 0;
         this.mContextWeakRef = new WeakReference<>(context);
         this.sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         this.margin = Integer.parseInt(sharedPrefs.getString(Keys.LAYOUT_MARGIN, "5"));
@@ -303,22 +332,11 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
             rectangleName = rootView.findViewById(R.id.rectangle_name);
 
             View creatorBar = rootView.findViewById(R.id.creator_bar); 
-            View creatorBarAutoHide = rootView.findViewById(R.id.creator_bar_auto_hide); 
-            View creatorView = rootView.findViewById(R.id.creator_first_screen);   
-            // What the home screen shows of the bars on its first page: the button only where the vertical bar and the
-            // handle are on the same side, else the handle's strip (a picture; it reserves nothing)
-            final boolean autoHide = sharedPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false);
-            final CreatorBars bars = CreatorBars.of(
-                    BarLayouts.sides(sharedPrefs, sharedPrefs.getBoolean(Keys.VERTICAL_BAR, false)), autoHide);
-            mBarOnTop = bars.top;
-            mCollapsedBarReserved = bars.button != null;
-            if (!mCollapsedBarReserved && creatorBarAutoHide != null) {
-                creatorBarAutoHide.setVisibility(View.GONE);
-            } else if (creatorBarAutoHide != null) {
-                CreatorBarMarks.addArrow(creatorBarAutoHide, bars.arrowRotation);
-            }
-            if (rootView instanceof ConstraintLayout) {
-                mBarMarks = CreatorBarMarks.install((ConstraintLayout) rootView, creatorBar, bars, false, 0);
+            View creatorView = rootView.findViewById(R.id.creator_screen);
+            // Where no bar takes the strip of this page the controls are shown from the start, as the bar is on the home screen
+            if (!CreatorBarToggle.canToggle(mPage == 0, sharedPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false),
+                    sharedPrefs.getBoolean(Keys.HORIZONTAL_BAR_EVERY_PAGE, false)) && creatorBar != null) {
+                creatorBar.setVisibility(View.VISIBLE);
             }
             gestureDetector = new GestureDetector(getSafeContext(), new GestureDetector.SimpleOnGestureListener() {
                 @Override
@@ -331,7 +349,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
                         saveStatsAndRedraw();
                         return true;
                     }
-                    if (!CreatorBarToggle.canToggle(true,
+                    if (!CreatorBarToggle.canToggle(mPage == 0,
                             sharedPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false),
                             sharedPrefs.getBoolean(Keys.HORIZONTAL_BAR_EVERY_PAGE, false))) {
                         return true;
@@ -340,10 +358,6 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
                     creatorBar.setVisibility(showControls ? View.VISIBLE : View.GONE);
                     if (mBarMarks != null) {
                         mBarMarks.setControlsShown(showControls);
-                    }
-                    // The collapsed button replaces the controls only with the vertical bar.
-                    if (mCollapsedBarReserved && creatorBarAutoHide != null) {
-                        creatorBarAutoHide.setVisibility(showControls ? View.GONE : View.VISIBLE);
                     }
                     return true; 
                 }
@@ -570,8 +584,9 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
         float maxBottom = getHeight() - margin;
         float width = Math.min(r.width(), Math.max(cfg.minWidth, maxRight - margin));
         float height = Math.min(r.height(), Math.max(cfg.minHeight, maxBottom - margin));
+        float minTop = margin + topInset;   // below a horizontal bar at the top
         float left = Math.min(Math.max(r.left, margin), Math.max(margin, maxRight - width));
-        float top = Math.min(Math.max(r.top, margin), Math.max(margin, maxBottom - height));
+        float top = Math.min(Math.max(r.top, minTop), Math.max(minTop, maxBottom - height));
         return new RectF(left, top, left + width, top + height);
     }
 
@@ -602,20 +617,24 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
         hint.setTextAlign(Paint.Align.CENTER);
         hint.setShadowLayer(2, 1, 1, Color.WHITE);
         float centerX = getWidth() / 2f;
-        if (CreatorBarToggle.canToggle(true, sharedPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false),
+        if (CreatorBarToggle.canToggle(mPage == 0, sharedPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false),
                 sharedPrefs.getBoolean(Keys.HORIZONTAL_BAR_EVERY_PAGE, false))) {
             float centerY = SettingsActivity.screenHeight / 2f;
             float lineHeight = hint.getTextSize() * 1.2f; 
-            String centerText = getSafeContext().getString(R.string.double_tap, "1");
+            String centerText = getSafeContext().getString(R.string.double_tap, String.valueOf(mPage + 1));
             String[] lines = centerText.split("\\n");
             float startY = centerY - ((lines.length - 1) * lineHeight / 2f);
             for (int i = 0; i < lines.length; i++) {
                 canvas.drawText(lines[i], centerX, startY + (i * lineHeight), hint);
             }
-        } else {
+        } else if (mPage == 0) {
             float centerY = getHeight() / 2f;
             String centerText = getSafeContext().getString(R.string.screen_first);
             canvas.drawText(centerText, centerX, centerY, hint);
+        } else {
+            // A double tap hides nothing here, so the hint only names the page.
+            canvas.drawText(getSafeContext().getString(R.string.screen_number, String.valueOf(mPage + 1)),
+                    centerX, getHeight() / 2f, hint);
         }
 
         // Draw rectangles (and glare if both opted-in and overlapping)
@@ -1018,7 +1037,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
      * Bounds of the creator's auto-hide bar in this view's coordinates, grown by {@link #margin}.
      *
      * Always read from the live view, so the collision logic sees whatever height the bar really
-     * has: the exact pixel height CreatorFirstScreen applies for Keys.RESIZABLE_HORIZONTAL_BAR, or the
+     * has: the exact pixel height CreatorScreen applies for Keys.RESIZABLE_HORIZONTAL_BAR, or the
      * XML size (height percent / dimension ratio) when the feature is off. No hardcoded offsets.
      *
      * If a new exact height is applied but not laid out yet, the pending LayoutParams height is
@@ -1029,7 +1048,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
     private boolean resolveAutoHideBarBounds(RectF out) {
         if (mRootView == null || !mCollapsedBarReserved) return false;
 
-        View creatorBarAutoHide = mRootView.findViewById(R.id.creator_bar_auto_hide);
+        View creatorBarAutoHide = mBarMarks == null ? null : mBarMarks.buttonView();
         // GONE: the bounds are stale (a GONE child is not laid out); not laid out: nothing yet.
         if (creatorBarAutoHide == null
                 || creatorBarAutoHide.getVisibility() == View.GONE
@@ -1391,8 +1410,7 @@ public class DrawViewFirstScreen extends View implements View.OnClickListener {
 
     private boolean compareScreens(String pipScreenKey) {
         int pipScreen = sharedPrefs.getInt(pipScreenKey, 1) - 1;
-        int screen = 0;
-        if (screen == pipScreen) {
+        if (mPage == pipScreen) {
             return true;
         } else {
             return false;

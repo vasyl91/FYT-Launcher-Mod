@@ -179,7 +179,7 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         if (rootView != null) {
             rectangleName = rootView.findViewById(R.id.rectangle_name);
             View creatorBar = rootView.findViewById(R.id.creator_bar); 
-            View creatorView = rootView.findViewById(R.id.creator_other_screens);   
+            View creatorView = rootView.findViewById(R.id.creator_screen);   
             gestureDetector = new GestureDetector(getSafeContext(), new GestureDetector.SimpleOnGestureListener() {
                 @Override
                 public boolean onDoubleTap(MotionEvent event) {

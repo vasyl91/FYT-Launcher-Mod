@@ -24,14 +24,21 @@ import androidx.core.widget.TextViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
+import com.android.launcher66.BarConstraints;
+import com.android.launcher66.CreatorBars;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 
-public class CreatorFirstScreen extends Fragment {
+/**
+ * The fragment of the layout creator, for every page of the home screen (see {@link DrawViewScreen} for what
+ * is the same on every page and what differs). The page travels in the arguments Bundle, which the system saves
+ * itself: a Fragment must have a public no-arg constructor, and one that took the page made FragmentManager
+ * throw InstantiationException on state restore (rotation, theme change, return after process death).
+ */
+public class CreatorScreen extends Fragment {
 
-    // Fragment that opens DrawViewFirstScreen.java where user can create the layout
-
-    private static final String TAG = "CreatorFirstScreen";
+    private static final String TAG = "CreatorScreen";
+    private static final String ARG_PAGE = "page";
 
     /** Smallest share of its scaled size the confirm text may auto-shrink to. */
     private static final float CONFIRM_TEXT_MIN_FRACTION = 0.5f;
@@ -39,29 +46,33 @@ public class CreatorFirstScreen extends Fragment {
     private Helpers helpers;
     private SharedPreferences sharedPrefs;
     private ConstraintLayout layout;
-    private DrawViewFirstScreen canvas;
+    private DrawViewScreen canvas;
     private OnBackPressedCallback backPressedCallback;
     private OneShotPreDrawCheck arrowControlsFit;
+    /** 0 for the first page. */
+    private int mPage;
+    private CreatorPage mCreatorPage;
 
-    public static boolean pip = false;
-    public static boolean dualPip = false;
-    public static boolean firstPip = false;
-    public static boolean secondPip = false;
-    public static boolean thirdPip = false;
-    public static boolean fourthPip = false;
-    public static boolean date = false;
-    public static boolean music = false;
-    public static boolean radio = false;
-    public static boolean stats = false; 
-
-    public CreatorFirstScreen() {
+    public CreatorScreen() {
         super();
+    }
+
+    /** @param page the page, 0 for the first */
+    public static CreatorScreen newInstance(int page) {
+        CreatorScreen fragment = new CreatorScreen();
+        Bundle args = new Bundle();
+        args.putInt(ARG_PAGE, page);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         helpers = new Helpers();
+        if (getArguments() != null) {
+            mPage = getArguments().getInt(ARG_PAGE, 0);
+        }
     }
 
     @Override
@@ -77,103 +88,34 @@ public class CreatorFirstScreen extends Fragment {
         if (mContext == null) {
             return null;
         }
-        
-        View rootView;
+
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-        boolean verticalBar = sharedPrefs.getBoolean(Keys.VERTICAL_BAR, false);
-        pip = sharedPrefs.getBoolean(Keys.DISPLAY_PIP, false);
-        dualPip = sharedPrefs.getBoolean(Keys.PIP_DUAL, false);
-        firstPip = sharedPrefs.getBoolean(Keys.PIP_FIRST, false);
-        secondPip = sharedPrefs.getBoolean(Keys.PIP_SECOND, false);
-        thirdPip = sharedPrefs.getBoolean(Keys.PIP_THIRD, false);
-        fourthPip = sharedPrefs.getBoolean(Keys.PIP_FOURTH, false);
-        String firstPkg = sharedPrefs.getString(Keys.PIP_FIRST_PACKAGE, "");
-        String secondPkg = sharedPrefs.getString(Keys.PIP_SECOND_PACKAGE, "");
-        String thirdPkg = sharedPrefs.getString(Keys.PIP_THIRD_PACKAGE, "");
-        String fourthPkg = sharedPrefs.getString(Keys.PIP_FOURTH_PACKAGE, "");
-        String pipFirstName = getAppNameFromPackage(firstPkg);
-        String pipSecondName = getAppNameFromPackage(secondPkg);
-        date = sharedPrefs.getBoolean(Keys.USER_DATE, true);
-        music = sharedPrefs.getBoolean(Keys.USER_MUSIC, true);
-        radio = sharedPrefs.getBoolean(Keys.USER_RADIO, true); 
-        stats = sharedPrefs.getBoolean(Keys.USER_STATS, true);        
-        if (verticalBar) {           
-            rootView = inflater.inflate(R.layout.creator_vertical, container, false);
-            // The preview shows the background chosen for the vertical bar
-            View verticalBarView = rootView.findViewById(R.id.rl_vertical_bar);
-            String chosenBackground = sharedPrefs.getString(Keys.VERTICAL_BAR_SELECTED_BACKGROUND, "hotseat_bg");
-            if (verticalBarView != null && !"hotseat_bg".equals(chosenBackground)) {
-                int backgroundRes = BackgroundSelectorDialog.getResId(chosenBackground, R.drawable.class);
-                if (backgroundRes > 0) {
-                    verticalBarView.setBackgroundResource(backgroundRes);
-                }
+        mCreatorPage = CreatorPage.of(mPage, snapshot(sharedPrefs));
+        final CreatorBars bars = mCreatorPage.bars;
+        View rootView = inflater.inflate(R.layout.creator_screen, container, false);
+        layout = rootView.findViewById(R.id.creator_screen);
+        // The horizontal bar at the top: the controls go to the top and the canvas spans the whole height, so that
+        // the coordinates stay those of the launcher's box (the band of the bar is kept free by the top inset)
+        if (bars.top && rootView instanceof ConstraintLayout) {
+            BarConstraints.apply((ConstraintLayout) rootView, R.id.creator_bar, R.id.creator_screen, true, false);
+        }
+        canvas = new DrawViewScreen(inflater, rootView, mContext, mPage);
+        // The vertical bar's band beside the canvas, and the button or the handle's strip: both under the controls
+        float verticalShare = 0f;
+        if (rootView instanceof ConstraintLayout) {
+            verticalShare = geometry(mContext).verticalBarShare();
+            if (mCreatorPage.verticalOnPage) {
+                addVerticalBarBand((ConstraintLayout) rootView, layout, bars, verticalShare);
             }
-        } else {
-            rootView = inflater.inflate(R.layout.creator, container, false);
+            CreatorBarMarks marks = CreatorBarMarks.install((ConstraintLayout) rootView,
+                    rootView.findViewById(R.id.creator_bar), bars, verticalShare);
+            canvas.setBarMarks(marks, bars);
         }
-        final boolean barAtTop = sharedPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
-        final boolean verticalBarAtRight = verticalBar && BarLayouts.sides(sharedPrefs, true).right;
-        // An auto-hide bar with no button in the corner leaves it free: the vertical bar has the whole height
-        final boolean verticalFullHeight = verticalBar
-                && com.android.launcher66.CreatorBars.of(BarLayouts.sides(sharedPrefs, true),
-                        sharedPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false)).verticalFullHeight;
-        if ((barAtTop || verticalBarAtRight || verticalFullHeight) && rootView instanceof ConstraintLayout) {
-            // The bars to their edges; the canvas keeps the whole height with the bar at the top
-            com.android.launcher66.BarConstraints.apply((ConstraintLayout) rootView, R.id.creator_bar,
-                    R.id.creator_first_screen, barAtTop, verticalBarAtRight, verticalFullHeight,
-                    verticalBarWidthPx(mContext));
-        }
-        layout = rootView.findViewById(R.id.creator_first_screen);
-        canvas = new DrawViewFirstScreen(inflater, rootView, mContext);
         // After the canvas: its constructor gives the bar controls their base sizes, which the
         // resizable bar then scales. No-op while Keys.RESIZABLE_HORIZONTAL_BAR is off.
         applyResizableHorizontalBar(rootView, mContext);
-        if (pip && dualPip && !firstPip && !secondPip && compareScreens(Keys.PIP_DUAL_SCREEN)) {
-            String pipDualName;
-            if (TextUtils.isEmpty(pipFirstName) || TextUtils.isEmpty(pipSecondName)) {
-                pipDualName = (mContext.getString(R.string.pref_dual_pip_title));
-            } else {
-                pipDualName = pipFirstName + " / " + pipSecondName;
-            }
-            canvas.addRectangle(pipDualName, "pipDual", "#55FFFFFF", true); 
-        }
-        if (pip && firstPip && !dualPip && compareScreens(Keys.PIP_FIRST_SCREEN)) {
-            if (TextUtils.isEmpty(pipFirstName)) {
-                pipFirstName = (mContext.getString(R.string.pref_first_pip_title));
-            }
-            canvas.addRectangle(pipFirstName, "pipFirst", "#55FFFFFF", true); 
-        }
-        if (pip && secondPip && !dualPip && compareScreens(Keys.PIP_SECOND_SCREEN)) {
-            if (TextUtils.isEmpty(pipSecondName)) {
-                pipSecondName = (mContext.getString(R.string.pref_second_pip_title));
-            }
-            canvas.addRectangle(pipSecondName, "pipSecond", "#55FFFFFF", true); 
-        }
-        if (pip && thirdPip && compareScreens(Keys.PIP_THIRD_SCREEN)) {
-            String pipThirdName = getAppNameFromPackage(thirdPkg);
-            if (TextUtils.isEmpty(pipThirdName)) {
-                pipThirdName = (mContext.getString(R.string.pref_third_pip_title));
-            }
-            canvas.addRectangle(pipThirdName, "pipThird", "#55FFFFFF", true); 
-        }
-        if (pip && fourthPip && compareScreens(Keys.PIP_FOURTH_SCREEN)) {
-            String pipFourthName = getAppNameFromPackage(fourthPkg);
-            if (TextUtils.isEmpty(pipFourthName)) {
-                pipFourthName = (mContext.getString(R.string.pref_fourth_pip_title));
-            }
-            canvas.addRectangle(pipFourthName, "pipFourth", "#55FFFFFF", true); 
-        }
-        if (date && compareScreens(Keys.DATE_SCREEN)) {
-            canvas.addRectangle("Date", "date", "#ff4285f4", true);
-        }
-        if (music && compareScreens(Keys.MUSIC_SCREEN)) {
-            canvas.addRectangle("Music", "music", "#FFBB86FC", true); 
-        }
-        if (radio && compareScreens(Keys.RADIO_SCREEN)) {
-            canvas.addRectangle("Radio", "radio", "#e2e732", true);
-        }
-        if (stats && compareScreens(Keys.STATS_SCREEN)) {
-            canvas.addRectangle("Stats", "stats", "#0ca7f5", false);
+        for (String key : mCreatorPage.elements) {
+            addRectangle(mContext, key);
         }
         if (layout != null) {
             layout.addView(canvas);
@@ -181,15 +123,163 @@ public class CreatorFirstScreen extends Fragment {
         return rootView;
     }
 
-    /** The vertical bar's width: the one the launcher counts with, else the formula of the layouts. */
-    private int verticalBarWidthPx(Context context) {
-        if (com.android.launcher66.Launcher.calculatedVerticalBarWidth > 0) {
-            return com.android.launcher66.Launcher.calculatedVerticalBarWidth;
+    /** The settings the creator of a page reads, as CreatorPage takes them. */
+    private static CreatorPage.Snapshot snapshot(SharedPreferences prefs) {
+        return new CreatorPage.Snapshot() {
+            @Override
+            public boolean bool(String key) {
+                return prefs.getBoolean(key, false);
+            }
+
+            @Override
+            public boolean boolOr(String key, boolean defaultValue) {
+                return prefs.getBoolean(key, defaultValue);
+            }
+
+            @Override
+            public int screenOf(String screenKey) {
+                return prefs.getInt(screenKey, 1);
+            }
+        };
+    }
+
+    /** The rectangle of an element on this page: its name, colour and whether it is resizable as the canvas has always had them. */
+    private void addRectangle(Context context, String key) {
+        switch (key) {
+            case "pipDual": {
+                String first = getAppNameFromPackage(sharedPrefs.getString(Keys.PIP_FIRST_PACKAGE, ""));
+                String second = getAppNameFromPackage(sharedPrefs.getString(Keys.PIP_SECOND_PACKAGE, ""));
+                String name = TextUtils.isEmpty(first) || TextUtils.isEmpty(second)
+                        ? context.getString(R.string.pref_dual_pip_title) : first + " / " + second;
+                canvas.addRectangle(name, key, "#55FFFFFF", true);
+                break;
+            }
+            case "pipFirst":
+                canvas.addRectangle(pipName(context, Keys.PIP_FIRST_PACKAGE, R.string.pref_first_pip_title), key,
+                        "#55FFFFFF", true);
+                break;
+            case "pipSecond":
+                canvas.addRectangle(pipName(context, Keys.PIP_SECOND_PACKAGE, R.string.pref_second_pip_title), key,
+                        "#55FFFFFF", true);
+                break;
+            case "pipThird":
+                canvas.addRectangle(pipName(context, Keys.PIP_THIRD_PACKAGE, R.string.pref_third_pip_title), key,
+                        "#55FFFFFF", true);
+                break;
+            case "pipFourth":
+                canvas.addRectangle(pipName(context, Keys.PIP_FOURTH_PACKAGE, R.string.pref_fourth_pip_title), key,
+                        "#55FFFFFF", true);
+                break;
+            case "date":
+                canvas.addRectangle("Date", key, "#ff4285f4", true);
+                break;
+            case "music":
+                canvas.addRectangle("Music", key, "#FFBB86FC", true);
+                break;
+            case "radio":
+                canvas.addRectangle("Radio", key, "#e2e732", true);
+                break;
+            case "stats":
+                canvas.addRectangle("Stats", key, "#0ca7f5", false);
+                break;
+            default:
+                break;
         }
-        android.util.DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-        boolean portrait = metrics.heightPixels > metrics.widthPixels;
-        return (int) HorizontalBarDimensions.computeVerticalBarWidth(portrait, metrics.widthPixels,
-                metrics.heightPixels, HorizontalBarDimensions.boxBarHeight(context, sharedPrefs));
+    }
+
+    private String pipName(Context context, String packageKey, int fallbackTitle) {
+        String name = getAppNameFromPackage(sharedPrefs.getString(packageKey, ""));
+        return TextUtils.isEmpty(name) ? context.getString(fallbackTitle) : name;
+    }
+
+    /**
+     * The geometry the launcher's box has and the preview is made in proportion to: the box the bar and the
+     * widgets live in, the horizontal bar in it, and the vertical bar's width.
+     */
+    private final class Geometry {
+        final int rootWidth;
+        final int rootHeight;
+        final int barHeight;
+        final int legacyBarHeight;
+        final int verticalBarWidth;
+        final boolean portrait;
+
+        Geometry(Context context) {
+            portrait = HorizontalBarDimensions.isPortrait(context);
+            Point screen = HorizontalBarDimensions.resolveScreenSize(context);
+            int statusBarHeight = HorizontalBarDimensions.getStatusBarHeight(context.getResources());
+            // The box the launcher gives the bar and the widgets, and the bar inside it - exactly the
+            // geometry Helpers checks the saved positions against.
+            rootWidth = HorizontalBarDimensions.getBarRootWidth(screen.x);
+            rootHeight = HorizontalBarDimensions.getBarRootHeight(screen.y, statusBarHeight);
+            barHeight = HorizontalBarDimensions.computeBarHeight(sharedPrefs, portrait, rootWidth, rootHeight, 0);
+            legacyBarHeight = HorizontalBarDimensions.computeLegacyBarHeight(portrait, rootWidth, rootHeight, 0);
+            // The launcher shifts everything on a page with the vertical bar by Launcher.calculatedVerticalBarWidth
+            // (CellLayout placeholders, PiP panes), so the canvas has to leave exactly that room. In
+            // portrait the bar is 7.1 % of its HEIGHT, not of the width.
+            verticalBarWidth = com.android.launcher66.Launcher.calculatedVerticalBarWidth > 0
+                    ? com.android.launcher66.Launcher.calculatedVerticalBarWidth
+                    : (int) HorizontalBarDimensions.computeVerticalBarWidth(portrait, rootWidth, rootHeight, legacyBarHeight);
+        }
+
+        boolean known() {
+            return rootWidth > 0 && rootHeight > 0 && barHeight > 0 && legacyBarHeight > 0;
+        }
+
+        /** The vertical bar's width as a share of the box's: the band keeps it whatever room the creator has. */
+        float verticalBarShare() {
+            return rootWidth > 0 ? Math.min(0.5f, verticalBarWidth / (float) rootWidth) : 0.071f;
+        }
+    }
+
+    private Geometry geometry(Context context) {
+        return new Geometry(context);
+    }
+
+    /**
+     * The vertical bar of this page, as a band on its side beside the canvas, in the background chosen for it. It
+     * is added under the controls (before them), so that the horizontal bar of the creator is always drawn over
+     * it. The canvas is then the launcher's area beside the bar (x = 0 is the bar's inner edge, as on the home
+     * screen), and nothing can be put into the band.
+     */
+    private void addVerticalBarBand(ConstraintLayout root, View canvasArea, CreatorBars bars, float share) {
+        if (canvasArea == null) {
+            return;
+        }
+        final boolean right = bars.arrowRotation == 180f;
+        View band = new View(requireContext());
+        band.setId(View.generateViewId());
+        String chosen = sharedPrefs.getString(Keys.VERTICAL_BAR_SELECTED_BACKGROUND, "hotseat_bg");
+        int backgroundRes = "hotseat_bg".equals(chosen) ? 0 : BackgroundSelectorDialog.getResId(chosen, R.drawable.class);
+        band.setBackgroundResource(backgroundRes > 0 ? backgroundRes : R.drawable.hotseat_bg);
+        ConstraintLayout.LayoutParams bandParams = new ConstraintLayout.LayoutParams(0, 0);
+        bandParams.matchConstraintDefaultWidth = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT_PERCENT;
+        bandParams.matchConstraintPercentWidth = share;
+        // The whole height of the creator: where the horizontal bar and the corner are taken, the controls (or the
+        // button) are drawn over the band, and where the corner is free the band is seen all the way
+        bandParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
+        bandParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
+        if (right) {
+            bandParams.rightToRight = ConstraintLayout.LayoutParams.PARENT_ID;
+        } else {
+            bandParams.leftToLeft = ConstraintLayout.LayoutParams.PARENT_ID;
+        }
+        // Under the controls: the horizontal bar is drawn over the band where they meet
+        View controls = root.findViewById(R.id.creator_bar);
+        int index = controls != null && controls.getParent() == root ? root.indexOfChild(controls) : -1;
+        root.addView(band, index, bandParams);
+        ViewGroup.LayoutParams raw = canvasArea.getLayoutParams();
+        if (raw instanceof ConstraintLayout.LayoutParams) {
+            ConstraintLayout.LayoutParams area = (ConstraintLayout.LayoutParams) raw;
+            area.width = 0;
+            area.leftToLeft = right ? ConstraintLayout.LayoutParams.PARENT_ID : ConstraintLayout.LayoutParams.UNSET;
+            area.leftToRight = right ? ConstraintLayout.LayoutParams.UNSET : band.getId();
+            area.rightToRight = right ? ConstraintLayout.LayoutParams.UNSET : ConstraintLayout.LayoutParams.PARENT_ID;
+            area.rightToLeft = right ? band.getId() : ConstraintLayout.LayoutParams.UNSET;
+            canvasArea.setLayoutParams(area);
+        }
+        Log.d(TAG, "Vertical bar on page " + (mPage + 1) + ": " + Math.round(share * 1000) / 10f + " % on the "
+                + (right ? "right" : "left") + (bars.verticalFullHeight ? ", whole height" : ""));
     }
 
     @Override
@@ -281,44 +371,32 @@ public class CreatorFirstScreen extends Fragment {
      *     fit the width of creator_buttons (the XML only fixes their share of the width).
      */
     private void applyResizableHorizontalBar(@NonNull View rootView, @NonNull Context context) {
-        boolean portrait = HorizontalBarDimensions.isPortrait(context);
-        Point screen = HorizontalBarDimensions.resolveScreenSize(context);
-        int statusBarHeight = HorizontalBarDimensions.getStatusBarHeight(context.getResources());
-        // The box the launcher gives the bar and the widgets, and the bar inside it - exactly the
-        // geometry Helpers checks the saved positions against.
-        int rootWidth = HorizontalBarDimensions.getBarRootWidth(screen.x);
-        int rootHeight = HorizontalBarDimensions.getBarRootHeight(screen.y, statusBarHeight);
-        int barHeight = HorizontalBarDimensions.computeBarHeight(sharedPrefs, portrait, rootWidth, rootHeight, 0);
-        int legacyBarHeight = HorizontalBarDimensions.computeLegacyBarHeight(portrait, rootWidth, rootHeight, 0);
-        if (rootWidth <= 0 || rootHeight <= 0 || barHeight <= 0 || legacyBarHeight <= 0) {
-            Log.w(TAG, "Bar geometry unknown (" + rootWidth + "x" + rootHeight + "), leaving the XML alone");
+        Geometry geo = geometry(context);
+        if (!geo.known()) {
+            Log.w(TAG, "Bar geometry unknown (" + geo.rootWidth + "x" + geo.rootHeight + "), leaving the XML alone");
             return;
         }
+        final boolean portrait = geo.portrait;
+        final int rootWidth = geo.rootWidth;
+        final int rootHeight = geo.rootHeight;
+        final int barHeight = geo.barHeight;
+        final int legacyBarHeight = geo.legacyBarHeight;
+        final CreatorBars bars = mCreatorPage.bars;
 
         // 1. The canvas mirrors the launcher's free area 1:1 - that is the space the positions are
         //    saved in - and scales itself into whatever room the creator screen has. The settings
         //    window can be smaller than the launcher's (system bars), and without this the canvas
         //    silently became a different coordinate space than the launcher's.
-        boolean verticalBar = sharedPrefs.getBoolean(Keys.VERTICAL_BAR, false);
-        boolean autoHideHorizontalBar = sharedPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false);
-        // The launcher shifts everything on its first page right by Launcher.calculatedVerticalBarWidth
-        // (CellLayout placeholders, PiP panes), so the canvas has to leave exactly that room. In
-        // portrait the bar is 7.1 % of its HEIGHT (W,0.071 in the layout), not of the width: the
-        // canvas used to be ~66 px wider than the launcher's area on a 1080x2340 phone, and a
-        // rectangle drawn up to its right edge came out wider than the screen allowed.
-        int verticalBarWidth = 0;
-        if (verticalBar) {
-            verticalBarWidth = com.android.launcher66.Launcher.calculatedVerticalBarWidth > 0
-                    ? com.android.launcher66.Launcher.calculatedVerticalBarWidth
-                    : (int) HorizontalBarDimensions.computeVerticalBarWidth(portrait, rootWidth, rootHeight, legacyBarHeight);
-        }
+        int verticalBarWidth = mCreatorPage.verticalOnPage ? geo.verticalBarWidth : 0;
         int workspaceWidth = rootWidth - verticalBarWidth;
-        // With auto-hide the workspace keeps the full height; only the collapsed button is reserved.
-        // (a bar at the top leaves the canvas the whole height too, its band is kept free by the topInset)
-        final boolean barAtTop = sharedPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
-        int workspaceHeight = autoHideHorizontalBar || barAtTop ? rootHeight : rootHeight - barHeight;
-        View canvasArea = rootView.findViewById(R.id.creator_first_screen);
-        if (autoHideHorizontalBar) {
+        // With auto-hide the workspace keeps the full height, and so does a page that has no horizontal bar; only the
+        // collapsed button is reserved. (a bar at the top leaves the canvas the whole height too, its band is kept
+        // free by the topInset)
+        final boolean autoHideHorizontalBar = bars.collapsible;
+        final boolean fullHeight = autoHideHorizontalBar || !mCreatorPage.horizontalOnPage;
+        int workspaceHeight = fullHeight || bars.top ? rootHeight : rootHeight - barHeight;
+        View canvasArea = rootView.findViewById(R.id.creator_screen);
+        if (fullHeight) {
             // The auto-hide bar lies on top of the workspace instead of reserving room for it, so
             // the preview keeps the full height and the bar covers its bottom - as in the launcher.
             // It also means the preview does not jump when the bar is toggled with a double tap.
@@ -327,14 +405,14 @@ public class CreatorFirstScreen extends Fragment {
         if (canvasArea != null) {
             // The preview keeps the launcher's proportions, so a strip can be left beside it;
             // painting it in the canvas colour keeps it from looking like another bar.
-            canvasArea.setBackgroundColor(DrawViewFirstScreen.CANVAS_BACKGROUND_COLOR);
+            canvasArea.setBackgroundColor(DrawViewScreen.CANVAS_BACKGROUND_COLOR);
         }
         if (canvas != null) {
-            canvas.setTopInset(barAtTop && !autoHideHorizontalBar ? barHeight : 0);
+            canvas.setTopInset(bars.top && mCreatorPage.horizontalOnPage && !autoHideHorizontalBar ? barHeight : 0);
             canvas.setWorkspaceArea(workspaceWidth, workspaceHeight);
         }
         Log.d(TAG, "Bar geometry: box " + rootWidth + "x" + rootHeight + ", bar " + barHeight
-                + "px, canvas area " + workspaceWidth + "x" + workspaceHeight);
+                + "px, canvas area " + workspaceWidth + "x" + workspaceHeight + ", page " + (mPage + 1));
 
         boolean resizableHorizontalBar = sharedPrefs.getBoolean(Keys.RESIZABLE_HORIZONTAL_BAR, false);
         if (!resizableHorizontalBar) {
@@ -343,18 +421,9 @@ public class CreatorFirstScreen extends Fragment {
 
         // 2. Bar containers: exact pixel height, conflicting XML ratio / percent cleared.
         HorizontalBarDimensions.applyExactHeight(rootView.findViewById(R.id.creator_bar), barHeight);
-        // Portrait layouts hang the vertical bar (rl_vertical_bar), the auto-hide width guide and the
-        // auto-hide bar on this invisible view, which has its own "H,0.142" ratio. Resizing it is
-        // what makes all three follow through their existing constraints. (Absent in landscape.)
-        HorizontalBarDimensions.applyExactHeight(rootView.findViewById(R.id.guideline_horizontal_bar_height), barHeight);
-        if (!portrait) {
-            // Landscape gives the auto-hide bar its own layout_constraintHeight_percent. In portrait
-            // it is constrained between the guideline above and the parent, so it needs nothing.
-            HorizontalBarDimensions.applyExactHeight(rootView.findViewById(R.id.creator_bar_auto_hide), barHeight);
-        }
-        // Landscape rl_vertical_bar is constrained to the top of creator_bar - it follows as well.
+        // (the collapsed bar's button and the handle's strip take the height of this bar themselves, CreatorBarMarks)
 
-        // 3. Children with absolute sizes (given by DrawViewFirstScreen) scale with the bar.
+        // 3. Children with absolute sizes (given by DrawViewScreen) scale with the bar.
         float scale = (float) barHeight / legacyBarHeight;
         if (Math.abs(scale - 1f) < 0.001f) {
             return;
@@ -574,18 +643,8 @@ public class CreatorFirstScreen extends Fragment {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         } catch (Exception e) {
-            Log.e("CreatorFirstScreen", "Error getting app name", e);
+            Log.e("CreatorScreen", "Error getting app name", e);
         }
         return "";
-    }
-
-    private boolean compareScreens(String pipScreenKey) {
-        int pipScreen = sharedPrefs.getInt(pipScreenKey, 1) - 1;
-        int screen = 0;
-        if (screen == pipScreen) {
-            return true;
-        } else {
-            return false;
-        }
     }
 }
