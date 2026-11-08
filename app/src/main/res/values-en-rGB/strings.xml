@@ -69,4 +69,5 @@
     <string name="edge_handle_side">Auto-hide handle</string>
     <string name="edge_handle_side_left">Left edge, opened with a swipe to the right</string>
     <string name="edge_handle_side_right">Right edge, opened with a swipe to the left</string>
+    <string name="vertical_bar_every_page">Vertical bar on every page</string>
 </resources>

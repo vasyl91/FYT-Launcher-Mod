@@ -541,4 +541,5 @@
     <string name="edge_handle_side">Автоматаар нуух бариул</string>
     <string name="edge_handle_side_left">Зүүн ирмэг, баруун тийш шудрахад нээгдэнэ</string>
     <string name="edge_handle_side_right">Баруун ирмэг, зүүн тийш шудрахад нээгдэнэ</string>
+    <string name="vertical_bar_every_page">Хуудас бүр дээр босоо самбар</string>
 </resources>

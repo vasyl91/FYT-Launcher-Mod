@@ -541,4 +541,5 @@
     <string name="edge_handle_side">ራስ-ሰር መደበቂያ እጀታ</string>
     <string name="edge_handle_side_left">የግራ ጠርዝ፣ ወደ ቀኝ በማንሸራተት ይከፈታል</string>
     <string name="edge_handle_side_right">የቀኝ ጠርዝ፣ ወደ ግራ በማንሸራተት ይከፈታል</string>
+    <string name="vertical_bar_every_page">የቀጥ ያለ አሞሌ በእያንዳንዱ ገጽ ላይ</string>
 </resources>

@@ -541,4 +541,5 @@
     <string name="edge_handle_side">Gagang sembunyi otomatis</string>
     <string name="edge_handle_side_left">Tepi kiri, dibuka dengan menggeser ke kanan</string>
     <string name="edge_handle_side_right">Tepi kanan, dibuka dengan menggeser ke kiri</string>
+    <string name="vertical_bar_every_page">Bilah vertikal di setiap halaman</string>
 </resources>

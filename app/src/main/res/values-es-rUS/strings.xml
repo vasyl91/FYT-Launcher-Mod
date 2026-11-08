@@ -97,4 +97,5 @@
     <string name="edge_handle_side">Asa de ocultación automática</string>
     <string name="edge_handle_side_left">Borde izquierdo, se abre deslizando hacia la derecha</string>
     <string name="edge_handle_side_right">Borde derecho, se abre deslizando hacia la izquierda</string>
+    <string name="vertical_bar_every_page">Barra vertical en todas las páginas</string>
 </resources>

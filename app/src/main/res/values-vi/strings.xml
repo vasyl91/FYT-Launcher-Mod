@@ -541,4 +541,5 @@
     <string name="edge_handle_side">Tay nắm tự động ẩn</string>
     <string name="edge_handle_side_left">Cạnh trái, mở bằng cách vuốt sang phải</string>
     <string name="edge_handle_side_right">Cạnh phải, mở bằng cách vuốt sang trái</string>
+    <string name="vertical_bar_every_page">Thanh dọc ở mọi trang</string>
 </resources>

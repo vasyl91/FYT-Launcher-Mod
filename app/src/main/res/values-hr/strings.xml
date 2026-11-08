@@ -541,4 +541,5 @@
     <string name="edge_handle_side">Ručka za automatsko skrivanje</string>
     <string name="edge_handle_side_left">Lijevi rub, otvara se povlačenjem udesno</string>
     <string name="edge_handle_side_right">Desni rub, otvara se povlačenjem ulijevo</string>
+    <string name="vertical_bar_every_page">Okomita traka na svakoj stranici</string>
 </resources>

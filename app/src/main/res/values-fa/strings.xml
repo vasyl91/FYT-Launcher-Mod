@@ -541,4 +541,5 @@
     <string name="edge_handle_side">دستگیره پنهان‌سازی خودکار</string>
     <string name="edge_handle_side_left">لبه چپ، با کشیدن به راست باز می‌شود</string>
     <string name="edge_handle_side_right">لبه راست، با کشیدن به چپ باز می‌شود</string>
+    <string name="vertical_bar_every_page">نوار عمودی در هر صفحه</string>
 </resources>

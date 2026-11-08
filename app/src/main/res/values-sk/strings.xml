@@ -541,4 +541,5 @@
     <string name="edge_handle_side">Úchyt automatického skrytia</string>
     <string name="edge_handle_side_left">Ľavý okraj, otvorí sa ťahom doprava</string>
     <string name="edge_handle_side_right">Pravý okraj, otvorí sa ťahom doľava</string>
+    <string name="vertical_bar_every_page">Zvislý panel na každej stránke</string>
 </resources>

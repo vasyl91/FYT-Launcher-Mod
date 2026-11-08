@@ -541,4 +541,5 @@
     <string name="edge_handle_side">Automaattisen piilotuksen kahva</string>
     <string name="edge_handle_side_left">Vasen reuna, avataan pyyhkäisemällä oikealle</string>
     <string name="edge_handle_side_right">Oikea reuna, avataan pyyhkäisemällä vasemmalle</string>
+    <string name="vertical_bar_every_page">Pystypalkki joka sivulla</string>
 </resources>

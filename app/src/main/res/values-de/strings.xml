@@ -541,4 +541,5 @@
     <string name="edge_handle_side">Griff zum automatischen Ausblenden</string>
     <string name="edge_handle_side_left">Linker Rand, mit Wischen nach rechts öffnen</string>
     <string name="edge_handle_side_right">Rechter Rand, mit Wischen nach links öffnen</string>
+    <string name="vertical_bar_every_page">Vertikale Leiste auf jeder Seite</string>
 </resources>

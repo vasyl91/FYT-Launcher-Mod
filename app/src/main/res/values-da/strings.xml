@@ -541,4 +541,5 @@
     <string name="edge_handle_side">Håndtag til automatisk skjul</string>
     <string name="edge_handle_side_left">Venstre kant, åbnes med et stryg mod højre</string>
     <string name="edge_handle_side_right">Højre kant, åbnes med et stryg mod venstre</string>
+    <string name="vertical_bar_every_page">Lodret bjælke på hver side</string>
 </resources>

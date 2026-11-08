@@ -541,4 +541,5 @@
     <string name="edge_handle_side">Дръжка за автоматично скриване</string>
     <string name="edge_handle_side_left">Ляв край, отваря се с плъзгане надясно</string>
     <string name="edge_handle_side_right">Десен край, отваря се с плъзгане наляво</string>
+    <string name="vertical_bar_every_page">Вертикална лента на всяка страница</string>
 </resources>

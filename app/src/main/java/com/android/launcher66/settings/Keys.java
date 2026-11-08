@@ -184,6 +184,8 @@ public final class Keys {
     public static final String EDGE_HANDLE_RIGHT = "edge_handle_right";
     /** The vertical bar is at the right edge of the screen. */
     public static final String VERTICAL_BAR_RIGHT = "vertical_bar_right";
+    /** The vertical bar is on every page of the home screen, not only on the first (VerticalBarPlacement). */
+    public static final String VERTICAL_BAR_EVERY_PAGE = "vertical_bar_every_page";
     public static final String HORIZONTAL_BAR_EVERY_PAGE = "bottom_bar_every_page";
     public static final String AUTO_HIDE_HORIZONTAL_BAR = "auto_hide_bottom_bar";
     public static final String AUTO_HIDE_TIMEOUT = "auto_hide_timeout";

@@ -541,4 +541,5 @@
     <string name="edge_handle_side">มือจับซ่อนอัตโนมัติ</string>
     <string name="edge_handle_side_left">ขอบซ้าย เปิดด้วยการปัดไปทางขวา</string>
     <string name="edge_handle_side_right">ขอบขวา เปิดด้วยการปัดไปทางซ้าย</string>
+    <string name="vertical_bar_every_page">แถบแนวตั้งในทุกหน้า</string>
 </resources>

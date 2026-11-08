@@ -541,4 +541,5 @@
     <string name="edge_handle_side">Uchwyt automatycznego ukrywania</string>
     <string name="edge_handle_side_left">Lewa krawędź, otwierana przesunięciem w prawo</string>
     <string name="edge_handle_side_right">Prawa krawędź, otwierana przesunięciem w lewo</string>
+    <string name="vertical_bar_every_page">Pasek pionowy na każdej stronie</string>
 </resources>

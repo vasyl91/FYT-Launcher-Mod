@@ -541,4 +541,5 @@
     <string name="edge_handle_side">Outomatiese versteekhandvatsel</string>
     <string name="edge_handle_side_left">Linkerrand, oopgemaak met \'n veeg na regs</string>
     <string name="edge_handle_side_right">Regterrand, oopgemaak met \'n veeg na links</string>
+    <string name="vertical_bar_every_page">Vertikale balk op elke bladsy</string>
 </resources>

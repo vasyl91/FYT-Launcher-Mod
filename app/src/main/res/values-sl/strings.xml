@@ -541,4 +541,5 @@
     <string name="edge_handle_side">Ročaj samodejnega skrivanja</string>
     <string name="edge_handle_side_left">Levi rob, odpre se z vlekom v desno</string>
     <string name="edge_handle_side_right">Desni rob, odpre se z vlekom v levo</string>
+    <string name="vertical_bar_every_page">Navpična vrstica na vsaki strani</string>
 </resources>

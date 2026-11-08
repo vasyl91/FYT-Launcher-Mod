@@ -35,7 +35,8 @@ final class HorizontalBarPlacement {
     /**
      * @param page the page that is shown (or being left), 0 for the first
      * @param pageMoving whether the pages are moving, between two pages or back to the same one
-     * @param verticalBar whether the vertical bar is on (it is on the first page only)
+     * @param verticalBar whether the vertical bar is on this page (VerticalBarPlacement.onPage): the first one,
+     *                    and with 'Vertical bar on every page' the others
      * @param buttonSide the vertical bar and the edge handle are on the same side: the collapsed bar has
      *                   its button in the corner of the vertical bar. On different sides the handle
      *                   stands for the bar, with no button, whatever the vertical bar does
@@ -52,7 +53,7 @@ final class HorizontalBarPlacement {
             if (pageMoving) {
                 return Bar.NONE;
             }
-            return page == 0 && verticalBar && buttonSide ? Bar.BUTTON : Bar.HANDLE;
+            return verticalBar && buttonSide ? Bar.BUTTON : Bar.HANDLE;
         }
         if (page == 0 && !pageMoving) {
             return Bar.EMBEDDED;

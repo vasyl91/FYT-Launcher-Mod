@@ -541,4 +541,5 @@
     <string name="edge_handle_side">Poignée de masquage automatique</string>
     <string name="edge_handle_side_left">Bord gauche, s\'ouvre en glissant vers la droite</string>
     <string name="edge_handle_side_right">Bord droit, s\'ouvre en glissant vers la gauche</string>
+    <string name="vertical_bar_every_page">Barre verticale sur chaque page</string>
 </resources>

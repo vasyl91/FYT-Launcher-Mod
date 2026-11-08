@@ -8948,6 +8948,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         private int mSlotHeight = -1;
         private CapacityListener mCapacityListener;
         private boolean mCapacityCheckPending;
+        private boolean mFollowsCapacity = true;
         private boolean mHeightCacheChecked;
 
         /** Looks at the settled height of the recycler, not at the size of one measure pass. */
@@ -8991,6 +8992,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         public void setCapacityListener(CapacityListener listener) {
             mCapacityListener = listener;
+        }
+
+        /**
+         * The bar in the window of the other pages shows the list of the first page's bar: its height may be
+         * another one, and it must neither work out nor store a capacity of its own.
+         */
+        void setFollowsCapacity(boolean follows) {
+            mFollowsCapacity = follows;
         }
 
         private static boolean isPortrait(Context context) {
@@ -9152,7 +9161,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
          * transient): one check is posted, and that one reads the height the recycler ended up with.
          */
         private void checkCapacity(int width, int height) {
-            if (mHost == null || mCapacityCheckPending || width <= 0 || height <= 0) {
+            if (!mFollowsCapacity || mHost == null || mCapacityCheckPending || width <= 0 || height <= 0) {
                 return;
             }
             if (BarCapacity.leftCapacity(height, iconSizeFor(width)) != mMaxItems) {

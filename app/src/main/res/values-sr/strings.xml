@@ -541,4 +541,5 @@
     <string name="edge_handle_side">Ручка за аутоматско сакривање</string>
     <string name="edge_handle_side_left">Леви руб, отвара се превлачењем удесно</string>
     <string name="edge_handle_side_right">Десни руб, отвара се превлачењем улево</string>
+    <string name="vertical_bar_every_page">Вертикална трака на свакој страници</string>
 </resources>

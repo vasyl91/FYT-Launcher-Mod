@@ -541,4 +541,5 @@
     <string name="edge_handle_side">Otomatik gizleme tutamacı</string>
     <string name="edge_handle_side_left">Sol kenar, sağa kaydırarak açılır</string>
     <string name="edge_handle_side_right">Sağ kenar, sola kaydırarak açılır</string>
+    <string name="vertical_bar_every_page">Her sayfada dikey çubuk</string>
 </resources>

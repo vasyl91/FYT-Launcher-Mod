@@ -541,4 +541,5 @@
     <string name="edge_handle_side">Handtag för automatisk döljning</string>
     <string name="edge_handle_side_left">Vänster kant, öppnas med ett svep åt höger</string>
     <string name="edge_handle_side_right">Höger kant, öppnas med ett svep åt vänster</string>
+    <string name="vertical_bar_every_page">Vertikalt fält på varje sida</string>
 </resources>

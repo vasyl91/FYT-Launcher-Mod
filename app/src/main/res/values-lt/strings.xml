@@ -541,4 +541,5 @@
     <string name="edge_handle_side">Automatinio slėpimo rankenėlė</string>
     <string name="edge_handle_side_left">Kairysis kraštas, atidaroma braukiant į dešinę</string>
     <string name="edge_handle_side_right">Dešinysis kraštas, atidaroma braukiant į kairę</string>
+    <string name="vertical_bar_every_page">Vertikalioji juosta kiekviename puslapyje</string>
 </resources>

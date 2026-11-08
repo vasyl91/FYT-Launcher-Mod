@@ -441,6 +441,8 @@ public class Workspace extends SmoothPagedView
     private boolean mBarSidesAgree = true;
     /** The collapsed bar of the first page has its button in the corner of the vertical bar (auto-hide). */
     private boolean mCollapsedButton = false;
+    /** 'Vertical bar on every page' is on (and the vertical bar and the user layout with it). */
+    private boolean mVerticalEveryPage = false;
     /** Adding the persistent overlay failed (no permission): not tried again until the page is rebuilt. */
     private boolean mPersistentFailed = false;
     /** Auto-hide without the vertical bar, or with 'every page': the edge handle replaces the collapsed button. */
@@ -879,6 +881,7 @@ public class Workspace extends SmoothPagedView
         BarLayout sides = BarLayouts.sides(mPrefs, verticalBar);
         mBarSidesAgree = sides.sidesAgree();
         mCollapsedButton = sides.buttonShown();
+        mVerticalEveryPage = verticalBar && BarLayouts.verticalEveryPage(mPrefs);
         widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
         blackTintBar = mPrefs.getBoolean(Keys.BLACK_BAR, false);
         boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
@@ -951,6 +954,7 @@ public class Workspace extends SmoothPagedView
             // edge handle (HorizontalBarEdgeHandle), which updateEdgeHandle() shows and hides.
             mEveryPage = mPrefs.getBoolean(Keys.HORIZONTAL_BAR_EVERY_PAGE, false);
             mPersistentFailed = false;
+        mVerticalWindowFailed = false;
             // With the vertical bar on the handle's side the first page has the collapsed button; the other
             // pages, if the bar is on every page, have the handle. With the vertical bar on the other side
             // than the handle, every page has the handle and the first one has no button.
@@ -2764,6 +2768,10 @@ public class Workspace extends SmoothPagedView
         if (!autoHideHorizontalBar) {
             return;
         }
+        if (mVerticalWindow != null) {
+            // The button of the other pages, in the corner of the vertical bar's window
+            mVerticalWindow.setButtonShown(shown, durationMs);
+        }
         if (mEdgeHandleMode) {
             updateEdgeHandle(shown ? "bar hidden" : "bar shown", durationMs,
                     shown && durationMs > 0 ? EDGE_HANDLE_RETURN_DELAY_MS : 0);
@@ -2872,7 +2880,7 @@ public class Workspace extends SmoothPagedView
                 && mLauncher != null
                 && mLauncher.mState == Launcher.State.WORKSPACE
                 && mState == State.NORMAL
-                && HorizontalBarPlacement.bar(placementPage(), mEveryPage, true, mVerticalBar, mBarSidesAgree, isPageMoving(),
+                && HorizontalBarPlacement.bar(placementPage(), mEveryPage, true, verticalBarOnShownPage(), mBarSidesAgree, isPageMoving(),
                         mPrefs.getBoolean(Keys.USER_LAYOUT, false))
                         == HorizontalBarPlacement.Bar.HANDLE;
     }
@@ -2994,10 +3002,11 @@ public class Workspace extends SmoothPagedView
      * @param standbyDue called by the delay that waited before building the window in standby
      */
     private void updatePersistentBar(String reason, boolean standbyDue) {
+        updateVerticalBarWindow(reason, false);
         boolean mode = mEveryPage && !autoHideHorizontalBar && workspaceView != null && mLauncher != null
                 && mPrefs != null && mPrefs.getBoolean(Keys.USER_LAYOUT, false);
         HorizontalBarPlacement.Bar bar = mode
-                ? HorizontalBarPlacement.bar(placementPage(), true, false, mVerticalBar, mBarSidesAgree, isPageMoving(), true)
+                ? HorizontalBarPlacement.bar(placementPage(), true, false, verticalBarOnShownPage(), mBarSidesAgree, isPageMoving(), true)
                 : HorizontalBarPlacement.Bar.NONE;   // the mode check above includes the user layout
         boolean permitted = mode && mEdgeHandleHostVisible && !mPersistentFailed
                 && Settings.canDrawOverlays(getContext());
@@ -3034,6 +3043,162 @@ public class Workspace extends SmoothPagedView
                 break;
             default:
                 break;
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // 'Vertical bar on every page': the window of the vertical bar on the pages that have none of their own
+    // ---------------------------------------------------------------------------------------------
+
+    private VerticalBarWindow mVerticalWindow;
+    private boolean mVerticalWindowFailed;
+    /** The placement last logged, so that the log line comes once per change. */
+    private String mVerticalPlacementLogged;
+    private final Runnable mBuildVerticalStandbyRunnable = () -> updateVerticalBarWindow("standby delay", true);
+    private static final long VERTICAL_STANDBY_DELAY_MS = 400L;
+
+    /** Whether the vertical bar is on the page that is shown (VerticalBarPlacement.onPage). */
+    private boolean verticalBarOnShownPage() {
+        return VerticalBarPlacement.onPage(mVerticalBar, placementPage(), mVerticalEveryPage,
+                mPrefs != null && mPrefs.getBoolean(Keys.USER_LAYOUT, false));
+    }
+
+    private PersistentBarWindow.State verticalWindowState() {
+        if (mVerticalWindow == null || !mVerticalWindow.exists()) {
+            return PersistentBarWindow.State.NONE;
+        }
+        return mVerticalWindow.isShown() ? PersistentBarWindow.State.SHOWN : PersistentBarWindow.State.STANDBY;
+    }
+
+    /**
+     * The same decisions as for the horizontal bar's window (PersistentBarWindow, the same triggers and the
+     * same rules for when something else is in its place), for the window of the vertical bar.
+     */
+    private void updateVerticalBarWindow(String reason, boolean standbyDue) {
+        boolean userLayout = mPrefs != null && mPrefs.getBoolean(Keys.USER_LAYOUT, false);
+        boolean mode = mVerticalBar && mVerticalEveryPage && userLayout && workspaceView != null && mLauncher != null;
+        VerticalBarPlacement.Bar bar = mode
+                ? VerticalBarPlacement.bar(placementPage(), true, isPageMoving(), true)
+                : VerticalBarPlacement.Bar.NONE;
+        logVerticalPlacement(mode, bar);
+        boolean permitted = mode && mEdgeHandleHostVisible && !mVerticalWindowFailed
+                && Settings.canDrawOverlays(getContext());
+        PersistentBarWindow.State target = PersistentBarWindow.target(mode, mEdgeHandleHostVisible, permitted,
+                bar == VerticalBarPlacement.Bar.PERSISTENT_OVERLAY, mode && persistentBarFree());
+        PersistentBarWindow.Action action = PersistentBarWindow.action(verticalWindowState(), target, isPageMoving());
+        switch (action) {
+            case REMOVE:
+                mainHandler.removeCallbacks(mBuildVerticalStandbyRunnable);
+                removeVerticalWindow(reason);
+                break;
+            case BUILD_LATER:
+                if (standbyDue) {
+                    buildVerticalWindow(reason, true);
+                } else {
+                    mainHandler.removeCallbacks(mBuildVerticalStandbyRunnable);
+                    mainHandler.postDelayed(mBuildVerticalStandbyRunnable, VERTICAL_STANDBY_DELAY_MS);
+                }
+                break;
+            case BUILD_NOW:
+                buildVerticalWindow(reason, false);
+                break;
+            case ACTIVATE:
+                placeVerticalWindow();
+                mVerticalWindow.setShown(true);
+                Log.d(TAG, "Persistent vertical bar: shown (" + reason + ") on page " + getCurrentPage());
+                break;
+            case PARK:
+                mVerticalWindow.setShown(false);
+                Log.d(TAG, "Persistent vertical bar: parked (" + reason + ")");
+                break;
+            default:
+                if (mVerticalWindow != null && mVerticalWindow.exists()) {
+                    placeVerticalWindow();   // the page's shape may have changed (a horizontal bar, the button)
+                }
+                break;
+        }
+    }
+
+    private void logVerticalPlacement(boolean mode, VerticalBarPlacement.Bar bar) {
+        if (!mode) {
+            mVerticalPlacementLogged = null;
+            return;
+        }
+        String now = "page " + getCurrentPage() + ": "
+                + (bar == VerticalBarPlacement.Bar.EMBEDDED ? "embedded"
+                : bar == VerticalBarPlacement.Bar.PERSISTENT_OVERLAY ? "overlay" : "none");
+        if (!now.equals(mVerticalPlacementLogged)) {
+            mVerticalPlacementLogged = now;
+            Log.i(TAG, "Vertical bar on " + now);
+        }
+    }
+
+    /** {x, y, width, height} of the window on the screen, for the page that is shown; withCorner[0]: it takes the button's corner. */
+    private int[] verticalWindowFrame(boolean[] withCorner) {
+        Rect box = barBoxOnScreen();
+        int page = placementPage();
+        boolean autoHide = mPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false);
+        boolean horizontalOnPage = HorizontalBarPlacement.reserve(page, mEveryPage, autoHide, true)
+                != HorizontalBarPlacement.Reserve.NONE;
+        // At rest: the button does not flicker while the pages move
+        withCorner[0] = HorizontalBarPlacement.bar(page, mEveryPage, autoHide, true, mBarSidesAgree, false, true)
+                == HorizontalBarPlacement.Bar.BUTTON;
+        int screenWidth = Launcher.screenWidth;
+        int screenHeight = Launcher.screenHeight;
+        int barHeight = getHorizontalBarHeight(screenWidth, screenHeight);
+        boolean portrait = orientation == Configuration.ORIENTATION_PORTRAIT;
+        float width = Launcher.calculatedVerticalBarWidth > 0
+                ? Launcher.calculatedVerticalBarWidth
+                : PipEdgeTrim.computeVerticalBarWidth(portrait, screenWidth, screenHeight, barHeight);
+        BarLayout layout = BarLayouts.of(mPrefs, box.width(), box.height(), barHeight, Math.round(width), true,
+                horizontalOnPage);
+        int[] w = layout.verticalWindow(withCorner[0]);
+        return new int[] {box.left + w[0], box.top + w[1], w[2] - w[0], w[3] - w[1]};
+    }
+
+    private void placeVerticalWindow() {
+        boolean[] corner = new boolean[1];
+        int[] frame = verticalWindowFrame(corner);
+        mVerticalWindow.rebindAdapter();
+        mVerticalWindow.setFrame(frame, corner[0]);
+    }
+
+    private void buildVerticalWindow(String reason, boolean standby) {
+        if (mLauncher == null || mLauncher.mAppBars.mVerticalAppListAdapter == null) {
+            return;   // the list is not built yet: the next update asks again
+        }
+        boolean[] corner = new boolean[1];
+        int[] frame = verticalWindowFrame(corner);
+        boolean autoHide = mPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false);
+        int cornerSize = autoHide && mBarSidesAgree ? getHorizontalBarHeight(Launcher.screenWidth, Launcher.screenHeight) : 0;
+        BarLayout sides = BarLayouts.sides(mPrefs, true);
+        if (mVerticalWindow == null) {
+            mVerticalWindow = new VerticalBarWindow(mLauncher, this::onVerticalButtonTapped);
+        }
+        if (frame[2] <= 0 || frame[3] <= 0) {
+            return;
+        }
+        if (!mVerticalWindow.build(frame, cornerSize, sides.top, corner[0], sides.right, standby)) {
+            mVerticalWindowFailed = true;   // typically no permission; asked again after the next rebuild
+            return;
+        }
+        Log.d(TAG, (standby ? "Persistent vertical bar: window built, in standby (" : "Persistent vertical bar: shown (")
+                + reason + ")" + (standby ? "" : " on page " + getCurrentPage()));
+    }
+
+    private void removeVerticalWindow(String reason) {
+        mainHandler.removeCallbacks(mBuildVerticalStandbyRunnable);
+        if (mVerticalWindow != null && mVerticalWindow.exists()) {
+            mVerticalWindow.remove();
+            Log.d(TAG, "Persistent vertical bar: removed (" + reason + ")");
+        }
+        mVerticalPlacementLogged = null;
+    }
+
+    /** The button in the corner of the window is the collapsed bar's button: it reveals the bar. */
+    private void onVerticalButtonTapped() {
+        if (mLauncher != null) {
+            mLauncher.onClickShowBarButton();
         }
     }
 
@@ -3356,6 +3521,7 @@ public class Workspace extends SmoothPagedView
         // Cancel any pending operations
         cancelPendingAutoHide();
         mainHandler.removeCallbacks(mBuildStandbyRunnable);
+        removeVerticalWindow("page rebuilt");
         
         // Clean up overlay
         if (isOverlayShowing) {
@@ -3456,6 +3622,7 @@ public class Workspace extends SmoothPagedView
         clearWidgetReferences();
         mEdgeHandleMode = false;
         releaseEdgeHandle();
+        removeVerticalWindow("workspace released");
 
         // Nullify local view references
         absoluteLayout = null;

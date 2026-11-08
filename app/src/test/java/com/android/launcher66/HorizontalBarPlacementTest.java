@@ -15,7 +15,7 @@ class HorizontalBarPlacementTest {
 
     private static HorizontalBarPlacement.Bar bar(int page, boolean every, boolean autoHide, boolean left,
                                               boolean moving) {
-        return HorizontalBarPlacement.bar(page, every, autoHide, left, true, moving, true);
+        return HorizontalBarPlacement.bar(page, every, autoHide, left && page == 0, true, moving, true);
     }
 
     @Test
@@ -88,7 +88,7 @@ class HorizontalBarPlacementTest {
         // the switch was left on, but the persistent overlay and the handles exist only in the user layout
         assertEquals(NONE, HorizontalBarPlacement.bar(1, true, false, false, true, false, false));
         assertEquals(NONE, HorizontalBarPlacement.bar(2, true, true, false, true, false, false));
-        assertEquals(NONE, HorizontalBarPlacement.bar(1, true, false, true, true, true, false));
+        assertEquals(NONE, HorizontalBarPlacement.bar(1, true, false, false, true, true, false));
         assertEquals(HorizontalBarPlacement.Reserve.NONE, HorizontalBarPlacement.reserve(1, true, false, false));
         assertEquals(HorizontalBarPlacement.Reserve.NONE, HorizontalBarPlacement.reserve(3, true, true, false));
     }
@@ -107,10 +107,10 @@ class HorizontalBarPlacementTest {
         for (int page = 0; page < 3; page++) {
             for (boolean moving : new boolean[] {false, true}) {
                 // the vertical bar on the other side than the handle: never a button
-                HorizontalBarPlacement.Bar other = HorizontalBarPlacement.bar(page, true, true, true, false, moving, true);
+                HorizontalBarPlacement.Bar other = HorizontalBarPlacement.bar(page, true, true, true && page == 0, false, moving, true);
                 assertEquals(moving ? NONE : HANDLE, other);
                 // the same side: the button on the first page only
-                HorizontalBarPlacement.Bar same = HorizontalBarPlacement.bar(page, true, true, true, true, moving, true);
+                HorizontalBarPlacement.Bar same = HorizontalBarPlacement.bar(page, true, true, true && page == 0, true, moving, true);
                 assertEquals(moving ? NONE : page == 0 ? BUTTON : HANDLE, same);
                 // without the vertical bar the sides do not matter
                 assertEquals(moving ? NONE : HANDLE,
@@ -122,6 +122,16 @@ class HorizontalBarPlacementTest {
         // the first page with the option off
         assertEquals(HANDLE, HorizontalBarPlacement.bar(0, false, true, true, false, false, true));
         assertEquals(BUTTON, HorizontalBarPlacement.bar(0, false, true, true, true, false, true));
-        assertEquals(NONE, HorizontalBarPlacement.bar(1, false, true, true, true, false, true));
+        assertEquals(NONE, HorizontalBarPlacement.bar(1, false, true, false, true, false, true));
+    }
+
+    @Test
+    void withTheVerticalBarOnEveryPageTheOtherPagesHaveTheButtonToo() {
+        // verticalOnPage is true on page 2: the button on the handle's side, the handle on the other
+        assertEquals(BUTTON, HorizontalBarPlacement.bar(2, true, true, true, true, false, true));
+        assertEquals(HANDLE, HorizontalBarPlacement.bar(2, true, true, true, false, false, true));
+        assertEquals(NONE, HorizontalBarPlacement.bar(2, true, true, true, true, true, true));
+        // the horizontal bar is only on the first page: nothing on page 2, the vertical bar or not
+        assertEquals(NONE, HorizontalBarPlacement.bar(2, false, true, true, true, false, true));
     }
 }

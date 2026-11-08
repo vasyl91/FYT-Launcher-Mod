@@ -541,4 +541,5 @@
     <string name="edge_handle_side">Maniglia per zuppar automaticamain</string>
     <string name="edge_handle_side_left">Ur sanester, s\'avra cun in zugar a dretga</string>
     <string name="edge_handle_side_right">Ur dretg, s\'avra cun in zugar a sanestra</string>
+    <string name="vertical_bar_every_page">Bara verticala sin mintga pagina</string>
 </resources>

@@ -541,4 +541,5 @@
     <string name="edge_handle_side">ມືຈັບເຊື່ອງອັດຕະໂນມັດ</string>
     <string name="edge_handle_side_left">ຂອບຊ້າຍ, ເປີດດ້ວຍການປັດໄປທາງຂວາ</string>
     <string name="edge_handle_side_right">ຂອບຂວາ, ເປີດດ້ວຍການປັດໄປທາງຊ້າຍ</string>
+    <string name="vertical_bar_every_page">ແຖບແນວຕັ້ງໃນທຸກໜ້າ</string>
 </resources>

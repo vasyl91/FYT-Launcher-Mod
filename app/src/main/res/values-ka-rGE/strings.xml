@@ -541,4 +541,5 @@
     <string name="edge_handle_side">ავტომატური დამალვის სახელური</string>
     <string name="edge_handle_side_left">მარცხენა კიდე, იხსნება მარჯვნივ გადასმით</string>
     <string name="edge_handle_side_right">მარჯვენა კიდე, იხსნება მარცხნივ გადასმით</string>
+    <string name="vertical_bar_every_page">ვერტიკალური ზოლი ყველა გვერდზე</string>
 </resources>

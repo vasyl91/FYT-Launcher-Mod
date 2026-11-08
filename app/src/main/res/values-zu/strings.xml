@@ -541,4 +541,5 @@
     <string name="edge_handle_side">Isibambo sokufihla ngokuzenzakalelayo</string>
     <string name="edge_handle_side_left">Onqenqemeni lwesobunxele, kuvulwa ngokuswayipha kwesokudla</string>
     <string name="edge_handle_side_right">Onqenqemeni lwesokudla, kuvulwa ngokuswayipha kwesobunxele</string>
+    <string name="vertical_bar_every_page">Ibha eqondile ekhasini ngalinye</string>
 </resources>

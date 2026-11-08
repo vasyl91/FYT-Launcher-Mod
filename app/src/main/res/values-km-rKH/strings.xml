@@ -541,4 +541,5 @@
     <string name="edge_handle_side">ដងចាប់លាក់ដោយស្វ័យប្រវត្តិ</string>
     <string name="edge_handle_side_left">គែមខាងឆ្វេង បើកដោយអូសទៅស្តាំ</string>
     <string name="edge_handle_side_right">គែមខាងស្តាំ បើកដោយអូសទៅឆ្វេង</string>
+    <string name="vertical_bar_every_page">របារបញ្ឈរនៅគ្រប់ទំព័រ</string>
 </resources>

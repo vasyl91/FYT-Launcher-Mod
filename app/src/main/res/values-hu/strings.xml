@@ -541,4 +541,5 @@
     <string name="edge_handle_side">Automatikus elrejtés fogantyúja</string>
     <string name="edge_handle_side_left">Bal szél, jobbra húzással nyílik</string>
     <string name="edge_handle_side_right">Jobb szél, balra húzással nyílik</string>
+    <string name="vertical_bar_every_page">Függőleges sáv minden oldalon</string>
 </resources>

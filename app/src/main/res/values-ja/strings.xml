@@ -541,4 +541,5 @@
     <string name="edge_handle_side">自動非表示のハンドル</string>
     <string name="edge_handle_side_left">左端、右にスワイプして開く</string>
     <string name="edge_handle_side_right">右端、左にスワイプして開く</string>
+    <string name="vertical_bar_every_page">すべてのページに縦バーを表示</string>
 </resources>

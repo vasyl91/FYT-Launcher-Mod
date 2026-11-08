@@ -541,4 +541,5 @@
     <string name="edge_handle_side">Maniglia di nascondimento automatico</string>
     <string name="edge_handle_side_left">Bordo sinistro, si apre con uno scorrimento verso destra</string>
     <string name="edge_handle_side_right">Bordo destro, si apre con uno scorrimento verso sinistra</string>
+    <string name="vertical_bar_every_page">Barra verticale su ogni pagina</string>
 </resources>

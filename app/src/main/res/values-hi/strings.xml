@@ -541,4 +541,5 @@
     <string name="edge_handle_side">ऑटो-हाइड हैंडल</string>
     <string name="edge_handle_side_left">बायाँ किनारा, दाईं ओर स्वाइप करके खुलता है</string>
     <string name="edge_handle_side_right">दायाँ किनारा, बाईं ओर स्वाइप करके खुलता है</string>
+    <string name="vertical_bar_every_page">हर पेज पर ऊर्ध्वाधर बार</string>
 </resources>

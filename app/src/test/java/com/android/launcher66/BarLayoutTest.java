@@ -9,11 +9,11 @@ class BarLayoutTest {
 
     // landscape box 1280 x 640, bar 100, vertical bar 91; portrait box 720 x 1200, bar 102, vertical bar 85
     private static BarLayout land(boolean top, boolean right, boolean vertical) {
-        return new BarLayout(1280, 640, 100, 91, top, right, right, vertical);
+        return new BarLayout(1280, 640, 100, 91, top, right, right, vertical, true);
     }
 
     private static BarLayout port(boolean top, boolean right, boolean vertical) {
-        return new BarLayout(720, 1200, 102, 85, top, right, right, vertical);
+        return new BarLayout(720, 1200, 102, 85, top, right, right, vertical, true);
     }
 
     @Test
@@ -76,14 +76,14 @@ class BarLayoutTest {
     @Test
     void pageInsets() {
         // the first page, the vertical bar on the left, the horizontal at the bottom
-        assertArrayEquals(new int[] {91, 0, 0, 100}, land(false, false, true).pageInsets(true, true));
-        assertArrayEquals(new int[] {0, 0, 91, 100}, land(false, true, true).pageInsets(true, true));
-        assertArrayEquals(new int[] {91, 100, 0, 0}, land(true, false, true).pageInsets(true, true));
-        assertArrayEquals(new int[] {0, 100, 91, 0}, land(true, true, true).pageInsets(true, true));
-        // the other pages: no vertical bar; the horizontal one only with the bar on every page
-        assertArrayEquals(new int[] {0, 100, 0, 0}, land(true, true, true).pageInsets(false, true));
-        assertArrayEquals(new int[] {0, 0, 0, 0}, land(true, true, true).pageInsets(false, false));
-        assertArrayEquals(new int[] {0, 0, 0, 102}, port(false, false, true).pageInsets(false, true));
+        assertArrayEquals(new int[] {91, 0, 0, 100}, land(false, false, true).pageInsets());
+        assertArrayEquals(new int[] {0, 0, 91, 100}, land(false, true, true).pageInsets());
+        assertArrayEquals(new int[] {91, 100, 0, 0}, land(true, false, true).pageInsets());
+        assertArrayEquals(new int[] {0, 100, 91, 0}, land(true, true, true).pageInsets());
+        // a page without the vertical bar: only the horizontal bar's inset
+        assertArrayEquals(new int[] {0, 100, 0, 0}, page(true, true, false, true).pageInsets());
+        assertArrayEquals(new int[] {0, 0, 0, 0}, page(true, true, false, false).pageInsets());
+        assertArrayEquals(new int[] {0, 0, 0, 100}, page(false, false, false, true).pageInsets());
     }
 
     @Test
@@ -103,10 +103,10 @@ class BarLayoutTest {
     @Test
     void theCornerCellIsOnTheHandlesSideAndTheButtonOnlyWhenTheSidesAgree() {
         // vertical bar side x handle side
-        BarLayout leftLeft = new BarLayout(1280, 640, 100, 91, false, false, false, true);
-        BarLayout rightRight = new BarLayout(1280, 640, 100, 91, false, true, true, true);
-        BarLayout barRightHandleLeft = new BarLayout(1280, 640, 100, 91, false, true, false, true);
-        BarLayout barLeftHandleRight = new BarLayout(1280, 640, 100, 91, false, false, true, true);
+        BarLayout leftLeft = new BarLayout(1280, 640, 100, 91, false, false, false, true, true);
+        BarLayout rightRight = new BarLayout(1280, 640, 100, 91, false, true, true, true, true);
+        BarLayout barRightHandleLeft = new BarLayout(1280, 640, 100, 91, false, true, false, true, true);
+        BarLayout barLeftHandleRight = new BarLayout(1280, 640, 100, 91, false, false, true, true, true);
         assertEquals(0, leftLeft.cornerCellX(8));
         assertEquals(7, rightRight.cornerCellX(8));
         // the handle is on the left: the left corner is reserved, the right one takes icons
@@ -117,8 +117,47 @@ class BarLayoutTest {
         assertEquals(false, barRightHandleLeft.buttonShown());
         assertEquals(false, barLeftHandleRight.buttonShown());
         // without the vertical bar there is never a button
-        assertEquals(false, new BarLayout(1280, 640, 100, 91, false, false, false, false).buttonShown());
+        assertEquals(false, new BarLayout(1280, 640, 100, 91, false, false, false, false, true).buttonShown());
         // the corner at the top
-        assertEquals(0, new BarLayout(1280, 640, 100, 91, true, true, false, true).cornerCellY(6));
+        assertEquals(0, new BarLayout(1280, 640, 100, 91, true, true, false, true, true).cornerCellY(6));
+    }
+
+    private static BarLayout page(boolean top, boolean right, boolean verticalOnPage, boolean horizontalOnPage) {
+        return new BarLayout(1280, 640, 100, 91, top, right, right, verticalOnPage, horizontalOnPage);
+    }
+
+    @Test
+    void theVerticalBarHasTheWholeHeightOnAPageWithoutTheHorizontalBar() {
+        // every combination of the two sides: the vertical bar on a page, the horizontal bar on it or not
+        for (boolean top : new boolean[] {false, true}) {
+            for (boolean right : new boolean[] {false, true}) {
+                int left = right ? 1280 - 91 : 0;
+                // with the horizontal bar: between it and the other end
+                int[] with = page(top, right, true, true).verticalBarBand();
+                assertArrayEquals(new int[] {left, top ? 100 : 0, left + 91, top ? 640 : 540}, with);
+                // without it: the whole height
+                assertArrayEquals(new int[] {left, 0, left + 91, 640}, page(top, right, true, false).verticalBarBand());
+                // and nothing is taken from the widgets above or below
+                assertEquals(0, page(top, right, true, false).minTop(5));
+                assertEquals(640 - 5, page(top, right, true, false).maxBottom(5));
+                assertEquals(300, page(top, right, true, false).fitY(300, 120, 5));
+                assertArrayEquals(new int[] {0, 0, 0, 0}, page(top, right, true, false).collapsedButton());
+                // without the vertical bar there is no band at all
+                assertArrayEquals(new int[] {0, 0, 0, 0}, page(top, right, false, true).verticalBarBand());
+                assertEquals(0, page(top, right, false, true).contentOffsetX());
+                assertEquals(1280 - 5, page(top, right, false, true).maxRight(5));
+            }
+        }
+    }
+
+    @Test
+    void theWindowOfTheVerticalBarTakesTheCornerOnlyWithTheButton() {
+        assertArrayEquals(new int[] {0, 0, 91, 540}, page(false, false, true, true).verticalWindow(false));
+        assertArrayEquals(new int[] {0, 0, 91, 640}, page(false, false, true, true).verticalWindow(true));
+        assertArrayEquals(new int[] {1189, 100, 1280, 640}, page(true, true, true, true).verticalWindow(false));
+        assertArrayEquals(new int[] {1189, 0, 1280, 640}, page(true, true, true, true).verticalWindow(true));
+        // no horizontal bar on the page, no corner
+        assertArrayEquals(new int[] {0, 0, 91, 640}, page(false, false, true, false).verticalWindow(true));
+        assertArrayEquals(new int[] {0, 0, 0, 0}, page(false, false, false, true).verticalWindow(true));
     }
 }

@@ -3,6 +3,7 @@ package com.android.launcher66.settings;
 import android.content.SharedPreferences;
 
 import com.android.launcher66.BarLayout;
+import com.android.launcher66.VerticalBarPlacement;
 
 /**
  * Builds the {@link BarLayout} from the settings: the one place that reads which side the horizontal bar,
@@ -16,19 +17,35 @@ public final class BarLayouts {
     }
 
     /**
-     * @param verticalBar whether the vertical bar is on the page the layout is for
+     * @param verticalBar      whether the vertical bar is on the page the layout is for
+     * @param horizontalOnPage whether the horizontal bar (or the place it keeps while collapsed) is on it
      */
     public static BarLayout of(SharedPreferences prefs, int rootWidth, int rootHeight, int barHeight,
-                               int verticalBarWidth, boolean verticalBar) {
+                               int verticalBarWidth, boolean verticalBar, boolean horizontalOnPage) {
         return new BarLayout(rootWidth, rootHeight, barHeight, verticalBarWidth,
                 prefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false),
                 prefs.getBoolean(Keys.VERTICAL_BAR_RIGHT, false),
                 prefs.getBoolean(Keys.EDGE_HANDLE_RIGHT, false),
-                verticalBar);
+                verticalBar, horizontalOnPage);
     }
 
     /** The layout for the rules that need the sides only, not a size. */
     public static BarLayout sides(SharedPreferences prefs, boolean verticalBar) {
-        return of(prefs, 0, 0, 0, 0, verticalBar);
+        return of(prefs, 0, 0, 0, 0, verticalBar, true);
+    }
+
+    /**
+     * Whether the vertical bar is on a page: the first one, and with 'Vertical bar on every page'
+     * (in the user layout) the others. The geometry of a page (the shift of its rectangles, the width
+     * left to them) asks this and not "is it page 0".
+     */
+    public static boolean verticalOnPage(SharedPreferences prefs, int page) {
+        return VerticalBarPlacement.onPage(prefs.getBoolean(Keys.VERTICAL_BAR, false), page,
+                prefs.getBoolean(Keys.VERTICAL_BAR_EVERY_PAGE, false), prefs.getBoolean(Keys.USER_LAYOUT, false));
+    }
+
+    /** 'Vertical bar on every page' is on; it means nothing without the user layout. */
+    public static boolean verticalEveryPage(SharedPreferences prefs) {
+        return prefs.getBoolean(Keys.VERTICAL_BAR_EVERY_PAGE, false) && prefs.getBoolean(Keys.USER_LAYOUT, false);
     }
 }

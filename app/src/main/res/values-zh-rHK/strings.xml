@@ -76,4 +76,5 @@
     <string name="edge_handle_side">自動隱藏把手</string>
     <string name="edge_handle_side_left">左邊緣，向右滑動開啟</string>
     <string name="edge_handle_side_right">右邊緣，向左滑動開啟</string>
+    <string name="vertical_bar_every_page">每頁都顯示縱欄</string>
 </resources>

@@ -541,4 +541,5 @@
     <string name="edge_handle_side">مقبض الإخفاء التلقائي</string>
     <string name="edge_handle_side_left">الحافة اليسرى، تُفتح بالسحب نحو اليمين</string>
     <string name="edge_handle_side_right">الحافة اليمنى، تُفتح بالسحب نحو اليسار</string>
+    <string name="vertical_bar_every_page">الشريط العمودي في كل صفحة</string>
 </resources>

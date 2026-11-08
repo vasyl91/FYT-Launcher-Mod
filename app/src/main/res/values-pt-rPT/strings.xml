@@ -187,4 +187,5 @@
     <string name="edge_handle_side">Alça de ocultação automática</string>
     <string name="edge_handle_side_left">Margem esquerda, abre-se deslizando para a direita</string>
     <string name="edge_handle_side_right">Margem direita, abre-se deslizando para a esquerda</string>
+    <string name="vertical_bar_every_page">Barra vertical em todas as páginas</string>
 </resources>

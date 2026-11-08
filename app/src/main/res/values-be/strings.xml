@@ -541,4 +541,5 @@
     <string name="edge_handle_side">Ручка аўтаматычнага хавання</string>
     <string name="edge_handle_side_left">Левы край, адкрываецца свайпам управа</string>
     <string name="edge_handle_side_right">Правы край, адкрываецца свайпам улева</string>
+    <string name="vertical_bar_every_page">Вертыкальная панэль на кожнай старонцы</string>
 </resources>

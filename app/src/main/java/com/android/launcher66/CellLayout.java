@@ -4475,15 +4475,14 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
      * (readCustomElementPrefs() sets the field only on the host).
      */
     private boolean isVerticalBarOffsetActive(int currentScreen) {
-        if (currentScreen != 0) {
-            return false;
-        }
         SharedPreferences p = (prefs != null)
                 ? prefs
                 : PreferenceManager.getDefaultSharedPreferences(getContext());
         verticalBar = p.getBoolean(Keys.VERTICAL_BAR, false);
-        // The page is shifted by the bar's width only when the bar is on its left
-        return verticalBar && p.getBoolean(Keys.USER_LAYOUT, false) && !BarLayouts.sides(p, true).right;
+        // The page is shifted by the bar's width only when the bar is on its left. The bar is on the first
+        // page, and with 'Vertical bar on every page' on the others
+        return BarLayouts.verticalOnPage(p, currentScreen) && p.getBoolean(Keys.USER_LAYOUT, false)
+                && !BarLayouts.sides(p, true).right;
     }
 
     public int[] getStatsPlaceholderPosition() {

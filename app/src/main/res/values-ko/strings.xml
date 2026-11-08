@@ -541,4 +541,5 @@
     <string name="edge_handle_side">자동 숨김 핸들</string>
     <string name="edge_handle_side_left">왼쪽 가장자리, 오른쪽으로 스와이프하여 열기</string>
     <string name="edge_handle_side_right">오른쪽 가장자리, 왼쪽으로 스와이프하여 열기</string>
+    <string name="vertical_bar_every_page">모든 페이지에 세로 바 표시</string>
 </resources>

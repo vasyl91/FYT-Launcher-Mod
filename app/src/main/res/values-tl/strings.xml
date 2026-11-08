@@ -541,4 +541,5 @@
     <string name="edge_handle_side">Hawakan sa awtomatikong pagtatago</string>
     <string name="edge_handle_side_left">Kaliwang gilid, bubuksan sa pag-swipe pakanan</string>
     <string name="edge_handle_side_right">Kanang gilid, bubuksan sa pag-swipe pakaliwa</string>
+    <string name="vertical_bar_every_page">Patayong bar sa bawat pahina</string>
 </resources>

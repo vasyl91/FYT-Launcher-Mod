@@ -273,6 +273,7 @@ public class WindowUtil {
                 }
                 sb.append('|').append(prefs.getString(Keys.LAYOUT_MARGIN, "5"));
                 sb.append('|').append(prefs.getBoolean(Keys.VERTICAL_BAR, false));
+                sb.append('|').append(BarLayouts.verticalEveryPage(prefs));
             }
             return sb.toString();
         } catch (Throwable t) {
@@ -2665,7 +2666,7 @@ public class WindowUtil {
         int[] def = defaultPipRect();
 
         // The first page is shifted by the bar's width only when the vertical bar is on its left
-        if (verticalBar && pipScreen == 0 && !BarLayouts.sides(prefs, true).right) {
+        if (verticalBar && BarLayouts.verticalOnPage(prefs, pipScreen) && !BarLayouts.sides(prefs, true).right) {
             mapTopLeftX = prefs.getInt(topLeftXKey, def[0]) + Launcher.calculatedVerticalBarWidth;
             mapBottomRightX = prefs.getInt(bottomRightXKey, def[2]) + Launcher.calculatedVerticalBarWidth;
         } else {

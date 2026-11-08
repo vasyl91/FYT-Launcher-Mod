@@ -541,4 +541,5 @@
     <string name="edge_handle_side">Kishikio cha kuficha kiotomatiki</string>
     <string name="edge_handle_side_left">Ukingo wa kushoto, hufunguliwa kwa kutelezesha kulia</string>
     <string name="edge_handle_side_right">Ukingo wa kulia, hufunguliwa kwa kutelezesha kushoto</string>
+    <string name="vertical_bar_every_page">Upau wima kwenye kila ukurasa</string>
 </resources>

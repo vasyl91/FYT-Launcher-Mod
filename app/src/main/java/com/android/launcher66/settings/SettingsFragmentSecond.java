@@ -127,6 +127,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private SwitchPreferenceCompat autoHidePreference;
     private AutoHideSeekBarPreference autoHideSeekBar;
     private Preference everyPagePreference;
+    private Preference verticalEveryPagePreference;
     private CustomSwitchPreference widgetBarNoCoverPreference;
     private CustomSwitchPreference widgetBarNoDatePreference;
     private CustomSwitchPreference widgetBarNoWeatherPreference;
@@ -367,6 +368,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         startPage.setSummary(startPageStr);
 
         everyPagePreference = findPreference(Keys.HORIZONTAL_BAR_EVERY_PAGE);
+        verticalEveryPagePreference = findPreference(Keys.VERTICAL_BAR_EVERY_PAGE);
         autoHidePreference = findPreference(Keys.AUTO_HIDE_HORIZONTAL_BAR);
         autoHideSeekBar = findPreference(Keys.AUTO_HIDE_TIMEOUT);
         resizableBarPreference = findPreference(Keys.RESIZABLE_HORIZONTAL_BAR);
@@ -559,6 +561,11 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }
         if (everyPagePreference != null) {
             everyPagePreference.setOnPreferenceClickListener(this);
+            updateEveryPageSummary();
+        }
+        if (verticalEveryPagePreference != null) {
+            verticalEveryPagePreference.setVisible(sharedPrefs.getBoolean(Keys.VERTICAL_BAR, false));
+            verticalEveryPagePreference.setOnPreferenceClickListener(this);
             updateEveryPageSummary();
         }
         autoHideBool = sharedPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false);
@@ -784,6 +791,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 alertStartPageDialog.show();
                 break;
             case Keys.HORIZONTAL_BAR_EVERY_PAGE:
+            case Keys.VERTICAL_BAR_EVERY_PAGE:
                 updateEveryPageSummary();
                 helpers.setBarSettingsChanged(true);
                 break;
@@ -829,6 +837,9 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 }
                 if (verticalBarBackground != null) {
                     verticalBarBackground.setVisible(sharedPrefs.getBoolean(Keys.VERTICAL_BAR, false));
+                }
+                if (verticalEveryPagePreference != null) {
+                    verticalEveryPagePreference.setVisible(sharedPrefs.getBoolean(Keys.VERTICAL_BAR, false));
                 }
                 helpers.setBarSettingsChanged(true);
                 break;
@@ -1205,6 +1216,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         autoHidePreference = null;
         autoHideSeekBar = null;
         everyPagePreference = null;
+        verticalEveryPagePreference = null;
         widgetBarNoCoverPreference = null;
         widgetBarNoDatePreference = null;
         widgetBarNoWeatherPreference = null;
@@ -1223,10 +1235,16 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
      * summary of the switch says what is missing instead of promising the bar.
      */
     private void updateEveryPageSummary() {
-        if (!(everyPagePreference instanceof TwoStatePreference)) {
+        updateEveryPageSummary(everyPagePreference);
+        updateEveryPageSummary(verticalEveryPagePreference);
+    }
+
+    /** The same texts for both bars: they say "the bar on every page", whichever bar it is. */
+    private void updateEveryPageSummary(Preference preference) {
+        if (!(preference instanceof TwoStatePreference)) {
             return;
         }
-        TwoStatePreference every = (TwoStatePreference) everyPagePreference;
+        TwoStatePreference every = (TwoStatePreference) preference;
         boolean missing = every.isChecked() && !android.provider.Settings.canDrawOverlays(requireContext());
         every.setSummaryOn(getString(missing ? R.string.horizontal_bar_every_page_no_overlay
                 : R.string.horizontal_bar_every_page_on));

@@ -6,8 +6,10 @@ package com.android.launcher66;
  * that the rules have a test.
  *
  * <p>All coordinates are those of the box the home screen lives in (below the status bar). The horizontal
- * bar spans the whole width, at the top or at the bottom. The vertical bar, on the first page only, takes
- * the rest of the height at the left or the right edge, between the horizontal bar and the other end.
+ * bar spans the whole width, at the top or at the bottom. The vertical bar takes the rest of the height at
+ * the left or the right edge, between the horizontal bar and the other end. A layout is for one page: it
+ * says which of the bars that page has ({@code verticalBar}, {@code horizontalOnPage}), and a vertical bar
+ * on a page without the horizontal bar has the whole height.
  *
  * <p>The rectangles of the widgets are saved in the box without the vertical bar: x = 0 is its inner edge,
  * so on the left the page adds {@link #contentOffsetX()} to x, and on the right nothing. The usable width
@@ -25,11 +27,14 @@ public final class BarLayout {
     public final boolean right;
     /** The edge handle (and the reserved corner cell of the auto-hide bar) is at the right edge. */
     public final boolean handleRight;
-    /** The vertical bar is on (and, by the caller's choice of page, it is the first one). */
+    /** The vertical bar is on this page (VerticalBarPlacement.onPage). */
     public final boolean verticalBar;
+    /** The horizontal bar (or the place it keeps while collapsed) is on this page. */
+    public final boolean horizontalOnPage;
 
     public BarLayout(int rootWidth, int rootHeight, int barHeight, int verticalBarWidth,
-                     boolean top, boolean right, boolean handleRight, boolean verticalBar) {
+                     boolean top, boolean right, boolean handleRight, boolean verticalBar,
+                     boolean horizontalOnPage) {
         this.rootWidth = rootWidth;
         this.rootHeight = rootHeight;
         this.barHeight = barHeight;
@@ -38,18 +43,24 @@ public final class BarLayout {
         this.right = right;
         this.handleRight = handleRight;
         this.verticalBar = verticalBar;
+        this.horizontalOnPage = horizontalOnPage;
     }
 
     // ---------------------------------------------------------------- the bars
 
     /** First y of the horizontal bar. */
     public int horizontalBarTop() {
-        return top ? 0 : rootHeight - barHeight;
+        return top ? 0 : rootHeight - bandHeight();
     }
 
     /** First y after the horizontal bar. */
     public int horizontalBarBottom() {
-        return top ? barHeight : rootHeight;
+        return top ? bandHeight() : rootHeight;
+    }
+
+    /** The height the horizontal bar takes from the page: nothing on a page without it. */
+    private int bandHeight() {
+        return horizontalOnPage ? barHeight : 0;
     }
 
     /** {left, top, right, bottom} of the vertical bar; all zero without it. */
@@ -58,7 +69,7 @@ public final class BarLayout {
             return new int[] {0, 0, 0, 0};
         }
         int left = right ? rootWidth - verticalBarWidth : 0;
-        return new int[] {left, top ? barHeight : 0, left + verticalBarWidth, top ? rootHeight : rootHeight - barHeight};
+        return new int[] {left, top ? bandHeight() : 0, left + verticalBarWidth, top ? rootHeight : rootHeight - bandHeight()};
     }
 
     /**
@@ -67,8 +78,31 @@ public final class BarLayout {
      * only where the vertical bar and the handle are on the same side ({@link #buttonShown()}).
      */
     public int[] collapsedButton() {
+        if (!horizontalOnPage) {
+            return new int[] {0, 0, 0, 0};
+        }
         int left = right ? rootWidth - verticalBarWidth : 0;
         return new int[] {left, horizontalBarTop(), left + verticalBarWidth, horizontalBarBottom()};
+    }
+
+    /**
+     * {left, top, right, bottom} of the window that shows the vertical bar on a page that has no bar of its
+     * own: its band, and with the collapsed button the corner of the horizontal bar too, so that the window
+     * is as tall as the box. All zero without the vertical bar.
+     */
+    public int[] verticalWindow(boolean withButton) {
+        int[] band = verticalBarBand();
+        if (!verticalBar) {
+            return band;
+        }
+        if (withButton && horizontalOnPage) {
+            if (top) {
+                band[1] = 0;
+            } else {
+                band[3] = rootHeight;
+            }
+        }
+        return band;
     }
 
     // ---------------------------------------------------------------- what is left to the widgets
@@ -88,12 +122,12 @@ public final class BarLayout {
      * least a pixel apart, as for the bar at the bottom.
      */
     public int minTop(int margin) {
-        return top ? barHeight + Math.max(margin, 1) : 0;
+        return top && horizontalOnPage ? barHeight + Math.max(margin, 1) : 0;
     }
 
     /** Largest bottom edge of a rectangle. */
     public int maxBottom(int margin) {
-        return top ? rootHeight - margin : horizontalBarTop() - Math.max(margin, 1);
+        return top || !horizontalOnPage ? rootHeight - margin : horizontalBarTop() - Math.max(margin, 1);
     }
 
     /**
@@ -101,6 +135,9 @@ public final class BarLayout {
      * reaches into it; unchanged otherwise.
      */
     public int fitY(int y, int height, int margin) {
+        if (!horizontalOnPage) {
+            return y;
+        }
         if (top) {
             return y < barHeight ? barHeight + margin : y;
         }
@@ -108,11 +145,11 @@ public final class BarLayout {
         return y + height > barTop ? barTop - height - margin : y;
     }
 
-    /** Insets of a page's content on one side each: {left, top, right, bottom}. */
-    public int[] pageInsets(boolean firstPage, boolean barOnThisPage) {
-        int left = firstPage && verticalBar && !right ? verticalBarWidth : 0;
-        int rightInset = firstPage && verticalBar && right ? verticalBarWidth : 0;
-        return new int[] {left, barOnThisPage && top ? barHeight : 0, rightInset, barOnThisPage && !top ? barHeight : 0};
+    /** Insets of this page's content on one side each: {left, top, right, bottom}. */
+    public int[] pageInsets() {
+        int left = verticalBar && !right ? verticalBarWidth : 0;
+        int rightInset = verticalBar && right ? verticalBarWidth : 0;
+        return new int[] {left, horizontalOnPage && top ? barHeight : 0, rightInset, horizontalOnPage && !top ? barHeight : 0};
     }
 
     // ---------------------------------------------------------------- the cell grid

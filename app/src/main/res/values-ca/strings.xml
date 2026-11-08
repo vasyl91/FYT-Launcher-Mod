@@ -541,4 +541,5 @@
     <string name="edge_handle_side">Nansa d\'amagament automàtic</string>
     <string name="edge_handle_side_left">Vora esquerra, s\'obre lliscant cap a la dreta</string>
     <string name="edge_handle_side_right">Vora dreta, s\'obre lliscant cap a l\'esquerra</string>
+    <string name="vertical_bar_every_page">Barra vertical a cada pàgina</string>
 </resources>
