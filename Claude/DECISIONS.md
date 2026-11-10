@@ -214,7 +214,7 @@ by D-nn"; never delete an entry.
   - Every commit must build; CI is the gate between commits; no amend or force-push.
   - No model names in the repository.
   - Briefs and chat reports are in Polish; code, commits and these docs are in English.
-- Since 2026-11-10 the briefs live in `Claude/prompts/`, and the catalogue is updated together with each
+- Since 2026-11-10 the briefs live in `claude/prompts/`, and the catalogue is updated together with each
   brief.
 - **Source:** every brief §1; the owner's instruction of 2026-11-10 [H].
 

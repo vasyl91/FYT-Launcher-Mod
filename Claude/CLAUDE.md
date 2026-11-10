@@ -4,7 +4,7 @@ A reverse-engineered home-screen launcher (`com.android.launcher66`) for FYT car
 Android 8–16 as a system app on FYT units (the `system` flavor) or as a normal app anywhere (the
 `standard` flavor). It is written in Java with some Kotlin, built with Gradle, and has JVM unit tests only.
 
-This file is imported by the root `CLAUDE.md`. Paths in it are relative to `Claude/`, except those starting
+This file is imported by the root `CLAUDE.md`. Paths in it are relative to `claude/`, except those starting
 with `../` (the repository root), `app/`, `.github/` or another top-level folder.
 
 ## Read first
@@ -70,7 +70,7 @@ owner or a brief · **[P]** planned, not built · **[A]** assumed · **[U]** unk
   `HORIZONTAL_BAR_EVERY_PAGE` is still `"bottom_bar_every_page"`. Do not migrate users' preferences
   unless a brief says so.
 - No new dependencies without the owner's approval.
-- Delete code or resources only after an `rg` search of the whole repository (excluding `Claude/`) shows
+- Delete code or resources only after an `rg` search of the whole repository (excluding `claude/`) shows
   nothing else uses them.
 - Large files (`Launcher.java`, `Workspace.java`, `SettingsFragment*`, `LogcatWorker`, `CanbusService`)
   get targeted edits only. No drive-by refactors.
@@ -91,10 +91,10 @@ work targets the other units and phones. Platform-dependent behaviour follows th
 The loop has been in use since 2026-10-26:
 
 1. When the owner's logs need sifting first, **Sonnet** extracts the facts and log excerpts for Opus into
-   `Claude/prompts/active/` (`opus-logs-YYYY-MM-DD-<topic>.md`, `opus-analysis-…`; it has done so since
+   `claude/prompts/active/` (`opus-logs-YYYY-MM-DD-<topic>.md`, `opus-analysis-…`; it has done so since
    2026-10-26).
 2. **Opus (planning)** checks those facts and the owner's requests against the code, then writes a brief
-   in Polish to `Claude/prompts/active/sonnet-prompt-YYYY-MM-DD-<topic>.md`. Every brief:
+   in Polish to `claude/prompts/active/sonnet-prompt-YYYY-MM-DD-<topic>.md`. Every brief:
    - starts with a review of the previous round;
    - lists its commits with their exact subjects;
    - gives the facts, the rules, what not to change, how to verify, and the report to write.
@@ -118,6 +118,6 @@ current docs (old flavor `fyt`, branch `ccr-087eed00-gbqsuz`, "bottom/left bar")
 
 ## After significant changes
 
-Update the docs in `Claude/` that the change makes wrong, in the same commit or as the last `Docs:` commit
+Update the docs in `claude/` that the change makes wrong, in the same commit or as the last `Docs:` commit
 of the round. Update `README.MD` when a user-visible feature or setting changes; the briefs have done this
 with `Docs: README for …` commits.

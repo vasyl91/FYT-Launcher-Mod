@@ -28,7 +28,7 @@ The class Javadoc is the detailed reference; this file is the map.
 | `android_jar/` | Modified `android.jar` material. Obsolete since 1.1.7 (README). |
 | `images/` | README screenshots and videos. |
 | `.github/workflows/` | `build.yml` (CI), `release-assets.yml` (legacy updater asset names). |
-| `Claude/` | Documentation for Claude sessions (this folder). |
+| `claude/` | Documentation for Claude sessions (this folder). |
 
 ## 2. Build
 
@@ -218,7 +218,7 @@ declared but have no imports** (`KNOWN_ISSUES.md` KI-03).
 - **Stats window:** `S/StatsWindowSize`, `S/StatsOverlayAlpha` (full alpha through the host),
   `S/StatsBarFit` (the bars move the window, never resize it).
 - **Background** [H]: newer `com.syu.canbus` builds shift the `DATA[n]` indices (+11 for the PSA family).
-  `Claude/prompts/archive/analysis/canbus-app-comparison-2026-10-30.md` has the details.
+  `claude/prompts/archive/analysis/canbus-app-comparison-2026-10-30.md` has the details.
 
 ## 10. Night mode, location and weather
 

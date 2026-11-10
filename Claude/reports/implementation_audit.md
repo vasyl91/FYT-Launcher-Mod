@@ -1,6 +1,6 @@
 # Implementation audit (2026-11-10)
 
-An audit of the codebase at `testBranch` `3dd71894`, done to build the knowledge base in `Claude/`. No
+An audit of the codebase at `testBranch` `3dd71894`, done to build the knowledge base in `claude/`. No
 application code was changed. The current-state documents are `../PROJECT_STATE.md`, `../ARCHITECTURE.md`
 and `../KNOWN_ISSUES.md`; this report keeps the method, the evidence and the open questions.
 

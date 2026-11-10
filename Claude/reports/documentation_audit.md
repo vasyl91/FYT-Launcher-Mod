@@ -52,7 +52,7 @@ format version, build tasks).
 
 The owner's decisions on 2026-11-10:
 
-- everything for Claude goes in one folder, `Claude/`;
+- everything for Claude goes in one folder, `claude/`;
 - the last brief is archived;
 - English for the new documents;
 - a short README update;
@@ -61,15 +61,15 @@ The owner's decisions on 2026-11-10:
 
 **Created**
 - `CLAUDE.md` (repository root): a five-line stub. Claude Code loads project instructions only from the
-  root `CLAUDE.md` or from `.claude/`, so this one file stays at the root. It imports `Claude/CLAUDE.md`.
-- `Claude/CLAUDE.md`, `PROJECT_STATE.md`, `ARCHITECTURE.md`, `DECISIONS.md`, `ROADMAP.md`, `KNOWN_ISSUES.md`.
-- `Claude/prompts/README.md` (the catalogue) and `Claude/prompts/active/.gitkeep`.
-- `Claude/chat_archive/README.md` and `CHAT_EXTRACTION_TEMPLATE.md`.
-- `Claude/reports/implementation_audit.md` and this file.
+  root `CLAUDE.md` or from `.claude/`, so this one file stays at the root. It imports `claude/CLAUDE.md`.
+- `claude/CLAUDE.md`, `PROJECT_STATE.md`, `ARCHITECTURE.md`, `DECISIONS.md`, `ROADMAP.md`, `KNOWN_ISSUES.md`.
+- `claude/prompts/README.md` (the catalogue) and `claude/prompts/active/.gitkeep`.
+- `claude/chat_archive/README.md` and `CHAT_EXTRACTION_TEMPLATE.md`.
+- `claude/reports/implementation_audit.md` and this file.
 
 **Moved** with `git mv`, contents unchanged:
-- `docs/sonnet-prompt-*.md` (33) → `Claude/prompts/archive/`;
-- the four analyses → `Claude/prompts/archive/analysis/`;
+- `docs/sonnet-prompt-*.md` (33) → `claude/prompts/archive/`;
+- the four analyses → `claude/prompts/archive/analysis/`;
 - `docs/` no longer exists.
 
 **Modified**
