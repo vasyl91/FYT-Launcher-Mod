@@ -542,4 +542,5 @@
     <string name="vertical_bar_every_page">Vertikalioji juosta kiekviename puslapyje</string>
     <string name="overlap_fit_message">Persidengiantys valdikliai bus atitolinti taip, kaip juos stumia juostos: mažinami tik ten, kur nėra vietos, ir atkuriami tik jei visai netelpa.</string>
     <string name="proceed_and_fit">Tęsti ir pritaikyti</string>
+    <string name="start_page_missing">Puslapio %1$d nėra: pagrindiniame ekrane yra %2$d puslapiai.</string>
 </resources>

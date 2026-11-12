@@ -542,4 +542,5 @@
     <string name="vertical_bar_every_page">Bara verticala sin mintga pagina</string>
     <string name="overlap_fit_message">Ils widgets che sa surpiglian vegnan spustads sco las bandas als spostan: be pli pitschens nua che i n\'ha betg plaz e be restituids sch\'els na chapan insumma betg.</string>
     <string name="proceed_and_fit">Cuntinuar ed adattar</string>
+    <string name="start_page_missing">La pagina %1$d n\'exista betg: il visur da partenza ha %2$d paginas.</string>
 </resources>

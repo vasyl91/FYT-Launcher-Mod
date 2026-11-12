@@ -89,6 +89,7 @@ import com.android.launcher66.settings.CanbusService;
 import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.PipEdgeTrim;
+import com.android.launcher66.settings.StartPageRule;
 import com.android.recycler.AppListDialogFragment;
 import com.android.recycler.SimpleDividerDecoration;
 import com.syu.util.WindowHost;
@@ -1009,8 +1010,9 @@ public class Workspace extends SmoothPagedView
             // its size is the coordinate space Helpers has to test overlaps in.
             publishBarRootSize(absoluteLayout != null ? absoluteLayout : workspaceView);
         }
-        int startPage = Integer.parseInt(mPrefs.getString(Keys.START_PAGE, "1"));
-        if (getChildCount() >= startPage) {
+        // Never the stored text as it is: a broken or out-of-range value must not stop the page being built
+        int startPage = StartPageRule.parse(mPrefs.getString(Keys.START_PAGE, "1"));
+        if (StartPageRule.accepts(startPage, getChildCount())) {
             setCurrentPage(startPage - 1);
         } else {
             int index = getPageIndexForScreenId(CUSTOM_CONTENT_SCREEN_ID1);
@@ -8479,8 +8481,8 @@ public class Workspace extends SmoothPagedView
 
     void moveToDefaultScreen(boolean animate) {
         mPrefs = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
-        int startPage = Integer.parseInt(mPrefs.getString("start_page", "1"));
-        if (getChildCount() >= startPage) {
+        int startPage = StartPageRule.parse(mPrefs.getString(Keys.START_PAGE, "1"));
+        if (StartPageRule.accepts(startPage, getChildCount())) {
             moveToScreen(startPage - 1, animate);
         } else {
             int index = getPageIndexForScreenId(CUSTOM_CONTENT_SCREEN_ID1);

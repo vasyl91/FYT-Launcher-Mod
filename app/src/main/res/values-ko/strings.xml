@@ -542,4 +542,5 @@
     <string name="vertical_bar_every_page">모든 페이지에 세로 바 표시</string>
     <string name="overlap_fit_message">겹치는 위젯은 바가 밀어내는 방식과 같이 떨어뜨려 놓습니다. 공간이 없는 곳에서만 작게 만들고, 전혀 들어가지 않을 때만 초기화합니다.</string>
     <string name="proceed_and_fit">계속 및 맞춤</string>
+    <string name="start_page_missing">%1$d페이지가 없습니다. 홈 화면은 %2$d페이지입니다.</string>
 </resources>

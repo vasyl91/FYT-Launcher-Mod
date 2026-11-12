@@ -1,5 +1,8 @@
 package com.android.launcher66;
 
+import com.android.launcher66.settings.Keys;
+import com.android.launcher66.settings.StartPageRule;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -280,6 +283,13 @@ public final class WorkspaceScreenPlan {
         for (Map.Entry<String, Integer> ref : input.pageRefs.entrySet()) {
             int value = ref.getValue() == null ? 0 : ref.getValue();
             if (value < 1 || value > total) {
+                // The start page always names a page that exists (StartPageRule): at a load, which knows
+                // every page, one that points nowhere goes back to the first page. Other references and
+                // a plan made from the pages on screen only are left alone.
+                if (input.createMissing && Keys.START_PAGE.equals(ref.getKey())
+                        && value != StartPageRule.FIRST_PAGE) {
+                    changes.add(new PrefChange(ref.getKey(), value, StartPageRule.FIRST_PAGE));
+                }
                 continue;
             }
             // A removed page counts itself, so the start page of a removed page moves to the nearest

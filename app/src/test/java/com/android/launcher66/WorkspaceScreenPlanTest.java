@@ -194,6 +194,27 @@ class WorkspaceScreenPlanTest {
     }
 
     @Test
+    void atALoadAStartPagePastTheLastPageGoesBackToTheFirst() {
+        Map<String, Integer> refs = new LinkedHashMap<>();
+        refs.put(Keys.START_PAGE, 9);
+        WorkspaceScreenPlan.Result result = WorkspaceScreenPlan.plan(new WorkspaceScreenPlan.Input(
+                ids(3, 4, 5), set(3, 4, 5), Collections.<Long>emptySet(), pages(), refs, true,
+                new AtomicLong(10)::getAndIncrement));
+        assertEquals(Collections.singletonList(
+                new WorkspaceScreenPlan.PrefChange(Keys.START_PAGE, 9, 1)), result.prefChanges);
+    }
+
+    @Test
+    void atALoadAPinnedPipPagePastTheLastPageIsLeftAlone() {
+        Map<String, Integer> refs = new LinkedHashMap<>();
+        refs.put(Keys.PINNED_PIP_SCREEN, 9);
+        WorkspaceScreenPlan.Result result = WorkspaceScreenPlan.plan(new WorkspaceScreenPlan.Input(
+                ids(3, 4, 5), set(3, 4, 5), Collections.<Long>emptySet(), pages(), refs, true,
+                new AtomicLong(10)::getAndIncrement));
+        assertTrue(result.prefChanges.isEmpty());
+    }
+
+    @Test
     void thePinnedPipPageMovesLikeTheStartPage() {
         Map<String, Integer> refs = new LinkedHashMap<>();
         refs.put(Keys.PINNED_PIP_SCREEN, 4);

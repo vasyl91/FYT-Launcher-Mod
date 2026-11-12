@@ -542,4 +542,5 @@
     <string name="vertical_bar_every_page">ແຖບແນວຕັ້ງໃນທຸກໜ້າ</string>
     <string name="overlap_fit_message">ວິດເຈັດທີ່ຊ້ອນກັນຈະຖືກຍ້າຍຫ່າງກັນຄືກັບທີ່ແຖບຍ້າຍ: ຫຍໍ້ລົງສະເພາະບ່ອນທີ່ບໍ່ມີບ່ອນຫວ່າງ ແລະ ຣີເຊັດສະເພາະເມື່ອບໍ່ໃສ່ໄດ້ເລີຍ.</string>
     <string name="proceed_and_fit">ສືບຕໍ່ ແລະ ປັບ</string>
+    <string name="start_page_missing">ບໍ່ມີໜ້າ %1$d: ໜ້າຈໍຫຼັກມີ %2$d ໜ້າ.</string>
 </resources>

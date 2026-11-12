@@ -542,4 +542,5 @@
     <string name="vertical_bar_every_page">Вертикальна панель на кожній сторінці</string>
     <string name="overlap_fit_message">Віджети, що перекриваються, буде розсунуто так, як їх зсувають панелі: зменшено лише там, де немає місця, і скинуто лише якщо вони зовсім не вміщаються.</string>
     <string name="proceed_and_fit">Продовжити й підігнати</string>
+    <string name="start_page_missing">Сторінки %1$d не існує: на головному екрані %2$d сторінок.</string>
 </resources>

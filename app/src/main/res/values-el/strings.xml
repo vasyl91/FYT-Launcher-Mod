@@ -542,4 +542,5 @@
     <string name="vertical_bar_every_page">Κάθετη γραμμή σε κάθε σελίδα</string>
     <string name="overlap_fit_message">Τα γραφικά στοιχεία που επικαλύπτονται θα απομακρυνθούν όπως τα μετακινούν οι γραμμές: θα μικρύνουν μόνο όπου δεν υπάρχει χώρος και θα επαναφερθούν μόνο αν δεν χωρούν καθόλου.</string>
     <string name="proceed_and_fit">Συνέχεια και προσαρμογή</string>
+    <string name="start_page_missing">Η σελίδα %1$d δεν υπάρχει: η αρχική οθόνη έχει %2$d σελίδες.</string>
 </resources>

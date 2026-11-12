@@ -56,10 +56,13 @@ import androidx.preference.SwitchPreferenceCompat;
 import androidx.preference.TwoStatePreference;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.launcher66.CustomElement;
 import com.android.launcher66.LauncherApplication;
+import com.android.launcher66.LauncherModel;
 import com.android.launcher66.R;
 import com.android.launcher66.ServiceIntentGate;
 import com.android.launcher66.WidgetBarPlan;
+import com.android.launcher66.WorkspaceScreenPlan;
 import com.android.launcher66.colorpicker.ColorPicker;
 import com.android.launcher66.colorpicker.ColorPickerCallback;
 import com.fyt.skin.SkinAttribute;
@@ -364,8 +367,11 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         CustomNoSwitchPreference widgetsTintBlack = findPreference(Keys.BLACK_WIDGETS);
         CustomNoSwitchPreference barTintBlack = findPreference(Keys.BLACK_BAR);
         startPage = findPreference(Keys.START_PAGE);
+        // The page that is really used: a stored number that names no page shows as the first page
         String startPageStr = sharedPrefs.getString(Keys.START_PAGE, "1");
-        startPage.setSummary(startPageStr);
+        int startPagePages = knownPages();
+        startPage.setSummary(startPagePages > 0
+                ? String.valueOf(StartPageRule.effective(startPageStr, startPagePages)) : startPageStr);
 
         everyPagePreference = findPreference(Keys.HORIZONTAL_BAR_EVERY_PAGE);
         verticalEveryPagePreference = findPreference(Keys.VERTICAL_BAR_EVERY_PAGE);
@@ -2272,9 +2278,38 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }
     }
 
+    /**
+     * The pages the start page may name now (StartPageRule.knownPages): those of the launcher and those the
+     * elements switched on in this visit will add. 0 while the launcher's pages are not known yet.
+     */
+    private int knownPages() {
+        WorkspaceScreenPlan.Snapshot snapshot = LauncherModel.getScreenSnapshot();
+        if (snapshot == null || !snapshot.isReady()) {
+            return 0;
+        }
+        int highest = 0;
+        for (CustomElement element : CustomElement.values()) {
+            if (sharedPrefs.getBoolean(element.enabledKey, element.defaultEnabled)) {
+                highest = Math.max(highest, sharedPrefs.getInt(element.screenKey, 1));
+            }
+        }
+        return StartPageRule.knownPages(snapshot.pageCount(), highest);
+    }
+
     private void saveStartPage() {
-        String valueStr = startPageEditText.getText().toString();
-        if (valueStr.isEmpty()) valueStr = "1";
+        int typed = StartPageRule.parse(startPageEditText.getText().toString());
+        if (typed < StartPageRule.FIRST_PAGE) {
+            typed = StartPageRule.FIRST_PAGE;   // empty or not a number, as before: the first page
+        }
+        int pages = knownPages();
+        if (pages > 0 && !StartPageRule.accepts(typed, pages)) {
+            // A page that does not exist is refused: the stored page and the summary stay as they are
+            Log.i("SettingsFragmentSecond", "Start page " + typed + " refused: the home screen has " + pages + " pages");
+            Toast.makeText(requireContext(), getString(R.string.start_page_missing, typed, pages),
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+        String valueStr = String.valueOf(typed);
         startPage.setSummary(valueStr);
         editor.putString(Keys.START_PAGE, valueStr);
         editor.apply();
