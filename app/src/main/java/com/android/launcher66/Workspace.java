@@ -2488,7 +2488,11 @@ public class Workspace extends SmoothPagedView
         }
     }
 
-    /** The overlay that has been told, in the log, that its apps came after it was built. */
+    /**
+     * The overlay that has been told, in the log, that its apps came after it was built. It is only a marker
+     * for the log, so it must never outlive the overlay: clearOverlayReferences() lets go of it together with
+     * the overlay itself. Kept past that point it held the removed window's whole view tree (BarSwipeFrame).
+     */
     private View mAdapterLateLoggedFor;
 
     /**
@@ -3525,6 +3529,7 @@ public class Workspace extends SmoothPagedView
         
         // Clear overlay view references
         overlayHorizontalBar = null;
+        mAdapterLateLoggedFor = null;
         overlayWindowParams = null;
         overlayWindowManager = null;
         mOverlayPersistent = false;
@@ -3755,6 +3760,7 @@ public class Workspace extends SmoothPagedView
         mEdgeHandleMode = false;
         releaseEdgeHandle();
         removeVerticalWindow("workspace released");
+        mAdapterLateLoggedFor = null;
 
         // Nullify local view references
         absoluteLayout = null;
