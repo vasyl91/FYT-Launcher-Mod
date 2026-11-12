@@ -1,4 +1,8 @@
-# Documentation audit (2026-11-10)
+# Documentation audit (2026-11-10, updated 2026-11-12)
+
+> **Latest verification: 2026-11-12.** The audit of 2026-11-10 below is kept as written (the owner later
+> changed its folder name from `Claude/` to `claude/` in the text). The addendum at the end records what
+> the second pass found and changed. Where the two disagree, the addendum holds.
 
 An audit of the project's documentation, and the reorganisation that followed it, approved by the owner on
 2026-11-10.
@@ -95,7 +99,14 @@ wants kept (`docs/`) or reference material by the owner's rules (`decompiled_*`,
 Add here any contradiction found while incorporating chat reports (see
 `../chat_archive/CHAT_EXTRACTION_TEMPLATE.md`), with the evidence on both sides.
 
-- *(none yet)*
+Recorded on 2026-11-12 (details in `KNOWLEDGE_CONSOLIDATION_REPORT.md`, section E):
+
+- **Open:** why `b38f1286` reverted the 7862 stats-window fix, and whether the lag remains (CHAT_10 says the
+  fix was untested; git shows the owner's revert with no reason).
+- **Open:** CHAT_14 quotes the owner that changes worked "za wyjątkiem tych z urządzenia 7870"; no source
+  says which changes.
+- **Resolved:** the key, the location reason, the device ownership, and planned-versus-implemented for round
+  12 (see the addendum below).
 
 ## Keeping the documentation healthy
 
@@ -104,3 +115,59 @@ Add here any contradiction found while incorporating chat reports (see
   archived.
 - A user-visible change gets a `Docs: README for …` commit, as the briefs already did.
 - Use the tags [V]/[H]/[P]/[A]/[U] everywhere; an [A] becomes [V] only with a file or commit as evidence.
+
+---
+
+## Addendum: second pass of 2026-11-12
+
+### What the first pass got wrong or could not know
+
+| 2026-11-10 | 2026-11-12 |
+|---|---|
+| The chat archive was set up for "18 older conversations" with files `CHAT_NN.md` | The owner supplied 15 reports, `CHAT_01.MD` … `CHAT_15.MD`. The index now describes the files that exist and assumes no number |
+| "Recommended for deletion: nothing … `android_jar/` (obsolete)" | Wrong about `android_jar/`: the build needs `android-36.jar`. See `implementation_audit.md`, addendum, and KI-19 |
+| `KNOWN_ISSUES.md` rated the hardcoded weather key High | The owner had decided to keep it (D-26). Now an accepted limitation |
+| `DECISIONS.md` had 26 entries, some with "reason not recorded" | 49 entries with a status and who decided; the reports supplied several reasons |
+| Knowledge before 2026-10-26 "is not in the repository" | The reports cover 2026-10-05 → 11-08. What each 1.x release added is still only in the GitHub release notes |
+
+### Problems found in the documentation itself
+
+1. **Two folders on Linux.** The rename to lower case was made on a case-insensitive file system, so git
+   tracked `Claude/` (49 files) and `claude/` (15 files), and the root `CLAUDE.md` imported
+   `@claude/CLAUDE.md`, which did not exist on Linux. A cloud session would have loaded no project
+   instructions. **Fixed** in `e3ba694e`: all 49 files moved to `claude/` with `git mv` (contents unchanged).
+2. **Stale paths** after the move to `archive/`: the repository layout in `ARCHITECTURE.md`, the "do not
+   touch" list in `CLAUDE.md`, four links in `README.MD`, and the library script and its README. **Fixed.**
+3. **State out of date:** CI status, commit counts, device ownership. **Fixed** in `PROJECT_STATE.md`.
+4. **Confirmed and unconfirmed mixed** in `KNOWN_ISSUES.md`. **Fixed:** three parts (confirmed, accepted,
+   unverified).
+
+### Changes made on 2026-11-12
+
+**Moved (`git mv`, byte-identical):** `Claude/*` → `claude/*`: the six core documents, both indexes, the
+template, the 37 prompt files and both reports.
+
+**Updated:**
+- `claude/CLAUDE.md`, `PROJECT_STATE.md`, `ARCHITECTURE.md`, `DECISIONS.md`, `ROADMAP.md`, `KNOWN_ISSUES.md`;
+- `claude/prompts/README.md` (path map, device results on record, superseded instructions, the brief that
+  is not in the repository);
+- `claude/chat_archive/README.md` (rewritten from the files present) and `CHAT_EXTRACTION_TEMPLATE.md`
+  (file name, plain-text rule);
+- `claude/reports/implementation_audit.md` and this file (addenda);
+- outside `claude/`, with the owner's approval: `README.MD` (four links), `canbus_library/README.md` and
+  `canbus_library/build_canbus_library.py` (source root).
+
+**Created:** `claude/reports/KNOWLEDGE_CONSOLIDATION_REPORT.md`.
+
+**Not modified:** the 15 chat reports, the 33 archived briefs, the 4 archived analyses, and all application
+code, manifests, resources, Gradle files and workflows.
+
+**Deleted:** nothing.
+
+### Remaining gaps
+
+- What each release before 1.2.1 added (GitHub release notes only).
+- The stock-sources brief of 2026-10-23 and its 7870 test guide (a local commit that was never pushed).
+- Device results for the rounds listed as "none on record" in `../prompts/README.md`.
+- The open questions in `implementation_audit.md`, addendum.
+

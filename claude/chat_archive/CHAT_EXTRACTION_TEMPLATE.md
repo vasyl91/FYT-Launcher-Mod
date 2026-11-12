@@ -3,8 +3,9 @@
 How to use it:
 
 1. Copy everything between the two lines below into the old conversation, as one message.
-2. Save the answer as `CHAT_NN.md` in this folder.
-3. Update the tracking table in `README.md`.
+2. Save the answer in this folder as `CHAT_NN.MD` (two digits, the next free number; the files so far use
+   the upper-case extension).
+3. Update the tables in `README.md`: what the conversation covered, and its status.
 
 The answer is a historical record: it is checked against the code later, not edited to fit it.
 
@@ -41,6 +42,8 @@ Rules. Please follow them strictly:
    Write "unknown" rather than reconstructing them.
 7. Do not include secrets (API keys, tokens, passwords) even if they appear in the conversation. Write
    "[secret omitted]".
+8. Give the report as plain Markdown text. Do not wrap the whole report in a code fence, and keep the
+   table pipes and the slashes in file paths.
 
 Format:
 

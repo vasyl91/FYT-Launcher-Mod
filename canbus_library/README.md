@@ -96,6 +96,7 @@ Other modes of the script (`py build_canbus_library.py ...`):
 py build_canbus_library.py <src> [--out FILE] [--mapping FILE]   from a decompiled com.syu.canbus
 py build_canbus_library.py --launcher <repo> [--platform default|7870] [--out FILE]
                                                                  the library built into the launcher, from the newer and the older com.syu.canbus and decompiled_carinfo/
+                                                                 (all under archive/decompiled/ of the repository)
                                                                  (7870: from the com.syu.canbus of the 7870 first, into canbus_library_7870.txt)
 py build_canbus_library.py --seal FILE                           recompute the footer of an edited file
 py build_canbus_library.py --check FILE                          validate a file like the launcher does
@@ -207,7 +208,8 @@ end 8 1a2b3c4d
 ## 7. How the script decides
 
 * **The launcher's own library (`--launcher`).** It is built from three sources, the newest first (the folders are constants in the script):
-  `decompiled_com.syu.canbus/classes.dex.new/sources`, `decompiled_com.syu.canbus/classes.dex/sources` and `decompiled_carinfo/`.
+  `decompiled_com.syu.canbus/classes.dex.new/sources`, `decompiled_com.syu.canbus/classes.dex/sources` and `decompiled_carinfo/`,
+  all under `archive/decompiled/` of the repository (`LAUNCHER_SOURCE_ROOT` in the script).
   * **`C`, `R` and `N` of a car come from the newest source that knows its id**: the `switch` of that source's `ActivityLauncher` gives the class, and the pages and
     requests are searched in the same source. A car that only the older source knows keeps the older source's record. A car that none of the canbus sources knows
     keeps its class and its `N` from the current asset (its pages are then searched in `decompiled_carinfo/`). The `N` records of the asset are always kept.

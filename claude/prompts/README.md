@@ -20,12 +20,19 @@ Workflow (details in `../CLAUDE.md`):
 File names: `sonnet-prompt-YYYY-MM-DD-<topic>.md` for briefs; `opus-logs-…`, `opus-analysis-…` or a
 descriptive name for analyses.
 
-## Moved on 2026-11-10
+## Paths inside the briefs
 
-All 37 files used to be in `docs/` at the repository root. They were moved here with `git mv`, so
-`git log --follow` shows their history; the contents are unchanged. Links inside them still say
-`docs/<name>.md`. Read such a link as `archive/<name>.md`, or `archive/analysis/<name>.md` for the four
-analyses.
+The briefs are unchanged since they were written, so some paths in them are old. Read them as follows:
+
+| A brief says | Today |
+|---|---|
+| `docs/<name>.md` | `archive/<name>.md` here, or `archive/analysis/<name>.md` for the four analyses (moved 2026-11-10 from `docs/`, then 2026-11-12 from `Claude/` to `claude/`; `git log --follow` shows the history) |
+| `decompiled_carinfo/`, `decompiled_com.syu.*/` | `archive/decompiled/…` at the repository root (moved in `8bfc5a8d`) |
+| `fuel_stats_example/` | `archive/fuel_stats_example/` |
+| `decompiled_FYT_jars/` | removed from the tree in `8bfc5a8d`; still in git history |
+| flavor `fyt`, tasks `testFytDebugUnitTest`, `assembleFytDebug` | flavor `system`, `testSystemDebugUnitTest`, `assembleSystemDebug` |
+| branch `ccr-087eed00-gbqsuz` | `testBranch` |
+| "bottom bar", "left bar" | horizontal bar, vertical bar |
 
 ## How the status was established
 
@@ -36,10 +43,13 @@ brief of their own.
 
 **Statuses:**
 
-- ✅ implemented: all prescribed commits are in `testBranch`, and later rounds build on them. A device
-  result, where one was given, is in the next brief's review section; it was not checked brief by brief.
+- ✅ implemented: all prescribed commits are in `testBranch`, and later rounds build on them. This says the
+  work was done, not that it works on a device.
 - ✅¹ implemented with green CI; no later brief exists yet, so no device review is recorded.
 - ↩ partly reverted or superseded later (see the note).
+
+A brief existing proves nothing by itself. The status comes from git; what is known about devices is in the
+section "Device results on record" below.
 
 ## Briefs
 
@@ -73,10 +83,10 @@ brief of their own.
 | 26 | 11-05 | `sonnet-prompt-2026-11-05-every-page-bar-fixes.md` | Edge handle crash; icons and jank of the bar on every page | `347f06be` `656decb4` `11e70c29` | ✅ |
 | 27 | 11-06 | `sonnet-prompt-2026-11-06-creator-hint-canbus-leak.md` | Creator arrows, the double-tap hint, canbus callback leak | `ea203541` `cced3912` `5e3fb395` | ✅ |
 | 28 | 11-06 | `sonnet-prompt-2026-11-06-edge-handle-width.md` | Edge handle as wide as the left bar | `4677b990` | ✅ |
-| 29 | 11-07 | `sonnet-prompt-2026-11-07-dab-bt-bars-settings.md` | C1–C10: DABdream back to its pane, BT widget, handle tap on Android 10, fuel speed threshold, Spotify and fYT Rating state, bars renamed, the Bars category, bar sides, handle on either edge. Uses `archive/analysis/opus-logs-2026-11-07-dabdream-home-and-bt-widget.md` | `a64a2e90` `24ea895b` `9a61126a` `70f04048` `b0d2729e` `0ea8f2eb` `d0e67aaf` `663800c2` `9bc0faa5` `6080ce99` | ✅ |
-| 30 | 11-08 | `sonnet-prompt-2026-11-08-top-bar-button-vertical-every-page.md` | Top bar below the status bar, button or handle, the vertical bar on every page, touches under the handle | `a4f522bf` `1843f8a6` `5604d116` `4b63a077` | ✅ |
-| 31 | 11-08 | `sonnet-prompt-2026-11-08-top-bar-box-vertical-corner-creators.md` | Top bar on the page's box, the vertical bar in the empty corner, creators as the home screen | `752222ec` `6961a9ca` `8a0229d5` | ✅ |
-| 32 | 11-08 | `sonnet-prompt-2026-11-08-vertical-window-side-one-creator-stats.md` | Vertical bar window on the right, one creator for every page, stats window moved by the bars | `fc5cac17` `76c1c110` `f791b67e` | ✅ |
+| 29 | 11-07 | `sonnet-prompt-2026-11-07-dab-bt-bars-settings.md` | C1–C10: DABdream back to its pane, BT widget, handle tap on Android 10, fuel speed threshold, Spotify and fYT Rating state, bars renamed, the Bars category, bar sides, handle on either edge. Uses `archive/analysis/opus-logs-2026-11-07-dabdream-home-and-bt-widget.md` | `a64a2e90` `24ea895b` `9a61126a` `70f04048` `b0d2729e` `0ea8f2eb` `d0e67aaf` `663800c2` `9bc0faa5` `6080ce99` | ✅ ↩ the owner confirmed C1, C2 and C6; C3 did not work and was replaced by D4 of brief 30 (see below) |
+| 30 | 11-08 | `sonnet-prompt-2026-11-08-top-bar-button-vertical-every-page.md` | Top bar below the status bar, button or handle, the vertical bar on every page, touches under the handle | `a4f522bf` `1843f8a6` `5604d116` `4b63a077` | ✅ confirmed by the owner on a device (see below) |
+| 31 | 11-08 | `sonnet-prompt-2026-11-08-top-bar-box-vertical-corner-creators.md` | Top bar on the page's box, the vertical bar in the empty corner, creators as the home screen | `752222ec` `6961a9ca` `8a0229d5` | ✅ confirmed by the owner on a device (see below) |
+| 32 | 11-08 | `sonnet-prompt-2026-11-08-vertical-window-side-one-creator-stats.md` | Vertical bar window on the right, one creator for every page, stats window moved by the bars | `fc5cac17` `76c1c110` `f791b67e` | ✅ confirmed by the owner on a device (see below) |
 | 33 | 11-08 | `sonnet-prompt-2026-11-08-workspace-load-widget-style-creator-overlap.md` | G1–G3 with rules R1–R3: workspace load watchdog, widget colors as view tints, one overlap rule | `e3136f45` `b1fe254c` `3dd71894` | ✅¹ archived 2026-11-10 at the owner's request; device review pending |
 
 Note: commit `0ea8f2eb` (fYT Rating, C6 of #29) carries a lower-case subject (`fYT Rating: …`), which the
@@ -90,3 +100,53 @@ verbatim match missed; it was matched by hand.
 | 10-30 | `canbus-app-comparison-2026-10-30.md` | PL | Old vs new `com.syu.canbus`: IPC identical, the `DATA[n]` shift (+11 for PSA), what changed for car 1507667, recommendations | #9; lasting reference for `DATA[]` indices |
 | 11-03 | `opus-analysis-2026-11-03-remaining-log-findings.md` | EN | Three findings left after #19 (StrictMode on bar icons, pane bounds, cold start) | #20 |
 | 11-07 | `opus-logs-2026-11-07-dabdream-home-and-bt-widget.md` | PL | The tester's report and log excerpts (170 KB): DABdream crash after Home, BT widget state | #29 |
+
+## Device results on record
+
+From the review sections of later briefs and from the chat reports (`../chat_archive/`). "None on record"
+means no source read says how it went on a device; the owner may know more.
+
+| Briefs | What is on record | Source |
+|---|---|---|
+| 1 | The owner checked the round on the 7862: "działa bez zmian, tak jak miało być" | brief 2 |
+| 3–4 | Pinned PiP after the fixes: "Działa niemal idealnie". Pane and stats movement on the A55: "niemal idealnie". The 7862 stats window still lagged; its last fix was reverted | CHAT_10; `../KNOWN_ISSUES.md` KI-21 |
+| 5 | Three CI runs green. No device test | CHAT_07 |
+| 6 | CI green. The resource clean-up (U1) caused a white plate under every icon, fixed by `ee9b303f`. Not checked on a device in the conversation | CHAT_11 |
+| 16 | CI green. Look on the devices not reported | CHAT_09 |
+| 17 | The owner reported the date cut off after the first version; follow-up `3eb7798`. No result after it. The implementation differs from the brief in four points (stats overlaps, effective minimum, grid-line candidates, when `Helpers` runs) | CHAT_13 |
+| 19 | The next analysis says its fixes "were verified in these logs" (A55) | `archive/analysis/opus-analysis-2026-11-03-remaining-log-findings.md` |
+| 21 | CI runs 366–369 green. None of the device scenarios was run | CHAT_12 |
+| 22 | A tester's report from the 7870: FM covers working, BT cover and play symbol wrong, DABdream stops after Home | `archive/analysis/opus-logs-2026-11-07-dabdream-home-and-bt-widget.md` |
+| 29 | Owner: C1, C2 and C6 correct. C3 (touch through the handle on Android 10) did not work and was replaced by D4 of brief 30 | CHAT_14, CHAT_15 |
+| 30 | Owner: D2, D3 and D4 work ("Dotyk przechodzi, swipe również działa prawidłowo") | CHAT_14, CHAT_15 |
+| 31 | Owner: "Wprowadzone zmiany działają." | CHAT_14 |
+| 32 | Owner: "Wprowadzone zmiany działają." | CHAT_14 |
+| 33 | None on record | CHAT_15; KI-24 |
+| 2, 7–15, 18, 20, 23–28 | None on record in the sources read. Later briefs build on them and open with a review of the round before | the briefs themselves |
+
+## Instructions that later briefs replaced
+
+An archived brief is right for its date. Where two disagree, the later one holds.
+
+| Earlier instruction | Replaced by | Decision |
+|---|---|---|
+| Brief 1, C1: force every logcat capture on in debug builds | Brief 4, R: reverted | D-06, D-24 |
+| Brief 3, E3: pinned PiP only where `com.syu.music` is installed | Brief 6, D2: by chipset | D-03, D-45 |
+| Briefs of 2026-10-28 (7 and its neighbours): new keys in English only | all 59 files, stated in every brief from 29 on | D-10, D-46 |
+| Brief 17: date and week day with AppCompat autosize | the same round's follow-up: `BoxTextFit` | D-41, D-47 |
+| Brief 17: stats window as an obstacle others avoid; brief 32 first draft: fixed element in the resolver | Brief 32 as amended (`7b920b51`): only the bars move it | D-16 |
+| Brief 21: overlapping elements are cut, then moved, then reset | Brief 33, G3: moved, then cut, then reset; touching is no overlap | D-17 |
+| Brief 29, C3: touches injected under the edge handle on Android 10 | Brief 30, D4: an input monitor | D-18 |
+| Brief 31, E3: two creators made to look alike | Brief 32, F2: one creator for every page | D-18 |
+| Briefs 1–16: branch `ccr-087eed00-gbqsuz`; briefs 1–21: flavor `fyt` | from brief 17 `testBranch`; from brief 22 flavor `system` | D-01, D-25 |
+
+## Briefs outside the catalogue
+
+Work that was done from a written brief which is not in this folder.
+
+| Date | What | Where the brief is | Implemented as | Source |
+|---|---|---|---|---|
+| 2026-10-23 → 10-26 | FYT stock sources behind the music widget (work packages WP1–WP12; P3 optional) | **Not in the repository.** It was `docs/prompts/sonnet_stock_media_sources.md`, with a tester's guide `docs/7870-stock-sources-test.md`, in a local commit `0b722649` that was never pushed | `ded0e6ef`, `d5030a6e`, `4ad0bed2`, `f1773cc1` [V]. P3 (online radio logos, BT cover) came later with brief 22 (`b574e758`) | CHAT_06 |
+
+Before 2026-10-27 the work was directed in conversation, without brief files. Those conversations are
+covered by the reports CHAT_01 … CHAT_06.

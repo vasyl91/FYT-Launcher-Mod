@@ -1,6 +1,7 @@
 # Architecture
 
-State of `3dd71894` (2026-11-10). Everything here was checked in the code [V] unless it is tagged otherwise.
+State of `ee8e4f91` (2026-11-12). Everything here was checked in the code [V] unless it is tagged otherwise.
+The reasons behind the design are in `DECISIONS.md`; this file says what exists and where.
 Abbreviations used in paths below:
 
 - `L/` = `app/src/main/java/com/android/launcher66/`
@@ -23,12 +24,18 @@ The class Javadoc is the detailed reference; this file is the map.
 | `baselineProfile/` | `:baselineprofile`: Macrobenchmark generator and startup benchmark (see its README). |
 | `hiddenapi-stubs/` | `:hiddenapi-stubs`: compile-only stubs of hidden framework classes (`TaskStackListener`, `InputEventReceiver`, `InputChannel`). |
 | `vdhost/` | The FYT VDHost: `shared/` (protocol and core), `server/` (the uid-1000 daemon and the Magisk zip task), `magisk/` (module template), `tools/` (pane leak scripts). See `vdhost/README.md`. |
-| `canbus_library/` | `build_canbus_library.py` (+ a `.bat`): builds the CAN bus library from a decompiled `com.syu.canbus`. |
-| `decompiled_*`, `fuel_stats_example/` | Decompiled FYT apps, framework jars and examples. **Reference only, not in the build** (about 305 MB). |
-| `android_jar/` | Modified `android.jar` material. Obsolete since 1.1.7 (README). |
+| `canbus_library/` | `build_canbus_library.py` (+ a `.bat`): builds the CAN bus library from a decompiled `com.syu.canbus`. With `--launcher .` it rebuilds the two built-in assets from `archive/decompiled/`. |
+| `android_jar/android-36.jar` | The Android 36 class library. **`:hiddenapi-stubs` and `:vdhost-shared` compile against it** (`compileOnly`), so it must stay at this path. |
+| `archive/decompiled/` | Decompiled FYT apps: `decompiled_carinfo`, `decompiled_com.syu.canbus` (three versions: `classes.dex`, `classes.dex.new`, `classes.dex.7870`), `decompiled_com.syu.media`, `decompiled_com.syu.radio`. **Reference only, not in the build** (about 300 MB). `canbus_library/build_canbus_library.py --launcher .` reads the first two. |
+| `archive/fuel_stats_example/` | Four decompiled example classes that `README.MD` links to. |
+| `archive/android_jar/` | The two `.rar` archives of the modified-`android.jar` workflow, obsolete since 1.1.7 (README). |
 | `images/` | README screenshots and videos. |
 | `.github/workflows/` | `build.yml` (CI), `release-assets.yml` (legacy updater asset names). |
-| `claude/` | Documentation for Claude sessions (this folder). |
+| `claude/` | Documentation for Claude sessions (this folder, lower case). |
+
+The decompiled FYT framework (`decompiled_FYT_jars/`, three zips) was removed from the tree in `8bfc5a8d`. It
+is still in git history, e.g. `git show 8bfc5a8d^:decompiled_FYT_jars/7862/system.zip`. Several briefs and
+chat reports cite files inside it.
 
 ## 2. Build
 
@@ -49,6 +56,8 @@ The class Javadoc is the detailed reference; this file is the map.
   - The Baseline Profile plugin adds `nonMinifiedRelease` and `benchmarkRelease`; its other variants are
     disabled.
 - **Version:** `versionName` is set by hand (now `1.2.1`). `versionCode = major*10000 + minor*100 + patch`.
+- **Compile-only jar:** `:hiddenapi-stubs` and `:vdhost-shared` take the public Android classes from
+  `android_jar/android-36.jar` (`compileOnly(files(...))`). Without the file at that path the build fails.
 - **Signing:** both debug and release use `app/keystore.jks` with the public `android` alias and password
   (overridable through `keystore.properties`). This key is the AOSP test platform key that FYT firmware is
   signed with, which is what lets the `system` flavor be uid 1000 (README) [H].
@@ -120,7 +129,17 @@ declared but have no imports** (`KNOWN_ISSUES.md` KI-03).
 - **Startup:** `L/StartupSteps`, `L/WorkspaceScreensPreload`, and `L/ColdStart` (the about 10 s boot stall,
   the launcher kept in front, the autostart apps). `L/HomeLayoutRecovery` restores the layout after a wake.
 - **Keeping the home screen in front:** `L/HomeFrontGuard` sends back only the app the device itself
-  reopens after a wake or a boot, never one the user opened. `L/DefaultDisplayTask` reports the top task.
+  reopens after a wake or a boot, never one the user opened (`DECISIONS.md` D-28).
+  - `L/DefaultDisplayTask` reads what is in front from the task stack of the default display.
+  - User input is noted in `Launcher.dispatchTouchEvent`/`dispatchKeyEvent` and by `U/UserTouches`.
+  - `S/ForegroundAppTracker` reports the app in front through a task stack listener (system privileges) or
+    through the VD host.
+- **Bringing the last app back** (when a "home screen on top" option is off): `L/ColdStart` records the last
+  app on the main display (`noteForegroundApp`) and reopens it after a cold boot; `S/WakeDetection` does the
+  same after a wake. The two settings are `Keys.LAUNCHER_HOME_WAKE` and `Keys.LAUNCHER_HOME_COLD_START`
+  (D-30).
+- **Navigation:** `U/FytPackage.resolveNavigationPackage()` returns the package `com.syu.ms` reports
+  (`com/syu/car/CarStates.mNaviPkg`). The launcher never writes the system's navigation app (D-29).
 
 ## 5. Bars
 
@@ -168,8 +187,17 @@ declared but have no imports** (`KNOWN_ISSUES.md` KI-03).
     (`U/WindowHostVdDisplay`, `U/WindowHostVdProvider`, `U/WindowHostVdShizuku*`).
 - **Lifecycle rules:**
   - On a configuration-change recreation, the panes are handed over to the new activity (`panes handed over`).
-  - An app opened full screen comes back to its pane as it is.
-- **Pinned PiP:** `L/PinnedPip`, `L/PinnedPipFocus`, `U/PinnedPipLaunch`, `L/LauncherPipStarter`.
+  - An app opened full screen comes back to its pane as it is. `U/PaneLaunchFlags` starts a pane's app with
+    `NEW_TASK | RESET_TASK_IF_NEEDED` only, as the home screen does.
+  - Panes start one after another: the next one when the previous one is drawing, the visible page first.
+  - Panes wait for a VD host that is still attaching (`U/HostAwait`).
+  - `U/PaneYieldWatcher` removes the panes when HiCar or the 360° camera comes to the front on a non-system
+    launcher.
+  - While the pages move, pane windows are moved with a budget on Android 14+ (`U/PaneWindows`), where
+    window relayout is asynchronous.
+- **Pinned PiP:** `L/PinnedPip`, `U/PinnedPipLaunch`, `L/LauncherPipStarter`. `L/PinnedPipFocus` is a 1×1
+  overlay that takes the input focus so the launcher gets the keyboard beside the pinned PiP (D-44, not yet
+  confirmed on a device).
 - **Extras:** floating app-switch buttons in `S/FabOverlayService`; the status-bar swipe area in
   `S/StatusBarSwipeDetector` (system only).
 
@@ -179,7 +207,12 @@ declared but have no imports** (`KNOWN_ISSUES.md` KI-03).
   `L/MusicWidgetSizer`, `L/MusicWidgetText`, `L/RadioWidgetPlan`, `L/RadioWidgetSizer`. Look:
   `L/WidgetStyle` + `L/WidgetStyler` + `L/ViewTint`. Colors are view tints, never color filters on shared
   drawables (rule R2, 2026-11-08).
-- **Any player:** `L/NotificationListener.kt` (media sessions) and `L/MediaTransportController`.
+- **Any player:** `L/NotificationListener.kt` (media sessions) and `L/MediaTransportController`. With no
+  cover the player's app icon is shown; with no session a widget button opens the last player.
+- **Sound channel:** `com.syu.ms` switches the MCU's sound channel when a media app comes up (1 radio,
+  3 Bluetooth, 8 FYT music, 10 third party; on the 7870 also 7 internet radio). `NotificationListener.kt`
+  restores the channel that was playing after the panes start their apps, unless the user tapped something.
+  Taps on panes are seen through `U/UserTouches`, a system-wide input monitor (D-31).
 - **FYT stock sources:**
   - `C/StockSources` decides which source is shown: `com.syu.music` on 7862/8581; `com.syu.media` music,
     online radio and BT on 7870; the radio on both.
@@ -233,10 +266,17 @@ declared but have no imports** (`KNOWN_ISSUES.md` KI-03).
 
 ## 11. Wake, sleep and boot
 
-- `S/WakeSignals` merges ACC (from `com.syu.ms`), the display state and other signals into one state.
-- `S/WakeDetection` acts on it for the whole process: logcat, home in front, panes. `S/WakeDetectionService`
-  only keeps the process alive.
-- `L/LauncherWake` and `L/UnisocPowerWhitelist` are the other pieces.
+- `S/WakeSignals` merges every signal into one state: ACC from `com.syu.ms` (`U_ACC_ON`), the display state,
+  screen broadcasts, unlock, dream, a poll, CPU suspend and a process restart. FYT's black screen
+  (`U_BLACK_SCREEN`) is neither a sleep nor a wake. It raises `onMcuOff()` when the MCU goes off.
+- `S/WakeDetection` acts on that state for the whole process: logcat, home in front, panes, the last app.
+  `S/WakeDetectionService` only keeps the process alive.
+- At sleep the launcher comes to the top 300 ms after ACC off, so that `com.syu.ms` finds the launcher on top
+  when it notes its "top app" at MCU off (D-28).
+- `L/LauncherWake` and `L/UnisocPowerWhitelist` are the other pieces. `L/SysCalls` keeps calls into
+  `system_server` off the main thread, because this ROM stalls them for seconds at boot.
+- `com/syu/car/CarStates` holds what `com.syu.ms` reports (ACC, MCU, the sound channel, the navigation
+  package).
 
 ## 12. Diagnostics
 
@@ -281,7 +321,7 @@ There is no server and there are no user accounts.
 
 | Service | Used by | Notes |
 |---|---|---|
-| api.openweathermap.org | `WeatherManager` | key hardcoded (KI-01) |
+| api.openweathermap.org | `WeatherManager` | the key is a constant in the source, by the owner's decision (D-26) |
 | api.sunrise-sunset.org | `SunTask` | |
 | accounts.spotify.com, api.spotify.com | `SpotifyRating` | OAuth PKCE, no client secret |
 | github.com releases | `VersionChecker`, `FytRating` (the bridge's release page), Shizuku Next link | |
@@ -292,6 +332,10 @@ There is no server and there are no user accounts.
 ## 16. Cross-cutting rules
 
 - No main-thread I/O; StrictMode runs in release too.
+- No arithmetic on `R.*` ids (`ResourceIdArithmeticTest`), and no resource ids in `switch`/`case`.
+- `L/Launcher` keeps delegates for the ten helper classes split out of it (`LauncherWeather`,
+  `HomeLayoutRecovery`, `LauncherWake`, `LauncherPipStarter`, `LauncherPermissionFlow`, `LauncherFab`,
+  `LauncherAppBars`, `LauncherMusicWidget`, `LauncherRadioWidget`, `LauncherWallpaperPicker`; D-36).
 - Logic in plain Java classes with JUnit 5 tests (95 test files under `app/src/test/java`).
 - Rules R1–R3 (2026-11-08) are written in the Javadoc of the classes that enforce them:
   - R1 in `WorkspaceLoadWatch` and `LauncherModel`;

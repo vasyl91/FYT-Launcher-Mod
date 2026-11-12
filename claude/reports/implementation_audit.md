@@ -1,4 +1,8 @@
-# Implementation audit (2026-11-10)
+# Implementation audit (2026-11-10, re-verified 2026-11-12)
+
+> **Latest verification: 2026-11-12**, at `ee8e4f91`. The findings of 2026-11-10 below are kept as they were
+> written. What changed since, and what turned out to be wrong, is in the addendum at the end. Where the two
+> disagree, the addendum holds.
 
 An audit of the codebase at `testBranch` `3dd71894`, done to build the knowledge base in `claude/`. No
 application code was changed. The current-state documents are `../PROJECT_STATE.md`, `../ARCHITECTURE.md`
@@ -92,3 +96,60 @@ and `../KNOWN_ISSUES.md`; this report keeps the method, the evidence and the ope
    reason? It is not recorded.
 6. **The `decompiled_*` trees and README videos:** should they stay in Git (KI-07, R-5)?
 7. **Round G:** the device result of the workspace load, widget colors and overlap rule.
+
+---
+
+## Addendum: re-verification of 2026-11-12
+
+Done for the knowledge consolidation (`KNOWLEDGE_CONSOLIDATION_REPORT.md`), after the owner added 15
+conversation reports and moved the reference material into `archive/`.
+
+### Corrections to the 2026-11-10 findings
+
+| 2026-11-10 said | Correct | How found |
+|---|---|---|
+| `android_jar/` is obsolete since 1.1.7 | `android_jar/android-36.jar` is a compile-time dependency of `:hiddenapi-stubs` and `:vdhost-shared`. Only the two `.rar` archives of the modified-jar workflow are obsolete | the build broke when the folder was moved (`8bfc5a8d`); CI run 467 failed; reproduced with `javac` with and without the jar; fixed by the owner in `ee8e4f91` (run 468 green) |
+| The OpenWeather key is a security finding; whether keeping it was decided is unknown | The owner decided to keep it hardcoded, twice, and had a move to `BuildConfig` reverted | CHAT_01, CHAT_02; `DECISIONS.md` D-26 |
+| Location "platform first": reason not recorded | The owner chose it after ART warnings about Play services classes | CHAT_11; D-19 |
+| Unresolved question 5: why was `b38f1286` reverted? | Still unknown, but the context is known: the reverted commit was an untested third attempt at the 7862 stats-window lag | CHAT_10; D-24, KI-21 |
+| 532 commits since `v1.2.1`, 137 ahead of `main` | 536 and 141 (four commits since: the docs, two `archive` commits, `jars`) | `git rev-list --count` |
+
+### New findings
+
+- **Repository layout [V]:** `archive/decompiled/` (four decompiled apps), `archive/fuel_stats_example/`,
+  `archive/android_jar/` (two `.rar` files); `decompiled_FYT_jars/` removed from the tree; the documentation
+  folder is `claude/` (lower case).
+- **`canbus_library/build_canbus_library.py` [V]:** its `--launcher` mode looked for the decompiled sources
+  at the repository root. It now reads them under `archive/decompiled/` (`LAUNCHER_SOURCE_ROOT`). Checked by
+  rebuilding both built-in libraries: the output is byte-identical to `canbus_library.txt` and
+  `canbus_library_7870.txt`.
+- **`display_pip` defaults [V]:** nine readers use default `true`, three use `false`
+  (`settings/SettingsFragmentSecond.java` twice, `settings/DrawViewScreen.java`); nothing calls
+  `PreferenceManager.setDefaultValues`. KI-20.
+- **Chat reports against git [V]:** the reports cite 156 distinct commits, all in `testBranch`. Two cited
+  hashes are not in the repository (`a63f42c`, a pre-rebase local commit; `0b722649`, never pushed). The
+  fixes of CHAT_01, which made no commits, are in the code through the owner's `eed91b73` and `3f4d96da`.
+- **Spot checks of reported behaviour in the code [V]:** see `../chat_archive/README.md`, "Verification".
+- **CI [V]:** run 465 (`a30c9a72`) success; run 467 (`754c8258`) failure; run 468 (`ee8e4f91`) success, with
+  the unit tests, both debug builds and the Magisk module.
+
+### Limitations (unchanged)
+
+Nothing was built or run locally beyond `javac` on two small modules and the Python library script. No
+device behaviour was checked. Statements about devices come from the briefs and the reports.
+
+### Questions for the owner: status on 2026-11-12
+
+| # | Question of 2026-11-10 | Status |
+|---|---|---|
+| 1 | The OpenWeather key | **Answered** by the reports: it stays (D-26) |
+| 2 | Room and Compose: planned or removable? | open |
+| 3 | A date or condition for 1.2.2 | open |
+| 4 | When was the Baseline Profile last generated? | open |
+| 5 | Reason for revert `b38f1286` | open; and is the 7862 stats lag still there? (KI-21) |
+| 6 | Should the reference trees and README videos stay in Git? | partly: they were gathered in `archive/`; the size question is open (R-5) |
+| 7 | Device result of round 12 | open (KI-24) |
+| 8 | *New:* whose devices are the two phones? | **Answered** by the owner 2026-11-12: both phones and the 7862 are the owner's; the 7870 is a tester's |
+| 9 | *New:* which changes "did not work on the 7870" (CHAT_14)? | open (KI-29) |
+| 10 | *New:* is "Proceed and fit" the wanted name for the creator's dialog button? | open (KI-24) |
+

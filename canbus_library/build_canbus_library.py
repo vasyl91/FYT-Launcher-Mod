@@ -5,6 +5,7 @@ fuel/range screens and the codes of its fuel consumption and range.
     py build_canbus_library.py <src> [--out FILE] [--mapping FILE]   from a decompiled com.syu.canbus
     py build_canbus_library.py --launcher <repo> [--out FILE]        the library built into the launcher, from the newer
                                                                      and the older com.syu.canbus and decompiled_carinfo/
+                                                                     (all under archive/decompiled/ of the repository)
     py build_canbus_library.py --seal FILE                           recomputes the footer of an edited file
     py build_canbus_library.py --check FILE                          validates a file like the launcher does
     py build_canbus_library.py --diff A B [--ids 1507667,163]        what differs between two library files
@@ -1838,8 +1839,11 @@ def build(args, root, mapping_path, consts, label, index, out_path, log):
                 codes_of, cond_counts, stats, warnings, units_of)
 
 
-# The sources of the library built into the launcher, the newest first: the folder in the repository, a name for
-# the log and the header, and whether it holds the switch on the car id (ActivityLauncher).
+# Where the decompiled sources lie in the repository. The folders below are given relative to it and are written
+# into the header of the library as they are, so a rebuild gives the same file as before they moved under archive/.
+LAUNCHER_SOURCE_ROOT = 'archive/decompiled'
+# The sources of the library built into the launcher, the newest first: the folder under LAUNCHER_SOURCE_ROOT, a
+# name for the log and the header, and whether it holds the switch on the car id (ActivityLauncher).
 LAUNCHER_SOURCES = (
     ('decompiled_com.syu.canbus/classes.dex.new/sources', 'newer com.syu.canbus', True),
     ('decompiled_com.syu.canbus/classes.dex/sources', 'older com.syu.canbus', True),
@@ -1887,7 +1891,7 @@ def build_launcher(repo, out_path, log, platform='default'):
     stats = Stats()
     indexes = []          # (name, index, class records or None)
     for rel, name, has_switch in sources:
-        folder = repo / rel
+        folder = repo / LAUNCHER_SOURCE_ROOT / rel
         if not folder.is_dir():
             log('error: %s not found' % folder)
             return 1

@@ -217,7 +217,7 @@ Most CAN boxes send the fuel consumption and the range on their own. Only some w
 
 [<img src="./images/s4.png" width="50%">](./images/s4.png)
 
-2. It should contain the name of the class that the CAN bus runs by default — in my case, it's [`com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi.java`](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/fuel_stats_example/RZC_BZ408IndexActi.java). Start with that class and inspect its subclasses if needed.
+2. It should contain the name of the class that the CAN bus runs by default — in my case, it's [`com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi.java`](archive/fuel_stats_example/RZC_BZ408IndexActi.java). Start with that class and inspect its subclasses if needed.
 
 3. Keep in mind that the following instructions are just an example based on my case, meant as a hint of how to do it. Also, some units or CAN buses don't provide this functionality — if your CAN bus app doesn't display current fuel consumption and/or cruising range, then you can't use this widget.
 
@@ -231,7 +231,7 @@ Most CAN boxes send the fuel consumption and the range on their own. Only some w
 ```
 That leads to the class `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMileIndexActi.java`; keep looking there.
 
-6. In [`RZC_BZ408OilMileIndexActi.java`](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/fuel_stats_example/RZC_BZ408OilMileIndexActi.java) you will find three tabs:
+6. In [`RZC_BZ408OilMileIndexActi.java`](archive/fuel_stats_example/RZC_BZ408OilMileIndexActi.java) you will find three tabs:
 
 ```
         this.mTabHost.addTab(this.mTabHost.newTabSpec("tabPage1").setIndicator("tabPage1").setContent(new Intent(this, (Class<?>) RZC_BZ408OilMilePage1Acti.class)));
@@ -240,7 +240,7 @@ That leads to the class `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMileIndexAct
 ```
 `RZC_BZ408OilMilePage1Acti.class` represents the window in the FYT CAN bus app that contains the fuel statistics.
 
-7. Finally, proceed to [`com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMilePage1Acti.java`](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/fuel_stats_example/RZC_BZ408OilMilePage1Acti.java), where you'll find functions similar to these (I left only the crucial parts):
+7. Finally, proceed to [`com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMilePage1Acti.java`](archive/fuel_stats_example/RZC_BZ408OilMilePage1Acti.java), where you'll find functions similar to these (I left only the crucial parts):
 
 ```
     private IUiNotify mNotifyCanbus = new IUiNotify() { 
@@ -296,7 +296,7 @@ That leads to the class `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMileIndexAct
 
     The cmdInt / cmdArr fields are shown only for the cars that need a request (the library knows them), and this car is one of them; the example is here to show what they mean. For such a car you can leave them empty. A car whose request has two numbers is written with a comma, e.g. `74,3`.
 
- If you have trouble identifying these codes, look in the containing folder for a file that holds the general code list for that particular car (it might NOT be available for every car! In my case, it's [`com.syu.carinfo.rzc.biaozhi408.Const_RZC4_PSA_ALL_DATA.java`](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/fuel_stats_example/Const_RZC4_PSA_ALL_DATA.java)).
+ If you have trouble identifying these codes, look in the containing folder for a file that holds the general code list for that particular car (it might NOT be available for every car! In my case, it's [`com.syu.carinfo.rzc.biaozhi408.Const_RZC4_PSA_ALL_DATA.java`](archive/fuel_stats_example/Const_RZC4_PSA_ALL_DATA.java)).
 
 9. If the widget still shows `0.0 L/100Km` and `0 Km`, or the readings are bizarre and inaccurate, your device probably uses different codes than the ones provided in this library. To get these codes, you'll have to unpack the CAN bus app installed on your head unit. 
 
