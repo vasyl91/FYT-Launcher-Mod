@@ -94,16 +94,16 @@ The files are kept exactly as they were written. Corrections belong in this inde
 | CHAT_03 | D-27, D-29, D-30, D-25; ARCHITECTURE §4 | log timings of ACC, MCU and carlink's start | navigation fix and the settings split on a device; a long-sleep wake (P-11) |
 | CHAT_04 | D-27, D-28; KI-27, KI-25; ARCHITECTURE §4, §11 | the rounds of logs and each rejected guard version in detail | the path where `com.syu.ms` reopens its app |
 | CHAT_05 | D-04, D-05, D-31, D-32, D-33, D-37, D-49; KI-13 | YT Music action names and icon ids; `IPlayer` transaction codes; Shizuku start timings | dual pane with a late host on Android 16 |
-| CHAT_06 | D-32; KI-26; `../prompts/README.md` (brief outside the catalogue) | parcel layouts and module codes of `com.syu.media` | 7870 behaviour as a whole at that date; BT time units |
+| CHAT_06 | D-32; KI-26; `../prompts/README.md` (brief outside the catalogue) | parcel layouts and module codes of `com.syu.media` | the 7870 questions listed in KI-29; BT time units. A session note on this work is in `../prompts/archive/analysis/memory-2026-10-26-stock-sources-7870.md` |
 | CHAT_07 | KI-04, KI-25; catalogue row 5 | CI run ids; counts of removed files | "no visible change" on a device |
-| CHAT_08 | D-44; KI-22; ARCHITECTURE §7 | the framework analysis behind the fix; rejected alternatives | everything about behaviour on a device |
+| CHAT_08 | D-44; KI-22; ARCHITECTURE §7 | the framework analysis behind the fix; rejected alternatives | two side effects (KI-22); the fix itself was confirmed by the owner on 2026-11-12 |
 | CHAT_09 | D-40; KI-26; catalogue row 16 | the table of slot counts per device | look on devices; the height-cache weakness |
-| CHAT_10 | D-34, D-24, D-49; KI-21; ARCHITECTURE §7 | A55 relayout measurements | the 7862 stats lag; the regrab fix |
+| CHAT_10 | D-34, D-24, D-49; KI-21; ARCHITECTURE §7 | A55 relayout measurements | the regrab fix; the stats-window question was answered by the owner on 2026-11-12 (KI-21) |
 | CHAT_11 | D-03, D-19, D-38; KI-25; catalogue row 6 | the clean-up scripts (not in the repository) | the three fixes on a device |
 | CHAT_12 | D-42; KI-20, KI-23, KI-25; catalogue row 21 | details of the cut and tie-break rules | device scenarios a–e; the Spotify cause |
 | CHAT_13 | D-41, D-47, D-09; KI-25, KI-26; catalogue row 17 | where the implementation differs from the brief | date widget on a device; item 3.7 |
-| CHAT_14 | D-16, D-17, D-18, D-49; KI-24, KI-28, KI-29; catalogue rows 29–33 | the owner's quoted confirmations per round | cause of the stuck load; the "7870" remark |
-| CHAT_15 | D-17, D-18; KI-24, KI-28; catalogue rows 27–33 | log signatures added per round; build errors fixed on the way | rounds 12 on a device; the G2 behaviour change |
+| CHAT_14 | D-16, D-17, D-18, D-49; KI-24, KI-28, KI-29; catalogue rows 29–33 | the owner's quoted confirmations per round | cause of the stuck load; the "7870" remark (the tester's reply is awaited, KI-29) |
+| CHAT_15 | D-17, D-18; KI-24, KI-28; catalogue rows 27–33 | log signatures added per round; build errors fixed on the way | nothing: the owner confirmed round 12 on 2026-11-12 |
 
 `D-nn` are entries in `../DECISIONS.md`, `KI-nn` in `../KNOWN_ISSUES.md`, `P-nn` in `../ROADMAP.md`.
 

@@ -196,8 +196,8 @@ declared but have no imports** (`KNOWN_ISSUES.md` KI-03).
   - While the pages move, pane windows are moved with a budget on Android 14+ (`U/PaneWindows`), where
     window relayout is asynchronous.
 - **Pinned PiP:** `L/PinnedPip`, `U/PinnedPipLaunch`, `L/LauncherPipStarter`. `L/PinnedPipFocus` is a 1×1
-  overlay that takes the input focus so the launcher gets the keyboard beside the pinned PiP (D-44, not yet
-  confirmed on a device).
+  overlay that takes the input focus so the launcher gets the keyboard beside the pinned PiP (D-44; the
+  owner confirmed it on 2026-11-12).
 - **Extras:** floating app-switch buttons in `S/FabOverlayService`; the status-bar swipe area in
   `S/StatusBarSwipeDetector` (system only).
 

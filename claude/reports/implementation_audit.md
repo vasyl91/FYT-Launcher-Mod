@@ -143,13 +143,14 @@ device behaviour was checked. Statements about devices come from the briefs and 
 | # | Question of 2026-11-10 | Status |
 |---|---|---|
 | 1 | The OpenWeather key | **Answered** by the reports: it stays (D-26) |
-| 2 | Room and Compose: planned or removable? | open |
+| 2 | Room and Compose: planned or removable? | **Answered** by the owner 2026-11-12: not planned, may be removed (D-51, P-12) |
 | 3 | A date or condition for 1.2.2 | open |
 | 4 | When was the Baseline Profile last generated? | open |
-| 5 | Reason for revert `b38f1286` | open; and is the 7862 stats lag still there? (KI-21) |
+| 5 | Reason for revert `b38f1286` | **Answered** by the owner 2026-11-12: the fix did not work as it should; the state after the revert is acceptable (D-24, KI-21) |
 | 6 | Should the reference trees and README videos stay in Git? | partly: they were gathered in `archive/`; the size question is open (R-5) |
-| 7 | Device result of round 12 | open (KI-24) |
+| 7 | Device result of round 12 | **Answered** by the owner 2026-11-12: works as intended (KI-24) |
 | 8 | *New:* whose devices are the two phones? | **Answered** by the owner 2026-11-12: both phones and the 7862 are the owner's; the 7870 is a tester's |
-| 9 | *New:* which changes "did not work on the 7870" (CHAT_14)? | open (KI-29) |
-| 10 | *New:* is "Proceed and fit" the wanted name for the creator's dialog button? | open (KI-24) |
+| 9 | *New:* which changes "did not work on the 7870" (CHAT_14)? | open: the tester has not said; the owner is waiting for a reply (KI-29) |
+| 10 | *New:* is "Proceed and fit" the wanted name for the creator's dialog button? | closed with question 7: round 12 works as intended |
+| 11 | *New:* does the pinned-PiP keyboard fix work? | **Answered** by the owner 2026-11-12: works, and Back going to the launcher is acceptable (D-44) |
 

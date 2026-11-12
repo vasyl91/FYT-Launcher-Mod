@@ -1,7 +1,7 @@
 # Project state
 
-**Snapshot: 2026-11-12, `testBranch` at `ee8e4f91` plus two documentation commits (`e3ba694e` and the one
-that carries this text). CI is green on `ee8e4f91` (run 468), the last commit that touched the build.** This file is the authoritative entry point for a new session. Update it at the
+**Snapshot: 2026-11-12, `testBranch` at `ee8e4f91` plus documentation commits (`e3ba694e`, `5ba38ec2` and
+the one that carries this text), with the owner's answers of that day. CI is green on `ee8e4f91` (run 468), the last commit that touched the build.** This file is the authoritative entry point for a new session. Update it at the
 end of every round (see `CLAUDE.md`).
 
 Status tags: [V] verified in code, git or CI · [H] historical, from the owner, a brief or a chat report ·
@@ -32,7 +32,7 @@ What the owner wants from it, as the briefs and chat reports show [H]:
 | Next version | 1.2.2. README, the updater and `release-assets.yml` already describe `system_release_1.2.2.apk` [V]. **No release date is recorded** [U]. |
 | Development phase | Short feature and fix rounds on `testBranch`, driven by device logs (Opus brief → Sonnet commits → owner test). 33 briefs since 2026-10-27, all implemented [V]. |
 | Active brief | **None.** `prompts/active/` is empty [V]. |
-| Last code change | Round 12 (G1–G3), 2026-11-08: `e3136f45`, `b1fe254c`, `3dd71894` [V]. No device result yet [H]. |
+| Last code change | Round 12 (G1–G3), 2026-11-08: `e3136f45`, `b1fe254c`, `3dd71894` [V]. The owner confirmed it on 2026-11-12: "It works as intended." [H] |
 | Since then | Documentation and repository layout only: `claude/` created (`a30c9a72`), reference material moved to `archive/` (`8bfc5a8d`), 15 chat reports added (`754c8258`), `android-36.jar` moved back (`ee8e4f91`), the folder unified as `claude/` (`e3ba694e`) [V]. |
 | Open GitHub issues | 0 [V] (2026-11-10). |
 
@@ -58,7 +58,7 @@ All features below are implemented [V]. Details are in `ARCHITECTURE.md`; user-f
 | Feature | Device | Notes |
 |---|---|---|
 | Up to four PiP panes on the home pages | owner's 7862 and both phones [H] | Android's ActivityView (system, 8–10) or the launcher's own virtual displays through a VD host (11+, standard). Android 8–10 through a host is **untested** (KI-05). |
-| Pinned PiP (FYT's pinned stack) | 7862 [H] | FYT units except the 7870, decided by chipset. The keyboard fix beside it is unconfirmed (KI-22). |
+| Pinned PiP (FYT's pinned stack) | 7862 [H] | FYT units except the 7870, decided by chipset. The keyboard fix beside it is confirmed by the owner (D-44). |
 | Layout creator | rounds 10–11 confirmed [H] | One creator for every page since 2026-11-08. |
 | Horizontal bar | rounds 8–11 confirmed [H] | Top or bottom, auto-hide with an edge handle, on every page, resizable, the widget bar with 7 options. |
 | Vertical bar | rounds 9–11 confirmed [H] | Left or right, on every page. |
@@ -71,7 +71,7 @@ All features below are implemented [V]. Details are in `ARCHITECTURE.md`; user-f
 | Built-in updater | released in 1.2.1 [V] | Downloads the release asset for its own flavor. |
 | Baseline Profile with on-device compilation | — | The profile in the repo is probably stale (KI-04). |
 | Standard flavor on root or Shizuku (VD host protocol 3) | both phones [H] | Overlay, notification access and install permissions granted through the host. |
-| Round 12: load restart, live widget colors, overlap rule | **none yet** | KI-24. |
+| Round 12: load restart, live widget colors, overlap rule | owner confirmed 2026-11-12 [H] | D-17. |
 
 Not implemented:
 
@@ -112,15 +112,15 @@ JUnit 5 JVM tests: 95 files, about 866 tests, no instrumented tests. CI runs on 
 
 ## Active tasks
 
-None. The next round starts when the owner reports on round 12 or asks for something new.
+None. Every round so far is implemented and reviewed. The next one starts when the owner asks for
+something new or the tester's 7870 results arrive.
 
 ## Blocked or waiting
 
-- **Device review of round 12** (workspace load restart, widget colors, creator overlap rule): waiting for
-  the owner [H]. Open points are listed in KI-24.
 - **Android 8–10 through the VD host:** needs one device each of 8.0, 8.1/9 and 10 (`vdhost/README.md`) [H].
 - **A build for a ROM signed with its own platform key:** only the ROM's maintainer has the key [V].
-- **Results from the 7870:** depend on the tester [H].
+- **Results from the 7870:** the owner is waiting for the tester's reply on which changes did not work
+  there (KI-29) [H].
 
 ## Known critical issues
 
@@ -128,16 +128,15 @@ Nothing is rated High at the moment. The build break of 2026-11-10/12 is fixed (
 in mind before a release, from `KNOWN_ISSUES.md`:
 
 1. The Baseline Profile is probably stale (KI-04).
-2. Round 12 has no device result (KI-24).
-3. Several earlier changes have no device confirmation on record (KI-25), and the 7862 stats-window lag may
-   still be there (KI-21).
+2. Something does not work on the tester's 7870, and it is not yet known what (KI-29).
+3. Several earlier changes have no device confirmation on record (KI-25).
 
 The hardcoded OpenWeather key is **not** an open issue: the owner decided to keep it (D-26).
 
 ## Next priorities
 
 **Confirmed by the owner or the briefs:**
-- The owner's device review of round 12. The next brief opens with it.
+- Remove the unused Room and Compose set-up; the owner approved it on 2026-11-12 (`ROADMAP.md` P-12).
 - Release 1.2.2 at some point; before it, a fresh Baseline Profile (`ROADMAP.md` P-2, P-3).
 - Deferred ideas, each needing its own brief: day/night mode pinned to the PiP displays; FYT skins in the
   standard flavor.
@@ -150,7 +149,7 @@ The hardcoded OpenWeather key is **not** an open issue: the owner decided to kee
 |---|---|
 | [`CLAUDE.md`](CLAUDE.md) | Rules, commands, Opus/Sonnet workflow |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | What exists and where: modules, subsystems, data, services, privileges |
-| [`DECISIONS.md`](DECISIONS.md) | Why: 49 decisions with status, who decided and the source |
+| [`DECISIONS.md`](DECISIONS.md) | Why: 51 decisions with status, who decided and the source |
 | [`ROADMAP.md`](ROADMAP.md) | History in milestones, confirmed plans, recommendations |
 | [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md) | Confirmed problems, accepted limitations, unverified reports |
 | [`prompts/README.md`](prompts/README.md) | Catalogue of all briefs → commits → status |

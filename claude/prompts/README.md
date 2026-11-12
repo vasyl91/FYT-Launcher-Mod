@@ -26,7 +26,7 @@ The briefs are unchanged since they were written, so some paths in them are old.
 
 | A brief says | Today |
 |---|---|
-| `docs/<name>.md` | `archive/<name>.md` here, or `archive/analysis/<name>.md` for the four analyses (moved 2026-11-10 from `docs/`, then 2026-11-12 from `Claude/` to `claude/`; `git log --follow` shows the history) |
+| `docs/<name>.md` | `archive/<name>.md` here, or `archive/analysis/<name>.md` for the four analyses that came from there (moved 2026-11-10 from `docs/`, then 2026-11-12 from `Claude/` to `claude/`; `git log --follow` shows the history) |
 | `decompiled_carinfo/`, `decompiled_com.syu.*/` | `archive/decompiled/…` at the repository root (moved in `8bfc5a8d`) |
 | `fuel_stats_example/` | `archive/fuel_stats_example/` |
 | `decompiled_FYT_jars/` | removed from the tree in `8bfc5a8d`; still in git history |
@@ -45,7 +45,6 @@ brief of their own.
 
 - ✅ implemented: all prescribed commits are in `testBranch`, and later rounds build on them. This says the
   work was done, not that it works on a device.
-- ✅¹ implemented with green CI; no later brief exists yet, so no device review is recorded.
 - ↩ partly reverted or superseded later (see the note).
 
 A brief existing proves nothing by itself. The status comes from git; what is known about devices is in the
@@ -87,7 +86,7 @@ section "Device results on record" below.
 | 30 | 11-08 | `sonnet-prompt-2026-11-08-top-bar-button-vertical-every-page.md` | Top bar below the status bar, button or handle, the vertical bar on every page, touches under the handle | `a4f522bf` `1843f8a6` `5604d116` `4b63a077` | ✅ confirmed by the owner on a device (see below) |
 | 31 | 11-08 | `sonnet-prompt-2026-11-08-top-bar-box-vertical-corner-creators.md` | Top bar on the page's box, the vertical bar in the empty corner, creators as the home screen | `752222ec` `6961a9ca` `8a0229d5` | ✅ confirmed by the owner on a device (see below) |
 | 32 | 11-08 | `sonnet-prompt-2026-11-08-vertical-window-side-one-creator-stats.md` | Vertical bar window on the right, one creator for every page, stats window moved by the bars | `fc5cac17` `76c1c110` `f791b67e` | ✅ confirmed by the owner on a device (see below) |
-| 33 | 11-08 | `sonnet-prompt-2026-11-08-workspace-load-widget-style-creator-overlap.md` | G1–G3 with rules R1–R3: workspace load watchdog, widget colors as view tints, one overlap rule | `e3136f45` `b1fe254c` `3dd71894` | ✅¹ archived 2026-11-10 at the owner's request; device review pending |
+| 33 | 11-08 | `sonnet-prompt-2026-11-08-workspace-load-widget-style-creator-overlap.md` | G1–G3 with rules R1–R3: workspace load watchdog, widget colors as view tints, one overlap rule | `e3136f45` `b1fe254c` `3dd71894` | ✅ confirmed by the owner on a device, 2026-11-12 (see below) |
 
 Note: commit `0ea8f2eb` (fYT Rating, C6 of #29) carries a lower-case subject (`fYT Rating: …`), which the
 verbatim match missed; it was matched by hand.
@@ -96,10 +95,11 @@ verbatim match missed; it was matched by hand.
 
 | Date | File | Language | What it is | Used by |
 |---|---|---|---|---|
-| 10-26 | `log-analysis-2026-10-26.md` | PL | Four 7870 logcats read with grep only; findings P1–P11, marked [OBS]/[HIP] | #1, which confirms or refutes each item. **P10 (move and rotate the API key) still open: KI-01** |
+| 10-26 | `log-analysis-2026-10-26.md` | PL | Four 7870 logcats read with grep only; findings P1–P11, marked [OBS]/[HIP] | #1, which confirms or refutes each item. P10 (move and rotate the API key) was decided against by the owner: D-26 |
 | 10-30 | `canbus-app-comparison-2026-10-30.md` | PL | Old vs new `com.syu.canbus`: IPC identical, the `DATA[n]` shift (+11 for PSA), what changed for car 1507667, recommendations | #9; lasting reference for `DATA[]` indices |
 | 11-03 | `opus-analysis-2026-11-03-remaining-log-findings.md` | EN | Three findings left after #19 (StrictMode on bar icons, pane bounds, cold start) | #20 |
 | 11-07 | `opus-logs-2026-11-07-dabdream-home-and-bt-widget.md` | PL | The tester's report and log excerpts (170 KB): DABdream crash after Home, BT widget state | #29 |
+| 10-26 | `memory-2026-10-26-stock-sources-7870.md` | EN | A session's own memory note on the stock-sources work: what was built, the owner's 7862 result, the open questions for the 7870. Supplied by the owner on 2026-11-12 and stored as it was | stands in for the brief that never reached the repository (see "Briefs outside the catalogue") |
 
 ## Device results on record
 
@@ -109,7 +109,7 @@ means no source read says how it went on a device; the owner may know more.
 | Briefs | What is on record | Source |
 |---|---|---|
 | 1 | The owner checked the round on the 7862: "działa bez zmian, tak jak miało być" | brief 2 |
-| 3–4 | Pinned PiP after the fixes: "Działa niemal idealnie". Pane and stats movement on the A55: "niemal idealnie". The 7862 stats window still lagged; its last fix was reverted | CHAT_10; `../KNOWN_ISSUES.md` KI-21 |
+| 3–4 | Pinned PiP after the fixes: "Działa niemal idealnie". Pane and stats movement on the A55: "niemal idealnie". The last fix for the 7862 stats window "didn't work as it should" and the owner reverted it "to acceptable state" | CHAT_10; the owner 2026-11-12; `../KNOWN_ISSUES.md` KI-21 |
 | 5 | Three CI runs green. No device test | CHAT_07 |
 | 6 | CI green. The resource clean-up (U1) caused a white plate under every icon, fixed by `ee9b303f`. Not checked on a device in the conversation | CHAT_11 |
 | 16 | CI green. Look on the devices not reported | CHAT_09 |
@@ -121,7 +121,7 @@ means no source read says how it went on a device; the owner may know more.
 | 30 | Owner: D2, D3 and D4 work ("Dotyk przechodzi, swipe również działa prawidłowo") | CHAT_14, CHAT_15 |
 | 31 | Owner: "Wprowadzone zmiany działają." | CHAT_14 |
 | 32 | Owner: "Wprowadzone zmiany działają." | CHAT_14 |
-| 33 | None on record | CHAT_15; KI-24 |
+| 33 | Owner, 2026-11-12: "It works as intended." | the owner's answer in the consolidation session |
 | 2, 7–15, 18, 20, 23–28 | None on record in the sources read. Later briefs build on them and open with a review of the round before | the briefs themselves |
 
 ## Instructions that later briefs replaced
@@ -146,7 +146,7 @@ Work that was done from a written brief which is not in this folder.
 
 | Date | What | Where the brief is | Implemented as | Source |
 |---|---|---|---|---|
-| 2026-10-23 → 10-26 | FYT stock sources behind the music widget (work packages WP1–WP12; P3 optional) | **Not in the repository.** It was `docs/prompts/sonnet_stock_media_sources.md`, with a tester's guide `docs/7870-stock-sources-test.md`, in a local commit `0b722649` that was never pushed | `ded0e6ef`, `d5030a6e`, `4ad0bed2`, `f1773cc1` [V]. P3 (online radio logos, BT cover) came later with brief 22 (`b574e758`) | CHAT_06 |
+| 2026-10-23 → 10-26 | FYT stock sources behind the music widget (work packages WP1–WP12; P3 optional) | **Not in the repository.** A session note about it is: `archive/analysis/memory-2026-10-26-stock-sources-7870.md`. The brief itself was `docs/prompts/sonnet_stock_media_sources.md`, with a tester's guide `docs/7870-stock-sources-test.md`, in a local commit `0b722649` that was never pushed | `ded0e6ef`, `d5030a6e`, `4ad0bed2`, `f1773cc1` [V]. P3 (online radio logos, BT cover) came later with brief 22 (`b574e758`) | CHAT_06 |
 
 Before 2026-10-27 the work was directed in conversation, without brief files. Those conversations are
 covered by the reports CHAT_01 … CHAT_06.

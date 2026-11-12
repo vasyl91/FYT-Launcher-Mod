@@ -1,6 +1,6 @@
 # Known issues
 
-As of 2026-11-12 (`ee8e4f91` plus two documentation commits). Sources: the code, git, CI, the
+As of 2026-11-12 (`ee8e4f91` plus documentation commits), with the owner's answers of the same day. Sources: the code, git, CI, the
 briefs and the chat reports (`chat_archive/`).
 
 The file has three parts, because they call for different handling:
@@ -19,7 +19,7 @@ Add new issues at the end of their part with the next number. Numbers are never 
 
 | ID | Issue | Kind | Priority | Status |
 |---|---|---|---|---|
-| KI-03 | Room and Compose declared but unused | Tech debt | Low | open |
+| KI-03 | Room and Compose declared but unused | Tech debt | Low | open; removal approved by the owner |
 | KI-04 | Baseline Profile probably stale | Performance | Medium | open |
 | KI-06 | No instrumented or UI tests | Missing tests | Medium | open |
 | KI-07 | Repository footprint | Maintenance | Low | open |
@@ -30,15 +30,16 @@ Add new issues at the end of their part with the next number. Numbers are never 
 | KI-19 | The build needs `android_jar/android-36.jar` at that path | Build | High | fixed 2026-11-12 |
 | KI-20 | `display_pip` is read with two different defaults | Bug risk | Low | open |
 | KI-23 | Translations are machine-written and unreviewed | Quality | Low | open |
-| KI-24 | Round 12 (G1–G3) has no device result | Verification | Medium | open |
+| KI-24 | Round 12 (G1–G3) had no device result | Verification | Medium | fixed 2026-11-12: confirmed by the owner |
 
 ### KI-03 Room and Compose declared but unused
 - **Where:** `app/build.gradle.kts` (`room-runtime`, `ksp(room-compiler)`, the Compose BOM, runtime and
   tooling, `buildFeatures.compose = true`, the Kotlin Compose plugin).
 - **Evidence [V]:** zero imports of `androidx.room` or `androidx.compose` under `app/src`.
 - **Impact:** build time (KSP, the Compose compiler). R8 keeps the effect on APK size small.
-- **Next:** remove them unless the owner plans to use them (`ROADMAP.md` R-2). This is a build change, so it
-  needs a brief. Whether they are planned is not recorded [U].
+- **Owner, 2026-11-12 [H]:** not planned; they may be removed if unused.
+- **Next:** remove them (`ROADMAP.md` P-12). This is a build change: Room's KSP processor goes, but KSP
+  itself stays for Glide. CI is the check.
 
 ### KI-04 Baseline Profile probably stale
 - **Where:** `app/src/main/generated/baselineProfiles/`.
@@ -110,15 +111,12 @@ page, the handle on either edge, the Bars category). Updated in `a30c9a72`. Keep
   `zu`, `sw`).
 - **Next:** native-speaker review where it matters; no plan is recorded.
 
-### KI-24 Round 12 (G1–G3) has no device result
+### KI-24 Round 12 (G1–G3) had no device result (confirmed 2026-11-12)
 - **What:** the workspace-load restart (`e3136f45`), widget colors as view tints (`b1fe254c`) and the overlap
-  rule with "Proceed and fit" (`3dd71894`). CI was green; nobody has reported a device result (CHAT_15).
-- **To confirm on a device:**
-  - G2 changed behaviour: the bar's music title and artist now follow the bar's text color setting;
-  - the owner had not yet answered whether renaming "Proceed and reset" to "Proceed and fit" is wanted
-    (CHAT_14);
-  - where the 2026-11-08 15:03 load stopped is still unknown; the new loader log lines are meant to show it
-    next time.
+  rule with "Proceed and fit" (`3dd71894`).
+- **Result [H]:** the owner, 2026-11-12: "It works as intended."
+- **Still unknown:** where the 2026-11-08 15:03 load stopped (KI-28). The new loader log lines are meant to
+  show it if it happens again.
 
 ## Part B: accepted limitations
 
@@ -134,6 +132,7 @@ page, the handle on either edge, the Bars category). Updated in `a30c9a72`. Keep
 | KI-16 | A standard ("phone") 1.2.1 cannot update itself | documented, one-time |
 | KI-18 | Framework warnings in logs | owner decision D-15 |
 | KI-27 | Limits of the home-screen guard | stated to the owner, D-28 |
+| KI-21 | The stats window on the 7862 while pages scroll | owner: acceptable as it is |
 
 ### KI-01 OpenWeather API key hardcoded in public source
 - **Where:** `app/src/main/java/com/syu/weather/WeatherManager.java` (`OPEN_WEATHER_APPID`), since 1.1.7.
@@ -200,6 +199,14 @@ Stated to the owner when the guard was finished (CHAT_04) [H]:
 - Steering-wheel (CAN) buttons and `adb shell am start` are invisible to the launcher: they produce no
   Android input and no button event.
 
+### KI-21 The stats window on the 7862 while pages scroll
+- **History [H]:** after `4f94b19` the owner reported the stats window lagging behind the pages on the 7862.
+  Two fixes did not help (`1cccf3c`, `998d56f`). A third (`3a0217ea`, direct surface moves through hidden
+  Android 10 API) was pushed untested.
+- **Outcome [H]:** the owner, 2026-11-12: "It didn't work as it should. Reverted it to acceptable state."
+  The revert is `b38f1286`. The behaviour since then is acceptable to the owner.
+- **So:** do not retry direct surface moves for it without being asked (D-24).
+
 ## Part C: unverified
 
 Nothing here is confirmed. Each item needs a check in the code or on a device before anyone acts on it.
@@ -207,29 +214,21 @@ Nothing here is confirmed. Each item needs a check in the code or on a device be
 | ID | Item | What is missing |
 |---|---|---|
 | KI-05 | Android 8–10 through the VD host | never run on a device |
-| KI-21 | The 7862 stats window may still lag behind the pages | the reason for a revert; the current behaviour |
-| KI-22 | The pinned-PiP keyboard fix | any device test |
+| KI-22 | Two side effects of the pinned-PiP keyboard fix | a check; the fix itself is confirmed |
 | KI-25 | Changes with no device confirmation on record | the owner's result for each |
 | KI-26 | Code observations from reviews | a re-check in today's code |
 | KI-28 | Root causes that were never found | a log of the next occurrence |
-| KI-29 | "Changes do not work on the 7870" | which changes |
+| KI-29 | "Changes do not work on the 7870" | the tester's reply |
 
 ### KI-05 Android 8–10 through the VD host never run on a device
 The path for a non-system launcher on 8.0, 8.1/9 and 10 (module daemon or Shizuku) was written from the
 AOSP sources only. The checklist is in `vdhost/README.md` ("Still to test on a device"). Code:
 `vdhost/shared/src/main/java/com/syu/vdhost/VdHostCore.java`, `app/src/main/java/com/syu/util/WindowHostVd*`.
 
-### KI-21 The 7862 stats window may still lag behind the pages
-- **History [H]:** after `4f94b19` the owner reported the stats window lagging while pages scroll on the
-  7862. Two fixes did not help (`1cccf3c`, `998d56f`). A third (`3a0217ea`, direct surface moves) was pushed
-  untested and reverted by the owner the same night (`b38f1286`).
-- **Unknown [U]:** why it was reverted, and whether the lag is still there. No later brief mentions it.
-
-### KI-22 The pinned-PiP keyboard fix was never tested on a device
-`PinnedPipFocus` (`d9fc21d`, D-44) was written from a log and the decompiled framework. Open points from
-CHAT_08:
-- whether the keyboard opens for the folder rename and closes as expected on a 7862/8581;
-- Back goes to the launcher after a launcher touch (a behaviour change nobody confirmed);
+### KI-22 Two side effects of the pinned-PiP keyboard fix were not checked
+`PinnedPipFocus` (`d9fc21d`, D-44) itself is confirmed: the owner, 2026-11-12, "Works and it is acceptable",
+including Back going to the launcher after a launcher touch. Two points CHAT_08 raised were not part of that
+answer:
 - launcher dialogs with text fields are not covered while the pinned PiP is shown;
 - with the accessibility fallback, the reported foreground package may alternate between the PiP app and
   the launcher, which could affect the stats window over apps.
@@ -285,7 +284,11 @@ Both were mitigated with guards and extra logging [V]; the cause is unknown [U].
   logs `Persistent vertical bar frame: …`, `… window is at …`).
 - A workspace load after leaving the settings bound nothing for 30 s (`e3136f45`; logs `Loader <id> …`).
 
-### KI-29 "Changes do not work on the 7870" (one remark)
+### KI-29 "Changes do not work on the 7870" (waiting for the tester)
 The planning report quotes the owner saying earlier that changes worked "za wyjątkiem tych z urządzenia
-7870" (CHAT_14). Which changes, and whether later rounds fixed them, is not in any source read [U]. The
-7870 is the tester's unit, so results arrive later and second-hand.
+7870" (CHAT_14). The owner, 2026-11-12: the tester did not say which, and a reply is still awaited [H].
+Questions the 7870's logs were meant to answer since 2026-10-26, from the session note
+`prompts/archive/analysis/memory-2026-10-26-stock-sources-7870.md` and CHAT_06:
+- does `com.syu.ms` push the current values when the launcher registers (the first radio or BT display)?
+- does `com.syu.media` give up its channel (8 → 0) when it pauses for a pane app?
+- Bluetooth times in milliseconds against `Launcher.refreshBtInfo`, which expects seconds (KI-26).

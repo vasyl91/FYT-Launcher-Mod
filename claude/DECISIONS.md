@@ -1,7 +1,8 @@
 # Decisions
 
 Important technical and product decisions. Last consolidated on 2026-11-12 from the code, git, the briefs
-(`prompts/archive/`) and the 15 chat reports (`chat_archive/CHAT_01.MD` … `CHAT_15.MD`).
+(`prompts/archive/`), the 15 chat reports (`chat_archive/CHAT_01.MD` … `CHAT_15.MD`) and the owner's answers
+of that day.
 
 ## How to read this file
 
@@ -74,12 +75,14 @@ entry that replaces it.
 | D-41 | Date widget fitted to its box | ACTIVE | Assistant |
 | D-42 | Screen numbers, overlaps, Spotify sign-in (round 2026-11-04) | ACTIVE | Owner (brief) |
 | D-43 | Repository layout: `claude/` and `archive/` | ACTIVE | Owner |
-| D-44 | Focus overlay for the keyboard beside the pinned PiP | UNDER_REVIEW | Assistant |
+| D-44 | Focus overlay for the keyboard beside the pinned PiP | ACTIVE | Assistant; confirmed by the owner |
 | D-45 | Pinned PiP only on units with `com.syu.music` | SUPERSEDED by D-03 | Owner (brief) |
 | D-46 | New strings in English only | SUPERSEDED by D-10 | Owner (brief) |
 | D-47 | Date widget with AppCompat autosize | SUPERSEDED by D-41 | Owner (brief) |
 | D-48 | Fixed 45 s workspace-load watchdog | SUPERSEDED by D-17 (R1) | Assistant |
 | D-49 | Rejected proposals (table) | REJECTED | Owner |
+| D-50 | History before 1.2.1 is not reconstructed | ACTIVE | Owner |
+| D-51 | Room and Compose are not planned | ACTIVE | Owner |
 
 ---
 
@@ -264,7 +267,7 @@ entry that replaces it.
 - **R3:** one overlap rule, under which touching edges do not overlap; overlapping elements are moved, then
   cut, then reset (`3dd71894`). Touching a bar is still a collision.
 - These rules are written in the Javadoc of the classes that enforce them.
-- **Open:** no device result yet (KI-24).
+- **Device result [H]:** the owner, 2026-11-12: "It works as intended."
 - **Source:** brief 2026-11-08, CHAT_14, CHAT_15 [H][V].
 
 ### D-18 Bars at either side; the handle catches only the opening swipe
@@ -309,12 +312,14 @@ entry that replaces it.
 - **Source:** brief 2026-11-04, CHAT_12 [H][V].
 
 ### D-44 A focus overlay gives the launcher the keyboard beside the pinned PiP
-- **Status:** UNDER_REVIEW. **By:** assistant. Never tested on a device; the owner has not confirmed it.
+- **Status:** ACTIVE. **By:** assistant; confirmed by the owner on 2026-11-12 ("Works and it is
+  acceptable"). It was UNDER_REVIEW until then, because the session that wrote it could not test it.
 - **Decision:** while FYT's pinned PiP is shown, a touch on the launcher adds a 1×1 overlay window that takes
   the input focus and proxies the keyboard to the launcher's text field (`PinnedPipFocus`, `d9fc21d`).
 - **Context:** the pinned stack is always the top, focusable stack, so the launcher could not get the
   keyboard (folder rename), and the PiP app's keyboard closed only by a tap in the PiP or Back.
-- **Consequence to confirm:** after a touch on the launcher, Back goes to the launcher, not to the PiP app.
+- **Consequence, accepted by the owner:** after a touch on the launcher, Back goes to the launcher, not to
+  the PiP app.
 - **Alternatives considered (assistant only):** hiding the PiP while editing; an overlay text field;
   injecting Back.
 - **Source:** CHAT_08 [H][V]; `KNOWN_ISSUES.md` KI-22.
@@ -361,7 +366,9 @@ entry that replaces it.
   - A stock player cannot take the widget from the radio or Bluetooth while the MCU is on their channel, and
     a takeover waits 1.5 s after a channel change (`StockKindArbiter`, `PLAYER_SETTLE_MS`; assistant's
     review fixes).
-- **Source:** CHAT_05, CHAT_06; commits `ded0e6ef`, `d5030a6e`, `4ad0bed2` [H][V].
+- **Source:** CHAT_05, CHAT_06; the session note
+  `prompts/archive/analysis/memory-2026-10-26-stock-sources-7870.md`; commits `ded0e6ef`, `d5030a6e`,
+  `4ad0bed2` [H][V].
 
 ### D-33 Music favorites: each player's own way
 - **Status:** ACTIVE. **By:** owner (choice of option), assistant (mechanism).
@@ -613,7 +620,7 @@ entry that replaces it.
 | Change | Revert | Reason |
 |---|---|---|
 | `66961f21` force every logcat capture on in debug builds | `735e308b` | owner decision (D-06) |
-| `3a0217ea` "on the 7862 the stats' surface moves with the launcher's frame": direct surface moves through hidden Android 10 API | `b38f1286`, by the owner, 2026-10-28 | not recorded [U]. Context [H]: it was the third attempt to stop the stats window lagging behind the pages on the 7862 and was pushed untested on a device (CHAT_10) |
+| `3a0217ea` "on the 7862 the stats' surface moves with the launcher's frame": direct surface moves through hidden Android 10 API | `b38f1286`, by the owner, 2026-10-28 | the owner, 2026-11-12: "It didn't work as it should. Reverted it to acceptable state." It was the third attempt to stop the stats window lagging behind the pages on the 7862, pushed untested (CHAT_10). The state after the revert is acceptable (KI-21) |
 | `1586b84b` (external PR #5) "Harden Maps PiP window lifecycle" | `c94703fd` (2026-07-22) | "a defect in the application view resume lifecycle causes a new instance to be created instead of restoring the existing one" |
 | OpenWeather key moved to `BuildConfig` (never committed) | reverted in the working tree | owner decision (D-26) |
 
@@ -636,3 +643,18 @@ entry that replaces it.
 | Parse logcat, `IActivityController` or usage events to attribute app starts | assistant | too invasive | CHAT_04 |
 | Shizuku Next start-up fixes | deferred by the owner ("temat na później") | another project's code | CHAT_05 |
 | A "stopped" state for the "Display media Titles" app | deferred by the owner | "zajmiemy się kiedy indziej" | CHAT_05 |
+
+## Added on 2026-11-12
+
+### D-50 History before 1.2.1 is not reconstructed
+- **Status:** ACTIVE. **By:** owner, 2026-11-12.
+- **Decision:** what each release before 1.2.1 added is not dug out of the commits: "too much digging as
+  there are plenty of commits. We work on what we currently have."
+- **Consequence:** the documents start from the current code and from 2026-10-05. Do not list the missing
+  early history as a gap to fill.
+
+### D-51 Room and Compose are not planned
+- **Status:** ACTIVE. **By:** owner, 2026-11-12.
+- **Decision:** neither is planned; they may be removed if unused. They are unused (`KNOWN_ISSUES.md` KI-03).
+- **Next:** `ROADMAP.md` P-12.
+

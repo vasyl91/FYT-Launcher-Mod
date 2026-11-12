@@ -101,10 +101,10 @@ Add here any contradiction found while incorporating chat reports (see
 
 Recorded on 2026-11-12 (details in `KNOWLEDGE_CONSOLIDATION_REPORT.md`, section E):
 
-- **Open:** why `b38f1286` reverted the 7862 stats-window fix, and whether the lag remains (CHAT_10 says the
-  fix was untested; git shows the owner's revert with no reason).
-- **Open:** CHAT_14 quotes the owner that changes worked "za wyjątkiem tych z urządzenia 7870"; no source
-  says which changes.
+- **Resolved by the owner on 2026-11-12:** `b38f1286` reverted the 7862 stats-window fix because it did not
+  work as it should; the state after the revert is acceptable (CHAT_10 had said the fix was untested).
+- **Open:** CHAT_14 quotes the owner that changes worked "za wyjątkiem tych z urządzenia 7870". The owner,
+  2026-11-12: the tester did not say which; a reply is awaited.
 - **Resolved:** the key, the location reason, the device ownership, and planned-versus-implemented for round
   12 (see the addendum below).
 
@@ -166,8 +166,11 @@ code, manifests, resources, Gradle files and workflows.
 
 ### Remaining gaps
 
-- What each release before 1.2.1 added (GitHub release notes only).
-- The stock-sources brief of 2026-10-23 and its 7870 test guide (a local commit that was never pushed).
+- What each release before 1.2.1 added. The owner decided on 2026-11-12 not to reconstruct it (D-50), so
+  this is no longer a gap to fill.
+- The stock-sources brief of 2026-10-23 and its 7870 test guide (a local commit that was never pushed). A
+  session note about the work was supplied by the owner and stored as
+  `../prompts/archive/analysis/memory-2026-10-26-stock-sources-7870.md`.
 - Device results for the rounds listed as "none on record" in `../prompts/README.md`.
 - The open questions in `implementation_audit.md`, addendum.
 

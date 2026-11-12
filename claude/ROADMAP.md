@@ -13,8 +13,8 @@ Move an item to "Completed" when it ships; do not delete it.
 
 The owner runs short device-driven rounds on `testBranch`: logs → Opus brief → Sonnet commits → device test.
 Each round fixes what the last test found and adds the features the owner asks for. The work since `v1.2.1`
-(536 commits at `ee8e4f91`) is unreleased. **No brief is active.** Round 12 (2026-11-08) waits for the owner's device
-review.
+(536 commits at `ee8e4f91`) is unreleased. **No brief is active**, and every round is reviewed: the
+owner confirmed round 12 on 2026-11-12.
 
 ## Completed milestones
 
@@ -38,7 +38,7 @@ review.
 
 | # | Item | Source | Depends on / blocked by |
 |---|---|---|---|
-| P-1 | **Owner's device review of round 12** (workspace load, widget colors, creator overlap) | the workflow; CHAT_14, CHAT_15 | owner |
+| P-1 | ~~Owner's device review of round 12~~ **Done 2026-11-12:** "It works as intended." | the owner | — |
 | P-2 | **Release 1.2.2.** README, the updater and `release-assets.yml` already use the 1.2.2 file names | `README.MD` [V]; release date [U] | P-3; `versionName` bump; merge to `main` |
 | P-3 | **Regenerate the Baseline Profile** before a release | Cling brief and CHAT_07: "właściciel wygeneruje profile na nowo"; `baselineProfile/README.md` §10 [H] | a test device on ADB |
 | P-4 | Owner actions when moving to the new names: publish the new Magisk module (protocol 3; the old one still hosts panes), and update the file names inside `installer.zip` (outside the repository) | brief 2026-11-05 media §6 [H] | — |
@@ -49,18 +49,20 @@ review.
 | P-9 | A build for custom ROMs signed with their own platform key | `README.MD`: "No such build exists yet" [V] | only the ROM's maintainer has the key |
 | P-10 | *Deferred by the owner:* Shizuku Next start-up fixes ("temat na później"); a "stopped" state for the "Display media Titles" app ("zajmiemy się kiedy indziej") | CHAT_05 [H] | other projects' code |
 | P-11 | *Said by the owner, no result on record:* a wake test after a long sleep ("Sprawdzę później jak to wygląda przy dłuższym okresie uśpienia") | CHAT_03 [H] | owner |
+| P-12 | **Remove the unused Room and Compose set-up** (Room runtime and its KSP processor; the Compose BOM, runtime, tooling, plugin and `compose = true`). KSP stays for Glide | the owner, 2026-11-12: "Not planned, might be removed if it is unused"; KI-03, D-51 | a brief or a direct request; CI is the check |
+| P-13 | The tester's answer on what did not work on the 7870 | the owner, 2026-11-12 | the tester |
 
 ## Recommendations (not decided)
 
 | # | Recommendation | Why | Issue |
 |---|---|---|---|
 | R-1 | ~~Move the OpenWeather key out of the source and rotate it~~ **Withdrawn 2026-11-12.** | The owner decided to keep the key hardcoded (D-26). The 2026-11-10 audit did not know that. | KI-01 |
-| R-2 | Remove Room (runtime + KSP compiler) and Compose (BOM, plugin, `compose = true`) unless they are planned | no imports anywhere; build-time cost | KI-03 |
+| R-2 | ~~Remove Room and Compose unless they are planned~~ **Approved by the owner 2026-11-12;** now P-12 | — | KI-03 |
 | R-3 | ~~Fill `chat_archive/` from the older conversations~~ **Done 2026-11-12** with the 15 reports supplied | — | — |
 | R-4 | Merge `testBranch` into `main` when 1.2.2 is released | `main` is more than 140 commits behind | KI-10 |
 | R-5 | Decide whether `archive/` (about 300 MB) and the README videos (176 MB) belong in Git, or in Git LFS or release assets | clone and CI checkout size. The move into `archive/` tidied the tree but not the history | KI-07 |
 | R-6 | Give `display_pip` one default everywhere | three readers use `false`, nine use `true` | KI-20 |
-| R-7 | When round 12 is reviewed, also ask about the items that never got a device result | they are cheap to check together | KI-21, KI-22, KI-25 |
+| R-7 | Ask the owner about the remaining items that never got a device result | the stats window and the pinned-PiP keyboard were answered on 2026-11-12; the rest of the list is open | KI-25 |
 
 ## Long-term objectives
 

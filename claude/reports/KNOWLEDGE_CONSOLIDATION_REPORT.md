@@ -7,6 +7,10 @@ State of the repository: `testBranch` at `ee8e4f91`, plus two documentation comm
 rename) and the one this report belongs to. CI was green on `ee8e4f91` (run 468), the last commit that
 touched the build.
 
+> **Update, later on 2026-11-12:** the owner answered five of the open questions after reading this report.
+> The answers are in the addendum at the end. Sections E, G, H and I below are kept as first written; where
+> they call something open that the addendum closes, the addendum holds.
+
 Evidence tags: [V] verified in code, git or CI · [H] historical, from the owner, a brief or a chat report ·
 [P] planned · [A] assumed · [U] unknown.
 
@@ -298,3 +302,39 @@ Can a fresh Opus or Sonnet session work from these documents alone?
 5. **The 7870 is seen second-hand.** Results come from a tester, later and through the owner.
 6. **Decisions by an assistant are weaker than decisions by the owner.** `DECISIONS.md` marks who decided;
    a session should not treat an assistant's choice as untouchable, nor an owner's as open.
+
+---
+
+## Addendum: the owner's answers (2026-11-12)
+
+Given after the report was first committed (`5ba38ec2`). Each answer is [H]: the owner's statement.
+
+| Question (section H) | Answer | Recorded in |
+|---|---|---|
+| 1. Does round 12 work on the devices? Is "Proceed and fit" wanted? | "It works as intended." | KI-24 fixed; D-17; catalogue row 33; P-1 done |
+| 2. Why was the 7862 stats-window fix reverted; does the lag remain? | "It didn't work as it should. Reverted it to acceptable state." | D-24; KI-21 moved to accepted limitations |
+| 3. Does the pinned-PiP keyboard fix work; is Back to the launcher acceptable? | "Works and it is acceptable." | D-44 UNDER_REVIEW → ACTIVE; KI-22 reduced to two unchecked side effects |
+| 4. Which changes did not work on the 7870? | "Tester didn't specify. Still waiting for the reply." | KI-29; P-13 |
+| 5. Are Room and Compose planned? | "Not planned, might be removed if it is unused." | D-51; KI-03; R-2 became the confirmed item P-12 |
+| What each release before 1.2.1 added | "too much digging as there are plenty of commits. We work on what we currently have." | D-50; removed from the gaps |
+
+**A source added:** the owner supplied a session's memory note on the stock-sources work of 2026-10-23/26.
+It is stored unchanged as `../prompts/archive/analysis/memory-2026-10-26-stock-sources-7870.md`. It confirms
+what CHAT_06 reports (the classes built, the owner's result on the 7862, the three review fixes) and lists
+the questions the 7870's logs were meant to answer; those are now in KI-29. The brief itself and the 7870
+test guide are still not in the repository.
+
+**What changes in the sections above**
+
+- **E, rows 13 and 14:** row 13 is resolved (the fix did not work; the reverted state is acceptable). Row 14
+  is still open, now with a named reason: the tester has not replied.
+- **G, "implemented, with no device confirmation on record":** round 12 and the pinned-PiP keyboard fix are
+  confirmed. KI-25 still lists the rest.
+- **H, genuine gaps:** items 1, 2, 3 and 5 are answered. Still open: which changes fail on the 7870; when
+  1.2.2 is due; when the Baseline Profile was last generated; why the Magisk module version stays 1.0.0;
+  the two root causes of KI-28.
+- **H, "not available":** the history before 1.2.1 is out of scope by the owner's decision (D-50).
+- **I, owner-approved priorities:** "review round 12" is done. Removing the unused Room and Compose set-up
+  moves from a recommendation to an approved item (P-12).
+- **J:** `DECISIONS.md` now has 51 entries. No decision is UNDER_REVIEW.
+
