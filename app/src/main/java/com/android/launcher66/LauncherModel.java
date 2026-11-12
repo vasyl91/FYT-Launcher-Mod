@@ -954,8 +954,8 @@ public class LauncherModel extends BroadcastReceiver {
      */
     static int getCellLayoutChildId(
             long container, long screen, int localCellX, int localCellY, int spanX, int spanY) {
-        return (((int) container & 0xFF) << 24)
-                | ((int) screen & 0xFF) << 16 | (localCellX & 0xFF) << 8 | (localCellY & 0xFF);
+        return CellChildId.of(container == LauncherSettings.Favorites.CONTAINER_DESKTOP, screen,
+                localCellX, localCellY);
     }
 
     /**
