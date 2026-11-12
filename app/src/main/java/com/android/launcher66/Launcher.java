@@ -6542,61 +6542,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 return;
             }
             if (v == getCustomView(Config.BT)) {
-                startActivitySafely(v, getIntent("com.syu.bt", "com.syu.bt.BtAct"), "bt");
-                WindowUtil.removePip();
+                startThenRemovePips(v, getIntent("com.syu.bt", "com.syu.bt.BtAct"), "bt");
                 return;
             }
             if (v == getCustomView(Config.RADIO)) {
-                if (CarStates.mExistCarRadio == 1) {
-                    startActivitySafely(v, FytPackage.getIntent(this, FytPackage.CARRADIOACTION), "bt");
-                } else {
-                    if (helpers.isPackageInstalled("com.syu.radio")) {
-                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.syu.music");
-                        try {
-                            ComponentName componentName = launchIntent.getComponent();
-                            PackageManager pm = getPackageManager();
-                            ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
-                            String appTitle = appInfo.loadLabel(pm).toString();
-                            AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
-                            mAppBars.refreshLeftCycle(bean);
-                            cleanWidgetBar();
-                        } catch (PackageManager.NameNotFoundException e) {
-                            throw new RuntimeException(e);
-                        }
-                        startActivitySafely(v, FytPackage.getIntent(this, "com.syu.radio"), "bt");
-                    } else {
-                        // 7870: the radio is a page of com.syu.media
-                        openMediaPage(v, "com.syu.radio", "bt");
-                    }
-                }
-                WindowUtil.removePip();
+                openRadio(v, "bt", false);
                 return;
             }
             if (v == getCustomView(Config.WS_Radio)) {
-                stopMusic();
-                if (CarStates.mExistCarRadio == 1) {
-                    startActivitySafely(v, FytPackage.getIntent(this, FytPackage.CARRADIOACTION), "bt");
-                } else {
-                    if (helpers.isPackageInstalled("com.syu.radio")) {
-                        Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.syu.music");
-                        try {
-                            ComponentName componentName = launchIntent.getComponent();
-                            PackageManager pm = getPackageManager();
-                            ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
-                            String appTitle = appInfo.loadLabel(pm).toString();
-                            AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
-                            mAppBars.refreshLeftCycle(bean);
-                            cleanWidgetBar();
-                        } catch (PackageManager.NameNotFoundException e) {
-                            throw new RuntimeException(e);
-                        }
-                        startActivitySafely(v, FytPackage.getIntent(this, "com.syu.radio"), "music");
-                    } else {
-                        // 7870: the radio is a page of com.syu.media
-                        openMediaPage(v, "com.syu.radio", "music");
-                    }
-                }
-                WindowUtil.removePip();
+                openRadio(v, "music", true);
                 return;
             }
             if (v == getCustomView(Config.WS_Music) || v == getCustomView(Config.WS_Music_Two) || v == getCustomView(Config.WS_Music3)) {
@@ -6627,13 +6581,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 return;
             }
             if (v == getCustomView(Config.WS_Video)) {
-                WindowUtil.removePip();
-                startActivitySafely(v, FytPackage.getIntent(this, "com.syu.video"), "music");
+                Intent video = FytPackage.getIntent(this, "com.syu.video");
+                if (canStart(video, "music")) {
+                    WindowUtil.removePip();
+                    startActivitySafely(v, video, "music");
+                }
                 return;
             }
             if (v == getCustomView(Config.WS_Gallery)) {
-                startActivitySafely(v, FytPackage.getIntent(this, FytPackage.galleryAction), "galleryAction");
-                WindowUtil.removePip();
+                startThenRemovePips(v, FytPackage.getIntent(this, FytPackage.galleryAction), "galleryAction");
                 return;
             }
             if (v == getCustomView(Config.WS_Miudrive)) {
@@ -6645,8 +6601,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 return;
             }
             if (v == getCustomView(Config.WS_Bt) || v == mBtavView) {
-                startActivitySafely(v, getIntent("com.syu.bt", "com.syu.bt.BtAct"), "bt");
-                WindowUtil.removePip();
+                startThenRemovePips(v, getIntent("com.syu.bt", "com.syu.bt.BtAct"), "bt");
                 return;
             }
             if (v == getCustomView(Config.WS_Navi)) {
@@ -6711,8 +6666,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 return;
             }
             if (v == getCustomView(Config.VIDEO)) {
-                startActivitySafely(v, FytPackage.getIntent(this, "com.syu.video"), "music");
-                WindowUtil.removePip();
+                startThenRemovePips(v, FytPackage.getIntent(this, "com.syu.video"), "music");
                 return;
             }
             if (v == getCustomView(Config.BTAV)) {
@@ -6740,8 +6694,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 return;
             }
             if (v == getCustomView(Config.MUSIC)) {
-                startActivitySafely(v, FytPackage.getIntent(this, "com.syu.music"), "music");
-                WindowUtil.removePip();
+                startThenRemovePips(v, FytPackage.getIntent(this, "com.syu.music"), "music");
                 return;
             }
             if (v == getCustomView(Config.KLFM)) {
@@ -6783,8 +6736,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 return;
             }
             if (v == getCustomView(Config.EQ) || v == getCustomView(Config.WS_EQ)) {
-                startActivitySafely(v, FytPackage.getIntent(this, FytPackage.eqACTION), "eq");
-                WindowUtil.removePip();
+                startThenRemovePips(v, FytPackage.getIntent(this, FytPackage.eqACTION), "eq");
                 return;
             }
             if (v == getCustomView(Config.WS_Time) || v == getCustomView(Config.WS_Time_Two)) {
@@ -7028,6 +6980,102 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
 
         CarStates.getCar(getApplicationContext()).mTools.sendInt(0, 24, 0);
+    }
+
+    /**
+     * Whether an activity answers the intent, so that a tap opens something (WidgetLaunchRule). The bare
+     * ACTION_MAIN that FytPackage.getIntent() gives for a package it cannot find names nothing. A package
+     * manager that cannot be asked counts as "yes": only a definite "nothing there" may swallow a tap.
+     */
+    boolean canStart(Intent intent, Object tag) {
+        boolean startable;
+        if (intent == null || !WidgetLaunchRule.namesTarget(intent.getComponent() != null,
+                intent.getPackage() != null, intent.getCategories() != null && !intent.getCategories().isEmpty(),
+                Intent.ACTION_MAIN.equals(intent.getAction()))) {
+            startable = false;
+        } else {
+            try {
+                startable = intent.resolveActivity(getPackageManager()) != null;
+            } catch (RuntimeException e) {
+                Log.w(TAG, "Cannot ask whether " + intent + " can be started: " + e);
+                startable = true;
+            }
+        }
+        if (!startable) {
+            Log.i(TAG, "Nothing to open for '" + tag + "': the tap changes nothing, the panes stay");
+        }
+        return startable;
+    }
+
+    /** Starts the app and then removes the panes it covers; neither when nothing can be started. */
+    private boolean startThenRemovePips(View v, Intent intent, Object tag) {
+        if (!canStart(intent, tag)) {
+            return false;
+        }
+        startActivitySafely(v, intent, tag);
+        WindowUtil.removePip();
+        return true;
+    }
+
+    /**
+     * The radio widget and the radio button: the car's radio, the radio app or the media app's page, in the
+     * order of WidgetLaunchRule.radio(). Where none of them exists (a phone, a unit without com.syu.radio)
+     * nothing is done at all: the music keeps playing and the panes stay.
+     *
+     * @param stopsMusic the widget stops the music for the radio, the button of the bar does not
+     */
+    private void openRadio(View v, String tag, boolean stopsMusic) {
+        Intent carRadio = FytPackage.getIntent(this, FytPackage.CARRADIOACTION);
+        Intent radioApp = helpers.isPackageInstalled("com.syu.radio") ? FytPackage.getIntent(this, "com.syu.radio") : null;
+        Intent page = StockSources.mediaPage("com.syu.radio");
+        boolean mcuCarRadio = CarStates.mExistCarRadio == 1;
+        WidgetLaunchRule.Radio target = WidgetLaunchRule.radio(mcuCarRadio,
+                mcuCarRadio && canStart(carRadio, tag),
+                !mcuCarRadio && radioApp != null && canStart(radioApp, tag),
+                !mcuCarRadio && page != null && canStart(page, tag));
+        if (target == WidgetLaunchRule.Radio.NONE) {
+            Log.i(TAG, "Radio tap: no radio on this device, nothing opened");
+            return;
+        }
+        if (stopsMusic) {
+            stopMusic();
+        }
+        switch (target) {
+            case CAR_RADIO:
+                startActivitySafely(v, carRadio, "bt");
+                break;
+            case RADIO_APP:
+                refreshLeftCycleForStockMusic();
+                startActivitySafely(v, radioApp, tag);
+                break;
+            default:
+                // 7870: the radio is a page of com.syu.media
+                openMediaPage(v, "com.syu.radio", tag);
+                break;
+        }
+        WindowUtil.removePip();
+    }
+
+    /**
+     * What the radio's start always did for the vertical bar's cycle: the stock music app takes its place
+     * in it. Skipped where com.syu.music is not installed (it used to end in a NullPointerException there).
+     */
+    private void refreshLeftCycleForStockMusic() {
+        Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.syu.music");
+        ComponentName componentName = launchIntent == null ? null : launchIntent.getComponent();
+        if (componentName == null) {
+            return;
+        }
+        try {
+            PackageManager pm = getPackageManager();
+            ApplicationInfo appInfo = pm.getApplicationInfo(componentName.getPackageName(), 0);
+            String appTitle = appInfo.loadLabel(pm).toString();
+            AppListBean bean = new AppListBean(appTitle, componentName.getPackageName(), componentName.getClassName());
+            mAppBars.refreshLeftCycle(bean);
+            cleanWidgetBar();
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.w(TAG, "The stock music app went away while the radio was opened: " + e);
+        }
     }
 
     /**

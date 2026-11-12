@@ -1488,14 +1488,15 @@ final class LauncherMusicWidget {
     }
 
     void openActiveMusicPlayer(View v) {
-        WindowUtil.removePip();
         Intent launchIntent = MediaTransportController.getActivePlayerLaunchIntent(
                 mLauncher,
                 getPreferredMediaControllerPackage()
         );
-        if (launchIntent == null) {
+        // The panes go only for a player that will open (WidgetLaunchRule): with no player to open they stay
+        if (launchIntent == null || !mLauncher.canStart(launchIntent, "music")) {
             return;
         }
+        WindowUtil.removePip();
         refreshLeftCycleForIntent(launchIntent);
         mLauncher.startActivitySafely(v, launchIntent, "music");
     }
