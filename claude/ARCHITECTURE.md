@@ -69,8 +69,8 @@ chat reports cite files inside it.
 ### Dependencies actually used
 
 Glide, OkHttp, LitePal, Flexbox, Material, Ackpine (the updater's installer), coroutines, Play services
-location (as a fallback only), Shizuku, profileinstaller and LeakCanary (debug). **Room and Compose are
-declared but have no imports** (`KNOWN_ISSUES.md` KI-03).
+location (as a fallback only), Shizuku, profileinstaller and LeakCanary (debug). Room and Compose were declared but never
+imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains for Glide only.
 
 ## 3. Process and privileges
 

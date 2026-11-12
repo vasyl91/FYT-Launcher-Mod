@@ -2,7 +2,6 @@ import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.ksp)
     alias(libs.plugins.dependency.analysis)
@@ -59,7 +58,6 @@ android {
 
     buildFeatures {
         buildConfig = true
-        compose = true
     }
 
     signingConfigs {
@@ -206,10 +204,6 @@ configurations.configureEach {
 }
 
 dependencies {
-    val composeBom = platform(libs.androidx.compose.bom)
-    implementation(composeBom)
-    androidTestImplementation(composeBom)
-
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 
     // ─── AndroidX ───
@@ -234,12 +228,6 @@ dependencies {
     implementation(libs.androidx.vectordrawable.animated)
     implementation(libs.androidx.viewpager)
 
-    // ─── Compose ───
-    implementation(libs.androidx.compose.runtime)
-    debugImplementation(libs.androidx.compose.ui.tooling)
-    implementation(libs.androidx.compose.ui.tooling.preview)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
-
     // ─── Coroutines ───
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
@@ -259,10 +247,7 @@ dependencies {
     // runtimeOnly: BaselineProfileCompiler uses ProfileVerifier.
     implementation(libs.androidx.profileinstaller)
 
-    // ─── Room ───
-    implementation(libs.androidx.room.runtime)
-    ksp(libs.androidx.room.compiler)
-
+    // ─── Glide annotation processor (the only KSP user) ───
     ksp(libs.glide.ksp)
 
     // ─── VD host (Android 11+ panes, see vdhost/README.md) ───

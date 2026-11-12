@@ -49,7 +49,7 @@ owner confirmed round 12 on 2026-11-12.
 | P-9 | A build for custom ROMs signed with their own platform key | `README.MD`: "No such build exists yet" [V] | only the ROM's maintainer has the key |
 | P-10 | *Deferred by the owner:* Shizuku Next start-up fixes ("temat na później"); a "stopped" state for the "Display media Titles" app ("zajmiemy się kiedy indziej") | CHAT_05 [H] | other projects' code |
 | P-11 | *Said by the owner, no result on record:* a wake test after a long sleep ("Sprawdzę później jak to wygląda przy dłuższym okresie uśpienia") | CHAT_03 [H] | owner |
-| P-12 | **Remove the unused Room and Compose set-up** (Room runtime and its KSP processor; the Compose BOM, runtime, tooling, plugin and `compose = true`). KSP stays for Glide | the owner, 2026-11-12: "Not planned, might be removed if it is unused"; KI-03, D-51 | a brief or a direct request; CI is the check |
+| P-12 | ~~**Remove the unused Room and Compose set-up** (Room runtime and its KSP processor; the Compose BOM, runtime, tooling, plugin and `compose = true`). KSP stays for Glide~~ **Done 2026-11-12** | the owner, 2026-11-12: "Not planned, might be removed if it is unused"; KI-03, D-51 | a brief or a direct request; CI is the check |
 | P-13 | The tester's answer on what did not work on the 7870 | the owner, 2026-11-12 | the tester |
 
 ## Recommendations (not decided)

@@ -19,7 +19,7 @@ Add new issues at the end of their part with the next number. Numbers are never 
 
 | ID | Issue | Kind | Priority | Status |
 |---|---|---|---|---|
-| KI-03 | Room and Compose declared but unused | Tech debt | Low | open; removal approved by the owner |
+| KI-03 | Room and Compose declared but unused | Tech debt | Low | fixed 2026-11-12 |
 | KI-04 | Baseline Profile probably stale | Performance | Medium | open |
 | KI-06 | No instrumented or UI tests | Missing tests | Medium | open |
 | KI-07 | Repository footprint | Maintenance | Low | open |
@@ -38,8 +38,9 @@ Add new issues at the end of their part with the next number. Numbers are never 
 - **Evidence [V]:** zero imports of `androidx.room` or `androidx.compose` under `app/src`.
 - **Impact:** build time (KSP, the Compose compiler). R8 keeps the effect on APK size small.
 - **Owner, 2026-11-12 [H]:** not planned; they may be removed if unused.
-- **Next:** remove them (`ROADMAP.md` P-12). This is a build change: Room's KSP processor goes, but KSP
-  itself stays for Glide. CI is the check.
+- **Fixed 2026-11-12 [V]:** the Room and Compose dependencies, the Compose BOM, the Kotlin Compose plugin
+  and `buildFeatures.compose` are removed (`ROADMAP.md` P-12). KSP stays for Glide. AGP 9 has built-in
+  Kotlin, so the nine `.kt` files needed no other plugin.
 
 ### KI-04 Baseline Profile probably stale
 - **Where:** `app/src/main/generated/baselineProfiles/`.

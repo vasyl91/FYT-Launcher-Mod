@@ -136,7 +136,6 @@ The hardcoded OpenWeather key is **not** an open issue: the owner decided to kee
 ## Next priorities
 
 **Confirmed by the owner or the briefs:**
-- Remove the unused Room and Compose set-up; the owner approved it on 2026-11-12 (`ROADMAP.md` P-12).
 - Release 1.2.2 at some point; before it, a fresh Baseline Profile (`ROADMAP.md` P-2, P-3).
 - Deferred ideas, each needing its own brief: day/night mode pinned to the PiP displays; FYT skins in the
   standard flavor.
