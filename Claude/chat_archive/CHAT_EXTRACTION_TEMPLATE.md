@@ -16,8 +16,8 @@ The project (`vasyl91/FYT-Launcher-Mod`) is building a knowledge base so that fu
 the memory of individual conversations. Please write a report of **this conversation only**, in English, in the
 exact format below.
 
-Don't continue the previous task if anything is unfinished, and don't modify any files. Just generate an archive 
-report of this conversation.
+Don't continue the previous task if anything is unfinished, don't sync the repo and don't modify any files. Just 
+generate an archive report of this conversation.
 
 Rules. Please follow them strictly:
 
