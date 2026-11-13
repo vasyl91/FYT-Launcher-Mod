@@ -16,7 +16,8 @@ import java.lang.reflect.Field;
  * corner of the vertical bar's window and the band of the creators all ask here, so they cannot differ.
  *
  * <p>A picture is the resource of that name, and the component's default picture when the name is unknown. The
- * user's own colour is drawn in the shape of the pictures it stands in for (RoundedColorDrawable). Main thread
+ * user's own colour is drawn in the shape of the pictures it stands in for (RoundedColorDrawable). A bar's
+ * picture is turned for the edge the bar is on (BackgroundAngle, RotatedDrawable); a colour is not. Main thread
  * only.
  */
 public final class BarBackground {
@@ -37,16 +38,35 @@ public final class BarBackground {
                 hasColor ? prefs.getInt(colorKey, 0) : 0);
     }
 
-    /** The background of the horizontal bar. */
-    public static Drawable horizontal(Context context, SharedPreferences prefs) {
-        return drawable(context, choice(prefs, Keys.BAR_SELECTED_BACKGROUND, HORIZONTAL_DEFAULT),
-                R.drawable.app_list_bg, RoundedColorDrawable.BAR_CORNERS);
+    /**
+     * The background of the horizontal bar.
+     *
+     * @param top the bar is at the top of the screen: its picture is turned by 180 degrees
+     */
+    public static Drawable horizontal(Context context, SharedPreferences prefs, boolean top) {
+        return turned(drawable(context, choice(prefs, Keys.BAR_SELECTED_BACKGROUND, HORIZONTAL_DEFAULT),
+                R.drawable.app_list_bg, RoundedColorDrawable.BAR_CORNERS), BackgroundAngle.horizontal(top));
     }
 
-    /** The background of the vertical bar. */
-    public static Drawable vertical(Context context, SharedPreferences prefs) {
-        return drawable(context, choice(prefs, Keys.VERTICAL_BAR_SELECTED_BACKGROUND, VERTICAL_DEFAULT),
-                R.drawable.hotseat_bg, RoundedColorDrawable.NO_CORNERS);
+    /**
+     * The background of the vertical bar.
+     *
+     * @param right the bar is at the right edge: a picture of the horizontal bar is turned by 90 degrees
+     *              counter-clockwise there and clockwise on the left
+     */
+    public static Drawable vertical(Context context, SharedPreferences prefs, boolean right) {
+        return turned(drawable(context, choice(prefs, Keys.VERTICAL_BAR_SELECTED_BACKGROUND, VERTICAL_DEFAULT),
+                R.drawable.hotseat_bg, RoundedColorDrawable.NO_CORNERS), BackgroundAngle.vertical(right));
+    }
+
+    /** The picture turned for its side; a colour, or a picture that needs no turn, as it is. */
+    private static Drawable turned(Drawable background, BackgroundAngle.Side side) {
+        if (background == null || background instanceof RoundedColorDrawable) {
+            return background;
+        }
+        boolean upright = background.getIntrinsicHeight() > background.getIntrinsicWidth();
+        int degrees = BackgroundAngle.degrees(side, upright);
+        return degrees == 0 ? background : new RotatedDrawable(background, degrees);
     }
 
     /** The background of a widget or of a PiP's placeholder. */

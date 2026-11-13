@@ -59,6 +59,10 @@ final class VerticalBarWindow {
     /** The shift applied once because the window lay elsewhere than put (see checkPlacement()). */
     private int correction;
     private boolean cornerOnTop;
+    /** The bar's own view and the picture of the corner, kept to give them a new background (BarBackground). */
+    private View barView;
+    private ImageView cornerBackground;
+    private boolean onRight;
 
     VerticalBarWindow(Launcher launcher, Runnable onButton) {
         this.launcher = launcher;
@@ -103,6 +107,8 @@ final class VerticalBarWindow {
         root.setOrientation(LinearLayout.VERTICAL);
 
         FrameLayout bar = new FrameLayout(context);
+        barView = bar;
+        onRight = right;
         applyBackground(bar);
         recycler = new RecyclerView(context);
         Launcher.EvenVerticalLayoutManager manager =
@@ -121,7 +127,7 @@ final class VerticalBarWindow {
         // the window then does not have to be built again when the page changes
         cornerOnTop = cornerTop;
         if (cornerSize > 0) {
-            corner = buildCorner(context);
+            corner = buildCorner(context, cornerTop);
             corner.setVisibility(withCorner ? View.VISIBLE : View.GONE);
             if (cornerTop) {
                 root.addView(corner, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, cornerSize));
@@ -172,11 +178,13 @@ final class VerticalBarWindow {
         return true;
     }
 
-    private View buildCorner(Context context) {
+    private View buildCorner(Context context, boolean top) {
         FrameLayout cornerView = new FrameLayout(context);
         ImageView background = new ImageView(context);
         background.setScaleType(ImageView.ScaleType.FIT_XY);
-        background.setImageDrawable(BarBackground.horizontal(context, prefs));
+        // The corner is the collapsed horizontal bar's: its background, turned as that bar's is
+        background.setImageDrawable(BarBackground.horizontal(context, prefs, top));
+        cornerBackground = background;
         cornerView.addView(background, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
         arrow = new ImageView(context);
@@ -198,7 +206,7 @@ final class VerticalBarWindow {
     }
 
     private void applyBackground(View bar) {
-        bar.setBackground(BarBackground.vertical(bar.getContext(), prefs));
+        bar.setBackground(BarBackground.vertical(bar.getContext(), prefs, onRight));
     }
 
     /**
@@ -324,6 +332,8 @@ final class VerticalBarWindow {
         recycler = null;
         corner = null;
         arrow = null;
+        barView = null;
+        cornerBackground = null;
         params = null;
         shown = false;
     }

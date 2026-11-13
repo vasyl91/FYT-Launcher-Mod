@@ -937,7 +937,8 @@ public class Workspace extends SmoothPagedView
             
             horizontalBarBg = workspaceView.findViewById(R.id.iv_list_bg);
             // Always set, the default too: the bar that is on screen then follows a choice back to it (BarBackground)
-            horizontalBarBg.setImageDrawable(BarBackground.horizontal(getContext(), mPrefs));
+            horizontalBarBg.setImageDrawable(BarBackground.horizontal(getContext(), mPrefs,
+                    mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false)));
             applyVerticalBarBackground(workspaceView);
 
             // Resizable horizontal bar (no-op when Keys.RESIZABLE_HORIZONTAL_BAR is off). Has to run before
@@ -1767,7 +1768,8 @@ public class Workspace extends SmoothPagedView
         if (bar == null) {
             return;
         }
-        bar.setBackground(BarBackground.vertical(getContext(), mPrefs));
+        // Turned for the side the bar is on (BackgroundAngle); the bar and its icons are not
+        bar.setBackground(BarBackground.vertical(getContext(), mPrefs, BarLayouts.sides(mPrefs, true).right));
     }
 
     public void toggleHorizontalBar() {
@@ -2134,7 +2136,8 @@ public class Workspace extends SmoothPagedView
         ImageView overlayAllApps = overlayHorizontalBar.findViewById(R.id.rl_allapps);
         ImageView overlayBg = overlayHorizontalBar.findViewById(R.id.iv_list_bg);
 
-        overlayBg.setImageDrawable(BarBackground.horizontal(getContext(), mPrefs));
+        overlayBg.setImageDrawable(BarBackground.horizontal(getContext(), mPrefs,
+                mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false)));
         
         forceOriginalSizes(screenWidth, horizontalBarHeight);
         

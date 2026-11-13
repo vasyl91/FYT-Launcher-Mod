@@ -33,7 +33,7 @@ final class CreatorBarBand {
         View band = new View(context);
         band.setId(View.generateViewId());
         // As on the home screen: a picture or the user's own colour (BarBackground)
-        band.setBackground(BarBackground.vertical(context, sharedPrefs));
+        band.setBackground(BarBackground.vertical(context, sharedPrefs, right));
         ConstraintLayout.LayoutParams bandParams = new ConstraintLayout.LayoutParams(0, 0);
         bandParams.matchConstraintDefaultWidth = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT_PERCENT;
         bandParams.matchConstraintPercentWidth = share;
