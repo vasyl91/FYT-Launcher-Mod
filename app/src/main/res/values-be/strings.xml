@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">У праграме</string>
     <string name="stats_background_preference">Выбраць фон для статыстыкі</string>
     <string name="wallpaper_unreadable">Бягучыя шпалеры немагчыма прачытаць на гэтай прыладзе. Выбраць замест іх выяву для рэжыму %1$s?</string>
+    <string name="home_layout_category">Макет галоўнага экрана</string>
+    <string name="workspace_grid_rows">Радкі: %1$d</string>
+    <string name="workspace_grid_columns">Слупкі: %1$d</string>
+    <string name="workspace_grid_rows_note">На старонцы з гарызантальнай панэллю на адзін радок менш. Панэль, якая хаваецца сама, радка не займае.</string>
+    <string name="workspace_grid_columns_note">На старонцы з вертыкальнай панэллю на адзін слупок менш.</string>
 </resources>

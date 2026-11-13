@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">У апликацији</string>
     <string name="stats_background_preference">Изабери позадину за статистику</string>
     <string name="wallpaper_unreadable">Тренутну позадину није могуће прочитати на овом уређају. Изабрати слику за режим %1$s уместо ње?</string>
+    <string name="home_layout_category">Распоред почетног екрана</string>
+    <string name="workspace_grid_rows">Редови: %1$d</string>
+    <string name="workspace_grid_columns">Колоне: %1$d</string>
+    <string name="workspace_grid_rows_note">Страница која приказује хоризонталну траку има један ред мање. Трака која се аутоматски скрива не заузима ред.</string>
+    <string name="workspace_grid_columns_note">Страница која приказује вертикалну траку има једну колону мање.</string>
 </resources>

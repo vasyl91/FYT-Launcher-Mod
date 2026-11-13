@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">No app</string>
     <string name="stats_background_preference">Escolher o plano de fundo das estatísticas</string>
     <string name="wallpaper_unreadable">Não é possível ler o plano de fundo atual neste dispositivo. Escolher uma imagem para o modo %1$s?</string>
+    <string name="home_layout_category">Layout da tela inicial</string>
+    <string name="workspace_grid_rows">Linhas: %1$d</string>
+    <string name="workspace_grid_columns">Colunas: %1$d</string>
+    <string name="workspace_grid_rows_note">Uma página que mostra a barra horizontal tem uma linha a menos. Uma barra que se oculta automaticamente não ocupa nenhuma linha.</string>
+    <string name="workspace_grid_columns_note">Uma página que mostra a barra vertical tem uma coluna a menos.</string>
 </resources>

@@ -146,14 +146,6 @@
             android:summaryOff="@string/wallpaper_picker_launcher"
             app:layout="@layout/preference_no_switch" />
         <Preference
-            android:key="all_apps_textSize"
-            android:title="@string/all_apps_textSize_str"
-            android:summary="18" />
-        <Preference
-            android:key="workspace_textSize"
-            android:title="@string/workspace_textSize_str"
-            android:summary="28" />
-        <Preference
             android:layout="@layout/preference_separator"
             android:selectable="false" />
         <SwitchPreferenceCompat

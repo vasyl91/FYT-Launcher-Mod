@@ -116,6 +116,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private boolean tickRunnableBool = false;
     private boolean countDownTimerBool = false;
     private Preference startPage;
+    /** The sizes of the icon labels, which came here from the first screen with their keys (IconTextSizeRows). */
+    private IconTextSizeRows iconTextSizeRows;
     private EditText startPageEditText;
     private AlertDialog alertStartPageDialog;
     private SwitchPreferenceCompat autoHidePreference;
@@ -347,6 +349,10 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         Preference barBackground = findPreference(Keys.BAR_BACKGROUND);
         Preference widgetsTint = findPreference(Keys.WIDGETS_TINT);
         Preference barTint = findPreference(Keys.BAR_TINT);
+        iconTextSizeRows = new IconTextSizeRows(this, sharedPrefs, helpers);
+        iconTextSizeRows.bind();
+        bindGridSlider(GridSeekBarPreference.ROWS, "workspace_grid_rows_title", R.string.workspace_grid_rows);
+        bindGridSlider(GridSeekBarPreference.COLUMNS, "workspace_grid_columns_title", R.string.workspace_grid_columns);
         startPage = findPreference(Keys.START_PAGE);
         // The page that is really used: a stored number that names no page shows as the first page
         String startPageStr = sharedPrefs.getString(Keys.START_PAGE, "1");
@@ -1285,6 +1291,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 wp.setOnPreferenceValuesChangedListener(null);
             } else if (p instanceof AutoHideSeekBarPreference) {
                 ((AutoHideSeekBarPreference) p).setOnSeekBarProgressChangeListener(null);
+            } else if (p instanceof GridSeekBarPreference) {
+                ((GridSeekBarPreference) p).setOnValueChangeListener(null);
             }
 
             if (p instanceof PreferenceGroup) {
@@ -1294,6 +1302,9 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     }
 
     private void dismissDialogs() {
+        if (iconTextSizeRows != null) {
+            iconTextSizeRows.dismiss();
+        }
         if (libraryImportDialog != null && libraryImportDialog.isShowing()) {
             // The work goes on without this screen: its result comes as a toast
             libraryImportBackground = true;
@@ -1369,6 +1380,20 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }
     }
     
+    /**
+     * The row above a slider of the grid shows the number the slider is at: the rows or the columns of a
+     * page without bars. The launcher builds its pages for the new grid when the settings are left.
+     */
+    private void bindGridSlider(String sliderKey, String titleKey, int titleRes) {
+        GridSeekBarPreference slider = findPreference(sliderKey);
+        Preference title = findPreference(titleKey);
+        if (slider == null || title == null) {
+            return;
+        }
+        title.setTitle(getString(titleRes, slider.getValue()));
+        slider.setOnValueChangeListener(value -> title.setTitle(getString(titleRes, value)));
+    }
+
     private void autoHideSeekBarProgress(AutoHideSeekBarPreference autoHidePreference) {
         autoHidePreference.setOnSeekBarProgressChangeListener(new AutoHideSeekBarPreference.OnSeekBarProgressChangeListener() {
             @Override

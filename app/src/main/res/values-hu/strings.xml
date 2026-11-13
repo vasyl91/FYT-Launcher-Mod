@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">Alkalmazásban</string>
     <string name="stats_background_preference">Statisztika hátterének kiválasztása</string>
     <string name="wallpaper_unreadable">A jelenlegi háttérkép nem olvasható ezen az eszközön. Választ helyette egy képet a(z) %1$s módhoz?</string>
+    <string name="home_layout_category">Kezdőképernyő elrendezése</string>
+    <string name="workspace_grid_rows">Sorok: %1$d</string>
+    <string name="workspace_grid_columns">Oszlopok: %1$d</string>
+    <string name="workspace_grid_rows_note">Azon az oldalon, amely a vízszintes sávot mutatja, eggyel kevesebb sor van. Az automatikusan elrejtőző sáv nem foglal sort.</string>
+    <string name="workspace_grid_columns_note">Azon az oldalon, amely a függőleges sávot mutatja, eggyel kevesebb oszlop van.</string>
 </resources>

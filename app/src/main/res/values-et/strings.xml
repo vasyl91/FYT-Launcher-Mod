@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">Rakenduses</string>
     <string name="stats_background_preference">Vali statistika taust</string>
     <string name="wallpaper_unreadable">Praegust taustapilti ei saa selles seadmes lugeda. Kas valida selle asemel režiimi %1$s jaoks pilt?</string>
+    <string name="home_layout_category">Avakuva paigutus</string>
+    <string name="workspace_grid_rows">Read: %1$d</string>
+    <string name="workspace_grid_columns">Veerud: %1$d</string>
+    <string name="workspace_grid_rows_note">Lehel, mis näitab horisontaalset riba, on üks rida vähem. Automaatselt peituv riba rida ei võta.</string>
+    <string name="workspace_grid_columns_note">Lehel, mis näitab vertikaalset riba, on üks veerg vähem.</string>
 </resources>

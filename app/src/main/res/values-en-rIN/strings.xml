@@ -78,4 +78,9 @@
     <string name="stats_in_app_page">In app</string>
     <string name="stats_background_preference">Choose background for statistics</string>
     <string name="wallpaper_unreadable">The current wallpaper cannot be read on this device. Pick an image for the %1$s mode instead?</string>
+    <string name="home_layout_category">Home screen layout</string>
+    <string name="workspace_grid_rows">Rows: %1$d</string>
+    <string name="workspace_grid_columns">Columns: %1$d</string>
+    <string name="workspace_grid_rows_note">A page that shows the horizontal bar has one row fewer. An auto-hiding bar takes no row.</string>
+    <string name="workspace_grid_columns_note">A page that shows the vertical bar has one column fewer.</string>
 </resources>

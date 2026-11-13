@@ -85,4 +85,9 @@
     <string name="stats_in_app_page">Dans l\'application</string>
     <string name="stats_background_preference">Choisir l\'arrière-plan des statistiques</string>
     <string name="wallpaper_unreadable">Le fond d\'écran actuel ne peut pas être lu sur cet appareil. Choisir plutôt une image pour le mode %1$s ?</string>
+    <string name="home_layout_category">Disposition de l\'écran d\'accueil</string>
+    <string name="workspace_grid_rows">Lignes : %1$d</string>
+    <string name="workspace_grid_columns">Colonnes : %1$d</string>
+    <string name="workspace_grid_rows_note">Une page qui affiche la barre horizontale a une ligne de moins. Une barre à masquage automatique n\'occupe aucune ligne.</string>
+    <string name="workspace_grid_columns_note">Une page qui affiche la barre verticale a une colonne de moins.</string>
 </resources>

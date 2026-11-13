@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">U aplikaciji</string>
     <string name="stats_background_preference">Odaberi pozadinu za statistiku</string>
     <string name="wallpaper_unreadable">Trenutnu pozadinu nije moguće pročitati na ovom uređaju. Odabrati sliku za način %1$s umjesto nje?</string>
+    <string name="home_layout_category">Raspored početnog zaslona</string>
+    <string name="workspace_grid_rows">Redci: %1$d</string>
+    <string name="workspace_grid_columns">Stupci: %1$d</string>
+    <string name="workspace_grid_rows_note">Stranica koja prikazuje vodoravnu traku ima jedan redak manje. Traka koja se automatski skriva ne zauzima redak.</string>
+    <string name="workspace_grid_columns_note">Stranica koja prikazuje okomitu traku ima jedan stupac manje.</string>
 </resources>

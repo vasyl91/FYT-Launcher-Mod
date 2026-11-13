@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">Ndani ya programu</string>
     <string name="stats_background_preference">Chagua mandharinyuma ya takwimu</string>
     <string name="wallpaper_unreadable">Mandhari ya sasa haiwezi kusomwa kwenye kifaa hiki. Ungependa kuchagua picha ya hali ya %1$s badala yake?</string>
+    <string name="home_layout_category">Mpangilio wa skrini ya mwanzo</string>
+    <string name="workspace_grid_rows">Safu mlalo: %1$d</string>
+    <string name="workspace_grid_columns">Safu wima: %1$d</string>
+    <string name="workspace_grid_rows_note">Ukurasa unaoonyesha upau wa mlalo una safu mlalo moja pungufu. Upau unaojificha wenyewe hauchukui safu.</string>
+    <string name="workspace_grid_columns_note">Ukurasa unaoonyesha upau wa wima una safu wima moja pungufu.</string>
 </resources>

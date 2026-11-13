@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">W aplikacji</string>
     <string name="stats_background_preference">Wybierz tło dla statystyk</string>
     <string name="wallpaper_unreadable">Na tym urządzeniu nie można odczytać bieżącej tapety. Wybrać zamiast niej obraz dla trybu %1$s?</string>
+    <string name="home_layout_category">Układ ekranu głównego</string>
+    <string name="workspace_grid_rows">Wiersze: %1$d</string>
+    <string name="workspace_grid_columns">Kolumny: %1$d</string>
+    <string name="workspace_grid_rows_note">Strona, na której widać pasek poziomy, ma o jeden wiersz mniej. Pasek ukrywany automatycznie nie zajmuje wiersza.</string>
+    <string name="workspace_grid_columns_note">Strona, na której widać pasek pionowy, ma o jedną kolumnę mniej.</string>
 </resources>

@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">Հավելվածում</string>
     <string name="stats_background_preference">Ընտրել ֆոն վիճակագրության համար</string>
     <string name="wallpaper_unreadable">Ընթացիկ պաստառը հնարավոր չէ կարդալ այս սարքում։ Փոխարենը ընտրե՞լ պատկեր %1$s ռեժիմի համար։</string>
+    <string name="home_layout_category">Հիմնական էկրանի դասավորություն</string>
+    <string name="workspace_grid_rows">Տողեր՝ %1$d</string>
+    <string name="workspace_grid_columns">Սյունակներ՝ %1$d</string>
+    <string name="workspace_grid_rows_note">Հորիզոնական վահանակը ցուցադրող էջն ունի մեկ տող պակաս։ Ինքնաթաքնվող վահանակը տող չի զբաղեցնում։</string>
+    <string name="workspace_grid_columns_note">Ուղղահայաց վահանակը ցուցադրող էջն ունի մեկ սյունակ պակաս։</string>
 </resources>

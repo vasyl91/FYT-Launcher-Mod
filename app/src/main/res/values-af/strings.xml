@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">In app</string>
     <string name="stats_background_preference">Kies agtergrond vir statistiek</string>
     <string name="wallpaper_unreadable">Die huidige muurpapier kan nie op hierdie toestel gelees word nie. Kies eerder \'n prent vir die %1$s-modus?</string>
+    <string name="home_layout_category">Tuisskerm-uitleg</string>
+    <string name="workspace_grid_rows">Rye: %1$d</string>
+    <string name="workspace_grid_columns">Kolomme: %1$d</string>
+    <string name="workspace_grid_rows_note">’n Bladsy wat die horisontale balk wys, het een ry minder. ’n Balk wat homself versteek, neem geen ry nie.</string>
+    <string name="workspace_grid_columns_note">’n Bladsy wat die vertikale balk wys, het een kolom minder.</string>
 </resources>

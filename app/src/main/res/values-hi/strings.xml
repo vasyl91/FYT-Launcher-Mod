@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">ऐप में</string>
     <string name="stats_background_preference">आँकड़ों के लिए पृष्ठभूमि चुनें</string>
     <string name="wallpaper_unreadable">इस डिवाइस पर मौजूदा वॉलपेपर पढ़ा नहीं जा सकता। इसके बजाय %1$s मोड के लिए कोई इमेज चुनें?</string>
+    <string name="home_layout_category">होम स्क्रीन लेआउट</string>
+    <string name="workspace_grid_rows">पंक्तियाँ: %1$d</string>
+    <string name="workspace_grid_columns">कॉलम: %1$d</string>
+    <string name="workspace_grid_rows_note">जिस पेज पर क्षैतिज बार दिखता है, उसमें एक पंक्ति कम होती है। अपने-आप छिपने वाला बार कोई पंक्ति नहीं लेता।</string>
+    <string name="workspace_grid_columns_note">जिस पेज पर लंबवत बार दिखता है, उसमें एक कॉलम कम होता है।</string>
 </resources>

@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">ในแอป</string>
     <string name="stats_background_preference">เลือกพื้นหลังสำหรับสถิติ</string>
     <string name="wallpaper_unreadable">ไม่สามารถอ่านวอลเปเปอร์ปัจจุบันบนอุปกรณ์นี้ได้ เลือกรูปภาพสำหรับโหมด %1$s แทนหรือไม่</string>
+    <string name="home_layout_category">เค้าโครงหน้าจอหลัก</string>
+    <string name="workspace_grid_rows">แถว: %1$d</string>
+    <string name="workspace_grid_columns">คอลัมน์: %1$d</string>
+    <string name="workspace_grid_rows_note">หน้าที่แสดงแถบแนวนอนจะมีแถวน้อยลงหนึ่งแถว แถบที่ซ่อนอัตโนมัติไม่ใช้แถว</string>
+    <string name="workspace_grid_columns_note">หน้าที่แสดงแถบแนวตั้งจะมีคอลัมน์น้อยลงหนึ่งคอลัมน์</string>
 </resources>

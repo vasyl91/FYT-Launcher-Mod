@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">应用内</string>
     <string name="stats_background_preference">选择统计背景</string>
     <string name="wallpaper_unreadable">此设备无法读取当前壁纸。要改为为%1$s模式选择一张图片吗？</string>
+    <string name="home_layout_category">主屏幕布局</string>
+    <string name="workspace_grid_rows">行数：%1$d</string>
+    <string name="workspace_grid_columns">列数：%1$d</string>
+    <string name="workspace_grid_rows_note">显示横栏的页面会少一行。自动隐藏的横栏不占用行。</string>
+    <string name="workspace_grid_columns_note">显示纵栏的页面会少一列。</string>
 </resources>

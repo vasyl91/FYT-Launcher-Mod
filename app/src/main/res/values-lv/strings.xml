@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">Lietotnē</string>
     <string name="stats_background_preference">Izvēlēties statistikas fonu</string>
     <string name="wallpaper_unreadable">Pašreizējo fona tapeti šajā ierīcē nevar nolasīt. Vai tā vietā izvēlēties attēlu režīmam %1$s?</string>
+    <string name="home_layout_category">Sākuma ekrāna izkārtojums</string>
+    <string name="workspace_grid_rows">Rindas: %1$d</string>
+    <string name="workspace_grid_columns">Kolonnas: %1$d</string>
+    <string name="workspace_grid_rows_note">Lapā, kurā redzama horizontālā josla, ir par vienu rindu mazāk. Automātiski paslēpta josla rindu neaizņem.</string>
+    <string name="workspace_grid_columns_note">Lapā, kurā redzama vertikālā josla, ir par vienu kolonnu mazāk.</string>
 </resources>

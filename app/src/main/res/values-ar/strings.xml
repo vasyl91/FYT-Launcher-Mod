@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">داخل التطبيق</string>
     <string name="stats_background_preference">اختيار خلفية الإحصاءات</string>
     <string name="wallpaper_unreadable">تعذّرت قراءة الخلفية الحالية على هذا الجهاز. هل تريد اختيار صورة لوضع %1$s بدلاً منها؟</string>
+    <string name="home_layout_category">تخطيط الشاشة الرئيسية</string>
+    <string name="workspace_grid_rows">الصفوف: %1$d</string>
+    <string name="workspace_grid_columns">الأعمدة: %1$d</string>
+    <string name="workspace_grid_rows_note">الصفحة التي تعرض الشريط الأفقي ينقص منها صف واحد. الشريط الذي يختفي تلقائيًا لا يأخذ أي صف.</string>
+    <string name="workspace_grid_columns_note">الصفحة التي تعرض الشريط العمودي ينقص منها عمود واحد.</string>
 </resources>

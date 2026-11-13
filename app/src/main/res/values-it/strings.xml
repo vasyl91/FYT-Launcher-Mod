@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">Nell\'app</string>
     <string name="stats_background_preference">Scegli lo sfondo delle statistiche</string>
     <string name="wallpaper_unreadable">Lo sfondo attuale non può essere letto su questo dispositivo. Scegliere invece un\'immagine per la modalità %1$s?</string>
+    <string name="home_layout_category">Layout della schermata Home</string>
+    <string name="workspace_grid_rows">Righe: %1$d</string>
+    <string name="workspace_grid_columns">Colonne: %1$d</string>
+    <string name="workspace_grid_rows_note">Una pagina che mostra la barra orizzontale ha una riga in meno. Una barra a scomparsa automatica non occupa alcuna riga.</string>
+    <string name="workspace_grid_columns_note">Una pagina che mostra la barra verticale ha una colonna in meno.</string>
 </resources>

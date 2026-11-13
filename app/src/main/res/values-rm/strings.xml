@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">En l\'app</string>
     <string name="stats_background_preference">Tscherner il fund per las statisticas</string>
     <string name="wallpaper_unreadable">Il maletg da fund actual na po betg vegnir legì sin quest apparat. Tscherner empè in maletg per il modus %1$s?</string>
+    <string name="home_layout_category">Layout dal visur da partenza</string>
+    <string name="workspace_grid_rows">Lingias: %1$d</string>
+    <string name="workspace_grid_columns">Colonnas: %1$d</string>
+    <string name="workspace_grid_rows_note">Ina pagina che mussa la trav orizontala ha ina lingia damain. Ina trav che sa zuppa automaticamain na dovra nagina lingia.</string>
+    <string name="workspace_grid_columns_note">Ina pagina che mussa la trav verticala ha ina colonna damain.</string>
 </resources>

@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">В приложение</string>
     <string name="stats_background_preference">Избор на фон за статистиката</string>
     <string name="wallpaper_unreadable">Текущият тапет не може да бъде прочетен на това устройство. Да изберете ли изображение за режим %1$s вместо него?</string>
+    <string name="home_layout_category">Оформление на началния екран</string>
+    <string name="workspace_grid_rows">Редове: %1$d</string>
+    <string name="workspace_grid_columns">Колони: %1$d</string>
+    <string name="workspace_grid_rows_note">Страница, която показва хоризонталната лента, има един ред по-малко. Лента, която се скрива автоматично, не заема ред.</string>
+    <string name="workspace_grid_columns_note">Страница, която показва вертикалната лента, има една колона по-малко.</string>
 </resources>

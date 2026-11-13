@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">應用程式內</string>
     <string name="stats_background_preference">選擇統計背景</string>
     <string name="wallpaper_unreadable">此裝置無法讀取目前的桌布。要改為替%1$s模式選擇圖片嗎？</string>
+    <string name="home_layout_category">主畫面版面配置</string>
+    <string name="workspace_grid_rows">列數：%1$d</string>
+    <string name="workspace_grid_columns">欄數：%1$d</string>
+    <string name="workspace_grid_rows_note">顯示橫欄的頁面會少一列。自動隱藏的橫欄不佔用任何一列。</string>
+    <string name="workspace_grid_columns_note">顯示縱欄的頁面會少一欄。</string>
 </resources>

@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">Sovelluksessa</string>
     <string name="stats_background_preference">Valitse tilastojen tausta</string>
     <string name="wallpaper_unreadable">Nykyistä taustakuvaa ei voi lukea tällä laitteella. Valitaanko sen sijaan kuva tilaa %1$s varten?</string>
+    <string name="home_layout_category">Aloitusnäytön asettelu</string>
+    <string name="workspace_grid_rows">Rivit: %1$d</string>
+    <string name="workspace_grid_columns">Sarakkeet: %1$d</string>
+    <string name="workspace_grid_rows_note">Sivulla, jolla vaakapalkki näkyy, on yksi rivi vähemmän. Automaattisesti piiloutuva palkki ei vie riviä.</string>
+    <string name="workspace_grid_columns_note">Sivulla, jolla pystypalkki näkyy, on yksi sarake vähemmän.</string>
 </resources>

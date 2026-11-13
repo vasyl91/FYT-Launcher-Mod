@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">V aplikaciji</string>
     <string name="stats_background_preference">Izberi ozadje za statistiko</string>
     <string name="wallpaper_unreadable">Trenutnega ozadja v tej napravi ni mogoče prebrati. Želite namesto tega izbrati sliko za način %1$s?</string>
+    <string name="home_layout_category">Postavitev začetnega zaslona</string>
+    <string name="workspace_grid_rows">Vrstice: %1$d</string>
+    <string name="workspace_grid_columns">Stolpci: %1$d</string>
+    <string name="workspace_grid_rows_note">Stran, ki prikazuje vodoravno vrstico, ima eno vrstico manj. Vrstica, ki se samodejno skrije, ne zasede nobene vrstice.</string>
+    <string name="workspace_grid_columns_note">Stran, ki prikazuje navpično vrstico, ima en stolpec manj.</string>
 </resources>

@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">I app</string>
     <string name="stats_background_preference">Velg bakgrunn for statistikk</string>
     <string name="wallpaper_unreadable">Gjeldende bakgrunn kan ikke leses på denne enheten. Vil du velge et bilde for %1$s-modus i stedet?</string>
+    <string name="home_layout_category">Startskjermens oppsett</string>
+    <string name="workspace_grid_rows">Rader: %1$d</string>
+    <string name="workspace_grid_columns">Kolonner: %1$d</string>
+    <string name="workspace_grid_rows_note">En side som viser den vannrette linjen, har én rad mindre. En linje som skjuler seg selv, tar ingen rad.</string>
+    <string name="workspace_grid_columns_note">En side som viser den loddrette linjen, har én kolonne mindre.</string>
 </resources>

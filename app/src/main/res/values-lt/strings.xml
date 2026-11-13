@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">Programoje</string>
     <string name="stats_background_preference">Pasirinkti statistikos foną</string>
     <string name="wallpaper_unreadable">Dabartinio ekrano fono šiame įrenginyje nuskaityti nepavyksta. Pasirinkti vaizdą režimui %1$s?</string>
+    <string name="home_layout_category">Pradžios ekrano išdėstymas</string>
+    <string name="workspace_grid_rows">Eilutės: %1$d</string>
+    <string name="workspace_grid_columns">Stulpeliai: %1$d</string>
+    <string name="workspace_grid_rows_note">Puslapyje, kuriame rodoma horizontali juosta, yra viena eilute mažiau. Automatiškai slepiama juosta eilutės neužima.</string>
+    <string name="workspace_grid_columns_note">Puslapyje, kuriame rodoma vertikali juosta, yra vienu stulpeliu mažiau.</string>
 </resources>

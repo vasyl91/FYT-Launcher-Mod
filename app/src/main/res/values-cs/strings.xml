@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">V aplikaci</string>
     <string name="stats_background_preference">Vybrat pozadí pro statistiky</string>
     <string name="wallpaper_unreadable">Aktuální tapetu nelze na tomto zařízení přečíst. Vybrat místo ní obrázek pro režim %1$s?</string>
+    <string name="home_layout_category">Rozvržení domovské obrazovky</string>
+    <string name="workspace_grid_rows">Řádky: %1$d</string>
+    <string name="workspace_grid_columns">Sloupce: %1$d</string>
+    <string name="workspace_grid_rows_note">Stránka, která zobrazuje vodorovnou lištu, má o jeden řádek méně. Automaticky skrývaná lišta žádný řádek nezabírá.</string>
+    <string name="workspace_grid_columns_note">Stránka, která zobrazuje svislou lištu, má o jeden sloupec méně.</string>
 </resources>

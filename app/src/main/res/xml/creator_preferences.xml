@@ -5,6 +5,52 @@
     android:layout_width="match_parent"
     android:id="@+id/creator_preferences" >
 
+    <!-- The grid of the pages and what else arranges the home screen. The two sliders keep nothing under
+         their own keys: they set the cells along the long and the short edge of the screen
+         (GridSeekBarPreference, WorkspaceGrid). -->
+    <PreferenceCategory
+        app:key="home_layout_category"
+        app:title="@string/home_layout_category">
+
+        <Preference
+            android:key="workspace_grid_rows_title"
+            android:title="@string/workspace_grid_rows"
+            android:selectable="false" />
+        <com.android.launcher66.settings.GridSeekBarPreference
+            android:key="workspace_grid_rows" />
+        <Preference
+            android:key="workspace_grid_rows_note"
+            android:summary="@string/workspace_grid_rows_note"
+            android:selectable="false" />
+        <Preference
+            android:key="workspace_grid_columns_title"
+            android:title="@string/workspace_grid_columns"
+            android:selectable="false" />
+        <com.android.launcher66.settings.GridSeekBarPreference
+            android:key="workspace_grid_columns" />
+        <Preference
+            android:key="workspace_grid_columns_note"
+            android:summary="@string/workspace_grid_columns_note"
+            android:selectable="false" />
+        <Preference
+            android:key="start_page"
+            android:title="@string/start_page"
+            android:summary="1" />
+        <Preference
+            android:key="all_apps_textSize"
+            android:title="@string/all_apps_textSize_str"
+            android:summary="18" />
+        <Preference
+            android:key="workspace_textSize"
+            android:title="@string/workspace_textSize_str"
+            android:summary="28" />
+
+    </PreferenceCategory>
+
+    <Preference
+        android:layout="@layout/preference_separator"
+        android:selectable="false" />
+
     <PreferenceCategory
         app:key="widgets_category"
         app:title="@string/widgets_category">
@@ -118,10 +164,6 @@
         app:key="bars_category"
         app:title="@string/bars_category">
 
-        <Preference
-            android:key="start_page"
-            android:title="@string/start_page"
-            android:summary="1" />   
         <com.android.launcher66.settings.CustomNoSwitchPreference
             android:key="horizontal_bar_top"
             android:defaultValue="false"

@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">I appen</string>
     <string name="stats_background_preference">Välj bakgrund för statistik</string>
     <string name="wallpaper_unreadable">Den aktuella bakgrunden kan inte läsas på den här enheten. Välja en bild för läget %1$s i stället?</string>
+    <string name="home_layout_category">Startskärmens layout</string>
+    <string name="workspace_grid_rows">Rader: %1$d</string>
+    <string name="workspace_grid_columns">Kolumner: %1$d</string>
+    <string name="workspace_grid_rows_note">En sida som visar det vågräta fältet har en rad mindre. Ett fält som döljs automatiskt tar ingen rad.</string>
+    <string name="workspace_grid_columns_note">En sida som visar det lodräta fältet har en kolumn mindre.</string>
 </resources>

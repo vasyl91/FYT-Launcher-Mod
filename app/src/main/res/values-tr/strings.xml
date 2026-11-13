@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">Uygulama içi</string>
     <string name="stats_background_preference">İstatistikler için arka plan seçin</string>
     <string name="wallpaper_unreadable">Geçerli duvar kağıdı bu cihazda okunamıyor. Bunun yerine %1$s modu için bir resim seçilsin mi?</string>
+    <string name="home_layout_category">Ana ekran düzeni</string>
+    <string name="workspace_grid_rows">Satırlar: %1$d</string>
+    <string name="workspace_grid_columns">Sütunlar: %1$d</string>
+    <string name="workspace_grid_rows_note">Yatay çubuğu gösteren sayfada bir satır eksik olur. Otomatik gizlenen çubuk satır kaplamaz.</string>
+    <string name="workspace_grid_columns_note">Dikey çubuğu gösteren sayfada bir sütun eksik olur.</string>
 </resources>

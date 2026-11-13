@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">アプリ内</string>
     <string name="stats_background_preference">統計の背景を選択</string>
     <string name="wallpaper_unreadable">このデバイスでは現在の壁紙を読み取れません。代わりに %1$s モード用の画像を選択しますか？</string>
+    <string name="home_layout_category">ホーム画面のレイアウト</string>
+    <string name="workspace_grid_rows">行数: %1$d</string>
+    <string name="workspace_grid_columns">列数: %1$d</string>
+    <string name="workspace_grid_rows_note">横バーを表示するページは行が1つ少なくなります。自動的に隠れるバーは行を使いません。</string>
+    <string name="workspace_grid_columns_note">縦バーを表示するページは列が1つ少なくなります。</string>
 </resources>

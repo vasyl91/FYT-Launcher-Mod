@@ -78,4 +78,9 @@
     <string name="stats_in_app_page">Dalam apl</string>
     <string name="stats_background_preference">Pilih latar belakang untuk statistik</string>
     <string name="wallpaper_unreadable">Kertas dinding semasa tidak dapat dibaca pada peranti ini. Pilih imej untuk mod %1$s sebagai ganti?</string>
+    <string name="home_layout_category">Susun atur skrin utama</string>
+    <string name="workspace_grid_rows">Baris: %1$d</string>
+    <string name="workspace_grid_columns">Lajur: %1$d</string>
+    <string name="workspace_grid_rows_note">Halaman yang memaparkan bar mendatar mempunyai satu baris kurang. Bar yang tersembunyi secara automatik tidak mengambil baris.</string>
+    <string name="workspace_grid_columns_note">Halaman yang memaparkan bar menegak mempunyai satu lajur kurang.</string>
 </resources>

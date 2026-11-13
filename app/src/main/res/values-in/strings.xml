@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">Dalam aplikasi</string>
     <string name="stats_background_preference">Pilih latar belakang untuk statistik</string>
     <string name="wallpaper_unreadable">Wallpaper saat ini tidak dapat dibaca di perangkat ini. Pilih gambar untuk mode %1$s sebagai gantinya?</string>
+    <string name="home_layout_category">Tata letak layar utama</string>
+    <string name="workspace_grid_rows">Baris: %1$d</string>
+    <string name="workspace_grid_columns">Kolom: %1$d</string>
+    <string name="workspace_grid_rows_note">Halaman yang menampilkan bilah horizontal memiliki satu baris lebih sedikit. Bilah yang tersembunyi otomatis tidak memakai baris.</string>
+    <string name="workspace_grid_columns_note">Halaman yang menampilkan bilah vertikal memiliki satu kolom lebih sedikit.</string>
 </resources>

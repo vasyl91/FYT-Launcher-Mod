@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">In app</string>
     <string name="stats_background_preference">Achtergrond voor statistieken kiezen</string>
     <string name="wallpaper_unreadable">De huidige achtergrond kan op dit apparaat niet worden gelezen. In plaats daarvan een afbeelding kiezen voor de modus %1$s?</string>
+    <string name="home_layout_category">Indeling van het startscherm</string>
+    <string name="workspace_grid_rows">Rijen: %1$d</string>
+    <string name="workspace_grid_columns">Kolommen: %1$d</string>
+    <string name="workspace_grid_rows_note">Een pagina die de horizontale balk toont, heeft één rij minder. Een balk die zichzelf verbergt, neemt geen rij in.</string>
+    <string name="workspace_grid_columns_note">Een pagina die de verticale balk toont, heeft één kolom minder.</string>
 </resources>

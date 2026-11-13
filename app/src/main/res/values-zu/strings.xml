@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">Ku-app</string>
     <string name="stats_background_preference">Khetha isizinda sezibalo</string>
     <string name="wallpaper_unreadable">Isithombe sangemuva samanje asikwazi ukufundwa kule divayisi. Khetha isithombe semodi ye-%1$s esikhundleni salokho?</string>
+    <string name="home_layout_category">Isakhiwo sesikrini sasekhaya</string>
+    <string name="workspace_grid_rows">Imigqa: %1$d</string>
+    <string name="workspace_grid_columns">Amakholomu: %1$d</string>
+    <string name="workspace_grid_rows_note">Ikhasi elibonisa ibha evundlile linomugqa owodwa ongaphansi. Ibha ezifihla yona ayithathi mugqa.</string>
+    <string name="workspace_grid_columns_note">Ikhasi elibonisa ibha eqondile linekholomu elilodwa elingaphansi.</string>
 </resources>

@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">በመተግበሪያ ውስጥ</string>
     <string name="stats_background_preference">ለስታቲስቲክስ ዳራ ምረጥ</string>
     <string name="wallpaper_unreadable">የአሁኑ ልጣፍ በዚህ መሣሪያ ላይ ሊነበብ አይችልም። በምትኩ ለ%1$s ሁነታ ምስል ይምረጡ?</string>
+    <string name="home_layout_category">የመነሻ ማያ ገጽ አቀማመጥ</string>
+    <string name="workspace_grid_rows">ረድፎች፦ %1$d</string>
+    <string name="workspace_grid_columns">አምዶች፦ %1$d</string>
+    <string name="workspace_grid_rows_note">አግድም አሞሌውን የሚያሳይ ገጽ አንድ ረድፍ ያንሰዋል። በራሱ የሚደበቅ አሞሌ ረድፍ አይወስድም።</string>
+    <string name="workspace_grid_columns_note">ቋሚ አሞሌውን የሚያሳይ ገጽ አንድ አምድ ያንሰዋል።</string>
 </resources>

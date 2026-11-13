@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">ໃນແອັບ</string>
     <string name="stats_background_preference">ເລືອກພື້ນຫຼັງສຳລັບສະຖິຕິ</string>
     <string name="wallpaper_unreadable">ບໍ່ສາມາດອ່ານຮູບພື້ນຫຼັງປັດຈຸບັນໃນອຸປະກອນນີ້ໄດ້. ເລືອກຮູບສຳລັບໂໝດ %1$s ແທນບໍ?</string>
+    <string name="home_layout_category">ໂຄງຮ່າງໜ້າຈໍຫຼັກ</string>
+    <string name="workspace_grid_rows">ແຖວ: %1$d</string>
+    <string name="workspace_grid_columns">ຖັນ: %1$d</string>
+    <string name="workspace_grid_rows_note">ໜ້າທີ່ສະແດງແຖບແນວນອນມີແຖວໜ້ອຍລົງໜຶ່ງແຖວ. ແຖບທີ່ເຊື່ອງອັດຕະໂນມັດບໍ່ໃຊ້ແຖວ.</string>
+    <string name="workspace_grid_columns_note">ໜ້າທີ່ສະແດງແຖບແນວຕັ້ງມີຖັນໜ້ອຍລົງໜຶ່ງຖັນ.</string>
 </resources>

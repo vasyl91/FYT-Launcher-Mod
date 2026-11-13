@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">In der App</string>
     <string name="stats_background_preference">Hintergrund für die Statistik wählen</string>
     <string name="wallpaper_unreadable">Das aktuelle Hintergrundbild kann auf diesem Gerät nicht gelesen werden. Stattdessen ein Bild für den Modus %1$s auswählen?</string>
+    <string name="home_layout_category">Layout des Startbildschirms</string>
+    <string name="workspace_grid_rows">Zeilen: %1$d</string>
+    <string name="workspace_grid_columns">Spalten: %1$d</string>
+    <string name="workspace_grid_rows_note">Eine Seite, die die horizontale Leiste zeigt, hat eine Zeile weniger. Eine automatisch ausgeblendete Leiste belegt keine Zeile.</string>
+    <string name="workspace_grid_columns_note">Eine Seite, die die vertikale Leiste zeigt, hat eine Spalte weniger.</string>
 </resources>

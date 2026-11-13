@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">درون برنامه</string>
     <string name="stats_background_preference">انتخاب پس‌زمینه آمار</string>
     <string name="wallpaper_unreadable">کاغذدیواری فعلی در این دستگاه قابل خواندن نیست. به‌جای آن تصویری برای حالت %1$s انتخاب شود؟</string>
+    <string name="home_layout_category">چیدمان صفحهٔ اصلی</string>
+    <string name="workspace_grid_rows">ردیف‌ها: %1$d</string>
+    <string name="workspace_grid_columns">ستون‌ها: %1$d</string>
+    <string name="workspace_grid_rows_note">صفحه‌ای که نوار افقی را نشان می‌دهد یک ردیف کمتر دارد. نواری که خودکار پنهان می‌شود ردیفی نمی‌گیرد.</string>
+    <string name="workspace_grid_columns_note">صفحه‌ای که نوار عمودی را نشان می‌دهد یک ستون کمتر دارد.</string>
 </resources>

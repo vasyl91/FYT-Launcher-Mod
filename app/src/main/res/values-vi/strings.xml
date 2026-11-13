@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">Trong ứng dụng</string>
     <string name="stats_background_preference">Chọn nền cho thống kê</string>
     <string name="wallpaper_unreadable">Không thể đọc hình nền hiện tại trên thiết bị này. Chọn một hình ảnh cho chế độ %1$s thay thế?</string>
+    <string name="home_layout_category">Bố cục màn hình chính</string>
+    <string name="workspace_grid_rows">Hàng: %1$d</string>
+    <string name="workspace_grid_columns">Cột: %1$d</string>
+    <string name="workspace_grid_rows_note">Trang hiển thị thanh ngang có ít hơn một hàng. Thanh tự động ẩn không chiếm hàng nào.</string>
+    <string name="workspace_grid_columns_note">Trang hiển thị thanh dọc có ít hơn một cột.</string>
 </resources>

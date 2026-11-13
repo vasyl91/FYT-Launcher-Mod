@@ -29,7 +29,6 @@ import android.os.Looper;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.text.Html;
-import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
@@ -65,8 +64,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.android.async.AsyncTask;
 import com.android.launcher66.ColdStart;
 import com.android.launcher66.DeviceIdentity;
-import com.android.launcher66.DeviceProfile;
-import com.android.launcher66.LauncherAppState;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.MediaFavoriteController;
 import com.android.launcher66.R;
@@ -130,12 +127,6 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     private Preference oauthForSpotify;
     private WeakReference<AppListCacheDialogFragment> appListCacheDialog;
     private WeakReference<AppListAutostartDialogFragment> appListAutostartDialog;
-    private Preference allAppsTextSize; 
-    private EditText allAppsTextSizeEditText;
-    private AlertDialog alertAllAppsTextSizeDialog;
-    private Preference workspaceTextSize;
-    private EditText workspaceTextSizeEditText;
-    private AlertDialog alertWorkspaceTextSizeDialog;
     private Preference nightMode;
     private Preference nightModeLights;
     private PreferenceCategory wallpapersCategory;
@@ -324,16 +315,6 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         Preference launcherHomeColdStart = findPreference(Keys.LAUNCHER_HOME_COLD_START);
         Preference coldStartLastAppDelay = findPreference(Keys.COLD_START_LAST_APP_DELAY);
 
-        allAppsTextSize = findPreference(Keys.ALL_APPS_TEXT_SIZE);
-        String allAppsTextSizeStr = sharedPrefs.getString(Keys.ALL_APPS_TEXT_SIZE, "18");
-        allAppsTextSize.setSummary(allAppsTextSizeStr);
-        dialogAllAppsTextSizeEditText();
-
-        workspaceTextSize = findPreference(Keys.WORKSPACE_TEXT_SIZE);
-        String workspaceTextSizeStr = sharedPrefs.getString(Keys.WORKSPACE_TEXT_SIZE, "28");
-        workspaceTextSize.setSummary(workspaceTextSizeStr);
-        dialogWorkspaceTextSizeEditText();
-
         baselineProfileSummary = findPreference(KEY_BASELINE_PROFILE_SUMMARY);
         Preference baselineProfileReset = findPreference(KEY_BASELINE_PROFILE_RESET);
         Preference appListAutostart = findPreference(Keys.AUTOSTART_APPS);
@@ -438,12 +419,6 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
         if (wallpaperPickerSource != null) {
             wallpaperPickerSource.setOnPreferenceClickListener(this);
-        }
-        if (allAppsTextSize != null) {
-            allAppsTextSize.setOnPreferenceClickListener(this);
-        }
-        if (workspaceTextSize != null) {
-            workspaceTextSize.setOnPreferenceClickListener(this);
         }
         if (launcherHomeWake != null) {
             launcherHomeWake.setOnPreferenceClickListener(this);
@@ -875,40 +850,6 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             case Keys.WALLPAPER_PICKER:
                 onClickWallpaperPicker(rootView);
                 break;
-            case Keys.ALL_APPS_TEXT_SIZE:
-                alertAllAppsTextSizeDialog = displayAllAppsTextSizeDialog().create();
-                alertAllAppsTextSizeDialog.show();
-
-                Button negativeButton = alertAllAppsTextSizeDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
-                negativeButton.setLayoutParams(params);
-
-                ViewGroup.LayoutParams editAllAppsTextParams = allAppsTextSizeEditText.getLayoutParams();
-                if (editAllAppsTextParams instanceof ViewGroup.MarginLayoutParams marginParams) {
-                    marginParams.setMargins(padding, padding, padding, padding);
-                    allAppsTextSizeEditText.setLayoutParams(marginParams);
-                }
-
-                allAppsTextSizeEditText.requestFocus();
-                imm.showSoftInput(allAppsTextSizeEditText, InputMethodManager.SHOW_IMPLICIT);
-                allAppsTextSizeEditText.setSelection(allAppsTextSizeEditText.getText().length());
-                break;
-            case Keys.WORKSPACE_TEXT_SIZE:
-                alertWorkspaceTextSizeDialog = displayWorkspaceTextSizeDialog().create();
-                alertWorkspaceTextSizeDialog.show();
-
-                Button negativeButtonW = alertWorkspaceTextSizeDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
-                negativeButtonW.setLayoutParams(params);
-
-                ViewGroup.LayoutParams editWorkspaceTextParams = workspaceTextSizeEditText.getLayoutParams();
-                if (editWorkspaceTextParams instanceof ViewGroup.MarginLayoutParams marginParams) {
-                    marginParams.setMargins(padding, padding, padding, padding);
-                    workspaceTextSizeEditText.setLayoutParams(marginParams);
-                }
-
-                workspaceTextSizeEditText.requestFocus();
-                imm.showSoftInput(workspaceTextSizeEditText, InputMethodManager.SHOW_IMPLICIT);
-                workspaceTextSizeEditText.setSelection(workspaceTextSizeEditText.getText().length());
-                break;
             case Keys.AUTOSTART_APPS:
                 AppListAutostartDialogFragment autostartPrevious =
                         (appListAutostartDialog != null) ? appListAutostartDialog.get() : null;
@@ -1231,34 +1172,6 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
     }
 
-    private void dialogAllAppsTextSizeEditText() {
-        allAppsTextSizeEditText = new EditText(this.getContext());
-        allAppsTextSizeEditText.setFilters(new InputFilter[]{ new InputFilterMinMax("0", "50")});
-        allAppsTextSizeEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        allAppsTextSizeEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        allAppsTextSizeEditText.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                saveAllAppsTextSize();
-                alertAllAppsTextSizeDialog.dismiss();
-            }
-            return false;
-        });
-    }
-
-    private void dialogWorkspaceTextSizeEditText() {
-        workspaceTextSizeEditText = new EditText(this.getContext());
-        workspaceTextSizeEditText.setFilters(new InputFilter[]{ new InputFilterMinMax("0", "50")});
-        workspaceTextSizeEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        workspaceTextSizeEditText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        workspaceTextSizeEditText.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                saveWorkspaceTextSize();
-                alertWorkspaceTextSizeDialog.dismiss();
-            }
-            return false;
-        });
-    }
-
     private void logcatServiceTimeoutEditText() {
         logcatServiceTimeoutEditText = new EditText(this.getContext());
         logcatServiceTimeoutEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -1514,34 +1427,6 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
         builder.setTitle(getString(R.string.confirmation_dialog, latestAppVersion));
         builder.setPositiveButton(R.string.update_btn, (dialog, which) -> downloadAndInstall());
-        builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
-        return builder;
-    }
-
-    private AlertDialog.Builder displayAllAppsTextSizeDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
-        builder.setTitle(R.string.all_apps_textSize_str);
-        if (allAppsTextSizeEditText.getParent() != null) {
-            ((ViewGroup)allAppsTextSizeEditText.getParent()).removeView(allAppsTextSizeEditText);
-        }
-        builder.setView(allAppsTextSizeEditText);
-        allAppsTextSizeEditText.setText(allAppsTextSize.getSummary());
-        allAppsTextSizeEditText.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
-        builder.setPositiveButton(R.string.set_btn, (dialog, which) -> saveAllAppsTextSize());
-        builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
-        return builder;
-    }
-
-    private AlertDialog.Builder displayWorkspaceTextSizeDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
-        builder.setTitle(R.string.workspace_textSize_str);
-        if (workspaceTextSizeEditText.getParent() != null) {
-            ((ViewGroup)workspaceTextSizeEditText.getParent()).removeView(workspaceTextSizeEditText);
-        }
-        builder.setView(workspaceTextSizeEditText);
-        workspaceTextSizeEditText.setText(workspaceTextSize.getSummary());
-        workspaceTextSizeEditText.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
-        builder.setPositiveButton(R.string.set_btn, (dialog, which) -> saveWorkspaceTextSize());
         builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
         return builder;
     }
@@ -1824,14 +1709,6 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             loadingDialog.dismiss();
             loadingDialog = null;
         } 
-        if (alertAllAppsTextSizeDialog != null && alertAllAppsTextSizeDialog.isShowing()) {
-            alertAllAppsTextSizeDialog.dismiss();
-            alertAllAppsTextSizeDialog = null;
-        }
-        if (alertWorkspaceTextSizeDialog != null && alertWorkspaceTextSizeDialog.isShowing()) {
-            alertWorkspaceTextSizeDialog.dismiss();
-            alertWorkspaceTextSizeDialog = null;
-        }
         if (alertLogcatServiceTimeoutDialog != null && alertLogcatServiceTimeoutDialog.isShowing()) {
             alertLogcatServiceTimeoutDialog.dismiss();
             alertLogcatServiceTimeoutDialog = null;
@@ -1848,27 +1725,6 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             alertBaselineFullResetDialog.dismiss();
         }
         alertBaselineFullResetDialog = null;
-    }
-
-    private void saveAllAppsTextSize() {
-        helpers.allAppsTextSizeChanged(true);
-        String valueStr = allAppsTextSizeEditText.getText().toString();
-        if (valueStr.isEmpty()) valueStr = "18";
-        LauncherAppState app = LauncherAppState.getInstance();
-        DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
-        grid.updateIconTextSize(Integer.parseInt(valueStr));
-        allAppsTextSize.setSummary(valueStr);
-        editor.putString(Keys.ALL_APPS_TEXT_SIZE, valueStr);
-        editor.apply();
-    }
-
-    private void saveWorkspaceTextSize() {
-        helpers.workspaceTextSizeChanged(true);
-        String valueStr = workspaceTextSizeEditText.getText().toString();
-        if (valueStr.isEmpty()) valueStr = "28";
-        workspaceTextSize.setSummary(valueStr);
-        editor.putString(Keys.WORKSPACE_TEXT_SIZE, valueStr);
-        editor.apply();
     }
 
     private void saveLogcatServiceTimeout() {

@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">ក្នុងកម្មវិធី</string>
     <string name="stats_background_preference">ជ្រើសរើសផ្ទៃខាងក្រោយសម្រាប់ស្ថិតិ</string>
     <string name="wallpaper_unreadable">មិនអាចអានផ្ទាំងរូបភាពបច្ចុប្បន្ននៅលើឧបករណ៍នេះបានទេ។ ជ្រើសរើសរូបភាពសម្រាប់មុខងារ %1$s ជំនួសវិញ?</string>
+    <string name="home_layout_category">ប្លង់អេក្រង់ដើម</string>
+    <string name="workspace_grid_rows">ជួរដេក៖ %1$d</string>
+    <string name="workspace_grid_columns">ជួរឈរ៖ %1$d</string>
+    <string name="workspace_grid_rows_note">ទំព័រដែលបង្ហាញរបារផ្ដេកមានជួរដេកតិចជាងមួយ។ របារដែលលាក់ដោយស្វ័យប្រវត្តិមិនយកជួរដេកទេ។</string>
+    <string name="workspace_grid_columns_note">ទំព័រដែលបង្ហាញរបារបញ្ឈរមានជួរឈរតិចជាងមួយ។</string>
 </resources>

@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">În aplicație</string>
     <string name="stats_background_preference">Alegeți fundalul pentru statistici</string>
     <string name="wallpaper_unreadable">Imaginea de fundal curentă nu poate fi citită pe acest dispozitiv. Alegeți în schimb o imagine pentru modul %1$s?</string>
+    <string name="home_layout_category">Aspectul ecranului de pornire</string>
+    <string name="workspace_grid_rows">Rânduri: %1$d</string>
+    <string name="workspace_grid_columns">Coloane: %1$d</string>
+    <string name="workspace_grid_rows_note">O pagină care afișează bara orizontală are un rând mai puțin. O bară care se ascunde automat nu ocupă niciun rând.</string>
+    <string name="workspace_grid_columns_note">O pagină care afișează bara verticală are o coloană mai puțin.</string>
 </resources>

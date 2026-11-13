@@ -543,4 +543,9 @@
     <string name="stats_in_app_page">Sa app</string>
     <string name="stats_background_preference">Pumili ng background para sa istatistika</string>
     <string name="wallpaper_unreadable">Hindi mabasa ang kasalukuyang wallpaper sa device na ito. Pumili na lang ng larawan para sa %1$s mode?</string>
+    <string name="home_layout_category">Layout ng home screen</string>
+    <string name="workspace_grid_rows">Mga row: %1$d</string>
+    <string name="workspace_grid_columns">Mga column: %1$d</string>
+    <string name="workspace_grid_rows_note">Ang page na nagpapakita ng pahalang na bar ay may isang row na mas kaunti. Ang bar na kusang nagtatago ay hindi kumukuha ng row.</string>
+    <string name="workspace_grid_columns_note">Ang page na nagpapakita ng patayong bar ay may isang column na mas kaunti.</string>
 </resources>
