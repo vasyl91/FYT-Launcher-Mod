@@ -201,6 +201,8 @@ public class LauncherApplication extends Application {
                     .putBoolean(Keys.USER_RADIO, false)
                     .putBoolean(Keys.USER_STATS, false)
                     .putBoolean(Keys.DISPLAY_CANBUS_READER, false)
+                    // hidden with them: a value left on by a backup or an older version must not act
+                    .putBoolean(Keys.COLD_START_LAST_APP_DELAY, false)
                     .apply();
         } else if (!prefs.contains(Keys.USER_RADIO)) {
             // The radio widget shows the FYT radio: on by default there only. Written down, as

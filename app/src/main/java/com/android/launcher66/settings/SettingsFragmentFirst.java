@@ -450,15 +450,25 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         if (launcherHomeColdStart != null) {
             launcherHomeColdStart.setOnPreferenceClickListener(this);
             // The last app is brought back only with the home screen not kept in front (ColdStart).
+            // The delay is for the FYT apps that crash when opened too early: on an FYT unit, and in debug
+            // builds, where every option is shown (LauncherApplication.showsFytOptions()).
             launcherHomeColdStart.setOnPreferenceChangeListener((preference, newValue) -> {
                 if (coldStartLastAppDelay != null) {
-                    coldStartLastAppDelay.setVisible(Boolean.FALSE.equals(newValue));
+                    coldStartLastAppDelay.setVisible(LauncherApplication.showsFytOptions()
+                            && Boolean.FALSE.equals(newValue));
                 }
                 return true;
             });
         }
         if (coldStartLastAppDelay != null) {
-            coldStartLastAppDelay.setVisible(!sharedPrefs.getBoolean(Keys.LAUNCHER_HOME_COLD_START, true));
+            coldStartLastAppDelay.setVisible(LauncherApplication.showsFytOptions()
+                    && !sharedPrefs.getBoolean(Keys.LAUNCHER_HOME_COLD_START, true));
+        }
+        // The compat reports are written by code made for FYT units: named only where they are shown
+        Preference logcatNamesInfo = findPreference("logcat_names_info");
+        if (logcatNamesInfo != null && !LauncherApplication.showsFytOptions()) {
+            logcatNamesInfo.setSummary(
+                    CompatInfoText.namesWithoutCompat(getString(R.string.logcat_names_info_summary)));
         }
         // statusText() blocks (ProfileVerifier), so it is loaded off the main thread.
         updateBaselineProfileSummary();
@@ -1612,7 +1622,9 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             return;
         }
         final Context appContext = requireContext().getApplicationContext();
-        final String locations = getString(R.string.logcat_locations_info_summary);
+        final String locations = LauncherApplication.showsFytOptions()
+                ? getString(R.string.logcat_locations_info_summary)
+                : CompatInfoText.locationsWithoutCompat(getString(R.string.logcat_locations_info_summary));
         final String none = getString(R.string.logcat_no_crash);
         new Thread(() -> {
             String last = null;
