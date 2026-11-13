@@ -283,6 +283,59 @@ final class HostServices {
      * system) would then open at its target. So: open with O_NOFOLLOW, look at what was opened (fstat,
      * and where /proc/self/fd/N leads), and only then hand out a duplicate.
      */
+    ParcelFileDescriptor readHomeWallpaper(int callerUid) {
+        for (String path : HostFilePolicy.homeWallpaperPaths(HostFilePolicy.userOfUid(callerUid))) {
+            ParcelFileDescriptor file = openHomeWallpaper(path);
+            if (file != null) {
+                return file;
+            }
+        }
+        return null;
+    }
+
+    /** One of the two files of HostFilePolicy.homeWallpaperPaths(), opened as readFile() opens its files. */
+    private ParcelFileDescriptor openHomeWallpaper(String path) {
+        java.io.FileDescriptor fd = null;
+        ParcelFileDescriptor dup = null;
+        try {
+            fd = Os.open(path, OsConstants.O_RDONLY | OsConstants.O_NOFOLLOW | OsConstants.O_CLOEXEC, 0);
+            dup = ParcelFileDescriptor.dup(fd);
+            StructStat stat = Os.fstat(dup.getFileDescriptor());
+            String opened = Os.readlink("/proc/self/fd/" + dup.getFd());
+            if (!HostFilePolicy.homeWallpaperAllowed(path, opened, OsConstants.S_ISREG(stat.st_mode), stat.st_size)) {
+                Log.i(TAG, "readHomeWallpaper: not used: " + path + " (opened " + opened + ", size="
+                        + stat.st_size + ")");
+                dup.close();
+                return null;
+            }
+            ParcelFileDescriptor result = dup;
+            dup = null;
+            return result;
+        } catch (ErrnoException e) {
+            // ENOENT: no picture is set (a live or the built-in wallpaper). EACCES: the host is shell.
+            Log.i(TAG, "readHomeWallpaper: cannot open " + path + ": " + e);
+            return null;
+        } catch (IOException e) {
+            Log.w(TAG, "readHomeWallpaper failed: " + path + ": " + e);
+            return null;
+        } finally {
+            if (fd != null) {
+                try {
+                    Os.close(fd);
+                } catch (ErrnoException ignored) {
+                    // closing the original: nothing to do
+                }
+            }
+            if (dup != null) {
+                try {
+                    dup.close();
+                } catch (IOException ignored) {
+                    // already refused
+                }
+            }
+        }
+    }
+
     ParcelFileDescriptor readFile(int callerUid, String path) {
         // The caller is one of the uids the host serves (VdHostStub's CallerPolicy): the launcher.
         // The first sieve: the path alone, before anything is opened.

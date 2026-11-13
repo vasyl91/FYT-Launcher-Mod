@@ -144,4 +144,41 @@ class HostFilePolicyTest {
         assertFalse(HostFilePolicy.allowedOpened(path, alias, false, 100));
         assertFalse(HostFilePolicy.allowedOpened(path, alias, true, HostFilePolicy.MAX_BYTES + 1));
     }
+
+    @Test
+    void theHomeWallpaperIsTheOwnersShownPictureThenThePictureAsSet() {
+        String[] paths = HostFilePolicy.homeWallpaperPaths(0);
+        assertEquals(2, paths.length);
+        assertEquals("/data/system/users/0/wallpaper", paths[0]);
+        assertEquals("/data/system/users/0/wallpaper_orig", paths[1]);
+    }
+
+    @Test
+    void theLockScreensWallpaperIsNeverAmongThem() {
+        for (int user : new int[] {0, 10, 150}) {
+            for (String path : HostFilePolicy.homeWallpaperPaths(user)) {
+                assertFalse(path.contains("lock"), path);
+                assertTrue(path.startsWith("/data/system/users/" + user + "/wallpaper"), path);
+            }
+        }
+    }
+
+    @Test
+    void theUserComesFromTheCallersUid() {
+        assertEquals(0, HostFilePolicy.userOfUid(10281));
+        assertEquals(10, HostFilePolicy.userOfUid(1010281));
+        assertEquals(0, HostFilePolicy.userOfUid(1000));
+        assertEquals(0, HostFilePolicy.userOfUid(-1));
+    }
+
+    @Test
+    void anOpenedWallpaperIsHandedOutOnlyAsARegularFileOfAPicturesSize() {
+        String path = "/data/system/users/0/wallpaper";
+        assertTrue(HostFilePolicy.homeWallpaperAllowed(path, path, true, 3_000_000));
+        // a link that leads elsewhere, a directory, an empty file, one that is no picture's size
+        assertFalse(HostFilePolicy.homeWallpaperAllowed(path, "/data/system/users/0/wallpaper_lock", true, 3_000_000));
+        assertFalse(HostFilePolicy.homeWallpaperAllowed(path, path, false, 3_000_000));
+        assertFalse(HostFilePolicy.homeWallpaperAllowed(path, path, true, 0));
+        assertFalse(HostFilePolicy.homeWallpaperAllowed(path, path, true, HostFilePolicy.WALLPAPER_MAX_BYTES + 1));
+    }
 }

@@ -177,6 +177,18 @@ public class VdHostStub extends Binder {
                     reply.writeTypedObject(file, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
                     return true;
                 }
+                case VdHostProtocol.TX_READ_HOME_WALLPAPER: {
+                    ParcelFileDescriptor file;
+                    long ident = Binder.clearCallingIdentity();
+                    try {
+                        file = mServices.readHomeWallpaper(uid);
+                    } finally {
+                        Binder.restoreCallingIdentity(ident);
+                    }
+                    reply.writeNoException();
+                    reply.writeTypedObject(file, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
+                    return true;
+                }
                 case VdHostProtocol.TX_ALLOW_APP_OP: {
                     String pkg = data.readString();
                     String op = data.readString();

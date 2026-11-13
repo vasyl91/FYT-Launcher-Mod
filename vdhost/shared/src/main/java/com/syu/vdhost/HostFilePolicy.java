@@ -38,6 +38,38 @@ public final class HostFilePolicy {
     private HostFilePolicy() {
     }
 
+    /** Where the system keeps the wallpapers of a user. */
+    private static final String SYSTEM_USERS_DIR = "/data/system/users/";
+    /** A wallpaper is a full-screen picture: far more than the 2 MB of the other files, and still bounded. */
+    public static final long WALLPAPER_MAX_BYTES = 64L * 1024 * 1024;
+
+    /**
+     * The files of the home screen's wallpaper of a user, in the order they are tried: the picture as it is
+     * shown (cropped to the screen), then the picture as it was set. These two names only. The lock screen's
+     * wallpaper is another file ("wallpaper_lock", "wallpaper_lock_orig") and is never among them: the
+     * launcher must not show, save or restore the lock screen's picture as if it were the home screen's.
+     *
+     * <p>The caller gives no path: the host builds these from the user of the caller's uid, so nothing but
+     * these two files can be asked for through readHomeWallpaper().
+     *
+     * @param userId the Android user (0 for the owner)
+     */
+    public static String[] homeWallpaperPaths(int userId) {
+        String dir = SYSTEM_USERS_DIR + Math.max(0, userId) + "/";
+        return new String[] {dir + "wallpaper", dir + "wallpaper_orig"};
+    }
+
+    /** Whether an opened home wallpaper may be handed out: a regular file that is a picture's size. */
+    public static boolean homeWallpaperAllowed(String requested, String opened, boolean isRegularFile, long length) {
+        return requested != null && requested.equals(opened) && isRegularFile
+                && length > 0 && length <= WALLPAPER_MAX_BYTES;
+    }
+
+    /** The Android user of an app's uid (uid / 100000). */
+    public static int userOfUid(int uid) {
+        return uid < 0 ? 0 : uid / 100000;
+    }
+
     /**
      * @param requested the path the caller asked for
      * @param canonical its canonical path (links resolved), null when that could not be had

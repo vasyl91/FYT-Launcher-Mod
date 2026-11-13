@@ -234,6 +234,21 @@ public final class WindowHostVdClient {
         return host != null ? host.readFile(path) : null;
     }
 
+    /**
+     * See VdHostProtocol.Proxy.readHomeWallpaper(). Blocking: never on the main thread. Asked of any host
+     * that is not the launcher itself; one that does not know the call gives null.
+     * @return the descriptor of the home screen's wallpaper, or null
+     */
+    public static android.os.ParcelFileDescriptor readHomeWallpaper() throws RemoteException {
+        VdHostProtocol.Proxy host = privilegedHost();
+        return host != null ? host.readHomeWallpaper() : null;
+    }
+
+    /** Whether a privileged host other than the launcher itself (the root module, Shizuku) is attached now. */
+    public static boolean isPrivilegedHostAttached() {
+        return privilegedHost() != null;
+    }
+
     /** See VdHostProtocol.Proxy.allowAppOp(). Blocking. @return the report, null without a host that knows the call */
     public static String allowAppOp(String pkg, String op) throws RemoteException {
         VdHostProtocol.Proxy host = optionalHost();

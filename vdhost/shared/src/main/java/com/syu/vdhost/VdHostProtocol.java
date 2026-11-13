@@ -60,6 +60,12 @@ public final class VdHostProtocol {
     static final int TX_READ_FILE = IBinder.FIRST_CALL_TRANSACTION + 17;
     static final int TX_ALLOW_APP_OP = IBinder.FIRST_CALL_TRANSACTION + 18;
     static final int TX_ALLOW_NOTIFICATION_LISTENER = IBinder.FIRST_CALL_TRANSACTION + 19;
+    /**
+     * The home screen's wallpaper (readHomeWallpaper). Added without raising {@link #VERSION}: a host that
+     * does not know the call answers with an empty reply, which reads as "no wallpaper", and the launcher
+     * goes on to the next way of getting one. So an older host module keeps working unchanged.
+     */
+    static final int TX_READ_HOME_WALLPAPER = IBinder.FIRST_CALL_TRANSACTION + 20;
 
     /** The handle exec() returns: waitFor() (blocking, the exit code), destroy(). */
     static final int EXEC_WAIT_FOR = IBinder.FIRST_CALL_TRANSACTION;
@@ -344,6 +350,32 @@ public final class VdHostProtocol {
                 data.writeInterfaceToken(DESCRIPTOR);
                 data.writeString(path);
                 mRemote.transact(TX_READ_FILE, data, reply, 0);
+                reply.readException();
+                return reply.readTypedObject(ParcelFileDescriptor.CREATOR);
+            } finally {
+                reply.recycle();
+                data.recycle();
+            }
+        }
+
+        /**
+         * Opens the wallpaper of the home screen for reading: the picture the system shows behind the
+         * launcher, of the caller's user. Never the lock screen's. From Android 13 an ordinary app cannot
+         * read it without access to all files; the system and root can.
+         *
+         * @return the descriptor (read-only); null when the host does not know the call (an older host: no
+         *         version is raised for it), cannot read the file (Shizuku runs as shell, which may not), or
+         *         there is no picture (a live wallpaper, or the built-in one)
+         */
+        public ParcelFileDescriptor readHomeWallpaper() throws RemoteException {
+            Parcel data = Parcel.obtain();
+            Parcel reply = Parcel.obtain();
+            try {
+                data.writeInterfaceToken(DESCRIPTOR);
+                mRemote.transact(TX_READ_HOME_WALLPAPER, data, reply, 0);
+                if (reply.dataAvail() <= 0) {
+                    return null;   // a host from before this call
+                }
                 reply.readException();
                 return reply.readTypedObject(ParcelFileDescriptor.CREATOR);
             } finally {
