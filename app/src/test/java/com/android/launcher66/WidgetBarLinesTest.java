@@ -3,6 +3,7 @@ package com.android.launcher66;
 import static com.android.launcher66.WidgetBarLines.Text.ARTIST_TITLE;
 import static com.android.launcher66.WidgetBarLines.Text.TITLE_ARTIST;
 import static com.android.launcher66.WidgetBarLines.Text.TWO_LINES;
+import static com.android.launcher66.WidgetBarLines.Text.TWO_LINES_ARTIST_FIRST;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -16,6 +17,26 @@ class WidgetBarLinesTest {
         assertFalse(TWO_LINES.oneLine());
         assertTrue(ARTIST_TITLE.oneLine());
         assertTrue(TITLE_ARTIST.oneLine());
+    }
+
+    @Test
+    void bothTwoLineChoicesAreTwoLines() {
+        assertFalse(TWO_LINES.oneLine());
+        assertFalse(TWO_LINES_ARTIST_FIRST.oneLine());
+    }
+
+    @Test
+    void onlyTheNewChoicePutsTheArtistAbove() {
+        assertTrue(TWO_LINES_ARTIST_FIRST.artistAbove());
+        assertFalse(TWO_LINES.artistAbove());
+        assertFalse(ARTIST_TITLE.artistAbove());
+        assertFalse(TITLE_ARTIST.artistAbove());
+    }
+
+    @Test
+    void theValueStoredBeforeTheNewChoiceStillMeansTheTitleAbove() {
+        assertEquals(TWO_LINES, WidgetBarLines.parse("two", false));
+        assertEquals(TWO_LINES_ARTIST_FIRST, WidgetBarLines.parse("two_artist_first", false));
     }
 
     @Test

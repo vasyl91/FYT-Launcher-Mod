@@ -49,6 +49,35 @@ final class WidgetBarLayout {
                 prefs.getBoolean(Keys.WIDGET_BAR_ONE_LINE, false));
     }
 
+    /**
+     * Puts the two lines of the bar's music widget in the order the user chose (WidgetBarLines): the artist's
+     * line above the title's, or back below it. The views themselves change places, so each text keeps its
+     * own color and everything bound to it. In one line the second view is hidden and the order does not
+     * show. Called after {@link #apply}, which may have replaced the music widget by its wide variant.
+     */
+    static void arrangeLines(View bar, SharedPreferences prefs) {
+        if (bar == null) {
+            return;
+        }
+        View title = bar.findViewById(R.id.tv_musicName_two);
+        View artist = bar.findViewById(R.id.tv_artist_two);
+        if (title == null || artist == null || title.getParent() != artist.getParent()
+                || !(title.getParent() instanceof ViewGroup)) {
+            return;
+        }
+        ViewGroup column = (ViewGroup) title.getParent();
+        boolean artistAbove = lineText(prefs).artistAbove();
+        boolean artistIsAbove = column.indexOfChild(artist) < column.indexOfChild(title);
+        if (artistAbove == artistIsAbove) {
+            return;
+        }
+        View upper = artistAbove ? artist : title;
+        View lower = artistAbove ? title : artist;
+        int at = column.indexOfChild(lower);
+        column.removeView(upper);
+        column.addView(upper, at);
+    }
+
     static boolean buttonsInOneRow(SharedPreferences prefs, boolean portrait) {
         return WidgetBarLines.buttonsInOneRow(prefs.getBoolean(Keys.WIDGET_BAR_BUTTONS_ONE_LINE, false),
                 buttonsBeside(prefs, portrait));

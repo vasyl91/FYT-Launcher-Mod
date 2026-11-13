@@ -514,7 +514,6 @@
     <string name="horizontal_bar_every_page_no_overlay">Бусад аппын дээр харуулах зөвшөөрөл шаардлагатай</string>
     <string name="widget_bar_line_mode">Гарчиг, уран бүтээлчийн байршил</string>
     <string name="widget_bar_one_line_on">Нэг мөр: уран бүтээлч – гарчиг</string>
-    <string name="widget_bar_one_line_off">Гарчиг уран бүтээлчийн дээр</string>
     <string name="widget_bar_buttons_beside">Товчнууд гарчгийн хажууд</string>
     <string name="widget_bar_buttons_beside_on">Товчнууд гарчиг, уран бүтээлчийн баруун талд</string>
     <string name="widget_bar_buttons_beside_off">Товчнууд гарчиг, уран бүтээлчийн доор</string>
@@ -542,5 +541,7 @@
     <string name="vertical_bar_every_page">Хуудас бүр дээр босоо самбар</string>
     <string name="overlap_fit_message">Давхцсан виджетүүдийг самбар шиг зөөж салгана: зөвхөн зай байхгүй газарт жижигрүүлж, огт багтахгүй бол л анхны төлөвт оруулна.</string>
     <string name="proceed_and_fit">Үргэлжлүүлж тохируулах</string>
+    <string name="widget_bar_two_lines_title_first">Хоёр мөр: гарчиг уран бүтээлчийн дээр</string>
+    <string name="widget_bar_two_lines_artist_first">Хоёр мөр: уран бүтээлч гарчгийн дээр</string>
     <string name="start_page_missing">%1$d-р хуудас байхгүй: нүүр дэлгэц %2$d хуудастай.</string>
 </resources>

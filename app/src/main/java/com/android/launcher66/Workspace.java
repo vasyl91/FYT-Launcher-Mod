@@ -922,6 +922,7 @@ public class Workspace extends SmoothPagedView
                 // replaces it with its wide variant, which has the same ids.
                 WidgetBarLayout.apply(workspaceView, this.mLauncher.getLayoutInflater(), mPrefs,
                         orientation == Configuration.ORIENTATION_PORTRAIT);
+                WidgetBarLayout.arrangeLines(workspaceView, mPrefs);
                 mLauncher.removeCustomView("WS_Music_Two");
                 mBarMusicWidget = workspaceView.findViewById(R.id.rl_music_two);
                 mLauncher.initMusicBarView(mBarMusicWidget);
@@ -1992,6 +1993,7 @@ public class Workspace extends SmoothPagedView
             if (widgetBar) {
                 WidgetBarLayout.apply(barContent, inflater, mPrefs,
                         orientation == Configuration.ORIENTATION_PORTRAIT);
+                WidgetBarLayout.arrangeLines(barContent, mPrefs);
             }
             applyBarConstraints(barContent, false);
             final BarSwipeFrame barFrame = new BarSwipeFrame(getContext(), mBarSwipeHost);

@@ -514,7 +514,6 @@
     <string name="horizontal_bar_every_page_no_overlay">Vajab luba kuvamiseks teiste rakenduste peal</string>
     <string name="widget_bar_line_mode">Pealkirja ja esitaja paigutus</string>
     <string name="widget_bar_one_line_on">Üks rida: esitaja – pealkiri</string>
-    <string name="widget_bar_one_line_off">Pealkiri esitaja kohal</string>
     <string name="widget_bar_buttons_beside">Nupud pealkirja kõrval</string>
     <string name="widget_bar_buttons_beside_on">Nupud pealkirja ja esitaja paremal pool</string>
     <string name="widget_bar_buttons_beside_off">Nupud pealkirja ja esitaja all</string>
@@ -542,5 +541,7 @@
     <string name="vertical_bar_every_page">Vertikaalne riba igal lehel</string>
     <string name="overlap_fit_message">Kattuvad vidinad nihutatakse lahku nii, nagu ribad neid nihutavad: väiksemaks tehakse ainult seal, kus pole ruumi, ja lähtestatakse ainult siis, kui need üldse ei mahu.</string>
     <string name="proceed_and_fit">Jätka ja kohanda</string>
+    <string name="widget_bar_two_lines_title_first">Kaks rida: pealkiri esitaja kohal</string>
+    <string name="widget_bar_two_lines_artist_first">Kaks rida: esitaja pealkirja kohal</string>
     <string name="start_page_missing">Lehte %1$d ei ole: avakuval on %2$d lehte.</string>
 </resources>

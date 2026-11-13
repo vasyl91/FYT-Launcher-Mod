@@ -514,7 +514,6 @@
     <string name="horizontal_bar_every_page_no_overlay">Benötigt die Berechtigung „Über anderen Apps einblenden“</string>
     <string name="widget_bar_line_mode">Anordnung von Titel und Interpret</string>
     <string name="widget_bar_one_line_on">Eine Zeile: Interpret – Titel</string>
-    <string name="widget_bar_one_line_off">Der Titel über dem Interpreten</string>
     <string name="widget_bar_buttons_beside">Tasten neben dem Titel</string>
     <string name="widget_bar_buttons_beside_on">Tasten rechts von Titel und Interpret</string>
     <string name="widget_bar_buttons_beside_off">Tasten unter Titel und Interpret</string>
@@ -542,5 +541,7 @@
     <string name="vertical_bar_every_page">Vertikale Leiste auf jeder Seite</string>
     <string name="overlap_fit_message">Sich überlappende Widgets werden so auseinandergeschoben, wie die Leisten sie verschieben: nur dort verkleinert, wo kein Platz ist, und nur zurückgesetzt, wenn sie gar nicht passen.</string>
     <string name="proceed_and_fit">Weiter und anpassen</string>
+    <string name="widget_bar_two_lines_title_first">Zwei Zeilen: Titel über Interpret</string>
+    <string name="widget_bar_two_lines_artist_first">Zwei Zeilen: Interpret über Titel</string>
     <string name="start_page_missing">Seite %1$d existiert nicht: Der Startbildschirm hat %2$d Seiten.</string>
 </resources>

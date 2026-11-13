@@ -514,7 +514,6 @@
     <string name="horizontal_bar_every_page_no_overlay">दूसरे ऐप्लिकेशन के ऊपर दिखाने की अनुमति ज़रूरी है</string>
     <string name="widget_bar_line_mode">शीर्षक और कलाकार का क्रम</string>
     <string name="widget_bar_one_line_on">एक पंक्ति: कलाकार – शीर्षक</string>
-    <string name="widget_bar_one_line_off">शीर्षक कलाकार के ऊपर</string>
     <string name="widget_bar_buttons_beside">बटन शीर्षक के बगल में</string>
     <string name="widget_bar_buttons_beside_on">बटन शीर्षक और कलाकार के दाईं ओर</string>
     <string name="widget_bar_buttons_beside_off">बटन शीर्षक और कलाकार के नीचे</string>
@@ -542,5 +541,7 @@
     <string name="vertical_bar_every_page">हर पेज पर ऊर्ध्वाधर बार</string>
     <string name="overlap_fit_message">ओवरलैप होने वाले विजेट उसी तरह अलग किए जाएँगे जैसे बार उन्हें हटाते हैं: केवल वहीं छोटे किए जाएँगे जहाँ जगह नहीं है, और केवल तब रीसेट होंगे जब वे बिल्कुल न समाएँ।</string>
     <string name="proceed_and_fit">जारी रखें और समायोजित करें</string>
+    <string name="widget_bar_two_lines_title_first">दो पंक्तियाँ: शीर्षक कलाकार के ऊपर</string>
+    <string name="widget_bar_two_lines_artist_first">दो पंक्तियाँ: कलाकार शीर्षक के ऊपर</string>
     <string name="start_page_missing">पेज %1$d मौजूद नहीं है: होम स्क्रीन में %2$d पेज हैं।</string>
 </resources>

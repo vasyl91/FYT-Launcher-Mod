@@ -3,19 +3,23 @@ package com.android.launcher66;
 /**
  * How the music widget of the widget bar writes the title and the artist, and where the buttons
  * go: the user's choices and what is really used. Kept free of views so that the rules can be
- * tested. 'Title and artist' has three choices, the last two both mean "one line":
+ * tested. 'Title and artist arrangement' has four choices, two of two lines and two of one:
  * <ul>
- *   <li>{@link Text#TWO_LINES}: the title above the artist;</li>
+ *   <li>{@link Text#TWO_LINES}: two lines, the title above the artist;</li>
+ *   <li>{@link Text#TWO_LINES_ARTIST_FIRST}: two lines, the artist above the title;</li>
  *   <li>{@link Text#ARTIST_TITLE}: one line, "artist - title";</li>
  *   <li>{@link Text#TITLE_ARTIST}: one line, "title - artist".</li>
  * </ul>
+ * In two lines each text keeps its own look (the title white, the artist dimmer): the choice only says
+ * which of the two lines is the upper one.
  * The choice works the same in both layouts (the buttons beside the text, and the usual one with the
  * text above a row of buttons).
  */
 public final class WidgetBarLines {
 
     public enum Text {
-        TWO_LINES("two"), ARTIST_TITLE("artist_title"), TITLE_ARTIST("title_artist");
+        TWO_LINES("two"), TWO_LINES_ARTIST_FIRST("two_artist_first"),
+        ARTIST_TITLE("artist_title"), TITLE_ARTIST("title_artist");
 
         public final String value;
 
@@ -25,7 +29,12 @@ public final class WidgetBarLines {
 
         /** Both of the one-line choices. */
         public boolean oneLine() {
-            return this != TWO_LINES;
+            return this == ARTIST_TITLE || this == TITLE_ARTIST;
+        }
+
+        /** In two lines, the artist is the upper line. */
+        public boolean artistAbove() {
+            return this == TWO_LINES_ARTIST_FIRST;
         }
     }
 

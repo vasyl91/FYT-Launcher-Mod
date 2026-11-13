@@ -514,7 +514,6 @@
     <string name="horizontal_bar_every_page_no_overlay">Нужно разрешение на показ поверх других приложений</string>
     <string name="widget_bar_line_mode">Расположение названия и исполнителя</string>
     <string name="widget_bar_one_line_on">Одна строка: исполнитель – название</string>
-    <string name="widget_bar_one_line_off">Название над исполнителем</string>
     <string name="widget_bar_buttons_beside">Кнопки рядом с названием</string>
     <string name="widget_bar_buttons_beside_on">Кнопки справа от названия и исполнителя</string>
     <string name="widget_bar_buttons_beside_off">Кнопки под названием и исполнителем</string>
@@ -542,5 +541,7 @@
     <string name="vertical_bar_every_page">Вертикальная панель на каждой странице</string>
     <string name="overlap_fit_message">Перекрывающиеся виджеты будут раздвинуты так, как их сдвигают панели: уменьшены только там, где нет места, и сброшены только если совсем не помещаются.</string>
     <string name="proceed_and_fit">Продолжить и подогнать</string>
+    <string name="widget_bar_two_lines_title_first">Две строки: название над исполнителем</string>
+    <string name="widget_bar_two_lines_artist_first">Две строки: исполнитель над названием</string>
     <string name="start_page_missing">Страницы %1$d не существует: на главном экране %2$d страниц.</string>
 </resources>

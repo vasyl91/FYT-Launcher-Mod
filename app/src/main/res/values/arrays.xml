@@ -36,14 +36,17 @@
     <integer-array name="screen_size">
         <item>0</item>
     </integer-array>
-    <!-- PiP splash colour (CustomNestedThreePreference, Keys.COVER_SPLASH_MODE). -->
+    <!-- Title and artist arrangement of the widget bar (CustomNestedThreePreference,
+         Keys.WIDGET_BAR_LINE_MODE; the values are those of WidgetBarLines.Text). -->
     <string-array name="widget_bar_line_mode_entries">
-        <item>@string/widget_bar_one_line_off</item>
+        <item>@string/widget_bar_two_lines_title_first</item>
+        <item>@string/widget_bar_two_lines_artist_first</item>
         <item>@string/widget_bar_one_line_on</item>
         <item>@string/widget_bar_one_line_reversed</item>
     </string-array>
     <string-array name="widget_bar_line_mode_values" translatable="false">
         <item>two</item>
+        <item>two_artist_first</item>
         <item>artist_title</item>
         <item>title_artist</item>
     </string-array>

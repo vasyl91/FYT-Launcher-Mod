@@ -514,7 +514,6 @@
     <string name="horizontal_bar_every_page_no_overlay">ត្រូវការការអនុញ្ញាតឱ្យបង្ហាញលើកម្មវិធីផ្សេងទៀត</string>
     <string name="widget_bar_line_mode">ការរៀបចំចំណងជើង និងសិល្បករ</string>
     <string name="widget_bar_one_line_on">មួយបន្ទាត់៖ សិល្បករ – ចំណងជើង</string>
-    <string name="widget_bar_one_line_off">ចំណងជើងនៅលើសិល្បករ</string>
     <string name="widget_bar_buttons_beside">ប៊ូតុងនៅក្បែរចំណងជើង</string>
     <string name="widget_bar_buttons_beside_on">ប៊ូតុងនៅខាងស្តាំចំណងជើង និងសិល្បករ</string>
     <string name="widget_bar_buttons_beside_off">ប៊ូតុងនៅក្រោមចំណងជើង និងសិល្បករ</string>
@@ -542,5 +541,7 @@
     <string name="vertical_bar_every_page">របារបញ្ឈរនៅគ្រប់ទំព័រ</string>
     <string name="overlap_fit_message">ធាតុក្រាហ្វិកដែលត្រួតគ្នានឹងត្រូវផ្លាស់ទីឱ្យឆ្ងាយពីគ្នា ដូចរបារផ្លាស់ទីវា៖ តូចជាងតែកន្លែងដែលគ្មានទំហំ ហើយកំណត់ឡើងវិញតែនៅពេលវាមិនអាចដាក់ចូលបានទាល់តែសោះ។</string>
     <string name="proceed_and_fit">បន្ត និងកែសម្រួល</string>
+    <string name="widget_bar_two_lines_title_first">ពីរបន្ទាត់៖ ចំណងជើងនៅលើសិល្បករ</string>
+    <string name="widget_bar_two_lines_artist_first">ពីរបន្ទាត់៖ សិល្បករនៅលើចំណងជើង</string>
     <string name="start_page_missing">មិនមានទំព័រ %1$d ទេ៖ អេក្រង់ដើមមាន %2$d ទំព័រ។</string>
 </resources>

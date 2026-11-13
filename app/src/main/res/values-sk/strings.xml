@@ -514,7 +514,6 @@
     <string name="horizontal_bar_every_page_no_overlay">Vyžaduje povolenie zobrazovať sa nad inými aplikáciami</string>
     <string name="widget_bar_line_mode">Usporiadanie názvu a interpreta</string>
     <string name="widget_bar_one_line_on">Jeden riadok: interpret – názov</string>
-    <string name="widget_bar_one_line_off">Názov nad interpretom</string>
     <string name="widget_bar_buttons_beside">Tlačidlá vedľa názvu</string>
     <string name="widget_bar_buttons_beside_on">Tlačidlá vpravo od názvu a interpreta</string>
     <string name="widget_bar_buttons_beside_off">Tlačidlá pod názvom a interpretom</string>
@@ -542,5 +541,7 @@
     <string name="vertical_bar_every_page">Zvislý panel na každej stránke</string>
     <string name="overlap_fit_message">Prekrývajúce sa widgety sa odsunú od seba tak, ako ich posúvajú panely: zmenšia sa len tam, kde nie je miesto, a obnovia sa len vtedy, ak sa vôbec nezmestia.</string>
     <string name="proceed_and_fit">Pokračovať a prispôsobiť</string>
+    <string name="widget_bar_two_lines_title_first">Dva riadky: názov nad interpretom</string>
+    <string name="widget_bar_two_lines_artist_first">Dva riadky: interpret nad názvom</string>
     <string name="start_page_missing">Stránka %1$d neexistuje: domovská obrazovka má %2$d stránok.</string>
 </resources>

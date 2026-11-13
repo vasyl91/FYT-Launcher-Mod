@@ -514,7 +514,6 @@
     <string name="horizontal_bar_every_page_no_overlay">Изисква разрешение за показване върху други приложения</string>
     <string name="widget_bar_line_mode">Подредба на заглавието и изпълнителя</string>
     <string name="widget_bar_one_line_on">Един ред: изпълнител – заглавие</string>
-    <string name="widget_bar_one_line_off">Заглавието над изпълнителя</string>
     <string name="widget_bar_buttons_beside">Бутони до заглавието</string>
     <string name="widget_bar_buttons_beside_on">Бутони вдясно от заглавието и изпълнителя</string>
     <string name="widget_bar_buttons_beside_off">Бутони под заглавието и изпълнителя</string>
@@ -542,5 +541,7 @@
     <string name="vertical_bar_every_page">Вертикална лента на всяка страница</string>
     <string name="overlap_fit_message">Припокриващите се уиджети ще бъдат раздалечени така, както ги премествлентите: ще се смаляват само където няма място и ще се нулират само ако изобщо не се побират.</string>
     <string name="proceed_and_fit">Продължи и нагласи</string>
+    <string name="widget_bar_two_lines_title_first">Два реда: заглавие над изпълнител</string>
+    <string name="widget_bar_two_lines_artist_first">Два реда: изпълнител над заглавие</string>
     <string name="start_page_missing">Страница %1$d не съществува: началният екран има %2$d страници.</string>
 </resources>

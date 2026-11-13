@@ -514,7 +514,6 @@
     <string name="horizontal_bar_every_page_no_overlay">საჭიროა სხვა აპებზე გამოსახვის ნებართვა</string>
     <string name="widget_bar_line_mode">სათაურისა და შემსრულებლის განლაგება</string>
     <string name="widget_bar_one_line_on">ერთი ხაზი: შემსრულებელი – სათაური</string>
-    <string name="widget_bar_one_line_off">სათაური შემსრულებლის ზემოთ</string>
     <string name="widget_bar_buttons_beside">ღილაკები სათაურის გვერდით</string>
     <string name="widget_bar_buttons_beside_on">ღილაკები სათაურისა და შემსრულებლის მარჯვნივ</string>
     <string name="widget_bar_buttons_beside_off">ღილაკები სათაურისა და შემსრულებლის ქვემოთ</string>
@@ -542,5 +541,7 @@
     <string name="vertical_bar_every_page">ვერტიკალური ზოლი ყველა გვერდზე</string>
     <string name="overlap_fit_message">გადაფარული ვიჯეტები გაიმიჯნება ისე, როგორც მათ ზოლები გადააადგილებს: დაპატარავდება მხოლოდ იქ, სადაც ადგილი არ არის, და გადაიტვირთება მხოლოდ თუ საერთოდ ვერ ეტევა.</string>
     <string name="proceed_and_fit">გაგრძელება და მორგება</string>
+    <string name="widget_bar_two_lines_title_first">ორი ხაზი: სათაური შემსრულებლის ზემოთ</string>
+    <string name="widget_bar_two_lines_artist_first">ორი ხაზი: შემსრულებელი სათაურის ზემოთ</string>
     <string name="start_page_missing">გვერდი %1$d არ არსებობს: მთავარ ეკრანს %2$d გვერდი აქვს.</string>
 </resources>

@@ -514,7 +514,6 @@
     <string name="horizontal_bar_every_page_no_overlay">Потребна је дозвола за приказ преко других апликација</string>
     <string name="widget_bar_line_mode">Распоред наслова и извођача</string>
     <string name="widget_bar_one_line_on">Један ред: извођач – наслов</string>
-    <string name="widget_bar_one_line_off">Наслов изнад извођача</string>
     <string name="widget_bar_buttons_beside">Дугмад поред наслова</string>
     <string name="widget_bar_buttons_beside_on">Дугмад десно од наслова и извођача</string>
     <string name="widget_bar_buttons_beside_off">Дугмад испод наслова и извођача</string>
@@ -542,5 +541,7 @@
     <string name="vertical_bar_every_page">Вертикална трака на свакој страници</string>
     <string name="overlap_fit_message">Виџети који се преклапају биће раздвојени онако како их померају траке: смањују се само тамо где нема места, а ресетују само ако се уопште не могу сместити.</string>
     <string name="proceed_and_fit">Настави и прилагоди</string>
+    <string name="widget_bar_two_lines_title_first">Два реда: наслов изнад извођача</string>
+    <string name="widget_bar_two_lines_artist_first">Два реда: извођач изнад наслова</string>
     <string name="start_page_missing">Страница %1$d не постоји: почетни екран има %2$d страница.</string>
 </resources>

@@ -514,7 +514,6 @@
     <string name="horizontal_bar_every_page_no_overlay">Memerlukan izin untuk tampil di atas aplikasi lain</string>
     <string name="widget_bar_line_mode">Susunan judul dan artis</string>
     <string name="widget_bar_one_line_on">Satu baris: artis – judul</string>
-    <string name="widget_bar_one_line_off">Judul di atas artis</string>
     <string name="widget_bar_buttons_beside">Tombol di samping judul</string>
     <string name="widget_bar_buttons_beside_on">Tombol di sebelah kanan judul dan artis</string>
     <string name="widget_bar_buttons_beside_off">Tombol di bawah judul dan artis</string>
@@ -542,5 +541,7 @@
     <string name="vertical_bar_every_page">Bilah vertikal di setiap halaman</string>
     <string name="overlap_fit_message">Widget yang saling tumpang tindih akan digeser menjauh seperti bilah menggesernya: diperkecil hanya jika tidak ada ruang, dan direset hanya jika sama sekali tidak muat.</string>
     <string name="proceed_and_fit">Lanjutkan dan sesuaikan</string>
+    <string name="widget_bar_two_lines_title_first">Dua baris: judul di atas artis</string>
+    <string name="widget_bar_two_lines_artist_first">Dua baris: artis di atas judul</string>
     <string name="start_page_missing">Halaman %1$d tidak ada: layar utama memiliki %2$d halaman.</string>
 </resources>

@@ -514,7 +514,6 @@
     <string name="horizontal_bar_every_page_no_overlay">Dovra l\'autorisaziun da mussar sur autras apps</string>
     <string name="widget_bar_line_mode">Disposiziun dal titel e da l\'artist</string>
     <string name="widget_bar_one_line_on">Ina lingia: artist – titel</string>
-    <string name="widget_bar_one_line_off">Il titel sur l\'artist</string>
     <string name="widget_bar_buttons_beside">Buttuns ordaifer il titel</string>
     <string name="widget_bar_buttons_beside_on">Buttuns a dretga dal titel e da l\'artist</string>
     <string name="widget_bar_buttons_beside_off">Buttuns sut il titel e l\'artist</string>
@@ -542,5 +541,7 @@
     <string name="vertical_bar_every_page">Bara verticala sin mintga pagina</string>
     <string name="overlap_fit_message">Ils widgets che sa surpiglian vegnan spustads sco las bandas als spostan: be pli pitschens nua che i n\'ha betg plaz e be restituids sch\'els na chapan insumma betg.</string>
     <string name="proceed_and_fit">Cuntinuar ed adattar</string>
+    <string name="widget_bar_two_lines_title_first">Duas lingias: titel sur l\'artist</string>
+    <string name="widget_bar_two_lines_artist_first">Duas lingias: artist sur il titel</string>
     <string name="start_page_missing">La pagina %1$d n\'exista betg: il visur da partenza ha %2$d paginas.</string>
 </resources>

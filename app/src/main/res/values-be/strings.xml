@@ -514,7 +514,6 @@
     <string name="horizontal_bar_every_page_no_overlay">Патрабуецца дазвол паказваць паверх іншых праграм</string>
     <string name="widget_bar_line_mode">Размяшчэнне назвы і выканаўцы</string>
     <string name="widget_bar_one_line_on">Адзін радок: выканаўца – назва</string>
-    <string name="widget_bar_one_line_off">Назва над выканаўцам</string>
     <string name="widget_bar_buttons_beside">Кнопкі побач з назвай</string>
     <string name="widget_bar_buttons_beside_on">Кнопкі справа ад назвы і выканаўцы</string>
     <string name="widget_bar_buttons_beside_off">Кнопкі пад назвай і выканаўцам</string>
@@ -542,5 +541,7 @@
     <string name="vertical_bar_every_page">Вертыкальная панэль на кожнай старонцы</string>
     <string name="overlap_fit_message">Віджэты, што перакрываюцца, будуць раздзелены так, як іх зрушваюць панэлі: памяншаюцца толькі там, дзе няма месца, і скідаюцца толькі калі зусім не змяшчаюцца.</string>
     <string name="proceed_and_fit">Працягнуць і падагнаць</string>
+    <string name="widget_bar_two_lines_title_first">Два радкі: назва над выканаўцам</string>
+    <string name="widget_bar_two_lines_artist_first">Два радкі: выканаўца над назвай</string>
     <string name="start_page_missing">Старонкі %1$d не існуе: на галоўным экране %2$d старонак.</string>
 </resources>

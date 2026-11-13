@@ -514,7 +514,6 @@
     <string name="horizontal_bar_every_page_no_overlay">Պահանջվում է այլ հավելվածների վրայով ցուցադրելու թույլտվություն</string>
     <string name="widget_bar_line_mode">Վերնագրի և կատարողի դասավորությունը</string>
     <string name="widget_bar_one_line_on">Մեկ տող՝ կատարող – վերնագիր</string>
-    <string name="widget_bar_one_line_off">Վերնագիրը կատարողից վերև</string>
     <string name="widget_bar_buttons_beside">Կոճակները վերնագրի կողքին</string>
     <string name="widget_bar_buttons_beside_on">Կոճակները վերնագրի և կատարողի աջ կողմում</string>
     <string name="widget_bar_buttons_beside_off">Կոճակները վերնագրի և կատարողի տակ</string>
@@ -542,5 +541,7 @@
     <string name="vertical_bar_every_page">Ուղղահայաց գոտին յուրաքանչյուր էջում</string>
     <string name="overlap_fit_message">Համընկնող վիջեթները կբաժանվեն այնպես, ինչպես դրանք տեղափոխում են գոտիները՝ կփոքրացվեն միայն այնտեղ, որտեղ տեղ չկա, և կվերականգնվեն միայն եթե ընդհանրապես չեն տեղավորվում։</string>
     <string name="proceed_and_fit">Շարունակել և հարմարեցնել</string>
+    <string name="widget_bar_two_lines_title_first">Երկու տող՝ վերնագիրը կատարողից վերև</string>
+    <string name="widget_bar_two_lines_artist_first">Երկու տող՝ կատարողը վերնագրից վերև</string>
     <string name="start_page_missing">%1$d էջը գոյություն չունի. հիմնական էկրանն ունի %2$d էջ։</string>
 </resources>

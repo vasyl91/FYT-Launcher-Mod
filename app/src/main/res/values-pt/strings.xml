@@ -514,7 +514,6 @@
     <string name="horizontal_bar_every_page_no_overlay">Requer a permissão para exibir sobre outros apps</string>
     <string name="widget_bar_line_mode">Disposição do título e do artista</string>
     <string name="widget_bar_one_line_on">Uma linha: artista – título</string>
-    <string name="widget_bar_one_line_off">O título acima do artista</string>
     <string name="widget_bar_buttons_beside">Botões ao lado do título</string>
     <string name="widget_bar_buttons_beside_on">Botões à direita do título e do artista</string>
     <string name="widget_bar_buttons_beside_off">Botões abaixo do título e do artista</string>
@@ -542,5 +541,7 @@
     <string name="vertical_bar_every_page">Barra vertical em todas as páginas</string>
     <string name="overlap_fit_message">Os widgets sobrepostos serão afastados como as barras os movem: reduzidos apenas onde não há espaço e repostos apenas se não couberem de todo.</string>
     <string name="proceed_and_fit">Continuar e ajustar</string>
+    <string name="widget_bar_two_lines_title_first">Duas linhas: título acima do artista</string>
+    <string name="widget_bar_two_lines_artist_first">Duas linhas: artista acima do título</string>
     <string name="start_page_missing">A página %1$d não existe: a tela inicial tem %2$d páginas.</string>
 </resources>

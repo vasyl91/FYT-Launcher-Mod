@@ -514,7 +514,6 @@
     <string name="horizontal_bar_every_page_no_overlay">다른 앱 위에 표시할 권한이 필요합니다</string>
     <string name="widget_bar_line_mode">제목과 아티스트 배치</string>
     <string name="widget_bar_one_line_on">한 줄: 아티스트 – 제목</string>
-    <string name="widget_bar_one_line_off">제목을 아티스트 위에 표시</string>
     <string name="widget_bar_buttons_beside">버튼을 제목 옆에 배치</string>
     <string name="widget_bar_buttons_beside_on">버튼을 제목과 아티스트 오른쪽에 배치</string>
     <string name="widget_bar_buttons_beside_off">버튼을 제목과 아티스트 아래에 배치</string>
@@ -542,5 +541,7 @@
     <string name="vertical_bar_every_page">모든 페이지에 세로 바 표시</string>
     <string name="overlap_fit_message">겹치는 위젯은 바가 밀어내는 방식과 같이 떨어뜨려 놓습니다. 공간이 없는 곳에서만 작게 만들고, 전혀 들어가지 않을 때만 초기화합니다.</string>
     <string name="proceed_and_fit">계속 및 맞춤</string>
+    <string name="widget_bar_two_lines_title_first">두 줄: 제목을 아티스트 위에 표시</string>
+    <string name="widget_bar_two_lines_artist_first">두 줄: 아티스트를 제목 위에 표시</string>
     <string name="start_page_missing">%1$d페이지가 없습니다. 홈 화면은 %2$d페이지입니다.</string>
 </resources>
