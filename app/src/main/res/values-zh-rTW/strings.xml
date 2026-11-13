@@ -545,4 +545,6 @@
     <string name="widget_bar_two_lines_artist_first">雙行：歌手顯示在標題上方</string>
     <string name="pip_restart_button">重新啟動 %1$d</string>
     <string name="fab_overlay_controls_summary">為此懸浮按鈕控制的子母畫面視窗指定應用程式</string>
+    <string name="color_picker_alpha">透明度：%1$d%%</string>
+    <string name="color_picker_default">預設</string>
 </resources>

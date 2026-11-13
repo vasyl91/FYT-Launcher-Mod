@@ -40,22 +40,10 @@
             app:flexDirection="column" >
 
             <com.android.launcher66.colorpicker.MaterialColorPickerTextSeekBar
-                android:id="@+id/alphaSeekBar"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:max="255"
-                android:maxHeight="5dp"
-                android:minHeight="5dp"
-                android:progressDrawable="@drawable/materialcolorpicker__alpha_progress"
-                android:textColorHint="@android:color/black"
-                android:thumb="@drawable/materialcolorpicker__red_thumb_drawable"/>
-
-            <com.android.launcher66.colorpicker.MaterialColorPickerTextSeekBar
                 android:id="@+id/redSeekBar"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/alphaSeekBar"
-                android:max="255"
+                                android:max="255"
                 android:maxHeight="5dp"
                 android:minHeight="5dp"
                 android:progressDrawable="@drawable/materialcolorpicker__red_progress"
@@ -85,6 +73,27 @@
                 android:progressDrawable="@drawable/materialcolorpicker__blue_progress"
                 android:textColorHint="@android:color/holo_blue_light"
                 android:thumb="@drawable/materialcolorpicker__blue_thumb_drawable"/>
+
+            <!-- Background mode only (ColorPicker): the transparency, in steps of 1 % -->
+            <TextView
+                android:id="@+id/alphaLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:includeFontPadding="false"
+                android:visibility="gone" />
+
+            <com.android.launcher66.colorpicker.MaterialColorPickerTextSeekBar
+                android:id="@+id/alphaSeekBar"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:max="100"
+                android:maxHeight="5dp"
+                android:minHeight="5dp"
+                android:progressDrawable="@drawable/materialcolorpicker__alpha_progress"
+                android:textColorHint="@android:color/black"
+                android:thumb="@drawable/materialcolorpicker__red_thumb_drawable"
+                android:visibility="gone" />
 
         </com.google.android.flexbox.FlexboxLayout>
 
@@ -131,6 +140,19 @@
                     android:padding="0dp" />
 
             </com.google.android.flexbox.FlexboxLayout>
+            <!-- Text mode only (ColorPicker): back to the look without a tint -->
+            <Button
+                android:id="@+id/defaultColorButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/colorAccent"
+                android:clickable="true"
+                android:text="@string/color_picker_default"
+                android:focusable="true"
+                android:includeFontPadding="false"
+                android:padding="0dp"
+                android:visibility="gone" />
+
 
             <Button
                 android:id="@+id/okColorButton"

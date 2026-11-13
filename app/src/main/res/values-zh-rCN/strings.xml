@@ -545,4 +545,6 @@
     <string name="widget_bar_two_lines_artist_first">双行：歌手显示在标题上方</string>
     <string name="pip_restart_button">重启 %1$d</string>
     <string name="fab_overlay_controls_summary">为此悬浮按钮控制的画中画窗口指定应用</string>
+    <string name="color_picker_alpha">透明度：%1$d%%</string>
+    <string name="color_picker_default">默认</string>
 </resources>

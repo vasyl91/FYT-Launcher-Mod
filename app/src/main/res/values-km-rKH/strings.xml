@@ -545,4 +545,6 @@
     <string name="widget_bar_two_lines_artist_first">ពីរបន្ទាត់៖ សិល្បករនៅលើចំណងជើង</string>
     <string name="pip_restart_button">ចាប់ផ្តើមឡើងវិញ %1$d</string>
     <string name="fab_overlay_controls_summary">កំណត់កម្មវិធីទៅ PiP ដែលប៊ូតុងអណ្តែតនេះគ្រប់គ្រង</string>
+    <string name="color_picker_alpha">អាល់ហ្វា៖ %1$d%%</string>
+    <string name="color_picker_default">លំនាំដើម</string>
 </resources>

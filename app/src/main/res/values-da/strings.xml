@@ -545,4 +545,6 @@
     <string name="widget_bar_two_lines_artist_first">To linjer: kunstner over titel</string>
     <string name="pip_restart_button">Genstart %1$d</string>
     <string name="fab_overlay_controls_summary">Tildel apps til de PiP\'er, som denne flydende knap styrer</string>
+    <string name="color_picker_alpha">Alfa: %1$d%%</string>
+    <string name="color_picker_default">Standard</string>
 </resources>

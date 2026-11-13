@@ -73,4 +73,6 @@
     <string name="widget_bar_two_lines_artist_first">Dua baris: artis di atas tajuk</string>
     <string name="pip_restart_button">Mula semula %1$d</string>
     <string name="fab_overlay_controls_summary">Tetapkan apl kepada PiP yang dikawal oleh butang terapung ini</string>
+    <string name="color_picker_alpha">Alfa: %1$d%%</string>
+    <string name="color_picker_default">Lalai</string>
 </resources>

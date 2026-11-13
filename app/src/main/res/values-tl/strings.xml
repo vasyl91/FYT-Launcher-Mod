@@ -545,4 +545,6 @@
     <string name="widget_bar_two_lines_artist_first">Dalawang linya: artist sa itaas ng pamagat</string>
     <string name="pip_restart_button">I-restart ang %1$d</string>
     <string name="fab_overlay_controls_summary">Magtalaga ng mga app sa mga PiP na kinokontrol ng floating button na ito</string>
+    <string name="color_picker_alpha">Alpha: %1$d%%</string>
+    <string name="color_picker_default">Default</string>
 </resources>

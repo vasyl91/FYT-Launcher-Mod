@@ -545,4 +545,6 @@
     <string name="widget_bar_two_lines_artist_first">Хоёр мөр: уран бүтээлч гарчгийн дээр</string>
     <string name="pip_restart_button">Дахин эхлүүлэх %1$d</string>
     <string name="fab_overlay_controls_summary">Энэ хөвөгч товчлуурын удирддаг PiP-үүдэд апп оноох</string>
+    <string name="color_picker_alpha">Альфа: %1$d%%</string>
+    <string name="color_picker_default">Өгөгдмөл</string>
 </resources>

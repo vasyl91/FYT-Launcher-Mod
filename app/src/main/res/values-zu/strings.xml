@@ -545,4 +545,6 @@
     <string name="widget_bar_two_lines_artist_first">Imigqa emibili: umculi ngenhla kwesihloko</string>
     <string name="pip_restart_button">Qalisa kabusha %1$d</string>
     <string name="fab_overlay_controls_summary">Nikeza ama-app kuma-PiP alawulwa yile nkinobho entantayo</string>
+    <string name="color_picker_alpha">I-Alpha: %1$d%%</string>
+    <string name="color_picker_default">Okuzenzakalelayo</string>
 </resources>

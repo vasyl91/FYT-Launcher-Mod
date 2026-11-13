@@ -545,4 +545,6 @@
     <string name="widget_bar_two_lines_artist_first">Два реда: извођач изнад наслова</string>
     <string name="pip_restart_button">Поново покрени %1$d</string>
     <string name="fab_overlay_controls_summary">Доделите апликације PiP прозорима којима управља ово плутајуће дугме</string>
+    <string name="color_picker_alpha">Алфа: %1$d%%</string>
+    <string name="color_picker_default">Подразумевано</string>
 </resources>

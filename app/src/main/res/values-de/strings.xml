@@ -545,4 +545,6 @@
     <string name="widget_bar_two_lines_artist_first">Zwei Zeilen: Interpret über Titel</string>
     <string name="pip_restart_button">Neustart %1$d</string>
     <string name="fab_overlay_controls_summary">Weise den PiPs, die diese schwebende Schaltfläche steuert, Apps zu</string>
+    <string name="color_picker_alpha">Alpha: %1$d%%</string>
+    <string name="color_picker_default">Standard</string>
 </resources>

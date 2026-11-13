@@ -545,4 +545,6 @@
     <string name="widget_bar_two_lines_artist_first">ສອງແຖວ: ນັກຮ້ອງຢູ່ເໜືອຊື່ເພງ</string>
     <string name="pip_restart_button">ເລີ່ມໃໝ່ %1$d</string>
     <string name="fab_overlay_controls_summary">ກຳນົດແອັບໃຫ້ PiP ທີ່ປຸ່ມລອຍນີ້ຄວບຄຸມ</string>
+    <string name="color_picker_alpha">ອັລຟາ: %1$d%%</string>
+    <string name="color_picker_default">ຄ່າເລີ່ມຕົ້ນ</string>
 </resources>

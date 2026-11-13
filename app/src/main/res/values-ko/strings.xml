@@ -545,4 +545,6 @@
     <string name="widget_bar_two_lines_artist_first">두 줄: 아티스트를 제목 위에 표시</string>
     <string name="pip_restart_button">%1$d 다시 시작</string>
     <string name="fab_overlay_controls_summary">이 플로팅 버튼이 제어하는 PiP에 앱을 지정하세요</string>
+    <string name="color_picker_alpha">알파: %1$d%%</string>
+    <string name="color_picker_default">기본값</string>
 </resources>

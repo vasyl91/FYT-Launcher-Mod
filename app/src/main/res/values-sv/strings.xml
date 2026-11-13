@@ -545,4 +545,6 @@
     <string name="widget_bar_two_lines_artist_first">Två rader: artist ovanför titel</string>
     <string name="pip_restart_button">Starta om %1$d</string>
     <string name="fab_overlay_controls_summary">Tilldela appar till de PiP som den här flytande knappen styr</string>
+    <string name="color_picker_alpha">Alfa: %1$d%%</string>
+    <string name="color_picker_default">Standard</string>
 </resources>

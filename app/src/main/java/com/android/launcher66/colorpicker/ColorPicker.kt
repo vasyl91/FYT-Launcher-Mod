@@ -23,11 +23,26 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
 import androidx.core.view.updatePadding
 import androidx.fragment.app.DialogFragment
+import com.android.launcher66.ColorAlpha
 import com.android.launcher66.R
 import com.google.android.flexbox.FlexboxLayout
 
+/**
+ * The colour picker of the settings, in two modes that share everything but the transparency:
+ *
+ *  - the text mode ([newTextInstance]): red, green and blue, an opaque colour, as the picker always was. It can
+ *    offer "Default", which reports that no colour is wanted (the look without a tint);
+ *  - the background mode ([newBackgroundInstance]): a fourth slider below the three, "Alpha: NN%", in steps of
+ *    exactly 1 % (ColorAlpha), and the colour comes back with that transparency.
+ *
+ * The rule for both: nothing is reported while the sliders move. The colour goes to the callback only when
+ * "Select" is pressed; closing the picker any other way reports nothing, so the caller keeps what it had.
+ */
 class ColorPicker : DialogFragment(), OnSeekBarChangeListener {
     private var colorView: View? = null
+    private var alphaLabel: TextView? = null
+    private var defaultCallback: Runnable? = null
+    private var allowDefault = false
     private var alphaSeekBar: SeekBar? = null
     private var redSeekBar: SeekBar? = null
     private var greenSeekBar: SeekBar? = null
@@ -35,6 +50,7 @@ class ColorPicker : DialogFragment(), OnSeekBarChangeListener {
     private var textView: TextView? = null
     private var hexCode: EditText? = null
     private var alpha = 255
+    private var alphaPercent = 100
     private var red = 0
     private var green = 0
     private var blue = 0
@@ -50,6 +66,33 @@ class ColorPicker : DialogFragment(), OnSeekBarChangeListener {
         private const val ARG_BLUE = "blue"
         private const val ARG_WITH_ALPHA = "with_alpha"
         private const val ARG_COLOR = "color"
+        private const val ARG_ALLOW_DEFAULT = "allow_default"
+
+        /** The text mode: an opaque colour; with [allowDefault] the picker also offers "Default". */
+        @JvmStatic
+        fun newTextInstance(@ColorInt color: Int, allowDefault: Boolean): ColorPicker {
+            val args = Bundle().apply {
+                putInt(ARG_RED, Color.red(color))
+                putInt(ARG_GREEN, Color.green(color))
+                putInt(ARG_BLUE, Color.blue(color))
+                putBoolean(ARG_WITH_ALPHA, false)
+                putBoolean(ARG_ALLOW_DEFAULT, allowDefault)
+            }
+            return ColorPicker().apply { arguments = args }
+        }
+
+        /** The background mode: the colour with its transparency, chosen in percent. */
+        @JvmStatic
+        fun newBackgroundInstance(@ColorInt color: Int): ColorPicker {
+            val args = Bundle().apply {
+                putInt(ARG_ALPHA, Color.alpha(color))
+                putInt(ARG_RED, Color.red(color))
+                putInt(ARG_GREEN, Color.green(color))
+                putInt(ARG_BLUE, Color.blue(color))
+                putBoolean(ARG_WITH_ALPHA, true)
+            }
+            return ColorPicker().apply { arguments = args }
+        }
 
         @JvmStatic
         fun newInstance(): ColorPicker {
@@ -134,7 +177,11 @@ class ColorPicker : DialogFragment(), OnSeekBarChangeListener {
                 alpha = args.getInt(ARG_ALPHA, 255)
                 withAlpha = args.getBoolean(ARG_WITH_ALPHA, false)
             }
+            allowDefault = args.getBoolean(ARG_ALLOW_DEFAULT, false)
         }
+        // The slider counts in percent; the colour is kept at the alpha of that percent from the start
+        alphaPercent = ColorAlpha.toPercent(alpha)
+        alpha = ColorAlpha.toAlpha(alphaPercent)
     }
 
     override fun onCreateView(
@@ -211,6 +258,9 @@ class ColorPicker : DialogFragment(), OnSeekBarChangeListener {
             right = padding * 2
         )
 
+        alphaLabel = view.findViewById(R.id.alphaLabel)
+        alphaLabel?.textSize = textSize.toFloat()
+
         alphaSeekBar?.setOnSeekBarChangeListener(this)
         redSeekBar?.setOnSeekBarChangeListener(this)
         greenSeekBar?.setOnSeekBarChangeListener(this)
@@ -224,7 +274,7 @@ class ColorPicker : DialogFragment(), OnSeekBarChangeListener {
             hexCode?.setTextColor(ContextCompat.getColor(it, R.color.black))
         }
         hexCode?.textSize = textSize.toFloat()
-        hexCode?.filters = arrayOf(InputFilter.LengthFilter(if (withAlpha) 8 else 6))
+        hexCode?.filters = arrayOf(InputFilter.LengthFilter(6))
         hexCode?.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH ||
                 actionId == EditorInfo.IME_ACTION_DONE ||
@@ -249,6 +299,20 @@ class ColorPicker : DialogFragment(), OnSeekBarChangeListener {
             left = textSize,
             right = textSize
         )
+
+        val defaultColor = view.findViewById<Button>(R.id.defaultColorButton)
+        defaultColor?.textSize = textSize.toFloat()
+        defaultColor?.updatePadding(
+            left = textSize,
+            right = textSize
+        )
+        defaultColor?.visibility = if (allowDefault && !withAlpha) View.VISIBLE else View.GONE
+        defaultColor?.setOnClickListener {
+            defaultCallback?.run()
+            if (autoclose) {
+                dismiss()
+            }
+        }
 
         initUi()
     }
@@ -294,22 +358,29 @@ class ColorPicker : DialogFragment(), OnSeekBarChangeListener {
         callback = listener
     }
 
+    /** What "Default" does (text mode with allowDefault): the caller forgets its colour. */
+    fun setDefaultCallback(listener: Runnable?) {
+        defaultCallback = listener
+    }
+
     private fun initUi() {
         colorView?.setBackgroundColor(getColor())
 
-        alphaSeekBar?.progress = alpha
+        alphaSeekBar?.progress = alphaPercent
         redSeekBar?.progress = red
         greenSeekBar?.progress = green
         blueSeekBar?.progress = blue
 
-        if (!withAlpha) {
-            alphaSeekBar?.visibility = View.GONE
-        }
+        alphaSeekBar?.visibility = if (withAlpha) View.VISIBLE else View.GONE
+        alphaLabel?.visibility = if (withAlpha) View.VISIBLE else View.GONE
+        showAlphaPercent()
 
-        hexCode?.setText(
-            if (withAlpha) ColorFormatHelper.formatColorValues(alpha, red, green, blue)
-            else ColorFormatHelper.formatColorValues(red, green, blue)
-        )
+        // The hex field holds red, green and blue in both modes; the transparency has its own slider
+        hexCode?.setText(ColorFormatHelper.formatColorValues(red, green, blue))
+    }
+
+    private fun showAlphaPercent() {
+        alphaLabel?.text = getString(R.string.color_picker_alpha, alphaPercent)
     }
 
     private fun sendColor() {
@@ -329,14 +400,12 @@ class ColorPicker : DialogFragment(), OnSeekBarChangeListener {
     private fun updateColorView(input: String) {
         try {
             val color = "#$input".toColorInt()
-            alpha = Color.alpha(color)
             red = Color.red(color)
             green = Color.green(color)
             blue = Color.blue(color)
 
             colorView?.setBackgroundColor(getColor())
 
-            alphaSeekBar?.progress = alpha
             redSeekBar?.progress = red
             greenSeekBar?.progress = green
             blueSeekBar?.progress = blue
@@ -349,7 +418,11 @@ class ColorPicker : DialogFragment(), OnSeekBarChangeListener {
 
     override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
         when (seekBar.id) {
-            R.id.alphaSeekBar -> alpha = progress
+            R.id.alphaSeekBar -> {
+                alphaPercent = progress
+                alpha = ColorAlpha.toAlpha(progress)
+                showAlphaPercent()
+            }
             R.id.redSeekBar -> red = progress
             R.id.greenSeekBar -> green = progress
             R.id.blueSeekBar -> blue = progress
@@ -358,10 +431,7 @@ class ColorPicker : DialogFragment(), OnSeekBarChangeListener {
         colorView?.setBackgroundColor(getColor())
 
         // Setting the inputText hex color
-        hexCode?.setText(
-            if (withAlpha) ColorFormatHelper.formatColorValues(alpha, red, green, blue)
-            else ColorFormatHelper.formatColorValues(red, green, blue)
-        )
+        hexCode?.setText(ColorFormatHelper.formatColorValues(red, green, blue))
     }
 
     override fun onStopTrackingTouch(seekBar: SeekBar) {}
@@ -431,6 +501,8 @@ class ColorPicker : DialogFragment(), OnSeekBarChangeListener {
         blueSeekBar = null
         textView = null
         hexCode = null
+        alphaLabel = null
+        defaultCallback = null
         callback = null  
     }
 }

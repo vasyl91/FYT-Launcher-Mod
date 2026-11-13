@@ -545,4 +545,6 @@
     <string name="widget_bar_two_lines_artist_first">2行：アーティストをタイトルの上に表示</string>
     <string name="pip_restart_button">%1$d を再起動</string>
     <string name="fab_overlay_controls_summary">このフローティングボタンで操作する PiP にアプリを割り当ててください</string>
+    <string name="color_picker_alpha">アルファ：%1$d%%</string>
+    <string name="color_picker_default">デフォルト</string>
 </resources>

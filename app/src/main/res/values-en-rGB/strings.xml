@@ -76,4 +76,6 @@
     <string name="widget_bar_two_lines_artist_first">Two lines: artist above title</string>
     <string name="pip_restart_button">Restart %1$d</string>
     <string name="fab_overlay_controls_summary">Assign apps to the PiPs controlled by this floating button</string>
+    <string name="color_picker_alpha">Alpha: %1$d%%</string>
+    <string name="color_picker_default">Default</string>
 </resources>

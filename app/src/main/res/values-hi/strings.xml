@@ -545,4 +545,6 @@
     <string name="widget_bar_two_lines_artist_first">दो पंक्तियाँ: कलाकार शीर्षक के ऊपर</string>
     <string name="pip_restart_button">रीस्टार्ट %1$d</string>
     <string name="fab_overlay_controls_summary">इस फ़्लोटिंग बटन से नियंत्रित PiP को ऐप्स असाइन करें</string>
+    <string name="color_picker_alpha">अल्फ़ा: %1$d%%</string>
+    <string name="color_picker_default">डिफ़ॉल्ट</string>
 </resources>

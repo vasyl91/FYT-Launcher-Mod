@@ -545,4 +545,6 @@
     <string name="widget_bar_two_lines_artist_first">Два реда: изпълнител над заглавие</string>
     <string name="pip_restart_button">Рестарт %1$d</string>
     <string name="fab_overlay_controls_summary">Задайте приложения на PiP прозорците, управлявани от този плаващ бутон</string>
+    <string name="color_picker_alpha">Алфа: %1$d%%</string>
+    <string name="color_picker_default">По подразбиране</string>
 </resources>

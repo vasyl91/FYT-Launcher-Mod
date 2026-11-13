@@ -545,4 +545,6 @@
     <string name="widget_bar_two_lines_artist_first">Δύο γραμμές: καλλιτέχνης πάνω από τίτλο</string>
     <string name="pip_restart_button">Επανεκκίνηση %1$d</string>
     <string name="fab_overlay_controls_summary">Αντιστοιχίστε εφαρμογές στα PiP που ελέγχει αυτό το αιωρούμενο κουμπί</string>
+    <string name="color_picker_alpha">Άλφα: %1$d%%</string>
+    <string name="color_picker_default">Προεπιλογή</string>
 </resources>

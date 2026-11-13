@@ -545,4 +545,6 @@
     <string name="widget_bar_two_lines_artist_first">Dua baris: artis di atas judul</string>
     <string name="pip_restart_button">Mulai ulang %1$d</string>
     <string name="fab_overlay_controls_summary">Tetapkan aplikasi ke PiP yang dikendalikan tombol mengambang ini</string>
+    <string name="color_picker_alpha">Alfa: %1$d%%</string>
+    <string name="color_picker_default">Default</string>
 </resources>

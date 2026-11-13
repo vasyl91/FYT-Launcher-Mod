@@ -545,4 +545,6 @@
     <string name="widget_bar_two_lines_artist_first">Dvi eilutės: atlikėjas virš pavadinimo</string>
     <string name="pip_restart_button">Paleisti iš naujo %1$d</string>
     <string name="fab_overlay_controls_summary">Priskirkite programas PiP langams, kuriuos valdo šis slankusis mygtukas</string>
+    <string name="color_picker_alpha">Alfa: %1$d%%</string>
+    <string name="color_picker_default">Numatytoji</string>
 </resources>

@@ -545,4 +545,6 @@
     <string name="widget_bar_two_lines_artist_first">Mistari miwili: msanii juu ya kichwa</string>
     <string name="pip_restart_button">Anzisha upya %1$d</string>
     <string name="fab_overlay_controls_summary">Weka programu kwenye PiP zinazodhibitiwa na kitufe hiki kinachoelea</string>
+    <string name="color_picker_alpha">Alfa: %1$d%%</string>
+    <string name="color_picker_default">Chaguomsingi</string>
 </resources>

@@ -545,4 +545,6 @@
     <string name="widget_bar_two_lines_artist_first">سطران: الفنان فوق العنوان</string>
     <string name="pip_restart_button">إعادة تشغيل %1$d</string>
     <string name="fab_overlay_controls_summary">عيّن تطبيقات لنوافذ PiP التي يتحكم بها هذا الزر العائم</string>
+    <string name="color_picker_alpha">ألفا: %1$d%%</string>
+    <string name="color_picker_default">الافتراضي</string>
 </resources>

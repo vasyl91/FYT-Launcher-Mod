@@ -191,4 +191,6 @@
     <string name="widget_bar_two_lines_artist_first">Duas linhas: artista acima do título</string>
     <string name="pip_restart_button">Reiniciar %1$d</string>
     <string name="fab_overlay_controls_summary">Atribua apps aos PiP controlados por este botão flutuante</string>
+    <string name="color_picker_alpha">Alfa: %1$d%%</string>
+    <string name="color_picker_default">Predefinição</string>
 </resources>

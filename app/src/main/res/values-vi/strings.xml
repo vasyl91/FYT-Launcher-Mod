@@ -545,4 +545,6 @@
     <string name="widget_bar_two_lines_artist_first">Hai dòng: nghệ sĩ ở trên tiêu đề</string>
     <string name="pip_restart_button">Khởi động lại %1$d</string>
     <string name="fab_overlay_controls_summary">Gán ứng dụng cho các PiP do nút nổi này điều khiển</string>
+    <string name="color_picker_alpha">Alpha: %1$d%%</string>
+    <string name="color_picker_default">Mặc định</string>
 </resources>

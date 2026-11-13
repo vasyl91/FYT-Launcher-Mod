@@ -545,4 +545,6 @@
     <string name="widget_bar_two_lines_artist_first">ሁለት መስመር፦ አርቲስት ከርዕስ በላይ</string>
     <string name="pip_restart_button">ዳግም አስጀምር %1$d</string>
     <string name="fab_overlay_controls_summary">ይህ ተንሳፋፊ አዝራር ለሚቆጣጠራቸው PiPዎች መተግበሪያዎችን መድብ</string>
+    <string name="color_picker_alpha">አልፋ፦ %1$d%%</string>
+    <string name="color_picker_default">ነባሪ</string>
 </resources>
