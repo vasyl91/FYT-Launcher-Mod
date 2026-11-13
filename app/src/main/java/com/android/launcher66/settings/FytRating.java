@@ -383,7 +383,50 @@ public final class FytRating {
         rememberLastReply(videoId, error);
         noteReplyError(error);
 
-        return result.getString(EXTRA_RATING);
+        String rating = result.getString(EXTRA_RATING);
+        afterRatingAnswer(context, videoId, rating, error);
+        return rating;
+    }
+
+    /** The time of the last wake for an answer without a rating, 0 for none (RatingReplyRule). */
+    private static volatile long noRatingWakeAtMs;
+    /** What the bridge last said in place of a rating, so that the log names it once per change. */
+    private static volatile String lastLoggedReplyError;
+
+    /**
+     * An answer to a request for a rating has come: the bridge's reason for having none is logged (it was
+     * read and dropped, so a capture could not tell why the bridge had nothing), and a bridge that should have
+     * a rating and gives none is woken once (RatingReplyRule).
+     */
+    private static void afterRatingAnswer(Context context, String videoId, String rating, String error) {
+        boolean hasRating = rating != null && !rating.isEmpty();
+        String said = hasRating ? "" : (error == null || error.isEmpty() ? "(no reason given)" : error);
+        if (!said.equals(lastLoggedReplyError)) {
+            lastLoggedReplyError = said;
+            if (hasRating) {
+                Log.i(TAG, "The bridge gives ratings again");
+            } else {
+                Log.w(TAG, "The bridge answered without a rating for " + videoId + ": " + said
+                        + " (signed in " + signedIn + ", allowed " + allowed + ")");
+            }
+        }
+        if (hasRating) {
+            noRatingWakeAtMs = 0L;
+            return;
+        }
+        boolean explained = ERROR_MADE_FOR_KIDS.equals(error) || ERROR_NOT_ALLOWED.equals(error)
+                || ERROR_NOT_SIGNED_IN.equals(error) || ERROR_BAD_REQUEST.equals(error);
+        long now = SystemClock.elapsedRealtime();
+        long sinceWake = noRatingWakeAtMs == 0L ? -1L : now - noRatingWakeAtMs;
+        android.app.Activity launcher = FytRatingBridgeStarter.resumedLauncher();
+        RatingReplyRule.Action action = RatingReplyRule.afterAnswer(false, explained, signedIn, allowed,
+                launcher != null, sinceWake);
+        if (action == RatingReplyRule.Action.WAKE_THEN_RETRY) {
+            noRatingWakeAtMs = now;
+            boolean started = wake(launcher);
+            Log.i(TAG, "The bridge answers but has no rating: its wake activity "
+                    + (started ? "started" : "could not be started") + ", the rating is asked for again");
+        }
     }
 
     /**
@@ -461,6 +504,11 @@ public final class FytRating {
 
     private static void noteRatingAnswered(boolean answered) {
         lastRatingUnanswered = !answered;
+        if (answered) {
+            // The bridge is reached by broadcast after all: what was concluded from an earlier silence no
+            // longer holds (it stayed until the next missed answer happened to clear it)
+            retryBroadcastLaunch();
+        }
     }
 
     private static void rememberLastReply(String videoId, String error) {

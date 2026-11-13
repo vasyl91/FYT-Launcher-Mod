@@ -39,6 +39,11 @@ public final class FytRatingBridgeStarter {
     }
 
     /** Launcher.onResume. */
+    /** The launcher's activity while its home screen is in front, else null: the one that may start an activity. */
+    static Activity resumedLauncher() {
+        return sResumedLauncher.get();
+    }
+
     public static void onLauncherResumed(Activity launcher) {
         sResumedLauncher = new WeakReference<>(launcher);
     }
