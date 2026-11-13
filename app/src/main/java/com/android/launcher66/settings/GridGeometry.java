@@ -11,7 +11,9 @@ package com.android.launcher66.settings;
  */
 public final class GridGeometry {
 
-    private static volatile GridGeometry sPublished;
+    /** The grid of the first page and the grid of the other pages: their bars differ (WorkspaceGrid). */
+    private static volatile GridGeometry sPublishedFirst;
+    private static volatile GridGeometry sPublishedOthers;
 
     public final int paddingLeft;
     public final int paddingTop;
@@ -31,14 +33,21 @@ public final class GridGeometry {
         this.countY = countY;
     }
 
-    /** Called by CellLayout once it has measured its cells; every page has the same grid. */
-    public static void publish(GridGeometry grid) {
-        sPublished = grid;
+    /**
+     * Called by CellLayout once it has measured its cells. The first page has the bars of its own, the
+     * other pages those that are on every page, so there are two grids; all the other pages have the same.
+     */
+    public static void publish(boolean firstPage, GridGeometry grid) {
+        if (firstPage) {
+            sPublishedFirst = grid;
+        } else {
+            sPublishedOthers = grid;
+        }
     }
 
-    /** The grid of the workspace, or null until a page has been measured. */
-    public static GridGeometry published() {
-        return sPublished;
+    /** The grid of the first page or of the others, or null until such a page has been measured. */
+    public static GridGeometry published(boolean firstPage) {
+        return firstPage ? sPublishedFirst : sPublishedOthers;
     }
 
     public boolean isUsable() {

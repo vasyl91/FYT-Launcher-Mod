@@ -46,6 +46,7 @@ import com.android.launcher66.FolderIcon.FolderRingAnimator;
 import com.android.launcher66.settings.BarLayouts;
 import com.android.launcher66.settings.GridGeometry;
 import com.android.launcher66.settings.Keys;
+import com.android.launcher66.settings.WorkspaceGrids;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -176,7 +177,16 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
             new PorterDuffXfermode(PorterDuff.Mode.ADD);
     private final static Paint sPaint = new Paint();
 
-    private int excludeLastRow = 1; // do not allow to place the object where the horizontal bar is
+    /**
+     * The strips the bars take from this page, in pixels (WorkspaceGrid): the cells share what is left
+     * between them. All zero for a grid that is no page of the home screen (the hotseat, a folder).
+     */
+    private int mGridInsetLeft;
+    private int mGridInsetTop;
+    private int mGridInsetRight;
+    private int mGridInsetBottom;
+    /** Whether this is the first page of the home screen, one of the others, or no page at all (null). */
+    private Boolean mFirstPage;
     private final float widgetScaleFactor = ScreenScale.widgetScale();
 
     private View mUserDateWidget = null;
@@ -395,6 +405,49 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         requestLayout();
     }
 
+    /**
+     * Makes this a page of the home screen with the grid of such a page: the rows and columns the user
+     * chose, less the row and the column of the bars that stay on it, laid out beside the bars' strips
+     * (WorkspaceGrid). Called when the page is made, before anything is put on it: the cells that are
+     * taken are forgotten here. A change of the settings builds the pages anew (Launcher.recreateView()).
+     *
+     * @param firstPage the first page, which has the bars of its own; the others have those set to be
+     *                  on every page
+     */
+    public void useWorkspaceGrid(boolean firstPage) {
+        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(getContext());
+        // The orientation as the loader reads it (LauncherModel), so that a page and its items agree
+        boolean landscape = WorkspaceGrids.landscape(LauncherApplication.sApp);
+        WorkspaceGrid.Cells cells = WorkspaceGrids.cells(p, landscape, firstPage);
+        int barHeight = mLauncher != null ? mLauncher.getHorizontalBarHeight() : 0;
+        int[] insets = WorkspaceGrids.insets(p, landscape, firstPage, barHeight, Launcher.calculatedVerticalBarWidth);
+        mFirstPage = firstPage;
+        mGridInsetLeft = insets[0];
+        mGridInsetTop = insets[1];
+        mGridInsetRight = insets[2];
+        mGridInsetBottom = insets[3];
+        mShortcutsAndWidgets.setGridOffset(mGridInsetLeft, mGridInsetTop);
+        setGridSize(cells.countX, cells.countY);
+        Log.i(TAG, (firstPage ? "First page" : "Page") + " grid " + cells + ", strips of the bars "
+                + java.util.Arrays.toString(insets));
+    }
+
+    /** The x of the first cell in this view: after the padding and a bar at the left. */
+    private int gridLeft() {
+        return getPaddingLeft() + mGridInsetLeft;
+    }
+
+    /** The y of the first cell in this view: after the padding and a bar at the top. */
+    private int gridTop() {
+        return getPaddingTop() + mGridInsetTop;
+    }
+
+    /** The pixels left over when the width beside the bars is shared among the columns. */
+    private int gridSlackX() {
+        return getMeasuredWidth() - getPaddingLeft() - getPaddingRight() - mGridInsetLeft - mGridInsetRight
+                - (mCountX * mCellWidth);
+    }
+
     // Set whether or not to invert the layout horizontally if the layout is in RTL mode.
     public void setInvertIfRtl(boolean invert) {
         mShortcutsAndWidgets.setInvertIfRtl(invert);
@@ -504,8 +557,7 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
             final int padding = mPressedOrFocusedIcon.getPressedOrFocusedBackgroundPadding();
             final Bitmap b = mPressedOrFocusedIcon.getPressedOrFocusedBackground();
             if (b != null) {
-                int offset = getMeasuredWidth() - getPaddingLeft() - getPaddingRight() -
-                        (mCountX * mCellWidth);
+                int offset = gridSlackX();
                 int left = getPaddingLeft() + (int) Math.ceil(offset / 2f);
                 int top = getPaddingTop();
                 canvas.drawBitmap(b,
@@ -862,8 +914,8 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
      * @param result Array of 2 ints to hold the x and y coordinate of the cell
      */
     void pointToCellExact(int x, int y, int[] result) {
-        final int hStartPadding = getPaddingLeft();
-        final int vStartPadding = getPaddingTop();
+        final int hStartPadding = gridLeft();
+        final int vStartPadding = gridTop();
 
         result[0] = (x - hStartPadding) / (mCellWidth + mWidthGap);
         result[1] = (y - vStartPadding) / (mCellHeight + mHeightGap);
@@ -896,8 +948,8 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
      * @param result Array of 2 ints to hold the x and y coordinate of the point
      */
     void cellToPoint(int cellX, int cellY, int[] result) {
-        final int hStartPadding = getPaddingLeft();
-        final int vStartPadding = getPaddingTop();
+        final int hStartPadding = gridLeft();
+        final int vStartPadding = gridTop();
 
         result[0] = hStartPadding + cellX * (mCellWidth + mWidthGap);
         // Apply extra padding only to the first row
@@ -929,8 +981,8 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
      * @param result Array of 2 ints to hold the x and y coordinate of the point
      */
     void regionToCenterPoint(int cellX, int cellY, int spanX, int spanY, int[] result) {
-        final int hStartPadding = getPaddingLeft();
-        final int vStartPadding = getPaddingTop();
+        final int hStartPadding = gridLeft();
+        final int vStartPadding = gridTop();
         result[0] = hStartPadding + cellX * (mCellWidth + mWidthGap) +
                 (spanX * mCellWidth + (spanX - 1) * mWidthGap) / 2;
         result[1] = vStartPadding + cellY * (mCellHeight + mHeightGap) +
@@ -945,8 +997,8 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
      * @param result Rect in which to write the result
      */
      void regionToRect(int cellX, int cellY, int spanX, int spanY, Rect result) {
-        final int hStartPadding = getPaddingLeft();
-        final int vStartPadding = getPaddingTop();
+        final int hStartPadding = gridLeft();
+        final int vStartPadding = gridTop();
         final int left = hStartPadding + cellX * (mCellWidth + mWidthGap);
         final int top = vStartPadding + cellY * (mCellHeight + mHeightGap);
         result.set(left, top, left + (spanX * mCellWidth + (spanX - 1) * mWidthGap),
@@ -1015,8 +1067,11 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         int childWidthSize = widthSize - (getPaddingLeft() + getPaddingRight());
         int childHeightSize = heightSize - (getPaddingTop() + getPaddingBottom());
         if (mFixedCellWidth < 0 || mFixedCellHeight < 0) {
-            int cw = grid.calculateCellWidth(childWidthSize, mCountX);
-            int ch = grid.calculateCellHeight(childHeightSize, mCountY);
+            // The cells share what the bars leave of the page; the children below keep the whole page
+            int cw = grid.calculateCellWidth(
+                    Math.max(mCountX, childWidthSize - mGridInsetLeft - mGridInsetRight), mCountX);
+            int ch = grid.calculateCellHeight(
+                    Math.max(mCountY, childHeightSize - mGridInsetTop - mGridInsetBottom), mCountY);
             if (cw != mCellWidth || ch != mCellHeight) {
                 mCellWidth = cw;
                 mCellHeight = ch;
@@ -1073,21 +1128,23 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
 
     /**
      * Tells the settings (Helpers, which decides where custom widgets and PiPs may move) how the
-     * cells are laid out. All pages have the same grid, so the last one measured wins.
+     * cells are laid out. The first page has one grid and all the others another (the bars differ),
+     * so the last one measured of each kind wins. A grid that is no page (a folder, the hotseat) tells nothing.
      */
     private void publishGridGeometry() {
-        if (mCellWidth <= 0 || mCellHeight <= 0) return;
-        GridGeometry grid = new GridGeometry(getPaddingLeft(), getPaddingTop(),
+        if (mCellWidth <= 0 || mCellHeight <= 0 || mFirstPage == null) return;
+        GridGeometry grid = new GridGeometry(gridLeft(), gridTop(),
                 mCellWidth + mWidthGap, mCellHeight + mHeightGap, mCountX, mCountY);
-        if (grid.isUsable() && !grid.sameAs(GridGeometry.published())) {
-            GridGeometry.publish(grid);
+        if (grid.isUsable() && !grid.sameAs(GridGeometry.published(mFirstPage))) {
+            GridGeometry.publish(mFirstPage, grid);
         }
     }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        int offset = getMeasuredWidth() - getPaddingLeft() - getPaddingRight() -
-                (mCountX * mCellWidth);
+        // Every child has the whole page: the layout of the first page with its bars, and the container
+        // of the cells, which begins the cells beside the bars itself (setGridOffset())
+        int offset = gridSlackX();
         int left = getPaddingLeft() + (int) Math.ceil(offset / 2f);
         int top = getPaddingTop();
         int count = getChildCount();
@@ -1584,11 +1641,6 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         }
     }
 
-    /** The horizontal bar is at the top: its row (or its corner cell) is the first one, not the last. */
-    private boolean barOnTop() {
-        return barSides().top;
-    }
-
     /** The sides of the bars and of the handle, from the one place that reads them (BarLayouts). */
     private BarLayout barSides() {
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -1607,21 +1659,14 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         return barSides().cornerCellY(mCountY);
     }
 
+    /**
+     * Whether the auto-hide bar's handle keeps the corner cell of this page, while it is the page shown.
+     * The row of a bar that does not hide is no question for a search: it is not in the grid of the page
+     * at all (WorkspaceGrid, useWorkspaceGrid()).
+     */
     private boolean shouldExcludeFirstBottomCell() {
         int page = shownWorkspacePage();
-        return page >= 0 && HorizontalBarPlacement.reserve(page, barOnEveryPage(prefs),
-                prefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false), prefs.getBoolean(Keys.USER_LAYOUT, false)) == HorizontalBarPlacement.Reserve.CELL;
-    }
-
-    private boolean shouldExcludeLastRow() {
-        int page = shownWorkspacePage();
-        return page >= 0 && HorizontalBarPlacement.reserve(page, barOnEveryPage(prefs),
-                prefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false), prefs.getBoolean(Keys.USER_LAYOUT, false)) == HorizontalBarPlacement.Reserve.ROW;
-    }
-
-    /** 'Horizontal bar on every page'. */
-    private static boolean barOnEveryPage(SharedPreferences prefs) {
-        return prefs.getBoolean(Keys.HORIZONTAL_BAR_EVERY_PAGE, false);
+        return page >= 0 && WorkspaceGrids.cornerCell(prefs, page == 0);
     }
 
     /**
@@ -1676,21 +1721,14 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
 
         final int countX = mCountX;
         final int countY;
-        // Apply only for the first page that contains the horizontal bar
+        // Only the corner cell of an auto-hide bar is left out; a bar's row is not in the grid
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        boolean shouldExcludeLastRow = shouldExcludeLastRow();
         boolean shouldExcludeFirstCell = shouldExcludeFirstBottomCell();
 
-        final boolean barTop = barOnTop();
         final int cornerX = cornerCellX();
         final int cornerY = cornerCellY();
-        // The reserved row is the last one, or the first with the bar at the top
-        final int firstRow = shouldExcludeLastRow && barTop ? excludeLastRow : 0;
-        if (shouldExcludeLastRow && !barTop) {
-            countY = mCountY - excludeLastRow;
-        } else {
-            countY = mCountY; // Only the specific cell is excluded, or the first row
-        }
+        final int firstRow = 0;
+        countY = mCountY;
 
         if (minSpanX <= 0 || minSpanY <= 0 || spanX <= 0 || spanY <= 0 ||
                 spanX < minSpanX || spanY < minSpanY) {
@@ -1832,20 +1870,14 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
 
         final int countX = mCountX;
         final int countY;
-        // apply only for the first page that contains the horizontal bar
+        // Only the corner cell of an auto-hide bar is left out; a bar's row is not in the grid
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        boolean shouldExcludeLastRow = shouldExcludeLastRow();
         boolean shouldExcludeFirstCell = shouldExcludeFirstBottomCell();
 
-        final boolean barTop = barOnTop();
         final int cornerX = cornerCellX();
         final int cornerY = cornerCellY();
-        final int firstRow = shouldExcludeLastRow && barTop ? excludeLastRow : 0;
-        if (shouldExcludeLastRow && !barTop) {
-            countY = mCountY - excludeLastRow;
-        } else {
-            countY = mCountY;
-        }
+        final int firstRow = 0;
+        countY = mCountY;
 
         for (int y = firstRow; y < countY - (spanY - 1); y++) {
             inner:
@@ -2228,20 +2260,9 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         boolean foundSolution = false;
         clusterRect = cluster.getBoundingRect();
 
-        // Do not allow to reorder objects to the last row of the first screen
-        // where the horizontal bar has it's place
-        int fixedCountY;
-        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        boolean shouldExcludeLastRow = shouldExcludeLastRow();
-        boolean shouldExcludeFirstCell = shouldExcludeFirstBottomCell();
-
-        final boolean barTop = barOnTop();
-        final int fixedFirstRow = shouldExcludeLastRow && barTop ? excludeLastRow : 0;
-        if (shouldExcludeLastRow && !barTop) {
-            fixedCountY = mCountY - excludeLastRow;
-        } else {
-            fixedCountY = mCountY;
-        }
+        // The row of a horizontal bar is not in the grid, so the grid's own edges are the limit
+        final int fixedCountY = mCountY;
+        final int fixedFirstRow = 0;
 
         // Due to the nature of the algorithm, the only check required to verify a valid solution
         // is to ensure that completed shifted cluster lies completely within the cell layout.
@@ -3390,8 +3411,8 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         final int widthGap = mWidthGap;
         final int heightGap = mHeightGap;
 
-        final int hStartPadding = getPaddingLeft();
-        final int vStartPadding = getPaddingTop();
+        final int hStartPadding = gridLeft();
+        final int vStartPadding = gridTop();
 
         int width = cellHSpan * cellWidth + ((cellHSpan - 1) * widthGap);
         int height = cellVSpan * cellHeight + ((cellVSpan - 1) * heightGap);
@@ -3419,10 +3440,12 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
 
         // Always assume we're working with the smallest span to make sure we
         // reserve enough space in both orientations.
+        // The cells of a page of the home screen without bars, as the user set them (WorkspaceGrid)
+        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp);
         int parentWidth = grid.calculateCellWidth(grid.widthPx
-                - padding.left - padding.right, (int) grid.numColumns);
+                - padding.left - padding.right, WorkspaceGrids.columns(p, grid.isLandscape));
         int parentHeight = grid.calculateCellHeight(grid.heightPx
-                - padding.top - padding.bottom, (int) grid.numRows);
+                - padding.top - padding.bottom, WorkspaceGrids.rows(p, grid.isLandscape));
         return Math.min(parentWidth, parentHeight);
     }
 
@@ -4594,38 +4617,20 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
     }
 
     /**
-     * The horizontal bar covers the last row(s) of the first page, unless it hides itself; with 'Bottom
-     * bar on every page' of every page (HorizontalBarPlacement).
+     * With the auto-hiding bar, only the cell under its handle is taken, in the corner of a page
+     * (WorkspaceGrid.cornerCell). A bar that does not hide takes a row, which is not in the grid at all.
      */
-    private boolean isBarRowExcluded(int pageIndex) {
-        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(getContext());
-        return HorizontalBarPlacement.reserve(pageIndex, barOnEveryPage(p),
-                p.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false), p.getBoolean(Keys.USER_LAYOUT, false)) == HorizontalBarPlacement.Reserve.ROW;
-    }
-
-    /** With the auto-hiding bar, only its handle in the bottom-left cell of a page is taken. */
     private boolean isFirstBottomCellExcluded(int pageIndex) {
         SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(getContext());
-        return HorizontalBarPlacement.reserve(pageIndex, barOnEveryPage(p),
-                p.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false), p.getBoolean(Keys.USER_LAYOUT, false)) == HorizontalBarPlacement.Reserve.CELL;
+        return WorkspaceGrids.cornerCell(p, pageIndex == 0);
     }
 
-    /** A copy of mOccupied with the cells under the horizontal bar marked as taken. */
-    private boolean[][] buildSearchOccupied(boolean excludeBarRows, boolean excludeFirstCell) {
+    /** A copy of mOccupied with the corner cell of an auto-hide bar marked as taken. */
+    private boolean[][] buildSearchOccupied(boolean excludeFirstCell) {
         boolean[][] occupied = new boolean[mCountX][mCountY];
         for (int x = 0; x < mCountX; x++) {
             for (int y = 0; y < mCountY; y++) {
                 occupied[x][y] = mOccupied[x][y];
-            }
-        }
-        if (excludeBarRows) {
-            boolean top = barOnTop();
-            for (int x = 0; x < mCountX; x++) {
-                int from = top ? 0 : Math.max(0, mCountY - excludeLastRow);
-                int to = top ? Math.min(mCountY, excludeLastRow) : mCountY;
-                for (int y = from; y < to; y++) {
-                    occupied[x][y] = true;
-                }
             }
         }
         if (excludeFirstCell && mCountX > 0 && mCountY > 0) {
@@ -4666,8 +4671,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         if (mCountX <= 0 || mCountY <= 0 || mOccupied == null) {
             return false;
         }
-        boolean[][] occupied = buildSearchOccupied(isBarRowExcluded(pageIndex),
-                isFirstBottomCellExcluded(pageIndex));
+        boolean[][] occupied = buildSearchOccupied(isFirstBottomCellExcluded(pageIndex));
         return findVacantCells(occupied, mCountX, mCountY, spanX, spanY, result);
     }
 
@@ -4780,24 +4784,21 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             }
         }
 
-        // Items under the horizontal bar, which covers the first page only.
+        // Items in the corner cell of an auto-hide bar. (The row of a bar that does not hide is not in
+        // the grid; an item that had it was given another cell when the grid changed, GridOverflow.)
         prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        boolean excludeBarRows = isBarRowExcluded(pageIndex);
         boolean excludeFirstCell = isFirstBottomCellExcluded(pageIndex);
-        if (excludeBarRows || excludeFirstCell) {
+        if (excludeFirstCell) {
             for (int i = 0; i < count; i++) {
                 View child = mShortcutsAndWidgets.getChildAt(i);
                 if (!isMovableLauncherItem(child) || conflictingViews.contains(child)) {
                     continue;
                 }
                 LayoutParams lp = (LayoutParams) child.getLayoutParams();
-                boolean barTop = barOnTop();
                 int cornerX = cornerCellX();
                 int cornerY = cornerCellY();
-                boolean underBar = excludeBarRows
-                        ? (barTop ? lp.cellY < excludeLastRow : lp.cellY + lp.cellVSpan > mCountY - excludeLastRow)
-                        : lp.cellX <= cornerX && cornerX < lp.cellX + lp.cellHSpan
-                                && lp.cellY <= cornerY && cornerY < lp.cellY + lp.cellVSpan;
+                boolean underBar = lp.cellX <= cornerX && cornerX < lp.cellX + lp.cellHSpan
+                        && lp.cellY <= cornerY && cornerY < lp.cellY + lp.cellVSpan;
                 if (underBar) {
                     conflictingViews.add(child);
                 }
@@ -4823,7 +4824,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             // Built after the view's cells were freed, with the bar cells blocked again. The old
             // code freed them in its search copy too, so an item in the bar row found its own
             // cell, which the excludeLastRow check then rejected.
-            boolean[][] searchOccupied = buildSearchOccupied(excludeBarRows, excludeFirstCell);
+            boolean[][] searchOccupied = buildSearchOccupied(excludeFirstCell);
             if (findVacantCells(searchOccupied, mCountX, mCountY, lp.cellHSpan, lp.cellVSpan, newLocation)) {
                 lp.cellX = newLocation[0];
                 lp.cellY = newLocation[1];

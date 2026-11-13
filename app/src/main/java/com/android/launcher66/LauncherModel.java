@@ -41,6 +41,7 @@ import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.InstallWidgetReceiver.WidgetMimeTypeHandlerData;
 import com.android.launcher66.settings.Keys;
+import com.android.launcher66.settings.WorkspaceGrids;
 
 import java.lang.ref.WeakReference;
 import java.net.URISyntaxException;
@@ -266,10 +267,10 @@ public class LauncherModel extends BroadcastReceiver {
 
     static boolean findNextAvailableIconSpaceInScreen(ArrayList<ItemInfo> items, int[] xy,
                                  long screen) {
-        LauncherAppState app = LauncherAppState.getInstance();
-        DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
-        final int xCount = (int) grid.numColumns;
-        final int yCount = (int) grid.numRows;
+        // The grid of that screen's page: fewer rows or columns where a bar stays on it (WorkspaceGrid)
+        final WorkspaceGrid.Cells grid = gridOf(screen);
+        final int xCount = grid.countX;
+        final int yCount = grid.countY;
         boolean[][] occupied = new boolean[xCount][yCount];
 
         int cellX, cellY, spanX, spanY;
@@ -292,6 +293,13 @@ public class LauncherModel extends BroadcastReceiver {
 
         return CellLayout.findVacantCell(xy, 1, 1, xCount, yCount, occupied);
     }
+    /** The grid of a screen of the home screen as its page has it now; the first page has a negative id. */
+    static WorkspaceGrid.Cells gridOf(long screenId) {
+        Context context = LauncherApplication.sApp;
+        return WorkspaceGrids.cells(PreferenceManager.getDefaultSharedPreferences(context),
+                WorkspaceGrids.landscape(context), screenId < 0);
+    }
+
     static Pair<Long, int[]> findNextAvailableIconSpace(Context context, String name,
                                                         Intent launchIntent,
                                                         int firstScreenIndex,
@@ -1854,11 +1862,75 @@ public class LauncherModel extends BroadcastReceiver {
             }
         }
 
+        /** The grids of the pages for the load that is running (WorkspaceGrids.signature). */
+        private WorkspaceGrid.Signature mGrids;
+
+        /** True when the item does not lie in the grid of its page: such an item is not loaded, and stays in the database. */
         private boolean checkItemDimensions(ItemInfo info) {
-            LauncherAppState app = LauncherAppState.getInstance();
-            DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
-            return (info.cellX + info.spanX) > (int) grid.numColumns ||
-                    (info.cellY + info.spanY) > (int) grid.numRows;
+            WorkspaceGrid.Cells grid = mGrids != null ? mGrids.of(info.screenId) : gridOf(info.screenId);
+            return !grid.holds(info.cellX, info.cellY, Math.max(1, info.spanX), Math.max(1, info.spanY));
+        }
+
+        /**
+         * Before the items are read: when the grid of the pages is not the one the items were last
+         * arranged for (another number of rows or columns, a bar switched on, off or to another side),
+         * every item gets its cell in the new grid, and one that has none there a free one
+         * (GridOverflow). Nothing is deleted. The rows are written here, on the loader's thread, and
+         * the load that follows reads them; the grid they were arranged for is noted after the rows,
+         * so that a stop in between arranges once more rather than leaving items without a cell.
+         */
+        private void arrangeItemsForGrid(ContentResolver resolver, SharedPreferences prefs, boolean landscape) {
+            final String key = WorkspaceGrids.arrangedKey(landscape);
+            final String stored = prefs.getString(key, null);
+            final WorkspaceGrid.Signature before = WorkspaceGrid.arrangedFor(stored,
+                    prefs.getString(WorkspaceGrids.arrangedKey(!landscape), null), landscape, mGrids);
+            if (before != null) {
+                final ArrayList<GridOverflow.Item> items = new ArrayList<>();
+                Cursor c = null;
+                try {
+                    c = resolver.query(LauncherSettings.Favorites.CONTENT_URI,
+                            new String[] {BaseColumns._ID, LauncherSettings.Favorites.SCREEN,
+                                    LauncherSettings.Favorites.CELLX, LauncherSettings.Favorites.CELLY,
+                                    LauncherSettings.Favorites.SPANX, LauncherSettings.Favorites.SPANY,
+                                    LauncherSettings.Favorites.ITEM_TYPE},
+                            LauncherSettings.Favorites.CONTAINER + "=?",
+                            new String[] {String.valueOf(LauncherSettings.Favorites.CONTAINER_DESKTOP)}, null);
+                    if (c == null) {
+                        Log.w(TAG, "Grid " + before + " -> " + mGrids + ": the items could not be read, not arranged");
+                        return;
+                    }
+                    while (c.moveToNext()) {
+                        // Only a widget has a span of its own; the loader gives everything else one cell
+                        boolean widget = c.getInt(6) == LauncherSettings.Favorites.ITEM_TYPE_APPWIDGET;
+                        items.add(new GridOverflow.Item(c.getLong(0), c.getLong(1), c.getInt(2), c.getInt(3),
+                                widget ? c.getInt(4) : 1, widget ? c.getInt(5) : 1));
+                    }
+                } catch (RuntimeException e) {
+                    Log.w(TAG, "Grid " + before + " -> " + mGrids + ": the items could not be read, not arranged", e);
+                    return;
+                } finally {
+                    if (c != null) {
+                        c.close();
+                    }
+                }
+                final List<GridOverflow.Item> moves = GridOverflow.plan(items, before, mGrids,
+                        readWorkspaceScreens(mContext).order,
+                        () -> LauncherAppState.getLauncherProvider().generateNewScreenId());
+                for (GridOverflow.Item move : moves) {
+                    ContentValues values = new ContentValues();
+                    values.put(LauncherSettings.Favorites.SCREEN, move.screen);
+                    values.put(LauncherSettings.Favorites.CELLX, move.cellX);
+                    values.put(LauncherSettings.Favorites.CELLY, move.cellY);
+                    values.put(LauncherSettings.Favorites.SPANX, move.spanX);
+                    values.put(LauncherSettings.Favorites.SPANY, move.spanY);
+                    resolver.update(LauncherSettings.Favorites.getContentUri(move.id, false), values, null, null);
+                }
+                Log.i(TAG, "Grid " + before + " -> " + mGrids + " (" + (landscape ? "landscape" : "portrait")
+                        + "): " + items.size() + " items, " + moves.size() + " given a new cell " + moves);
+            }
+            if (!mGrids.encode().equals(stored)) {
+                prefs.edit().putString(key, mGrids.encode()).apply();
+            }
         }
 
         // check & update map of what's occupied; used to discard overlapping/invalid items
@@ -1866,8 +1938,10 @@ public class LauncherModel extends BroadcastReceiver {
                                            AtomicBoolean deleteOnItemOverlap) {
             LauncherAppState app = LauncherAppState.getInstance();
             DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
-            int countX = (int) grid.numColumns;
-            int countY = (int) grid.numRows;
+            // Room for every grid a page or the hotseat can have; which cells an item may have is
+            // checkItemDimensions()'s to say
+            int countX = Math.max((int) grid.numColumns, WorkspaceGrid.MAX_LONG);
+            int countY = Math.max((int) grid.numRows, WorkspaceGrid.MAX_LONG);
 
             long containerIndex = item.screenId;
             if (item.container == LauncherSettings.Favorites.CONTAINER_HOTSEAT) {
@@ -1952,18 +2026,25 @@ public class LauncherModel extends BroadcastReceiver {
          * (it stayed in the database, unseen, with its widget id). Caller holds sBgLock.
          */
         private void placeOverlappingWidget(LauncherAppWidgetInfo widget,
-                HashMap<Long, ItemInfo[][]> occupied, int countX, int countY,
+                HashMap<Long, ItemInfo[][]> occupied, int maxCountX, int maxCountY,
                 ContentResolver resolver) {
-            int spanX = Math.min(Math.max(1, widget.spanX), countX);
-            int spanY = Math.min(Math.max(1, widget.spanY), countY);
+            // The grid of the widget's own page; a new page is one of the pages after the first
+            WorkspaceGrid.Cells grid = mGrids.of(widget.screenId);
+            int spanX = Math.min(Math.max(1, widget.spanX), grid.countX);
+            int spanY = Math.min(Math.max(1, widget.spanY), grid.countY);
             long screenId = widget.screenId;
             int[] cell = nearestVacantArea(occupied.get(screenId), widget.cellX, widget.cellY,
-                    spanX, spanY, countX, countY);
+                    spanX, spanY, grid.countX, grid.countY);
             if (cell == null) {
                 screenId = LauncherAppState.getLauncherProvider().generateNewScreenId();
                 sBgWorkspaceScreens.add(screenId);
                 cell = new int[] {0, 0};
+                grid = mGrids.of(screenId);
+                spanX = Math.min(spanX, grid.countX);
+                spanY = Math.min(spanY, grid.countY);
             }
+            final int countX = maxCountX;
+            final int countY = maxCountY;
             Log.w(TAG, "widget " + widget.appWidgetId + " overlapped another item at "
                     + widget.screenId + ":" + widget.cellX + "," + widget.cellY + ", moved to "
                     + screenId + ":" + cell[0] + "," + cell[1]);
@@ -2048,11 +2129,22 @@ public class LauncherModel extends BroadcastReceiver {
 
             LauncherAppState app = LauncherAppState.getInstance();
             DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
-            int countX = (int) grid.numColumns;
-            int countY = (int) grid.numRows;
+            // The sizes of the tables of taken cells below, as in checkItemPlacement()
+            int countX = Math.max((int) grid.numColumns, WorkspaceGrid.MAX_LONG);
+            int countY = Math.max((int) grid.numRows, WorkspaceGrid.MAX_LONG);
 
             // Make sure the default workspace is loaded, if needed
             LauncherAppState.getLauncherProvider().loadDefaultFavoritesIfNecessary(0);
+
+            // The grid of each page for this load, and the items arranged for it if it has changed
+            final SharedPreferences gridPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+            final boolean landscape = WorkspaceGrids.landscape(LauncherApplication.sApp);
+            mGrids = WorkspaceGrids.signature(gridPrefs, landscape);
+            try {
+                arrangeItemsForGrid(contentResolver, gridPrefs, landscape);
+            } catch (RuntimeException e) {
+                Log.w(TAG, "The items could not be arranged for the grid " + mGrids, e);
+            }
 
             // Check if we need to do any upgrade-path logic
             boolean loadedOldDb = LauncherAppState.getLauncherProvider().justLoadedOldDb();
@@ -2199,7 +2291,7 @@ public class LauncherModel extends BroadcastReceiver {
                                     if (container == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
                                         if (checkItemDimensions(info)) {
                                             Launcher.addDumpLog(TAG, "Skipped loading out of bounds shortcut: "
-                                                    + info + ", " + grid.numColumns + "x" + grid.numRows, true);
+                                                    + info + ", " + mGrids.of(info.screenId), true);
                                             continue;
                                         }
                                     }
@@ -2595,8 +2687,9 @@ public class LauncherModel extends BroadcastReceiver {
             Collections.sort(workspaceItems, new Comparator<ItemInfo>() {
                 @Override
                 public int compare(ItemInfo lhs, ItemInfo rhs) {
-                    int cellCountX = (int) grid.numColumns;
-                    int cellCountY = (int) grid.numRows;
+                    // Only an order: as wide as any grid of a page can be (WorkspaceGrid)
+                    int cellCountX = Math.max((int) grid.numColumns, WorkspaceGrid.MAX_LONG);
+                    int cellCountY = Math.max((int) grid.numRows, WorkspaceGrid.MAX_LONG);
                     int screenOffset = cellCountX * cellCountY;
                     int containerOffset = screenOffset * (Launcher.SCREEN_COUNT + 1); // +1 hotseat
                     long lr = (lhs.container * containerOffset + lhs.screenId * screenOffset +

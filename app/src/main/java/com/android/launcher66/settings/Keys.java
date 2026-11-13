@@ -209,6 +209,12 @@ public final class Keys {
     public static final String WIDGETS_TINT = "choose_widgets_tint";
     public static final String BAR_TINT = "choose_bar_tint";
     public static final String START_PAGE = "start_page";
+    /** Cells along the long and the short edge of the screen (WorkspaceGrid); absent = ten by six. */
+    public static final String WORKSPACE_GRID_LONG = "workspace_grid_long";
+    public static final String WORKSPACE_GRID_SHORT = "workspace_grid_short";
+    /** The grids the items of the home screen were last arranged for, per orientation (WorkspaceGrid.arrangedFor). */
+    public static final String WORKSPACE_GRID_ARRANGED_LANDSCAPE = "workspace_grid_arranged_landscape";
+    public static final String WORKSPACE_GRID_ARRANGED_PORTRAIT = "workspace_grid_arranged_portrait";
     public static final String LAYOUT_MARGIN = "layout_margin";
     /** The horizontal bar is on every page of the home screen, not only on the first (HorizontalBarPlacement). */
     /** The horizontal bar is at the top of the screen (the stored key is new, it has no former name). */

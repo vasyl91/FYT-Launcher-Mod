@@ -598,8 +598,9 @@ public class Helpers {
         // The occupied cells of all pages are read at most once per call (the model snapshot holds
         // them all), so that a reset can avoid the icons and folders on every page, not only on
         // the first one with the bars.
-        WorkspaceOccupancy occupancy = null;
-        boolean occupancyRead = false;
+        // One for the first page and one for the others: their grids differ where their bars do
+        WorkspaceOccupancy[] occupancies = new WorkspaceOccupancy[2];
+        boolean[] occupancyRead = new boolean[2];
         boolean gridWarned = false;
 
         List<ScreenResolution> resolutions = new ArrayList<>();
@@ -660,7 +661,8 @@ public class Helpers {
                 changedAny |= moveStatsOutOfTheBars(env, bar);
             }
             if (elements.isEmpty()) continue;
-            GridGeometry grid = GridGeometry.published();
+            final int kind = screen == 0 ? 0 : 1;
+            GridGeometry grid = GridGeometry.published(screen == 0);
             // Away from the bars the cells are only read from the model's in-memory copy: before it is
             // loaded they would cost two database queries on this (possibly main) thread.
             boolean barsHere = env.maxBottom != CustomLayoutResolver.NO_LIMIT
@@ -669,11 +671,12 @@ public class Helpers {
             if (!barsHere && !LauncherModel.getScreenSnapshot().isReady()) {
                 grid = null;
             }
-            if (grid != null && !occupancyRead) {
-                occupancyRead = true;
-                occupancy = CustomLayoutDb.read(LauncherApplication.sApp, grid,
+            if (grid != null && !occupancyRead[kind]) {
+                occupancyRead[kind] = true;
+                occupancies[kind] = CustomLayoutDb.read(LauncherApplication.sApp, grid,
                         LauncherApplication.sApp.getResources().getInteger(R.integer.apps_customepage_count));
             }
+            WorkspaceOccupancy occupancy = occupancies[kind];
             if (grid != null && occupancy != null) {
                 env.grid = grid;
                 env.occupied = occupancy.page(screen);

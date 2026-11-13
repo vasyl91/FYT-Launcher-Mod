@@ -31,6 +31,22 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
         mRowPadding = rowPadding;
     }
 
+    /** Where the first cell lies in this container: beside a bar at the left, below one at the top (WorkspaceGrid). */
+    private int mGridOffsetX;
+    private int mGridOffsetY;
+
+    /**
+     * The bars' strips at the left and at the top of the page. The container itself keeps the whole page,
+     * because the launcher's own elements are placed in it by pixels; only the cells start further in.
+     */
+    void setGridOffset(int x, int y) {
+        if (x != mGridOffsetX || y != mGridOffsetY) {
+            mGridOffsetX = x;
+            mGridOffsetY = y;
+            requestLayout();
+        }
+    }
+
     public ShortcutAndWidgetContainer(Context context) {
         super(context);
         mContext = context;
@@ -106,6 +122,15 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
             lp.rowPadding = mRowPadding;
             lp.setup(this.mCellWidth, this.mCellHeight, this.mWidthGap, this.mHeightGap, invertLayoutHorizontally(), this.mCountX);
         }
+        offsetToGrid(lp);
+    }
+
+    /** After every setup() from cells: setup() counts from the container's corner, the cells start beside the bars. */
+    private void offsetToGrid(CellLayout.LayoutParams lp) {
+        if (lp.isLockedToGrid) {
+            lp.x += mGridOffsetX;
+            lp.y += mGridOffsetY;
+        }
     }
 
     public void setInvertIfRtl(boolean invert) {
@@ -157,11 +182,13 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
                 // Widgets have their own scale
                 lp.rowPadding = mRowPadding;
                 lp.setup(mCellWidth, mCellHeight, invertLayoutHorizontally(), mCountX, widgetScaleFactor, widgetScaleFactor);
+                offsetToGrid(lp);
             } else {
                 LauncherAppState app = LauncherAppState.getInstance();
                 DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
                 lp.rowPadding = mRowPadding;
                 lp.setup(mCellWidth, mCellHeight, this.mWidthGap, this.mHeightGap, invertLayoutHorizontally(), this.mCountX);
+                offsetToGrid(lp);
                 int cHeight = getCellContentHeight();
                 int cellPaddingY = (int) Math.max(0.0f, (lp.height - cHeight) / 2.0f);
                 int cellPaddingX = (int) (grid.edgeMarginPx / 2.0f);

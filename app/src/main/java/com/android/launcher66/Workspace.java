@@ -90,6 +90,7 @@ import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.PipEdgeTrim;
 import com.android.launcher66.settings.StartPageRule;
+import com.android.launcher66.settings.WorkspaceGrids;
 import com.android.recycler.AppListDialogFragment;
 import com.android.recycler.SimpleDividerDecoration;
 import com.syu.util.WindowHost;
@@ -181,6 +182,8 @@ public class Workspace extends SmoothPagedView
 
     static Rect mLandscapeCellLayoutMetrics = null;
     static Rect mPortraitCellLayoutMetrics = null;
+    /** The rows and columns the two rectangles above were worked out for; another setting works them out again. */
+    private static int sCellLayoutMetricsGrid;
 
     CustomContentCallbacks mCustomContentCallbacks;
     boolean mCustomContentShowing;
@@ -700,6 +703,7 @@ public class Workspace extends SmoothPagedView
             // Create the CellLayout page for this persisted id
             CellLayout page = (CellLayout) LayoutInflater.from(getContext())
                     .inflate(R.layout.workspace_screen, this, false);
+            page.useWorkspaceGrid(false);
 
             // make sure layout params are correct for PagedView.
             LayoutParams lp = new LayoutParams(
@@ -841,6 +845,8 @@ public class Workspace extends SmoothPagedView
         newScreen.setOnLongClickListener(mLongClickListener);
         newScreen.setOnClickListener(mLauncher);
         newScreen.setSoundEffectsEnabled(false);
+        // The rows and columns of a page after the first, beside the bars that are on every page (WorkspaceGrid)
+        newScreen.useWorkspaceGrid(false);
         
         // Add to data structures
         boolean createdHere = false;
@@ -895,6 +901,8 @@ public class Workspace extends SmoothPagedView
         }
 
         customScreen[0] = (CellLayout) this.mLauncher.getLayoutInflater().inflate(R.layout.workspace_custom, null);
+        // Before anything is put on it: the rows and columns of the first page, beside its bars (WorkspaceGrid)
+        customScreen[0].useWorkspaceGrid(true);
         CellLayout workspaceLayout = this.mLauncher.findViewById(R.id.workspace_custom);
 
         if (userLayout) {
@@ -6878,8 +6886,16 @@ public class Workspace extends SmoothPagedView
         Point smallestSize = new Point();
         Point largestSize = new Point();
         display.getCurrentSizeRange(smallestSize, largestSize);
-        int countX = (int) grid.numColumns;
-        int countY = (int) grid.numRows;
+        // The cells of a page without bars, as the user set them (WorkspaceGrid)
+        final SharedPreferences gridPrefs = PreferenceManager.getDefaultSharedPreferences(launcher);
+        int countX = WorkspaceGrids.columns(gridPrefs, orientation == CellLayout.LANDSCAPE);
+        int countY = WorkspaceGrids.rows(gridPrefs, orientation == CellLayout.LANDSCAPE);
+        int gridSetting = WorkspaceGrids.longCells(gridPrefs) * 100 + WorkspaceGrids.shortCells(gridPrefs);
+        if (gridSetting != sCellLayoutMetricsGrid) {
+            sCellLayoutMetricsGrid = gridSetting;
+            mLandscapeCellLayoutMetrics = null;
+            mPortraitCellLayoutMetrics = null;
+        }
         int constrainedLongEdge = largestSize.y;
         int constrainedShortEdge = smallestSize.y;
         if (orientation == CellLayout.LANDSCAPE) {
