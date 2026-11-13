@@ -543,5 +543,6 @@
     <string name="proceed_and_fit">Teruskan dan laraskan</string>
     <string name="widget_bar_two_lines_title_first">Dua baris: tajuk di atas artis</string>
     <string name="widget_bar_two_lines_artist_first">Dua baris: artis di atas tajuk</string>
+    <string name="pip_restart_button">Mula semula %1$d</string>
     <string name="start_page_missing">Halaman %1$d tidak wujud: skrin utama mempunyai %2$d halaman.</string>
 </resources>

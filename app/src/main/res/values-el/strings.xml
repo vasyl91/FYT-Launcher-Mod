@@ -543,5 +543,6 @@
     <string name="proceed_and_fit">Συνέχεια και προσαρμογή</string>
     <string name="widget_bar_two_lines_title_first">Δύο γραμμές: τίτλος πάνω από καλλιτέχνη</string>
     <string name="widget_bar_two_lines_artist_first">Δύο γραμμές: καλλιτέχνης πάνω από τίτλο</string>
+    <string name="pip_restart_button">Επανεκκίνηση %1$d</string>
     <string name="start_page_missing">Η σελίδα %1$d δεν υπάρχει: η αρχική οθόνη έχει %2$d σελίδες.</string>
 </resources>

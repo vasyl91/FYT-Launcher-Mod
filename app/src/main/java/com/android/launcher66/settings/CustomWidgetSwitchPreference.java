@@ -263,7 +263,8 @@ public class CustomWidgetSwitchPreference extends SwitchPreferenceCompat {
             ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) mPositionButton.getLayoutParams();
             lp.height = btnH;
             mPositionButton.setLayoutParams(lp);
-            mPositionButton.setTextSize(TypedValue.COMPLEX_UNIT_PX, txtPx);
+            // The whole line of the text inside the height of the button (ButtonTextFit)
+            ButtonTextFit.apply(mPositionButton, btnH, txtPx);
             mPositionButton.setAllCaps(false);
             GradientDrawable posBg = new GradientDrawable();
             posBg.setColor(accent);

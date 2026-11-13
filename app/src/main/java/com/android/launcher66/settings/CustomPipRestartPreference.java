@@ -87,6 +87,14 @@ public class CustomPipRestartPreference extends Preference {
 
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
         
+        // "Restart 1" ... "Restart 4" in the language of the settings
+        AppCompatButton[] numbered = {mRestartFirstButton, mRestartSecondButton, mRestartThirdButton,
+                mRestartFourthButton};
+        for (int i = 0; i < numbered.length; i++) {
+            if (numbered[i] != null) {
+                numbered[i].setText(getContext().getString(R.string.pip_restart_button, i + 1));
+            }
+        }
         if (mRestartFirstButton != null) {
             mRestartFirstButton.setTextColor(Color.WHITE);
             mRestartFirstButton.setAllCaps(false);
@@ -189,7 +197,8 @@ public class CustomPipRestartPreference extends Preference {
                 ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) button.getLayoutParams();
                 lp.height = btnH;
                 button.setLayoutParams(lp);
-                button.setTextSize(TypedValue.COMPLEX_UNIT_PX, txtPx);
+                // The whole line of the text inside the height of the button (ButtonTextFit)
+                ButtonTextFit.apply(button, btnH, txtPx);
                 button.setAllCaps(false);
                 GradientDrawable posBg = new GradientDrawable();
                 if (button == mRestartFirstButton) {

@@ -543,5 +543,6 @@
     <string name="proceed_and_fit">Nadaljuj in prilagodi</string>
     <string name="widget_bar_two_lines_title_first">Dve vrstici: naslov nad izvajalcem</string>
     <string name="widget_bar_two_lines_artist_first">Dve vrstici: izvajalec nad naslovom</string>
+    <string name="pip_restart_button">Znova zaženi %1$d</string>
     <string name="start_page_missing">Stran %1$d ne obstaja: začetni zaslon ima %2$d strani.</string>
 </resources>

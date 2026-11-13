@@ -543,5 +543,6 @@
     <string name="proceed_and_fit">Շարունակել և հարմարեցնել</string>
     <string name="widget_bar_two_lines_title_first">Երկու տող՝ վերնագիրը կատարողից վերև</string>
     <string name="widget_bar_two_lines_artist_first">Երկու տող՝ կատարողը վերնագրից վերև</string>
+    <string name="pip_restart_button">Վերագործարկել %1$d</string>
     <string name="start_page_missing">%1$d էջը գոյություն չունի. հիմնական էկրանն ունի %2$d էջ։</string>
 </resources>

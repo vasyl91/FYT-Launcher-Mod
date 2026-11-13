@@ -543,5 +543,6 @@
     <string name="proceed_and_fit">ดำเนินการต่อและปรับ</string>
     <string name="widget_bar_two_lines_title_first">สองบรรทัด: ชื่อเพลงอยู่เหนือศิลปิน</string>
     <string name="widget_bar_two_lines_artist_first">สองบรรทัด: ศิลปินอยู่เหนือชื่อเพลง</string>
+    <string name="pip_restart_button">รีสตาร์ท %1$d</string>
     <string name="start_page_missing">ไม่มีหน้า %1$d: หน้าจอหลักมี %2$d หน้า</string>
 </resources>

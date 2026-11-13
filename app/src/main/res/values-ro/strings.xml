@@ -543,5 +543,6 @@
     <string name="proceed_and_fit">Continuă și ajustează</string>
     <string name="widget_bar_two_lines_title_first">Două rânduri: titlul deasupra artistului</string>
     <string name="widget_bar_two_lines_artist_first">Două rânduri: artistul deasupra titlului</string>
+    <string name="pip_restart_button">Repornește %1$d</string>
     <string name="start_page_missing">Pagina %1$d nu există: ecranul de pornire are %2$d pagini.</string>
 </resources>
