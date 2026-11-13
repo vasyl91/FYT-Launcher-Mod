@@ -22,18 +22,39 @@ final class WidgetStyle {
     private final boolean blackWidgets;
     private final boolean blackBar;
     private final String background;
+    private final BackgroundChoice choice;
 
-    private WidgetStyle(boolean blackWidgets, boolean blackBar, String background) {
+    private WidgetStyle(boolean blackWidgets, boolean blackBar, String background, BackgroundChoice choice) {
         this.blackWidgets = blackWidgets;
         this.blackBar = blackBar;
         this.background = background;
+        this.choice = choice;
     }
 
     /** @param widgetsBackground the stored name of the chosen background, null or "bg_custom" for the default */
     static WidgetStyle of(boolean blackWidgets, boolean blackBar, String widgetsBackground) {
-        boolean isDefault = widgetsBackground == null || widgetsBackground.isEmpty()
-                || DEFAULT_BACKGROUND_RESOURCE.equals(widgetsBackground);
-        return new WidgetStyle(blackWidgets, blackBar, isDefault ? DEFAULT_BACKGROUND : widgetsBackground);
+        return of(blackWidgets, blackBar,
+                BackgroundChoice.of(widgetsBackground, DEFAULT_BACKGROUND_RESOURCE, false, 0));
+    }
+
+    /** @param widgetsBackground the background chosen for the widgets: a picture or the user's own colour */
+    static WidgetStyle of(boolean blackWidgets, boolean blackBar, BackgroundChoice widgetsBackground) {
+        String name;
+        if (widgetsBackground.kind == BackgroundChoice.Kind.CUSTOM) {
+            name = BackgroundChoice.CUSTOM;
+        } else if (widgetsBackground.kind == BackgroundChoice.Kind.NONE) {
+            name = BackgroundChoice.NONE;
+        } else {
+            String picture = widgetsBackground.picture;
+            boolean isDefault = picture == null || picture.isEmpty() || DEFAULT_BACKGROUND_RESOURCE.equals(picture);
+            name = isDefault ? DEFAULT_BACKGROUND : picture;
+        }
+        return new WidgetStyle(blackWidgets, blackBar, name, widgetsBackground);
+    }
+
+    /** The background of the widgets as chosen, for the one place that draws it (BarBackground). */
+    BackgroundChoice backgroundChoice() {
+        return choice;
     }
 
     /** Whether the colour for this role is black; else it is the default one the view had. */
@@ -48,7 +69,10 @@ final class WidgetStyle {
         }
     }
 
-    /** The name of the resource of the chosen background, or {@link #DEFAULT_BACKGROUND}. */
+    /**
+     * The name of the resource of the chosen background, {@link #DEFAULT_BACKGROUND}, or the stored word for the
+     * user's own colour ({@link BackgroundChoice#CUSTOM}).
+     */
     String background() {
         return background;
     }

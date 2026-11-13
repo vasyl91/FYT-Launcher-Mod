@@ -95,7 +95,6 @@ import com.android.recycler.SimpleDividerDecoration;
 import com.syu.util.WindowHost;
 import com.syu.util.WindowUtil;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -347,7 +346,6 @@ public class Workspace extends SmoothPagedView
     private ImageView horizontalBarAllApps;
     private RecyclerView horizontalBarRecycler;
     private ImageView horizontalBarBg;
-    private String selectedBackground;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> autoHideFuture;
@@ -938,10 +936,8 @@ public class Workspace extends SmoothPagedView
             horizontalBarRecycler = workspaceView.findViewById(R.id.recycler_view);
             
             horizontalBarBg = workspaceView.findViewById(R.id.iv_list_bg);
-            selectedBackground = mPrefs.getString(Keys.BAR_SELECTED_BACKGROUND, "app_list_bg");
-            if (!selectedBackground.equals("app_list_bg")) {
-                horizontalBarBg.setImageResource(getResId(selectedBackground));
-            }
+            // Always set, the default too: the bar that is on screen then follows a choice back to it (BarBackground)
+            horizontalBarBg.setImageDrawable(BarBackground.horizontal(getContext(), mPrefs));
             applyVerticalBarBackground(workspaceView);
 
             // Resizable horizontal bar (no-op when Keys.RESIZABLE_HORIZONTAL_BAR is off). Has to run before
@@ -1771,22 +1767,7 @@ public class Workspace extends SmoothPagedView
         if (bar == null) {
             return;
         }
-        String chosen = mPrefs.getString(Keys.VERTICAL_BAR_SELECTED_BACKGROUND, "hotseat_bg");
-        if (!"hotseat_bg".equals(chosen)) {
-            int resId = getResId(chosen);
-            if (resId > 0) {
-                bar.setBackgroundResource(resId);
-            }
-        }
-    }
-
-    private static int getResId(String resName) {
-        try {
-            Field idField = R.drawable.class.getDeclaredField(resName);
-            return idField.getInt(idField);
-        } catch (Exception e) {
-            return R.drawable.app_list_bg;
-        }
+        bar.setBackground(BarBackground.vertical(getContext(), mPrefs));
     }
 
     public void toggleHorizontalBar() {
@@ -2153,10 +2134,7 @@ public class Workspace extends SmoothPagedView
         ImageView overlayAllApps = overlayHorizontalBar.findViewById(R.id.rl_allapps);
         ImageView overlayBg = overlayHorizontalBar.findViewById(R.id.iv_list_bg);
 
-        selectedBackground = mPrefs.getString(Keys.BAR_SELECTED_BACKGROUND, "app_list_bg");
-        if (!selectedBackground.equals("app_list_bg")) {
-            overlayBg.setImageResource(getResId(selectedBackground));
-        }
+        overlayBg.setImageDrawable(BarBackground.horizontal(getContext(), mPrefs));
         
         forceOriginalSizes(screenWidth, horizontalBarHeight);
         

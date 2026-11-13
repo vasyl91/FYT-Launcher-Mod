@@ -46,7 +46,10 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceManager;
 
+import com.android.launcher66.BackgroundChoice;
+import com.android.launcher66.BarBackground;
 import com.android.launcher66.Launcher;
+import com.android.launcher66.colorpicker.ColorPicker;
 import com.android.launcher66.R;
 
 import java.io.FileDescriptor;
@@ -73,6 +76,8 @@ public class BackgroundSelectorDialog extends DialogFragment {
     /** The background the choice starts from when none was chosen; null = the name given to show(). */
     private String defaultBackground;
     private static final int REQ_PICK_WALLPAPER = 5001;
+    /** The colour the picker starts from the first time: a dark grey that lets a fifth of the wallpaper through. */
+    private static final int DEFAULT_CUSTOM_COLOR = 0xCC212121;
     private static final String PREF_KEY_SELECTED_BG_URI = "selected_background_uri";
 
     private GridLayout gridLayout;
@@ -562,8 +567,13 @@ public class BackgroundSelectorDialog extends DialogFragment {
         if (itemSize < minItem) itemSize = minItem;
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
-        String selectedBackground = sharedPreferences.getString(key,
+        // What is chosen now, read the way the home screen reads it (BackgroundChoice): a picture, or the
+        // user's own colour, which has a tile of its own before the pictures
+        BackgroundChoice chosen = BarBackground.choice(sharedPreferences, key,
                 defaultBackground != null ? defaultBackground : backgrounds);
+        String selectedBackground = chosen.kind == BackgroundChoice.Kind.PICTURE ? chosen.picture : null;
+
+        gridLayout.addView(customColorTile(sharedPreferences, chosen, itemSize, halfGap, cornerRadiusPx));
 
         for (String bgName : backgroundNames) {
             CardView cardView = new CardView(requireContext());
@@ -633,12 +643,93 @@ public class BackgroundSelectorDialog extends DialogFragment {
         }
     }
 
+    /** The chosen tile, whatever it shows: the same frame in every selector (SelectedFrameDrawable). */
     private void addFrame(CardView cardView) {
-        GradientDrawable border = new GradientDrawable();
-        border.setShape(GradientDrawable.RECTANGLE);
-        border.setCornerRadius(cardView.getRadius());
-        border.setStroke(dpToPx(8), Color.parseColor("#FC6B03"));
-        cardView.setForeground(border);
+        float density = requireContext().getResources().getDisplayMetrics().density;
+        cardView.setForeground(new SelectedFrameDrawable(cardView.getRadius(), 5f * density, 1.5f * density));
+    }
+
+    /**
+     * The first tile: the user's own colour for this component. Without one it is the "+" of an empty place in
+     * the horizontal bar, and a tap closes the selector and opens the colour picker. With one it shows the
+     * colour and its transparency; a tap chooses it, and a tap on it while it is the chosen one, or a long
+     * press, opens the picker to change it. The colour is stored only when "Select" is pressed in the picker.
+     */
+    private View customColorTile(SharedPreferences sharedPreferences, BackgroundChoice chosen, int itemSize,
+                                 int halfGap, int cornerRadiusPx) {
+        final String colorKey = BackgroundChoice.colorKey(key);
+        final boolean hasColor = sharedPreferences.contains(colorKey);
+        final int color = hasColor ? sharedPreferences.getInt(colorKey, DEFAULT_CUSTOM_COLOR) : DEFAULT_CUSTOM_COLOR;
+        final boolean selected = chosen.kind == BackgroundChoice.Kind.CUSTOM;
+
+        CardView cardView = new CardView(requireContext());
+        cardView.setCardBackgroundColor(Color.TRANSPARENT);
+        cardView.setRadius(cornerRadiusPx);
+        cardView.setCardElevation(0);
+        cardView.setUseCompatPadding(false);
+        cardView.setPreventCornerOverlap(false);
+
+        ImageView imageView = new ImageView(requireContext());
+        if (hasColor) {
+            imageView.setImageDrawable(new ColorTileDrawable(color, cornerRadiusPx, dpToPx(10)));
+            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+        } else {
+            GradientDrawable ground = new GradientDrawable();
+            ground.setColor(0x66000000);
+            ground.setCornerRadius(cornerRadiusPx);
+            imageView.setBackground(ground);
+            imageView.setImageResource(R.drawable.icon_add);
+            imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            int pad = itemSize / 4;
+            imageView.setPadding(pad, pad, pad, pad);
+        }
+        cardView.addView(imageView, new FrameLayout.LayoutParams(
+                android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.MATCH_PARENT));
+
+        GridLayout.LayoutParams lp = new GridLayout.LayoutParams();
+        lp.width = itemSize;
+        lp.height = itemSize;
+        lp.setMargins(halfGap, halfGap, halfGap, halfGap);
+        cardView.setLayoutParams(lp);
+
+        if (selected) addFrame(cardView);
+
+        cardView.setOnClickListener(v -> {
+            if (!hasColor || selected) {
+                openColorPicker(colorKey, color);
+            } else {
+                sharedPreferences.edit().putString(key, BackgroundChoice.CUSTOM).apply();
+                dismiss();
+            }
+        });
+        if (hasColor) {
+            cardView.setOnLongClickListener(v -> {
+                openColorPicker(colorKey, color);
+                return true;
+            });
+        }
+        return cardView;
+    }
+
+    /**
+     * Closes the selector and opens the picker of a background colour. Nothing is stored until "Select": a
+     * picker that is closed any other way leaves the choice and the colour as they were.
+     */
+    private void openColorPicker(String colorKey, int startColor) {
+        final FragmentManager fragments = getParentFragmentManager();
+        final Context app = requireContext().getApplicationContext();
+        final String choiceKey = key;
+        dismiss();
+        ColorPicker picker = ColorPicker.newBackgroundInstance(startColor);
+        picker.enableAutoClose();
+        picker.setCallback(color -> {
+            PreferenceManager.getDefaultSharedPreferences(app).edit()
+                    .putInt(colorKey, color)
+                    .putString(choiceKey, BackgroundChoice.CUSTOM)
+                    .apply();
+            Log.i(TAG, "Own background colour stored under " + colorKey + ": #" + String.format("%08X", color));
+        });
+        picker.show(fragments, "BackgroundColorPicker");
     }
 
     private Bitmap getCenterCroppedBitmap(Bitmap src, int targetW, int targetH) {

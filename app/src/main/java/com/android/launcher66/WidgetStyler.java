@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import com.android.launcher66.settings.Keys;
 import com.fyt.widget.DigitClock;
 
-import java.lang.reflect.Field;
 
 /**
  * Puts the look chosen in the settings (WidgetStyle) on the widgets and the bar that are on the screen now: one place,
@@ -25,7 +24,7 @@ final class WidgetStyler {
     /** The look the settings give now. */
     static WidgetStyle current(SharedPreferences prefs) {
         return WidgetStyle.of(prefs.getBoolean(Keys.BLACK_WIDGETS, false), prefs.getBoolean(Keys.BLACK_BAR, false),
-                prefs.getString(Keys.WIDGETS_SELECTED_BACKGROUND, WidgetStyle.DEFAULT_BACKGROUND_RESOURCE));
+                BarBackground.choice(prefs, Keys.WIDGETS_SELECTED_BACKGROUND, BarBackground.WIDGETS_DEFAULT));
     }
 
     /** The background of a widget: the chosen one, or bg_custom, the default the layouts give. */
@@ -33,17 +32,9 @@ final class WidgetStyler {
         if (view == null) {
             return;
         }
-        String name = style.defaultBackground() ? WidgetStyle.DEFAULT_BACKGROUND_RESOURCE : style.background();
-        view.setBackgroundResource(drawable(name));
-    }
-
-    private static int drawable(String name) {
-        try {
-            Field field = R.drawable.class.getDeclaredField(name);
-            return field.getInt(null);
-        } catch (Exception e) {
-            return R.drawable.bg_custom;
-        }
+        // A picture, or the user's own colour in the shape of the pictures (BarBackground)
+        view.setBackground(BarBackground.drawable(view.getContext(), style.backgroundChoice(), R.drawable.bg_custom,
+                RoundedColorDrawable.WIDGET_CORNERS));
     }
 
     /**

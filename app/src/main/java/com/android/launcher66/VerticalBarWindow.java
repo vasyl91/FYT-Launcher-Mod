@@ -19,7 +19,6 @@ import androidx.preference.PreferenceManager;
 import com.android.launcher66.settings.Keys;
 import com.android.recycler.VerticalAppListAdapter;
 
-import java.lang.reflect.Field;
 
 /**
  * The vertical bar of the pages that have no bar of their own ('Vertical bar on every page'): the same
@@ -177,8 +176,7 @@ final class VerticalBarWindow {
         FrameLayout cornerView = new FrameLayout(context);
         ImageView background = new ImageView(context);
         background.setScaleType(ImageView.ScaleType.FIT_XY);
-        String chosen = prefs.getString(Keys.BAR_SELECTED_BACKGROUND, "app_list_bg");
-        background.setImageResource(drawable(chosen, R.drawable.app_list_bg));
+        background.setImageDrawable(BarBackground.horizontal(context, prefs));
         cornerView.addView(background, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
         arrow = new ImageView(context);
@@ -200,17 +198,7 @@ final class VerticalBarWindow {
     }
 
     private void applyBackground(View bar) {
-        String chosen = prefs.getString(Keys.VERTICAL_BAR_SELECTED_BACKGROUND, "hotseat_bg");
-        bar.setBackgroundResource(drawable(chosen, R.drawable.hotseat_bg));
-    }
-
-    private static int drawable(String name, int fallback) {
-        try {
-            Field field = R.drawable.class.getDeclaredField(name);
-            return field.getInt(null);
-        } catch (Exception e) {
-            return fallback;
-        }
+        bar.setBackground(BarBackground.vertical(bar.getContext(), prefs));
     }
 
     /**

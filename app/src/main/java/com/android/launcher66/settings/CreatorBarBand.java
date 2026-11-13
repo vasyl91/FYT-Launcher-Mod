@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.android.launcher66.BarBackground;
 import com.android.launcher66.CreatorBars;
 import com.android.launcher66.R;
 
@@ -31,9 +32,8 @@ final class CreatorBarBand {
         final boolean right = bars.arrowRotation == 180f;
         View band = new View(context);
         band.setId(View.generateViewId());
-        String chosen = sharedPrefs.getString(Keys.VERTICAL_BAR_SELECTED_BACKGROUND, "hotseat_bg");
-        int backgroundRes = "hotseat_bg".equals(chosen) ? 0 : BackgroundSelectorDialog.getResId(chosen, R.drawable.class);
-        band.setBackgroundResource(backgroundRes > 0 ? backgroundRes : R.drawable.hotseat_bg);
+        // As on the home screen: a picture or the user's own colour (BarBackground)
+        band.setBackground(BarBackground.vertical(context, sharedPrefs));
         ConstraintLayout.LayoutParams bandParams = new ConstraintLayout.LayoutParams(0, 0);
         bandParams.matchConstraintDefaultWidth = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT_PERCENT;
         bandParams.matchConstraintPercentWidth = share;

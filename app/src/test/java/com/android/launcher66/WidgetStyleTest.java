@@ -15,13 +15,13 @@ class WidgetStyleTest {
 
     @Test
     void theWidgetsFollowTheirSettingAndTheBarItsOwn() {
-        WidgetStyle widgetsOnly = WidgetStyle.of(true, false, null);
+        WidgetStyle widgetsOnly = WidgetStyle.of(true, false, (String) null);
         assertTrue(widgetsOnly.black(WIDGET_TEXT));
         assertTrue(widgetsOnly.black(WIDGET_BUTTON));
         assertTrue(widgetsOnly.black(WIDGET_PROGRESS));
         assertFalse(widgetsOnly.black(BAR_TEXT));
         assertFalse(widgetsOnly.black(BAR_BUTTON));
-        WidgetStyle barOnly = WidgetStyle.of(false, true, null);
+        WidgetStyle barOnly = WidgetStyle.of(false, true, (String) null);
         assertFalse(barOnly.black(WIDGET_TEXT));
         assertTrue(barOnly.black(BAR_TEXT));
         assertTrue(barOnly.black(BAR_BUTTON));
@@ -30,7 +30,7 @@ class WidgetStyleTest {
     @Test
     void theDefaultBackgroundIsNamedDefaultWhateverTheStoredNameIs() {
         assertTrue(WidgetStyle.of(false, false, "bg_custom").defaultBackground());
-        assertTrue(WidgetStyle.of(false, false, null).defaultBackground());
+        assertTrue(WidgetStyle.of(false, false, (String) null).defaultBackground());
         assertTrue(WidgetStyle.of(false, false, "").defaultBackground());
         assertEquals(WidgetStyle.DEFAULT_BACKGROUND, WidgetStyle.of(false, false, "bg_custom").background());
         assertEquals("bg_custom_12", WidgetStyle.of(false, false, "bg_custom_12").background());
@@ -47,5 +47,23 @@ class WidgetStyleTest {
             assertEquals(!black, style.black(BAR_BUTTON));
             assertEquals("bg_custom_3", style.background());
         }
+    }
+
+    @Test
+    void theUsersOwnColourIsNeitherTheDefaultNorAPicture() {
+        WidgetStyle style = WidgetStyle.of(false, false,
+                BackgroundChoice.of("custom", "bg_custom", true, 0x80445566));
+        assertFalse(style.defaultBackground());
+        assertEquals(BackgroundChoice.CUSTOM, style.background());
+        assertEquals(BackgroundChoice.Kind.CUSTOM, style.backgroundChoice().kind);
+        assertEquals(0x80445566, style.backgroundChoice().color);
+    }
+
+    @Test
+    void aPictureGivenAsAChoiceIsTheSameAsItsName() {
+        WidgetStyle style = WidgetStyle.of(false, false,
+                BackgroundChoice.of("bg_custom_12", "bg_custom", false, 0));
+        assertEquals("bg_custom_12", style.background());
+        assertTrue(WidgetStyle.of(false, false, BackgroundChoice.of(null, "bg_custom", false, 0)).defaultBackground());
     }
 }

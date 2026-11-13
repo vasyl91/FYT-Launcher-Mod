@@ -173,6 +173,13 @@ public final class Keys {
     public static final String BAR_SELECTED_BACKGROUND = "bar_selected_background";
     public static final String VERTICAL_BAR_BACKGROUND = "choose_vertical_bar_background";
     public static final String VERTICAL_BAR_SELECTED_BACKGROUND = "vertical_bar_selected_background";
+    /**
+     * The user's own background colour of each component, with its transparency (an int, ARGB). Stored beside the
+     * choice and never shared: BackgroundChoice.colorKey() gives exactly these names from the keys above.
+     */
+    public static final String WIDGETS_CUSTOM_BACKGROUND_COLOR = "widgets_custom_background_color";
+    public static final String BAR_CUSTOM_BACKGROUND_COLOR = "bar_custom_background_color";
+    public static final String VERTICAL_BAR_CUSTOM_BACKGROUND_COLOR = "vertical_bar_custom_background_color";
     public static final String BLACK_BAR = "black_bar";
     public static final String BLACK_WIDGETS = "black_widgets";
     public static final String START_PAGE = "start_page";
