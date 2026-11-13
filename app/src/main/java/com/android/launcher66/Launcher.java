@@ -2211,6 +2211,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (!mStopRemovePipPending) return;
         mStopRemovePipPending = false;
         Log.d("onStop", "removePip");
+        // The home screen's statistics leave with the home screen, whether or not there are panes to remove
+        CanbusService.onLauncherStopped();
         WindowUtil.removePip();
     };
 

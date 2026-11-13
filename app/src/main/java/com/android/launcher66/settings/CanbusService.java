@@ -655,6 +655,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
                                 helpers.setInRecent(false);
                             }
                             currentForegroundApplication(packageName);
+                            // After the service's own decisions: a window that does not belong to what is
+                            // in front now goes (StatsWindowRule)
+                            enforceWindowOwner(packageName);
                             break;
                         default:
                             break;
@@ -1339,14 +1342,104 @@ public class CanbusService extends Service implements PropertyChangeListener {
         });
     }
 
-    /** The launcher is in front again: the GPS is asked for once more if it was not running. Any thread. */
+    /**
+     * The launcher is in front again: the GPS is asked for once more if it was not running, and the home
+     * screen's statistics are asked for again (they were taken away when the launcher stopped, see
+     * onLauncherStopped(); the conditions are those of every other time they are shown). Any thread.
+     */
     public static void onLauncherResumed() {
         new Handler(Looper.getMainLooper()).post(() -> {
             CanbusService service = sInstance;
             if (service != null) {
                 service.retryLocationUpdates();
+                service.mAppStatsRemovedForOtherApp = false;
+                service.addStatsViewMainScreen();
             }
         });
+    }
+
+    /**
+     * The launcher has stopped, and it was not one of the brief stops around a wake (the caller waits them
+     * out): the home screen's statistics go with it (StatsWindowRule). They used to go only together with the
+     * PiP panes, and where the panes have no host (no root module, Shizuku not started yet after a wake) the
+     * panes are not removed and the window stayed over the next app, or over another launcher. Any thread.
+     */
+    public static void onLauncherStopped() {
+        new Handler(Looper.getMainLooper()).post(() -> {
+            CanbusService service = sInstance;
+            if (service == null) {
+                return;
+            }
+            Launcher launcher = Launcher.getLauncher();
+            boolean resumed = launcher != null
+                    && launcher.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED);
+            if (!resumed && StatsWindowRule.removeWhenLauncherStopped(StatsWindowRule.shown(service.prevView))) {
+                Log.i(TAG, "Stats window: the home screen's window removed, the launcher has stopped");
+                service.removeView();
+            }
+        });
+    }
+
+    /** An app's window was taken away because an app outside the list came to the front (StatsWindowRule). */
+    private boolean mAppStatsRemovedForOtherApp;
+    /** Whether a package is an app (has something to open, or is a launcher), remembered per package. */
+    private final java.util.HashMap<String, Boolean> mIsAppCache = new java.util.HashMap<>();
+
+    /**
+     * A package was reported in front. The window that is shown must belong to it: the home screen's window to
+     * this launcher, an app's window to an app of the list (StatsWindowRule). Main thread.
+     */
+    private void enforceWindowOwner(String packageName) {
+        if (packageName == null) {
+            return;
+        }
+        if (packageName.contains(":")) {
+            packageName = packageName.substring(0, packageName.indexOf(":"));
+        }
+        Launcher launcher = Launcher.getLauncher();
+        boolean resumed = launcher != null
+                && launcher.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED);
+        boolean own = StatsWindowRule.isOwn(packageName, getPackageName(),
+                SystemProperties.get("persist.launcher.packagename", ""));
+        Set<String> apps = getApplicationContext().getSharedPreferences(APP_STATS_PREFS, MODE_PRIVATE)
+                .getStringSet("stats_apps", new HashSet<>());
+        boolean inList = apps != null && apps.contains(packageName);
+        StatsWindowRule.Shown shown = StatsWindowRule.shown(prevView);
+        if (shown != StatsWindowRule.Shown.NONE
+                && StatsWindowRule.removeForForeground(shown, resumed, own, inList, isApp(packageName))) {
+            Log.i(TAG, "Stats window: " + (shown == StatsWindowRule.Shown.HOME ? "the home screen's" : "an app's")
+                    + " window removed, " + packageName + " is in front");
+            mAppStatsRemovedForOtherApp = shown == StatsWindowRule.Shown.APP;
+            removeView();
+        } else if (StatsWindowRule.restoreForForeground(shown, resumed, inList, mAppStatsRemovedForOtherApp)) {
+            Log.i(TAG, "Stats window: an app's window back, " + packageName + " is in front again");
+            mAppStatsRemovedForOtherApp = false;
+            addStatsView(true);
+        } else if (shown == StatsWindowRule.Shown.APP) {
+            mAppStatsRemovedForOtherApp = false;
+        }
+    }
+
+    /** An app has an activity to open from a launcher, or is a launcher itself. */
+    private boolean isApp(String packageName) {
+        Boolean known = mIsAppCache.get(packageName);
+        if (known != null) {
+            return known;
+        }
+        boolean app;
+        try {
+            PackageManager pm = getPackageManager();
+            app = pm.getLaunchIntentForPackage(packageName) != null;
+            if (!app) {
+                Intent home = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
+                        .setPackage(packageName);
+                app = pm.resolveActivity(home, 0) != null;
+            }
+        } catch (RuntimeException e) {
+            app = false;   // cannot be asked: no reason to take a window away
+        }
+        mIsAppCache.put(packageName, app);
+        return app;
     }
 
     private void reselectCodes() {
