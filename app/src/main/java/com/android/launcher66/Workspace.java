@@ -1116,6 +1116,40 @@ public class Workspace extends SmoothPagedView
         }
         applyBarTexts(style.black(WidgetStyle.Role.BAR_TEXT));
         count[0] += 7;
+        applyBarBackgrounds(count);
+    }
+
+    /**
+     * The backgrounds of both bars on everything that shows them now: the first page's own bars, the window of the
+     * horizontal bar, the window of the vertical bar and its corner. A new background is on the first page at
+     * once, as it is in the windows, and does not wait for the page to be built again (BarBackground).
+     */
+    private void applyBarBackgrounds(int[] count) {
+        if (mPrefs == null) {
+            return;
+        }
+        final boolean top = mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
+        if (horizontalBarBg != null) {
+            horizontalBarBg.setImageDrawable(BarBackground.horizontal(getContext(), mPrefs, top));
+            count[0]++;
+        }
+        if (workspaceView != null) {
+            applyVerticalBarBackground(workspaceView);
+            count[0]++;
+        }
+        synchronized (overlayLock) {
+            if (overlayHorizontalBar != null) {
+                View overlayBg = overlayHorizontalBar.findViewById(R.id.iv_list_bg);
+                if (overlayBg instanceof ImageView) {
+                    ((ImageView) overlayBg).setImageDrawable(BarBackground.horizontal(getContext(), mPrefs, top));
+                    count[0]++;
+                }
+            }
+        }
+        if (mVerticalWindow != null) {
+            mVerticalWindow.refreshBackgrounds();
+            count[0]++;
+        }
     }
 
     /**

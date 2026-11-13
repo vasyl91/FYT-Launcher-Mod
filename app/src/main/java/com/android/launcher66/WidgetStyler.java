@@ -21,6 +21,23 @@ final class WidgetStyler {
     private WidgetStyler() {
     }
 
+    /**
+     * Whether a preference is a setting of look, which is put on the screen at once: the colours of the texts and
+     * buttons, and the background of the widgets and of each bar, the choice as well as the user's own colour.
+     * The bars' backgrounds were missing here, so a new one showed in the windows of the bars (they are built
+     * again at every return to the home screen) but on the first page only after its rebuild, which can be
+     * skipped.
+     */
+    static boolean isLookSetting(String key) {
+        return Keys.BLACK_WIDGETS.equals(key) || Keys.BLACK_BAR.equals(key)
+                || Keys.WIDGETS_SELECTED_BACKGROUND.equals(key)
+                || Keys.WIDGETS_CUSTOM_BACKGROUND_COLOR.equals(key)
+                || Keys.BAR_SELECTED_BACKGROUND.equals(key)
+                || Keys.BAR_CUSTOM_BACKGROUND_COLOR.equals(key)
+                || Keys.VERTICAL_BAR_SELECTED_BACKGROUND.equals(key)
+                || Keys.VERTICAL_BAR_CUSTOM_BACKGROUND_COLOR.equals(key);
+    }
+
     /** The look the settings give now. */
     static WidgetStyle current(SharedPreferences prefs) {
         return WidgetStyle.of(prefs.getBoolean(Keys.BLACK_WIDGETS, false), prefs.getBoolean(Keys.BLACK_BAR, false),

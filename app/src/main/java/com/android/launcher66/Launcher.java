@@ -1422,8 +1422,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
      */
     private final SharedPreferences.OnSharedPreferenceChangeListener mWidgetStyleListener =
             (prefs, key) -> {
-                if (Keys.BLACK_WIDGETS.equals(key) || Keys.BLACK_BAR.equals(key)
-                        || Keys.WIDGETS_SELECTED_BACKGROUND.equals(key)) {
+                if (WidgetStyler.isLookSetting(key)) {
                     WidgetStyler.apply(Launcher.this, "setting " + key);
                 }
             };

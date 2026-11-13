@@ -267,6 +267,17 @@ final class VerticalBarWindow {
         }
     }
 
+    /** A background chosen while the window is up: the bar's, and the horizontal bar's in the corner. */
+    void refreshBackgrounds() {
+        if (barView != null) {
+            applyBackground(barView);
+        }
+        if (cornerBackground != null) {
+            cornerBackground.setImageDrawable(
+                    BarBackground.horizontal(cornerBackground.getContext(), prefs, cornerOnTop));
+        }
+    }
+
     /** The colour of the arrow follows "Bar text and button color" (WidgetStyler). */
     void setArrowTint(boolean black) {
         ViewTint.tintImage(arrow, black);
