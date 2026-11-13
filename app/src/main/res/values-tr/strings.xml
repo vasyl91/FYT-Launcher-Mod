@@ -540,9 +540,9 @@
     <string name="vertical_bar_every_page">Her sayfada dikey çubuk</string>
     <string name="overlap_fit_message">Üst üste binen widget\'lar çubukların onları kaydırdığı gibi birbirinden ayrılacak: yalnızca yer olmayan yerde küçültülecek, hiç sığmıyorsa sıfırlanacak.</string>
     <string name="proceed_and_fit">Devam et ve sığdır</string>
+    <string name="start_page_missing">%1$d. sayfa yok: ana ekranda %2$d sayfa var.</string>
     <string name="widget_bar_two_lines_title_first">İki satır: başlık sanatçının üstünde</string>
     <string name="widget_bar_two_lines_artist_first">İki satır: sanatçı başlığın üstünde</string>
     <string name="pip_restart_button">%1$d yeniden başlat</string>
-    <string name="start_page_missing">%1$d. sayfa yok: ana ekranda %2$d sayfa var.</string>
     <string name="fab_overlay_controls_summary">Bu kayan düğmenin denetlediği PiP\'lere uygulama atayın</string>
 </resources>

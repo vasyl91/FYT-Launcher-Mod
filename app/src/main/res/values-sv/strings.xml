@@ -540,9 +540,9 @@
     <string name="vertical_bar_every_page">Vertikalt fält på varje sida</string>
     <string name="overlap_fit_message">Överlappande widgetar flyttas isär på samma sätt som fälten flyttar dem: görs bara mindre där det inte finns plats och återställs bara om de inte får plats alls.</string>
     <string name="proceed_and_fit">Fortsätt och anpassa</string>
+    <string name="start_page_missing">Sida %1$d finns inte: startskärmen har %2$d sidor.</string>
     <string name="widget_bar_two_lines_title_first">Två rader: titel ovanför artist</string>
     <string name="widget_bar_two_lines_artist_first">Två rader: artist ovanför titel</string>
     <string name="pip_restart_button">Starta om %1$d</string>
-    <string name="start_page_missing">Sida %1$d finns inte: startskärmen har %2$d sidor.</string>
     <string name="fab_overlay_controls_summary">Tilldela appar till de PiP som den här flytande knappen styr</string>
 </resources>

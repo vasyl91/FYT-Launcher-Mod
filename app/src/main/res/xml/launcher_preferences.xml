@@ -10,6 +10,7 @@
         app:title="@string/layout_category">
 
         <SwitchPreferenceCompat
+            app:singleLineTitle="false"
             android:key="transparent_statusbar"
             android:defaultValue="false"
             android:title="@string/transparent_statusbar" />
@@ -156,16 +157,19 @@
             android:layout="@layout/preference_separator"
             android:selectable="false" />
         <SwitchPreferenceCompat
+            app:singleLineTitle="false"
             android:key="launcher_home_wake"
             android:defaultValue="true"
             android:title="@string/launcher_home_wake"
             android:summary=" " />
         <SwitchPreferenceCompat
+            app:singleLineTitle="false"
             android:key="launcher_home_cold_start"
             android:defaultValue="true"
             android:title="@string/launcher_home_cold_start"
             android:summary=" " />
         <SwitchPreferenceCompat
+            app:singleLineTitle="false"
             android:key="cold_start_last_app_delay"
             android:defaultValue="false"
             android:title="@string/cold_start_last_app_delay"
@@ -188,6 +192,7 @@
             android:title="@string/autostart_apps"
             android:summary="@string/autostart_apps_summary" />
         <SwitchPreferenceCompat
+            app:singleLineTitle="false"
             android:key="autostart_apps_by_boot_completed"
             android:defaultValue="true"
             android:title="@string/autostart_apps_by_boot_completed"
@@ -204,6 +209,7 @@
         app:title="@string/night_mode">
 
         <SwitchPreferenceCompat
+            app:singleLineTitle="false"
             android:key="night_mode"
             android:defaultValue="false"
             android:title="@string/night_mode"
@@ -211,6 +217,7 @@
             android:maxLines="5" />
 
         <SwitchPreferenceCompat
+            app:singleLineTitle="false"
             android:key="night_mode_lights"
             android:defaultValue="false"
             android:title="@string/night_mode_lights"
@@ -325,10 +332,12 @@
             android:title="@string/logcat_locations_info"
             android:summary="@string/logcat_locations_info_summary" />
         <SwitchPreferenceCompat
+            app:singleLineTitle="false"
             android:key="logcat_service"
             android:defaultValue="@bool/logcat_on_by_default"
             android:title="@string/logcat_service" />
         <SwitchPreferenceCompat
+            app:singleLineTitle="false"
             android:key="logcat_service_wake"
             android:defaultValue="@bool/logcat_on_by_default"
             android:title="@string/logcat_service_wake" />
@@ -340,6 +349,7 @@
             android:summaryOff="@string/logcat_full_off"
             app:layout="@layout/preference_no_switch" />
         <SwitchPreferenceCompat
+            app:singleLineTitle="false"
             android:key="boot_logcat"
             android:defaultValue="@bool/logcat_on_by_default"
             android:title="@string/boot_logcat" />

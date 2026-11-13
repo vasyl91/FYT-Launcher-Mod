@@ -540,9 +540,9 @@
     <string name="vertical_bar_every_page">すべてのページに縦バーを表示</string>
     <string name="overlap_fit_message">重なっているウィジェットは、バーが動かすときと同じ方法で離されます。小さくするのは場所がない場合だけで、まったく収まらない場合にのみリセットされます。</string>
     <string name="proceed_and_fit">続行して調整</string>
+    <string name="start_page_missing">ページ %1$d は存在しません。ホーム画面は %2$d ページです。</string>
     <string name="widget_bar_two_lines_title_first">2行：タイトルをアーティストの上に表示</string>
     <string name="widget_bar_two_lines_artist_first">2行：アーティストをタイトルの上に表示</string>
     <string name="pip_restart_button">%1$d を再起動</string>
-    <string name="start_page_missing">ページ %1$d は存在しません。ホーム画面は %2$d ページです。</string>
     <string name="fab_overlay_controls_summary">このフローティングボタンで操作する PiP にアプリを割り当ててください</string>
 </resources>

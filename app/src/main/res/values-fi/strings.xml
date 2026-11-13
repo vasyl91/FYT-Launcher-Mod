@@ -540,9 +540,9 @@
     <string name="vertical_bar_every_page">Pystypalkki joka sivulla</string>
     <string name="overlap_fit_message">Päällekkäiset vimpaimet siirretään erilleen samalla tavalla kuin palkit ne siirtävät: pienennetään vain, jos tilaa ei ole, ja nollataan vain, jos ne eivät mahdu lainkaan.</string>
     <string name="proceed_and_fit">Jatka ja sovita</string>
+    <string name="start_page_missing">Sivua %1$d ei ole: aloitusnäytössä on %2$d sivua.</string>
     <string name="widget_bar_two_lines_title_first">Kaksi riviä: nimi esittäjän yläpuolella</string>
     <string name="widget_bar_two_lines_artist_first">Kaksi riviä: esittäjä nimen yläpuolella</string>
     <string name="pip_restart_button">Käynnistä %1$d uudelleen</string>
-    <string name="start_page_missing">Sivua %1$d ei ole: aloitusnäytössä on %2$d sivua.</string>
     <string name="fab_overlay_controls_summary">Määritä sovellukset PiP-ikkunoille, joita tämä kelluva painike ohjaa</string>
 </resources>

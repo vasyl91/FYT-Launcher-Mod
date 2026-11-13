@@ -540,9 +540,9 @@
     <string name="vertical_bar_every_page">Svislý panel na každé stránce</string>
     <string name="overlap_fit_message">Překrývající se widgety budou odsunuty od sebe tak, jak je posouvají panely: zmenší se jen tam, kde není místo, a obnoví se jen tehdy, když se nevejdou vůbec.</string>
     <string name="proceed_and_fit">Pokračovat a přizpůsobit</string>
+    <string name="start_page_missing">Stránka %1$d neexistuje: domovská obrazovka má %2$d stránek.</string>
     <string name="widget_bar_two_lines_title_first">Dva řádky: název nad interpretem</string>
     <string name="widget_bar_two_lines_artist_first">Dva řádky: interpret nad názvem</string>
     <string name="pip_restart_button">Restart %1$d</string>
-    <string name="start_page_missing">Stránka %1$d neexistuje: domovská obrazovka má %2$d stránek.</string>
     <string name="fab_overlay_controls_summary">Přiřaďte aplikace oknům PiP, která toto plovoucí tlačítko ovládá</string>
 </resources>

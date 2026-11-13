@@ -39,6 +39,8 @@ public class CustomNoSwitchPreference extends SwitchPreferenceCompat {
     public CustomNoSwitchPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         setLayoutResource(R.layout.preference_no_switch);
+        // A long title wraps to more lines instead of being cut; the controls keep their own sizes
+        setSingleLineTitle(false);
     }
 
     @Override

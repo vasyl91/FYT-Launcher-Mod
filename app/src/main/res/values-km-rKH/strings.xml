@@ -540,9 +540,9 @@
     <string name="vertical_bar_every_page">របារបញ្ឈរនៅគ្រប់ទំព័រ</string>
     <string name="overlap_fit_message">ធាតុក្រាហ្វិកដែលត្រួតគ្នានឹងត្រូវផ្លាស់ទីឱ្យឆ្ងាយពីគ្នា ដូចរបារផ្លាស់ទីវា៖ តូចជាងតែកន្លែងដែលគ្មានទំហំ ហើយកំណត់ឡើងវិញតែនៅពេលវាមិនអាចដាក់ចូលបានទាល់តែសោះ។</string>
     <string name="proceed_and_fit">បន្ត និងកែសម្រួល</string>
+    <string name="start_page_missing">មិនមានទំព័រ %1$d ទេ៖ អេក្រង់ដើមមាន %2$d ទំព័រ។</string>
     <string name="widget_bar_two_lines_title_first">ពីរបន្ទាត់៖ ចំណងជើងនៅលើសិល្បករ</string>
     <string name="widget_bar_two_lines_artist_first">ពីរបន្ទាត់៖ សិល្បករនៅលើចំណងជើង</string>
     <string name="pip_restart_button">ចាប់ផ្តើមឡើងវិញ %1$d</string>
-    <string name="start_page_missing">មិនមានទំព័រ %1$d ទេ៖ អេក្រង់ដើមមាន %2$d ទំព័រ។</string>
     <string name="fab_overlay_controls_summary">កំណត់កម្មវិធីទៅ PiP ដែលប៊ូតុងអណ្តែតនេះគ្រប់គ្រង</string>
 </resources>

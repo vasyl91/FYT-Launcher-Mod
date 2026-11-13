@@ -67,6 +67,8 @@ public class CustomPipSwitchPreference extends SwitchPreferenceCompat {
         super(context, attrs, defStyleAttr);
         orientation = context.getResources().getConfiguration().orientation;
         setLayoutResource(R.layout.nested_preference_pip_switch);
+        // A long title wraps to more lines instead of being cut; the controls keep their own sizes
+        setSingleLineTitle(false);
         setWidgetLayoutResource(0);
     }
 

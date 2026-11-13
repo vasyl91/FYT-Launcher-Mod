@@ -66,6 +66,8 @@ public class CustomWidgetPreference extends Preference {
         super(context, attrs, defStyleAttr);
         orientation = context.getResources().getConfiguration().orientation;
         setWidgetLayoutResource(R.layout.widget_preference);
+        // A long title wraps to more lines instead of being cut; the controls keep their own sizes
+        setSingleLineTitle(false);
     }
 
     public void setOnPositionClickListener(@Nullable OnPositionClickListener l) { mPositionListener = l; }

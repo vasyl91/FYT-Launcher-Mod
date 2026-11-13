@@ -540,9 +540,9 @@
     <string name="vertical_bar_every_page">Vertikālā josla katrā lapā</string>
     <string name="overlap_fit_message">Pārklājošies logrīki tiks atvirzīti viens no otra tāpat, kā tos pārvieto joslas: samazināti tikai tur, kur nav vietas, un atiestatīti tikai tad, ja tie nemaz neietilpst.</string>
     <string name="proceed_and_fit">Turpināt un pielāgot</string>
+    <string name="start_page_missing">Lapa %1$d nepastāv: sākuma ekrānā ir %2$d lapas.</string>
     <string name="widget_bar_two_lines_title_first">Divas rindas: nosaukums virs izpildītāja</string>
     <string name="widget_bar_two_lines_artist_first">Divas rindas: izpildītājs virs nosaukuma</string>
     <string name="pip_restart_button">Pārstartēt %1$d</string>
-    <string name="start_page_missing">Lapa %1$d nepastāv: sākuma ekrānā ir %2$d lapas.</string>
     <string name="fab_overlay_controls_summary">Piešķiriet lietotnes PiP logiem, kurus pārvalda šī peldošā poga</string>
 </resources>

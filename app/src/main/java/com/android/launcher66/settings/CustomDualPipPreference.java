@@ -61,6 +61,8 @@ public class CustomDualPipPreference extends SwitchPreferenceCompat {
         super(context, attrs, defStyleAttr);
         orientation = context.getResources().getConfiguration().orientation;
         setLayoutResource(R.layout.nested_preference_dual_pip);
+        // A long title wraps to more lines instead of being cut; the controls keep their own sizes
+        setSingleLineTitle(false);
         setWidgetLayoutResource(0);
     }
 

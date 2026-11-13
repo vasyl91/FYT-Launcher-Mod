@@ -540,9 +540,9 @@
     <string name="vertical_bar_every_page">Vertikale Leiste auf jeder Seite</string>
     <string name="overlap_fit_message">Sich überlappende Widgets werden so auseinandergeschoben, wie die Leisten sie verschieben: nur dort verkleinert, wo kein Platz ist, und nur zurückgesetzt, wenn sie gar nicht passen.</string>
     <string name="proceed_and_fit">Weiter und anpassen</string>
+    <string name="start_page_missing">Seite %1$d existiert nicht: Der Startbildschirm hat %2$d Seiten.</string>
     <string name="widget_bar_two_lines_title_first">Zwei Zeilen: Titel über Interpret</string>
     <string name="widget_bar_two_lines_artist_first">Zwei Zeilen: Interpret über Titel</string>
     <string name="pip_restart_button">Neustart %1$d</string>
-    <string name="start_page_missing">Seite %1$d existiert nicht: Der Startbildschirm hat %2$d Seiten.</string>
     <string name="fab_overlay_controls_summary">Weise den PiPs, die diese schwebende Schaltfläche steuert, Apps zu</string>
 </resources>

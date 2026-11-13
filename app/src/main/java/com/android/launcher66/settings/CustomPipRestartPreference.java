@@ -50,6 +50,8 @@ public class CustomPipRestartPreference extends Preference {
         super(context, attrs, defStyleAttr);
         mContext = context;
         setLayoutResource(R.layout.nested_preference_pip_restart);
+        // A long title wraps to more lines instead of being cut; the controls keep their own sizes
+        setSingleLineTitle(false);
         setWidgetLayoutResource(0);
     }
 

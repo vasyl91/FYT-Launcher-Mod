@@ -540,9 +540,9 @@
     <string name="vertical_bar_every_page">Navpična vrstica na vsaki strani</string>
     <string name="overlap_fit_message">Prekrivajoči se pripomočki bodo razmaknjeni, kot jih premikajo vrstice: zmanjšani le, kjer ni prostora, in ponastavljeni le, če se sploh ne prilegajo.</string>
     <string name="proceed_and_fit">Nadaljuj in prilagodi</string>
+    <string name="start_page_missing">Stran %1$d ne obstaja: začetni zaslon ima %2$d strani.</string>
     <string name="widget_bar_two_lines_title_first">Dve vrstici: naslov nad izvajalcem</string>
     <string name="widget_bar_two_lines_artist_first">Dve vrstici: izvajalec nad naslovom</string>
     <string name="pip_restart_button">Znova zaženi %1$d</string>
-    <string name="start_page_missing">Stran %1$d ne obstaja: začetni zaslon ima %2$d strani.</string>
     <string name="fab_overlay_controls_summary">Dodelite aplikacije oknom PiP, ki jih upravlja ta plavajoči gumb</string>
 </resources>
