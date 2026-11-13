@@ -349,7 +349,8 @@ public class Workspace extends SmoothPagedView
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> autoHideFuture;
-    private boolean blackTintBar = false;
+    /** "Horizontal bar text and button color": a colour, or ViewTint.NONE. */
+    private int barTint = ViewTint.NONE;
     private boolean widgetBar = false;
     private boolean autoHideHorizontalBar = false;
     private boolean isOverlayShowing = false;
@@ -882,7 +883,7 @@ public class Workspace extends SmoothPagedView
         mCollapsedButton = sides.buttonShown();
         mVerticalEveryPage = verticalBar && BarLayouts.verticalEveryPage(mPrefs);
         widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
-        blackTintBar = mPrefs.getBoolean(Keys.BLACK_BAR, false);
+        barTint = WidgetStyler.barTint(mPrefs);
         boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
         boolean userStats = mPrefs.getBoolean(Keys.USER_STATS, false);
         orientation = getResources().getConfiguration().orientation;
@@ -931,7 +932,7 @@ public class Workspace extends SmoothPagedView
             applyBarConstraints(workspaceView, verticalBar, true);
             
             horizontalBarAllApps = workspaceView.findViewById(R.id.rl_allapps);
-            ViewTint.tintImage(horizontalBarAllApps, blackTintBar);
+            ViewTint.tintImage(horizontalBarAllApps, barTint);
 
             horizontalBarRecycler = workspaceView.findViewById(R.id.recycler_view);
             
@@ -1070,11 +1071,11 @@ public class Workspace extends SmoothPagedView
             adjustTextSize(tempText, weatherShare);
         }
         applyWeatherTextShares(barView, largeText);
-        applyBarTexts(blackTintBar);
+        applyBarTexts(barTint);
     }
 
-    /** The texts of the bar's widgets: black, or the colour they had (ViewTint). */
-    private void applyBarTexts(boolean black) {
+    /** The texts of the bar's widgets: the chosen colour, or the colour they had (ViewTint). */
+    private void applyBarTexts(int black) {
         ViewTint.tintText(titleText, black);
         ViewTint.tintText(artistText, black);
         ViewTint.tintText(cityText, black);
@@ -1092,8 +1093,8 @@ public class Workspace extends SmoothPagedView
      * texts of the bar's widgets.
      */
     void applyBarStyle(WidgetStyle style, int[] count) {
-        final boolean black = style.black(WidgetStyle.Role.BAR_BUTTON);
-        blackTintBar = black;
+        final int black = style.tint(WidgetStyle.Role.BAR_BUTTON);
+        barTint = black;
         ViewTint.tintImage(horizontalBarAllApps, black);
         ViewTint.tintImage(showBarIcon, black);
         count[0] += (horizontalBarAllApps != null ? 1 : 0) + (showBarIcon != null ? 1 : 0);
@@ -1114,7 +1115,7 @@ public class Workspace extends SmoothPagedView
         if (mVerticalWindow != null) {
             mVerticalWindow.setArrowTint(black);
         }
-        applyBarTexts(style.black(WidgetStyle.Role.BAR_TEXT));
+        applyBarTexts(style.tint(WidgetStyle.Role.BAR_TEXT));
         count[0] += 7;
         applyBarBackgrounds(count);
     }
@@ -1906,8 +1907,8 @@ public class Workspace extends SmoothPagedView
                     horizontalBarAllApps.setVisibility(View.INVISIBLE);
                     showBarIcon.setAlpha(0f);
                     showBarIcon.setVisibility(View.VISIBLE);
-                    blackTintBar = mPrefs.getBoolean(Keys.BLACK_BAR, false);
-                    ViewTint.tintImage(showBarIcon, blackTintBar);
+                    barTint = WidgetStyler.barTint(mPrefs);
+                    ViewTint.tintImage(showBarIcon, barTint);
                     showBarIcon.animate().alpha(0.5f).setDuration(0).start();
                 })
                 .start();
@@ -2047,8 +2048,8 @@ public class Workspace extends SmoothPagedView
             });
 
             ImageView overlayAllApps = overlayHorizontalBar.findViewById(R.id.rl_allapps);
-            blackTintBar = mPrefs.getBoolean(Keys.BLACK_BAR, false);
-            ViewTint.tintImage(overlayAllApps, blackTintBar);
+            barTint = WidgetStyler.barTint(mPrefs);
+            ViewTint.tintImage(overlayAllApps, barTint);
 
             // Setup the overlay view
             setupOverlayView(barWidth, horizontalBarHeight);
@@ -2929,8 +2930,8 @@ public class Workspace extends SmoothPagedView
             showBarIcon = workspaceView.findViewById(R.id.show_bar);
         }
         if (shown && showBarIcon != null) {
-            blackTintBar = mPrefs.getBoolean(Keys.BLACK_BAR, false);
-            ViewTint.tintImage(showBarIcon, blackTintBar);
+            barTint = WidgetStyler.barTint(mPrefs);
+            ViewTint.tintImage(showBarIcon, barTint);
         }
         fadeView(horizontalBarBg, shown ? 1f : 0f, durationMs);
         fadeView(showBarIcon, shown ? COLLAPSED_BUTTON_ALPHA : 0f, durationMs);
@@ -3074,7 +3075,7 @@ public class Workspace extends SmoothPagedView
         }
         mEdgeHandle.setGeometry(stripWidth, touchWidth,
                 barHeight,
-                mPrefs.getBoolean(Keys.BLACK_BAR, false));
+                WidgetStyle.isDark(WidgetStyler.barTint(mPrefs)));
     }
 
     /** What a touch that the edge handle does not take belongs to: a pane under it, else the launcher. */

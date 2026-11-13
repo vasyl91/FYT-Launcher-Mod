@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Pasirinkti ekrano foną</string>
     <string name="black_widgets">Valdiklių teksto ir mygtukų spalva</string>
     <string name="black_bar">Horizontaliosios juostos teksto ir mygtukų spalva</string>
-    <string name="black_color">Juoda</string>
-    <string name="white_color">Balta</string>
     <string name="auto_hide_horizontal_bar">Automatiškai slėpti horizontaliąją juostą</string>
     <string name="auto_hide_timeout">Skirtasis laikas: %1$s s</string>
     <string name="resizable_horizontal_bar">Keičiamo dydžio horizontalioji juosta</string>

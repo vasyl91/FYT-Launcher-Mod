@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Выбрать обои</string>
     <string name="black_widgets">Цвет текста и кнопок виджетов</string>
     <string name="black_bar">Цвет текста и кнопок горизонтальной панели</string>
-    <string name="black_color">Чёрный</string>
-    <string name="white_color">Белый</string>
     <string name="auto_hide_horizontal_bar">Автоматически скрывать горизонтальную панель</string>
     <string name="auto_hide_timeout">Тайм-аут: %1$s с</string>
     <string name="resizable_horizontal_bar">Изменяемый размер горизонтальной панели</string>

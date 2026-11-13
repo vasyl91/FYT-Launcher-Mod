@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Duvar kâğıdı seç</string>
     <string name="black_widgets">Widget metin ve düğme rengi</string>
     <string name="black_bar">Yatay çubuk metin ve düğme rengi</string>
-    <string name="black_color">Siyah</string>
-    <string name="white_color">Beyaz</string>
     <string name="auto_hide_horizontal_bar">Yatay çubuğu otomatik gizle</string>
     <string name="auto_hide_timeout">Zaman aşımı: %1$s sn</string>
     <string name="resizable_horizontal_bar">Yeniden boyutlandırılabilir yatay çubuk</string>

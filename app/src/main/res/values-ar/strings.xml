@@ -375,8 +375,6 @@
     <string name="pick_image_manually">اختيار خلفية</string>
     <string name="black_widgets">لون نص وأزرار عناصر الواجهة</string>
     <string name="black_bar">لون نص وأزرار الشريط الأفقي</string>
-    <string name="black_color">أسود</string>
-    <string name="white_color">أبيض</string>
     <string name="auto_hide_horizontal_bar">إخفاء الشريط الأفقي تلقائيًا</string>
     <string name="auto_hide_timeout">المهلة: %1$s ث</string>
     <string name="resizable_horizontal_bar">شريط أفقي قابل لتغيير الحجم</string>

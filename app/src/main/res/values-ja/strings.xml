@@ -375,8 +375,6 @@
     <string name="pick_image_manually">壁紙を選択</string>
     <string name="black_widgets">ウィジェットの文字とボタンの色</string>
     <string name="black_bar">横バーの文字とボタンの色</string>
-    <string name="black_color">黒</string>
-    <string name="white_color">白</string>
     <string name="auto_hide_horizontal_bar">横バーを自動的に隠す</string>
     <string name="auto_hide_timeout">タイムアウト: %1$s秒</string>
     <string name="resizable_horizontal_bar">サイズ変更可能な横バー</string>

@@ -16,7 +16,7 @@ import com.fyt.widget.DigitClock;
  * placeholders of every page, the music and radio widgets, the digits of the clock, the bar and its window. Main
  * thread only.
  */
-final class WidgetStyler {
+public final class WidgetStyler {
 
     private WidgetStyler() {
     }
@@ -29,7 +29,7 @@ final class WidgetStyler {
      * skipped.
      */
     static boolean isLookSetting(String key) {
-        return Keys.BLACK_WIDGETS.equals(key) || Keys.BLACK_BAR.equals(key)
+        return Keys.WIDGETS_TINT_COLOR.equals(key) || Keys.BAR_TINT_COLOR.equals(key)
                 || Keys.WIDGETS_SELECTED_BACKGROUND.equals(key)
                 || Keys.WIDGETS_CUSTOM_BACKGROUND_COLOR.equals(key)
                 || Keys.BAR_SELECTED_BACKGROUND.equals(key)
@@ -38,9 +38,21 @@ final class WidgetStyler {
                 || Keys.VERTICAL_BAR_CUSTOM_BACKGROUND_COLOR.equals(key);
     }
 
+    /** "Widget text and button color": the chosen colour, or ViewTint.NONE while none was chosen. */
+    public static int widgetsTint(SharedPreferences prefs) {
+        return prefs.contains(Keys.WIDGETS_TINT_COLOR) ? prefs.getInt(Keys.WIDGETS_TINT_COLOR, ViewTint.NONE)
+                : ViewTint.NONE;
+    }
+
+    /** "Horizontal bar text and button color": the chosen colour, or ViewTint.NONE while none was chosen. */
+    public static int barTint(SharedPreferences prefs) {
+        return prefs.contains(Keys.BAR_TINT_COLOR) ? prefs.getInt(Keys.BAR_TINT_COLOR, ViewTint.NONE)
+                : ViewTint.NONE;
+    }
+
     /** The look the settings give now. */
     static WidgetStyle current(SharedPreferences prefs) {
-        return WidgetStyle.of(prefs.getBoolean(Keys.BLACK_WIDGETS, false), prefs.getBoolean(Keys.BLACK_BAR, false),
+        return WidgetStyle.of(widgetsTint(prefs), barTint(prefs),
                 BarBackground.choice(prefs, Keys.WIDGETS_SELECTED_BACKGROUND, BarBackground.WIDGETS_DEFAULT));
     }
 
@@ -74,25 +86,22 @@ final class WidgetStyler {
                 }
             }
             workspace.applyBarStyle(style, count);
-            applyClocks(workspace, style.black(WidgetStyle.Role.WIDGET_TEXT), count);
+            applyClocks(workspace, style.tint(WidgetStyle.Role.WIDGET_TEXT), count);
         }
-        Log.i(Launcher.TAG, "Widget style applied (" + reason + "): widgets "
-                + (style.black(WidgetStyle.Role.WIDGET_BUTTON) ? "black" : "default") + ", bar "
-                + (style.black(WidgetStyle.Role.BAR_BUTTON) ? "black" : "default") + ", background "
-                + style.background() + ", " + count[0] + " views");
+        Log.i(Launcher.TAG, "Widget style applied (" + reason + "): " + style + ", " + count[0] + " views");
     }
 
     /** The digits of every clock below this view. */
-    private static void applyClocks(View view, boolean black, int[] count) {
+    private static void applyClocks(View view, int tint, int[] count) {
         if (view instanceof DigitClock) {
-            ((DigitClock) view).applyStyle(black);
+            ((DigitClock) view).applyStyle(tint);
             count[0]++;
             return;
         }
         if (view instanceof ViewGroup) {
             ViewGroup group = (ViewGroup) view;
             for (int i = 0; i < group.getChildCount(); i++) {
-                applyClocks(group.getChildAt(i), black, count);
+                applyClocks(group.getChildAt(i), tint, count);
             }
         }
     }

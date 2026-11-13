@@ -180,8 +180,21 @@ public final class Keys {
     public static final String WIDGETS_CUSTOM_BACKGROUND_COLOR = "widgets_custom_background_color";
     public static final String BAR_CUSTOM_BACKGROUND_COLOR = "bar_custom_background_color";
     public static final String VERTICAL_BAR_CUSTOM_BACKGROUND_COLOR = "vertical_bar_custom_background_color";
+    /**
+     * The old on/off settings of the text and button colour ("Black" / "White"). Read only once, at the start,
+     * to become the colours below (LauncherApplication); nothing else may read them.
+     */
     public static final String BLACK_BAR = "black_bar";
     public static final String BLACK_WIDGETS = "black_widgets";
+    /**
+     * "Widget text and button color" and "Horizontal bar text and button color": an opaque colour (an int, ARGB).
+     * No value means no tint, the look the views have by themselves (WidgetStyler.widgetsTint / barTint).
+     */
+    public static final String WIDGETS_TINT_COLOR = "widgets_tint_color";
+    public static final String BAR_TINT_COLOR = "bar_tint_color";
+    /** The rows of the settings that open the colour picker for the two colours above; they store nothing. */
+    public static final String WIDGETS_TINT = "choose_widgets_tint";
+    public static final String BAR_TINT = "choose_bar_tint";
     public static final String START_PAGE = "start_page";
     public static final String LAYOUT_MARGIN = "layout_margin";
     /** The horizontal bar is on every page of the home screen, not only on the first (HorizontalBarPlacement). */

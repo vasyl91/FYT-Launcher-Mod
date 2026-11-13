@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Ընտրել պաստառ</string>
     <string name="black_widgets">Վիջեթների տեքստի և կոճակների գույն</string>
     <string name="black_bar">Հորիզոնական գոտու տեքստի և կոճակների գույն</string>
-    <string name="black_color">Սև</string>
-    <string name="white_color">Սպիտակ</string>
     <string name="auto_hide_horizontal_bar">Ավտոմատ թաքցնել հորիզոնական գոտին</string>
     <string name="auto_hide_timeout">Ժամանակի սահման՝ %1$s վրկ</string>
     <string name="resizable_horizontal_bar">Փոփոխվող չափով հորիզոնական գոտի</string>

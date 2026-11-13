@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Pumili ng wallpaper</string>
     <string name="black_widgets">Kulay ng text at button ng mga widget</string>
     <string name="black_bar">Kulay ng text at button ng pahalang na bar</string>
-    <string name="black_color">Itim</string>
-    <string name="white_color">Puti</string>
     <string name="auto_hide_horizontal_bar">Awtomatikong itago ang pahalang na bar</string>
     <string name="auto_hide_timeout">Timeout: %1$s s</string>
     <string name="resizable_horizontal_bar">Pahalang na bar na maaaring baguhin ang laki</string>

@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Kies agtergrond</string>
     <string name="black_widgets">Legstukke se teks- en knoppiekleur</string>
     <string name="black_bar">Horisontale balk se teks- en knoppiekleur</string>
-    <string name="black_color">Swart</string>
-    <string name="white_color">Wit</string>
     <string name="auto_hide_horizontal_bar">Versteek horisontale balk outomaties</string>
     <string name="auto_hide_timeout">Tydsverloop: %1$s s</string>
     <string name="resizable_horizontal_bar">Horisontale balk met aanpasbare grootte</string>

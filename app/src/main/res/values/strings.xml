@@ -443,8 +443,6 @@
     <string name="pick_image_manually">Pick wallpaper</string>
     <string name="black_widgets">Widget text and button color</string>
     <string name="black_bar">Horizontal bar text and button color</string>
-    <string name="black_color">Black</string>
-    <string name="white_color">White</string>
     <string name="auto_hide_horizontal_bar">Auto-hide horizontal bar</string>
     <string name="auto_hide_timeout">Timeout: %1$ss</string>
     <string name="resizable_horizontal_bar">Resizable horizontal bar</string>

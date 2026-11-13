@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Vælg baggrund</string>
     <string name="black_widgets">Tekst- og knapfarve for widgets</string>
     <string name="black_bar">Tekst- og knapfarve for vandret bjælke</string>
-    <string name="black_color">Sort</string>
-    <string name="white_color">Hvid</string>
     <string name="auto_hide_horizontal_bar">Skjul vandret bjælke automatisk</string>
     <string name="auto_hide_timeout">Timeout: %1$s s</string>
     <string name="resizable_horizontal_bar">Vandret bjælke med ændrelig størrelse</string>

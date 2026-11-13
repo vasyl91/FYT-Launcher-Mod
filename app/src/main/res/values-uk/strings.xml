@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Вибрати шпалери</string>
     <string name="black_widgets">Колір тексту й кнопок віджетів</string>
     <string name="black_bar">Колір тексту й кнопок горизонтальної панелі</string>
-    <string name="black_color">Чорний</string>
-    <string name="white_color">Білий</string>
     <string name="auto_hide_horizontal_bar">Автоматично ховати горизонтальну панель</string>
     <string name="auto_hide_timeout">Тайм-аут: %1$s с</string>
     <string name="resizable_horizontal_bar">Горизонтальна панель зі змінним розміром</string>

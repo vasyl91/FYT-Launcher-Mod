@@ -98,13 +98,11 @@
         <Preference
             android:key="choose_widgets_background"
             android:title="@string/widgets_background_preference"/>
-        <com.android.launcher66.settings.CustomNoSwitchPreference
-            android:key="black_widgets"
-            android:defaultValue="false"
-            android:title="@string/black_widgets"
-            android:summaryOn="@string/black_color"
-            android:summaryOff="@string/white_color"
-            app:layout="@layout/preference_no_switch" />
+        <!-- Opens the colour picker (text mode); the colour is stored under widgets_tint_color -->
+        <Preference
+            android:key="choose_widgets_tint"
+            android:persistent="false"
+            android:title="@string/black_widgets"/>
         <Preference
             android:key="layout_margin"
             android:title="@string/margins_str"
@@ -168,13 +166,11 @@
         <Preference
             android:key="choose_bar_background"
             android:title="@string/bar_background_preference"/>  
-        <com.android.launcher66.settings.CustomNoSwitchPreference
-            android:key="black_bar"
-            android:defaultValue="false"
-            android:title="@string/black_bar"
-            android:summaryOn="@string/black_color"
-            android:summaryOff="@string/white_color"
-            app:layout="@layout/preference_no_switch" />
+        <!-- Opens the colour picker (text mode); the colour is stored under bar_tint_color -->
+        <Preference
+            android:key="choose_bar_tint"
+            android:persistent="false"
+            android:title="@string/black_bar"/>
         <SwitchPreferenceCompat
             app:singleLineTitle="false"
             android:key="widget_bar"

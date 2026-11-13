@@ -375,8 +375,6 @@
     <string name="pick_image_manually">ფონის არჩევა</string>
     <string name="black_widgets">ვიჯეტების ტექსტისა და ღილაკების ფერი</string>
     <string name="black_bar">ჰორიზონტალური ზოლის ტექსტისა და ღილაკების ფერი</string>
-    <string name="black_color">შავი</string>
-    <string name="white_color">თეთრი</string>
     <string name="auto_hide_horizontal_bar">ჰორიზონტალური ზოლის ავტომატური დამალვა</string>
     <string name="auto_hide_timeout">დროის ლიმიტი: %1$s წმ</string>
     <string name="resizable_horizontal_bar">ცვალებადი ზომის ჰორიზონტალური ზოლი</string>

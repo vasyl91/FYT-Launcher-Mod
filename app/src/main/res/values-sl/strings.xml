@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Izberi ozadje</string>
     <string name="black_widgets">Barva besedila in gumbov gradnikov</string>
     <string name="black_bar">Barva besedila in gumbov vodoravne vrstice</string>
-    <string name="black_color">Črna</string>
-    <string name="white_color">Bela</string>
     <string name="auto_hide_horizontal_bar">Samodejno skrij vodoravno vrstico</string>
     <string name="auto_hide_timeout">Časovna omejitev: %1$s s</string>
     <string name="resizable_horizontal_bar">Vodoravna vrstica s spremenljivo velikostjo</string>

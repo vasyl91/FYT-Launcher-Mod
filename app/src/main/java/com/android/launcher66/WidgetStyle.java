@@ -1,8 +1,9 @@
 package com.android.launcher66;
 
 /**
- * How the widgets and the bar look under the settings "Widget text and button color" (black or default), "Bar text and
- * button color" and "Choose background for widgets". Pure Java, so that the rule has a test.
+ * How the widgets and the bar look under the settings "Widget text and button color", "Horizontal bar text and button
+ * color" (each a colour of the user's choice, or none: the look the views have by themselves) and "Choose background
+ * for widgets". Pure Java, so that the rule has a test.
  *
  * <p>R2: a setting of look works on the views that are already on the screen, through one place in the code
  * ({@link WidgetStyler}); it does not depend on the screen being rebuilt; the colour is set in both directions; and
@@ -19,26 +20,31 @@ final class WidgetStyle {
     /** The resource of the default background. */
     static final String DEFAULT_BACKGROUND_RESOURCE = "bg_custom";
 
-    private final boolean blackWidgets;
-    private final boolean blackBar;
+    /** No colour chosen: the views keep their own (ViewTint.NONE). */
+    static final int NO_TINT = 0;
+    /** The colour the old on/off setting "black" stood for. */
+    static final int BLACK = 0xFF000000;
+
+    private final int widgetsTint;
+    private final int barTint;
     private final String background;
     private final BackgroundChoice choice;
 
-    private WidgetStyle(boolean blackWidgets, boolean blackBar, String background, BackgroundChoice choice) {
-        this.blackWidgets = blackWidgets;
-        this.blackBar = blackBar;
+    private WidgetStyle(int widgetsTint, int barTint, String background, BackgroundChoice choice) {
+        this.widgetsTint = widgetsTint;
+        this.barTint = barTint;
         this.background = background;
         this.choice = choice;
     }
 
     /** @param widgetsBackground the stored name of the chosen background, null or "bg_custom" for the default */
-    static WidgetStyle of(boolean blackWidgets, boolean blackBar, String widgetsBackground) {
-        return of(blackWidgets, blackBar,
+    static WidgetStyle of(int widgetsTint, int barTint, String widgetsBackground) {
+        return of(widgetsTint, barTint,
                 BackgroundChoice.of(widgetsBackground, DEFAULT_BACKGROUND_RESOURCE, false, 0));
     }
 
     /** @param widgetsBackground the background chosen for the widgets: a picture or the user's own colour */
-    static WidgetStyle of(boolean blackWidgets, boolean blackBar, BackgroundChoice widgetsBackground) {
+    static WidgetStyle of(int widgetsTint, int barTint, BackgroundChoice widgetsBackground) {
         String name;
         if (widgetsBackground.kind == BackgroundChoice.Kind.CUSTOM) {
             name = BackgroundChoice.CUSTOM;
@@ -49,7 +55,7 @@ final class WidgetStyle {
             boolean isDefault = picture == null || picture.isEmpty() || DEFAULT_BACKGROUND_RESOURCE.equals(picture);
             name = isDefault ? DEFAULT_BACKGROUND : picture;
         }
-        return new WidgetStyle(blackWidgets, blackBar, name, widgetsBackground);
+        return new WidgetStyle(widgetsTint, barTint, name, widgetsBackground);
     }
 
     /** The background of the widgets as chosen, for the one place that draws it (BarBackground). */
@@ -57,16 +63,43 @@ final class WidgetStyle {
         return choice;
     }
 
-    /** Whether the colour for this role is black; else it is the default one the view had. */
-    boolean black(Role role) {
+    /** The colour for this role, or {@link #NO_TINT} for the one the view has by itself. */
+    int tint(Role role) {
         switch (role) {
             case WIDGET_TEXT:
             case WIDGET_BUTTON:
             case WIDGET_PROGRESS:
-                return blackWidgets;
+                return widgetsTint;
             default:
-                return blackBar;
+                return barTint;
         }
+    }
+
+    /**
+     * What the old settings become, once: "black" on was the colour black, and "black" off ("White" in the
+     * settings) was no colour at all, the views' own look, which is kept as no tint so that nothing changes on
+     * the screen.
+     */
+    static int tintOfLegacyBlack(boolean black) {
+        return black ? BLACK : NO_TINT;
+    }
+
+    /**
+     * Whether something drawn beside this tint should be dark too (the strip of the edge handle is black or
+     * white): only a chosen colour that is itself dark.
+     */
+    static boolean isDark(int tint) {
+        if (tint == NO_TINT) {
+            return false;
+        }
+        int r = (tint >> 16) & 0xFF;
+        int g = (tint >> 8) & 0xFF;
+        int b = tint & 0xFF;
+        return (r * 299 + g * 587 + b * 114) / 1000 < 128;
+    }
+
+    private static String name(int tint) {
+        return tint == NO_TINT ? "default" : String.format("#%06X", tint & 0xFFFFFF);
     }
 
     /**
@@ -83,7 +116,6 @@ final class WidgetStyle {
 
     @Override
     public String toString() {
-        return "widgets " + (blackWidgets ? "black" : "default") + ", bar " + (blackBar ? "black" : "default")
-                + ", background " + background;
+        return "widgets " + name(widgetsTint) + ", bar " + name(barTint) + ", background " + background;
     }
 }

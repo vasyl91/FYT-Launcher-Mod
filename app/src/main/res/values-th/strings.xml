@@ -375,8 +375,6 @@
     <string name="pick_image_manually">เลือกวอลเปเปอร์</string>
     <string name="black_widgets">สีข้อความและปุ่มของวิดเจ็ต</string>
     <string name="black_bar">สีข้อความและปุ่มของแถบแนวนอน</string>
-    <string name="black_color">ดำ</string>
-    <string name="white_color">ขาว</string>
     <string name="auto_hide_horizontal_bar">ซ่อนแถบแนวนอนอัตโนมัติ</string>
     <string name="auto_hide_timeout">หมดเวลา: %1$s วินาที</string>
     <string name="resizable_horizontal_bar">แถบแนวนอนปรับขนาดได้</string>

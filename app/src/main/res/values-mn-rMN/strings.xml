@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Ханын зураг сонгох</string>
     <string name="black_widgets">Виджетийн бичвэр болон товчийн өнгө</string>
     <string name="black_bar">Хэвтээ самбарын бичвэр болон товчийн өнгө</string>
-    <string name="black_color">Хар</string>
-    <string name="white_color">Цагаан</string>
     <string name="auto_hide_horizontal_bar">Хэвтээ самбарыг автоматаар нуух</string>
     <string name="auto_hide_timeout">Хугацааны хязгаар: %1$s с</string>
     <string name="resizable_horizontal_bar">Хэмжээг өөрчлөх боломжтой хэвтээ самбар</string>

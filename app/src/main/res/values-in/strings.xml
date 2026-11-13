@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Pilih wallpaper</string>
     <string name="black_widgets">Warna teks dan tombol widget</string>
     <string name="black_bar">Warna teks dan tombol bilah horizontal</string>
-    <string name="black_color">Hitam</string>
-    <string name="white_color">Putih</string>
     <string name="auto_hide_horizontal_bar">Sembunyikan bilah horizontal otomatis</string>
     <string name="auto_hide_timeout">Batas waktu: %1$s dtk</string>
     <string name="resizable_horizontal_bar">Bilah horizontal yang dapat diubah ukurannya</string>

@@ -375,8 +375,6 @@
     <string name="pick_image_manually">ልጣፍ ምረጥ</string>
     <string name="black_widgets">የምግቦች ጽሑፍ እና አዝራር ቀለም</string>
     <string name="black_bar">አግድም አሞሌ ጽሑፍ እና አዝራር ቀለም</string>
-    <string name="black_color">ጥቁር</string>
-    <string name="white_color">ነጭ</string>
     <string name="auto_hide_horizontal_bar">አግድም አሞሌን በራስ-ሰር ደብቅ</string>
     <string name="auto_hide_timeout">የጊዜ ማብቂያ፦ %1$s ሰ</string>
     <string name="resizable_horizontal_bar">መጠኑ ሊቀየር የሚችል አግድም አሞሌ</string>

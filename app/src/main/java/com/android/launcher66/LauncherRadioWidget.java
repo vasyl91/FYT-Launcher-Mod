@@ -155,12 +155,12 @@ final class LauncherRadioWidget {
      * texts of the band, the unit and the frequency, in both directions.
      */
     void applyStyle(WidgetStyle style, int[] count) {
-        boolean buttons = style.black(WidgetStyle.Role.WIDGET_BUTTON);
+        int buttons = style.tint(WidgetStyle.Role.WIDGET_BUTTON);
         for (Button button : new Button[] {mRadioPrevButton, mRadioNextButton, mRadioPauseButton, mRadioBandButton}) {
             ViewTint.tintBackground(button, buttons);
             count[0] += button != null ? 1 : 0;
         }
-        boolean text = style.black(WidgetStyle.Role.WIDGET_TEXT);
+        int text = style.tint(WidgetStyle.Role.WIDGET_TEXT);
         for (TextView view : new TextView[] {tvBand, tvUnit, tvCurFreq}) {
             ViewTint.tintText(view, text);
             count[0] += view != null ? 1 : 0;

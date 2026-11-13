@@ -375,8 +375,6 @@
     <string name="pick_image_manually">ເລືອກພາບພື້ນຫຼັງ</string>
     <string name="black_widgets">ສີຂໍ້ຄວາມ ແລະ ປຸ່ມຂອງວິດເຈັດ</string>
     <string name="black_bar">ສີຂໍ້ຄວາມ ແລະ ປຸ່ມຂອງແຖບແນວນອນ</string>
-    <string name="black_color">ດຳ</string>
-    <string name="white_color">ຂາວ</string>
     <string name="auto_hide_horizontal_bar">ເຊື່ອງແຖບແນວນອນອັດຕະໂນມັດ</string>
     <string name="auto_hide_timeout">ໝົດເວລາ: %1$s ວິ</string>
     <string name="resizable_horizontal_bar">ແຖບແນວນອນປັບຂະໜາດໄດ້</string>

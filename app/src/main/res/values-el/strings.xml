@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Επιλογή ταπετσαρίας</string>
     <string name="black_widgets">Χρώμα κειμένου και κουμπιών γραφικών στοιχείων</string>
     <string name="black_bar">Χρώμα κειμένου και κουμπιών οριζόντιας γραμμής</string>
-    <string name="black_color">Μαύρο</string>
-    <string name="white_color">Λευκό</string>
     <string name="auto_hide_horizontal_bar">Αυτόματη απόκρυψη οριζόντιας γραμμής</string>
     <string name="auto_hide_timeout">Χρονικό όριο: %1$s δευτ.</string>
     <string name="resizable_horizontal_bar">Οριζόντια γραμμή με δυνατότητα αλλαγής μεγέθους</string>

@@ -375,8 +375,6 @@
     <string name="pick_image_manually">ជ្រើសរើសផ្ទាំងរូបភាព</string>
     <string name="black_widgets">ពណ៌អក្សរ និងប៊ូតុងរបស់ធាតុក្រាហ្វិក</string>
     <string name="black_bar">ពណ៌អក្សរ និងប៊ូតុងរបស់របារផ្ដេក</string>
-    <string name="black_color">ខ្មៅ</string>
-    <string name="white_color">ស</string>
     <string name="auto_hide_horizontal_bar">លាក់របារផ្ដេកដោយស្វ័យប្រវត្តិ</string>
     <string name="auto_hide_timeout">ពេលអស់ពេល៖ %1$s វិ</string>
     <string name="resizable_horizontal_bar">របារផ្ដេកអាចប្តូរទំហំបាន</string>

@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Pilih kertas dinding</string>
     <string name="black_widgets">Warna teks dan butang widget</string>
     <string name="black_bar">Warna teks dan butang bar mendatar</string>
-    <string name="black_color">Hitam</string>
-    <string name="white_color">Putih</string>
     <string name="auto_hide_horizontal_bar">Sembunyi bar mendatar secara automatik</string>
     <string name="auto_hide_timeout">Tamat masa: %1$s s</string>
     <string name="resizable_horizontal_bar">Bar mendatar boleh diubah saiz</string>

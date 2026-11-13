@@ -375,8 +375,6 @@
     <string name="pick_image_manually">選擇桌布</string>
     <string name="black_widgets">小工具文字和按鈕顏色</string>
     <string name="black_bar">橫欄文字和按鈕顏色</string>
-    <string name="black_color">黑色</string>
-    <string name="white_color">白色</string>
     <string name="auto_hide_horizontal_bar">自動隱藏橫欄</string>
     <string name="auto_hide_timeout">逾時: %1$s秒</string>
     <string name="resizable_horizontal_bar">可調整大小的橫欄</string>

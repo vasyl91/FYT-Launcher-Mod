@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Выбраць шпалеры</string>
     <string name="black_widgets">Колер тэксту і кнопак віджэтаў</string>
     <string name="black_bar">Колер тэксту і кнопак гарызантальнай панэлі</string>
-    <string name="black_color">Чорны</string>
-    <string name="white_color">Белы</string>
     <string name="auto_hide_horizontal_bar">Аўтаматычна хаваць гарызантальную панэль</string>
     <string name="auto_hide_timeout">Тайм-аўт: %1$s с</string>
     <string name="resizable_horizontal_bar">Гарызантальная панэль са зменным памерам</string>

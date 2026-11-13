@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Изабери позадину</string>
     <string name="black_widgets">Боја текста и дугмади виџета</string>
     <string name="black_bar">Боја текста и дугмади хоризонталне траке</string>
-    <string name="black_color">Црна</string>
-    <string name="white_color">Бела</string>
     <string name="auto_hide_horizontal_bar">Аутоматски сакриј хоризонталну траку</string>
     <string name="auto_hide_timeout">Временско ограничење: %1$s с</string>
     <string name="resizable_horizontal_bar">Хоризонтална трака променљиве величине</string>

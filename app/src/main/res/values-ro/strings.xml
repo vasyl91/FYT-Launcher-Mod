@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Alegeți imaginea de fundal</string>
     <string name="black_widgets">Culoarea textului și a butoanelor widgeturilor</string>
     <string name="black_bar">Culoarea textului și a butoanelor barei orizontale</string>
-    <string name="black_color">Negru</string>
-    <string name="white_color">Alb</string>
     <string name="auto_hide_horizontal_bar">Ascunde automat bara orizontală</string>
     <string name="auto_hide_timeout">Timeout: %1$s s</string>
     <string name="resizable_horizontal_bar">Bară orizontală redimensionabilă</string>

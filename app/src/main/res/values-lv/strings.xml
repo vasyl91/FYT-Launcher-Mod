@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Izvēlēties fona tapeti</string>
     <string name="black_widgets">Logrīku teksta un pogu krāsa</string>
     <string name="black_bar">Horizontālās joslas teksta un pogu krāsa</string>
-    <string name="black_color">Melns</string>
-    <string name="white_color">Balts</string>
     <string name="auto_hide_horizontal_bar">Automātiski slēpt horizontālo joslu</string>
     <string name="auto_hide_timeout">Taimauts: %1$s s</string>
     <string name="resizable_horizontal_bar">Horizontālā josla ar maināmu izmēru</string>

@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Scegli lo sfondo</string>
     <string name="black_widgets">Colore del testo e dei pulsanti dei widget</string>
     <string name="black_bar">Colore del testo e dei pulsanti della barra orizzontale</string>
-    <string name="black_color">Nero</string>
-    <string name="white_color">Bianco</string>
     <string name="auto_hide_horizontal_bar">Nascondi automaticamente la barra orizzontale</string>
     <string name="auto_hide_timeout">Timeout: %1$s s</string>
     <string name="resizable_horizontal_bar">Barra orizzontale ridimensionabile</string>

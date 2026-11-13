@@ -180,6 +180,15 @@ public class LauncherApplication extends Application {
                     .remove(Keys.COVER_SPLASH)
                     .apply();
         }
+        // "Text and button color" was Black or White and became a colour of the user's choice, once. Black is
+        // the colour black; White was no colour at all (the views' own look) and stays no colour, so the screen
+        // looks as it did (WidgetStyle.tintOfLegacyBlack).
+        if (prefs.contains(Keys.BLACK_WIDGETS) || prefs.contains(Keys.BLACK_BAR)) {
+            SharedPreferences.Editor tints = prefs.edit();
+            migrateTint(prefs, tints, Keys.BLACK_WIDGETS, Keys.WIDGETS_TINT_COLOR);
+            migrateTint(prefs, tints, Keys.BLACK_BAR, Keys.BAR_TINT_COLOR);
+            tints.apply();
+        }
         // The widget bar's one-line switch became three choices (CustomNestedThreePreference), once.
         if (prefs.contains(Keys.WIDGET_BAR_ONE_LINE)) {
             prefs.edit()
@@ -810,6 +819,28 @@ public class LauncherApplication extends Application {
     /**
      * Puts every pane back to a window, if any is saved as pinned. Main thread; the write is apply().
      */
+    /**
+     * One of the two old Black / White settings into its colour (see the caller). The old key goes either way,
+     * so this runs once; a colour that is already stored is not overwritten.
+     */
+    private static void migrateTint(SharedPreferences prefs, SharedPreferences.Editor editor, String oldKey,
+                                    String newKey) {
+        if (!prefs.contains(oldKey)) {
+            return;
+        }
+        boolean black = false;
+        try {
+            black = prefs.getBoolean(oldKey, false);
+        } catch (ClassCastException e) {
+            // not the on/off value it should be: nothing to carry over
+        }
+        int tint = WidgetStyle.tintOfLegacyBlack(black);
+        if (tint != WidgetStyle.NO_TINT && !prefs.contains(newKey)) {
+            editor.putInt(newKey, tint);
+        }
+        editor.remove(oldKey);
+    }
+
     public static void clearPinnedPipModes(SharedPreferences prefs, String why) {
         if (!prefs.getBoolean(Keys.PIP_FIRST_MODE, false)
                 && !prefs.getBoolean(Keys.PIP_SECOND_MODE, false)

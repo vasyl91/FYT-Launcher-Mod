@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Ustaw tło</string>
     <string name="black_widgets">Kolor tekstu i przycisków wewnątrz widgetów</string>
     <string name="black_bar">Kolor tekstu i przycisków paska poziomego</string>
-    <string name="black_color">Czarny</string>
-    <string name="white_color">Biały</string>
     <string name="auto_hide_horizontal_bar">Automatycznie ukrywaj pasek poziomy</string>
     <string name="auto_hide_timeout">Timeout: %1$ss</string>
     <string name="resizable_horizontal_bar">Regulowany pasek poziomy</string>

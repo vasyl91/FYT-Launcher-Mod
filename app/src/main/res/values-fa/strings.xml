@@ -375,8 +375,6 @@
     <string name="pick_image_manually">انتخاب تصویر زمینه</string>
     <string name="black_widgets">رنگ متن و دکمه‌های ویجت‌ها</string>
     <string name="black_bar">رنگ متن و دکمه‌های نوار افقی</string>
-    <string name="black_color">سیاه</string>
-    <string name="white_color">سفید</string>
     <string name="auto_hide_horizontal_bar">پنهان‌شدن خودکار نوار افقی</string>
     <string name="auto_hide_timeout">مهلت: %1$s ثانیه</string>
     <string name="resizable_horizontal_bar">نوار افقی با اندازه قابل تغییر</string>

@@ -199,6 +199,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private WeakReference<AppListStatsDialogFragment> appListStatsDialog;
     private WeakReference<ColorPicker> colorPicker;
     private WeakReference<ColorPicker> bgColorPicker;
+    private WeakReference<ColorPicker> tintPicker;
     private InputMethodManager imm;
     private RecyclerView recyclerView;
 
@@ -364,8 +365,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
         Preference widgetsBackground = findPreference(Keys.WIDGETS_BACKGROUND);
         Preference barBackground = findPreference(Keys.BAR_BACKGROUND);
-        CustomNoSwitchPreference widgetsTintBlack = findPreference(Keys.BLACK_WIDGETS);
-        CustomNoSwitchPreference barTintBlack = findPreference(Keys.BLACK_BAR);
+        Preference widgetsTint = findPreference(Keys.WIDGETS_TINT);
+        Preference barTint = findPreference(Keys.BAR_TINT);
         startPage = findPreference(Keys.START_PAGE);
         // The page that is really used: a stored number that names no page shows as the first page
         String startPageStr = sharedPrefs.getString(Keys.START_PAGE, "1");
@@ -528,8 +529,11 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 return true;
             });
         }
-        if (widgetsTintBlack != null) {
-            widgetsTintBlack.setOnPreferenceClickListener(this);
+        if (widgetsTint != null) {
+            widgetsTint.setOnPreferenceClickListener(preference -> {
+                showTintPicker(Keys.WIDGETS_TINT_COLOR);
+                return true;
+            });
         }
         if (barBackground != null) {
             barBackground.setOnPreferenceClickListener(preference -> {
@@ -537,8 +541,11 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 return true;
             });
         }
-        if (barTintBlack != null) {
-            barTintBlack.setOnPreferenceClickListener(this);
+        if (barTint != null) {
+            barTint.setOnPreferenceClickListener(preference -> {
+                showTintPicker(Keys.BAR_TINT_COLOR);
+                return true;
+            });
         }
         Preference horizontalBarTop = findPreference(Keys.HORIZONTAL_BAR_TOP);
         if (horizontalBarTop != null) {
@@ -1072,6 +1079,23 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         return false;
     }
 
+    /**
+     * "Widget text and button color" / "Horizontal bar text and button color": the colour picker in its text
+     * mode. "Select" stores the colour, "Default" forgets it (the views get their own look back), and a picker
+     * closed any other way changes nothing. The home screen follows at once (WidgetStyler.isLookSetting).
+     *
+     * @param colorKey Keys.WIDGETS_TINT_COLOR or Keys.BAR_TINT_COLOR
+     */
+    private void showTintPicker(String colorKey) {
+        int current = sharedPrefs.contains(colorKey) ? sharedPrefs.getInt(colorKey, Color.WHITE) : Color.WHITE;
+        ColorPicker picker = ColorPicker.newTextInstance(current, true);
+        tintPicker = new WeakReference<>(picker);
+        picker.enableAutoClose();
+        picker.setCallback(color -> sharedPrefs.edit().putInt(colorKey, 0xFF000000 | color).apply());
+        picker.setDefaultCallback(() -> sharedPrefs.edit().remove(colorKey).apply());
+        picker.show(getParentFragmentManager(), "TintPicker");
+    }
+
     private void checkAndShowWidgetsBackgroundSelector() {
         List<String> perms = getMissingReadWallpaperPermissions(requireContext());
         if (perms.isEmpty()) {
@@ -1394,6 +1418,14 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 getParentFragmentManager().executePendingTransactions();
             }
             colorPicker = null;
+        }
+        if (tintPicker != null) {
+            ColorPicker tintDialog = tintPicker.get();
+            if (tintDialog != null && tintDialog.isAdded()) {
+                tintDialog.dismissAllowingStateLoss();
+                getParentFragmentManager().executePendingTransactions();
+            }
+            tintPicker = null;
         }
         if (bgColorPicker != null) {
             ColorPicker bgDialog = bgColorPicker.get();

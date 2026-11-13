@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Vybrať tapetu</string>
     <string name="black_widgets">Farba textu a tlačidiel widgetov</string>
     <string name="black_bar">Farba textu a tlačidiel vodorovného panela</string>
-    <string name="black_color">Čierna</string>
-    <string name="white_color">Biela</string>
     <string name="auto_hide_horizontal_bar">Automaticky skryť vodorovný panel</string>
     <string name="auto_hide_timeout">Časový limit: %1$s s</string>
     <string name="resizable_horizontal_bar">Vodorovný panel so zmeniteľnou veľkosťou</string>

@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Vali taustapilt</string>
     <string name="black_widgets">Vidinate teksti ja nuppude värv</string>
     <string name="black_bar">Horisontaalse riba teksti ja nuppude värv</string>
-    <string name="black_color">Must</string>
-    <string name="white_color">Valge</string>
     <string name="auto_hide_horizontal_bar">Peida horisontaalne riba automaatselt</string>
     <string name="auto_hide_timeout">Ajalõpp: %1$s s</string>
     <string name="resizable_horizontal_bar">Muudetava suurusega horisontaalne riba</string>

@@ -96,14 +96,14 @@ public class WeekDay extends AppCompatTextView implements SharedPreferences.OnSh
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (Keys.BLACK_WIDGETS.equals(key)) {
+        if (Keys.WIDGETS_TINT_COLOR.equals(key)) {
             updateTextColor();
         }
     }
 
     private void updateTextColor() {
-        boolean blackTintWidgets = mPrefs.getBoolean(Keys.BLACK_WIDGETS, false);
-        // Black, or the colour the view had (ViewTint remembers it)
+        int blackTintWidgets = com.android.launcher66.WidgetStyler.widgetsTint(mPrefs);
+        // The chosen colour, or the colour the view had (ViewTint remembers it)
         com.android.launcher66.ViewTint.tintText(this, blackTintWidgets);
     }
 

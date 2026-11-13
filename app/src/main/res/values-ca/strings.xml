@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Tria un fons de pantalla</string>
     <string name="black_widgets">Color del text i dels botons dels widgets</string>
     <string name="black_bar">Color del text i dels botons de la barra horitzontal</string>
-    <string name="black_color">Negre</string>
-    <string name="white_color">Blanc</string>
     <string name="auto_hide_horizontal_bar">Amaga automàticament la barra horitzontal</string>
     <string name="auto_hide_timeout">Temps d\'espera: %1$s s</string>
     <string name="resizable_horizontal_bar">Barra horitzontal redimensionable</string>

@@ -375,8 +375,6 @@
     <string name="pick_image_manually">选择壁纸</string>
     <string name="black_widgets">小部件文字和按钮颜色</string>
     <string name="black_bar">横栏文字和按钮颜色</string>
-    <string name="black_color">黑色</string>
-    <string name="white_color">白色</string>
     <string name="auto_hide_horizontal_bar">自动隐藏横栏</string>
     <string name="auto_hide_timeout">超时: %1$s秒</string>
     <string name="resizable_horizontal_bar">可调整大小的横栏</string>

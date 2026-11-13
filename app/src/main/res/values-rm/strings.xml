@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Tscherner in maletg dal fund</string>
     <string name="black_widgets">Colur dal text e dals buttuns dals widgets</string>
     <string name="black_bar">Colur dal text e dals buttuns da la bara orizontala</string>
-    <string name="black_color">Nair</string>
-    <string name="white_color">Alv</string>
     <string name="auto_hide_horizontal_bar">Zuppar automaticamain la bara orizontala</string>
     <string name="auto_hide_timeout">Timeout: %1$s s</string>
     <string name="resizable_horizontal_bar">Bara orizontala cun grondezza modifitgabla</string>

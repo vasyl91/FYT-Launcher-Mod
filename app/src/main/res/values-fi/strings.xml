@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Valitse taustakuva</string>
     <string name="black_widgets">Widgetien tekstin ja painikkeiden väri</string>
     <string name="black_bar">Vaakapalkin tekstin ja painikkeiden väri</string>
-    <string name="black_color">Musta</string>
-    <string name="white_color">Valkoinen</string>
     <string name="auto_hide_horizontal_bar">Piilota vaakapalkki automaattisesti</string>
     <string name="auto_hide_timeout">Aikakatkaisu: %1$s s</string>
     <string name="resizable_horizontal_bar">Kokoa muutettava vaakapalkki</string>

@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Elegir fondo de pantalla</string>
     <string name="black_widgets">Color del texto y los botones de los widgets</string>
     <string name="black_bar">Color del texto y los botones de la barra horizontal</string>
-    <string name="black_color">Negro</string>
-    <string name="white_color">Blanco</string>
     <string name="auto_hide_horizontal_bar">Ocultar automáticamente la barra horizontal</string>
     <string name="auto_hide_timeout">Tiempo de espera: %1$s s</string>
     <string name="resizable_horizontal_bar">Barra horizontal redimensionable</string>

@@ -125,9 +125,9 @@ final class LauncherMusicWidget {
      */
     static final long AUDIO_STATE_WAIT_MS = 100L;
 
-    boolean barTint = false;
+    int barTint = ViewTint.NONE;
 
-    boolean widgetTint = false;
+    int widgetTint = ViewTint.NONE;
 
     static final String PREF_LAST_ALBUM_ART = "last_album_art_bitmap";
 
@@ -1228,7 +1228,7 @@ final class LauncherMusicWidget {
             mLauncher.mTvMusic = musicWidgetView.findViewById(ResValue.getInstance().tv_music);
             musicSeekBar = musicWidgetView.findViewById(ResValue.getInstance().music_seekbar);
             musicProgress = musicWidgetView.findViewById(ResValue.getInstance().music_progress);
-            widgetTint = mLauncher.mPrefs.getBoolean(Keys.BLACK_WIDGETS, false);
+            widgetTint = WidgetStyler.widgetsTint(mLauncher.mPrefs);
             ViewTint.tintProgress(musicProgress, widgetTint);
             ViewTint.tintText(musicWidgetView.findViewById(ResValue.getInstance().tv_musicName), widgetTint);
             ViewTint.tintText(musicWidgetView.findViewById(ResValue.getInstance().tv_artist), widgetTint);
@@ -1671,7 +1671,7 @@ final class LauncherMusicWidget {
         if (button == null) {
             return;
         }
-        barTint = mLauncher.mPrefs.getBoolean(Keys.BLACK_BAR, false);
+        barTint = WidgetStyler.barTint(mLauncher.mPrefs);
         ViewTint.tintBackground(button, barTint);
     }
 
@@ -1679,7 +1679,7 @@ final class LauncherMusicWidget {
         if (button == null) {
             return;
         }
-        widgetTint = mLauncher.mPrefs.getBoolean(Keys.BLACK_WIDGETS, false);
+        widgetTint = WidgetStyler.widgetsTint(mLauncher.mPrefs);
         ViewTint.tintBackground(button, widgetTint);
     }
 
@@ -1690,8 +1690,8 @@ final class LauncherMusicWidget {
      * @param count incremented by the views that were styled
      */
     void applyStyle(WidgetStyle style, int[] count) {
-        widgetTint = style.black(WidgetStyle.Role.WIDGET_BUTTON);
-        barTint = style.black(WidgetStyle.Role.BAR_BUTTON);
+        widgetTint = style.tint(WidgetStyle.Role.WIDGET_BUTTON);
+        barTint = style.tint(WidgetStyle.Role.BAR_BUTTON);
         for (Button button : new Button[] {mPlayPauseButton, mMusicPrevButton, mMusicNextButton, mMusicFavoriteButton}) {
             ViewTint.tintBackground(button, widgetTint);
             count[0] += button != null ? 1 : 0;
@@ -1701,11 +1701,11 @@ final class LauncherMusicWidget {
             ViewTint.tintBackground(button, barTint);
             count[0] += button != null ? 1 : 0;
         }
-        ViewTint.tintProgress(musicProgress, style.black(WidgetStyle.Role.WIDGET_PROGRESS));
-        ViewTint.tintText(tvMusicName, style.black(WidgetStyle.Role.WIDGET_TEXT));
-        ViewTint.tintText(tvAritst, style.black(WidgetStyle.Role.WIDGET_TEXT));
-        ViewTint.tintText(tvMusicNameTwo, style.black(WidgetStyle.Role.BAR_TEXT));
-        ViewTint.tintText(tvAritstTwo, style.black(WidgetStyle.Role.BAR_TEXT));
+        ViewTint.tintProgress(musicProgress, style.tint(WidgetStyle.Role.WIDGET_PROGRESS));
+        ViewTint.tintText(tvMusicName, style.tint(WidgetStyle.Role.WIDGET_TEXT));
+        ViewTint.tintText(tvAritst, style.tint(WidgetStyle.Role.WIDGET_TEXT));
+        ViewTint.tintText(tvMusicNameTwo, style.tint(WidgetStyle.Role.BAR_TEXT));
+        ViewTint.tintText(tvAritstTwo, style.tint(WidgetStyle.Role.BAR_TEXT));
         count[0] += (musicProgress != null ? 1 : 0) + (tvMusicName != null ? 1 : 0) + (tvAritst != null ? 1 : 0)
                 + (tvMusicNameTwo != null ? 1 : 0) + (tvAritstTwo != null ? 1 : 0);
     }

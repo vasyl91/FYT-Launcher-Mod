@@ -136,14 +136,14 @@ public class DateTwo extends AppCompatTextView implements SharedPreferences.OnSh
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (Keys.BLACK_BAR.equals(key)) {
+        if (Keys.BAR_TINT_COLOR.equals(key)) {
             updateTextColor();
         }
     }
 
     private void updateTextColor() {
-        boolean blackTintWidgets = mPrefs.getBoolean(Keys.BLACK_BAR, false);
-        // Black, or the colour the view had (ViewTint remembers it)
+        int blackTintWidgets = com.android.launcher66.WidgetStyler.barTint(mPrefs);
+        // The chosen colour, or the colour the view had (ViewTint remembers it)
         com.android.launcher66.ViewTint.tintText(this, blackTintWidgets);
     }
 
@@ -164,7 +164,7 @@ public class DateTwo extends AppCompatTextView implements SharedPreferences.OnSh
             verifyFit();
         }
 
-        com.android.launcher66.ViewTint.tintText(this, mPrefs.getBoolean(Keys.BLACK_BAR, false));
+        com.android.launcher66.ViewTint.tintText(this, com.android.launcher66.WidgetStyler.barTint(mPrefs));
     }
 
     /**

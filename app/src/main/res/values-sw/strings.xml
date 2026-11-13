@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Chagua mandhari</string>
     <string name="black_widgets">Rangi ya maandishi na vitufe vya wijeti</string>
     <string name="black_bar">Rangi ya maandishi na vitufe vya upau mlalo</string>
-    <string name="black_color">Nyeusi</string>
-    <string name="white_color">Nyeupe</string>
     <string name="auto_hide_horizontal_bar">Ficha upau mlalo kiotomatiki</string>
     <string name="auto_hide_timeout">Muda wa kuisha: sekunde %1$s</string>
     <string name="resizable_horizontal_bar">Upau mlalo unaoweza kubadilishwa ukubwa</string>

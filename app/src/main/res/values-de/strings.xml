@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Hintergrund auswählen</string>
     <string name="black_widgets">Text- und Tastenfarbe der Widgets</string>
     <string name="black_bar">Text- und Tastenfarbe der horizontalen Leiste</string>
-    <string name="black_color">Schwarz</string>
-    <string name="white_color">Weiß</string>
     <string name="auto_hide_horizontal_bar">Horizontale Leiste automatisch ausblenden</string>
     <string name="auto_hide_timeout">Zeitlimit: %1$s s</string>
     <string name="resizable_horizontal_bar">Horizontale Leiste in der Größe anpassbar</string>

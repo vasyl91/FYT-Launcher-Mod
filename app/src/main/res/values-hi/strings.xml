@@ -375,8 +375,6 @@
     <string name="pick_image_manually">वॉलपेपर चुनें</string>
     <string name="black_widgets">विजेट के टेक्स्ट और बटन का रंग</string>
     <string name="black_bar">क्षैतिज बार के टेक्स्ट और बटन का रंग</string>
-    <string name="black_color">काला</string>
-    <string name="white_color">सफ़ेद</string>
     <string name="auto_hide_horizontal_bar">क्षैतिज बार अपने-आप छिपाएँ</string>
     <string name="auto_hide_timeout">टाइमआउट: %1$s सेकंड</string>
     <string name="resizable_horizontal_bar">आकार बदलने योग्य क्षैतिज बार</string>

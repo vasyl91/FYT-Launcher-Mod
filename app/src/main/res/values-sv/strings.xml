@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Välj bakgrund</string>
     <string name="black_widgets">Text- och knappfärg för widgets</string>
     <string name="black_bar">Text- och knappfärg för horisontella fältet</string>
-    <string name="black_color">Svart</string>
-    <string name="white_color">Vit</string>
     <string name="auto_hide_horizontal_bar">Dölj horisontella fältet automatiskt</string>
     <string name="auto_hide_timeout">Tidsgräns: %1$s s</string>
     <string name="resizable_horizontal_bar">Horisontellt fält med ändringsbar storlek</string>

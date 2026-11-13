@@ -4535,7 +4535,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
     private void setCalculatedTextColor(View view, int viewId) {
         TextView textView = view.findViewById(viewId);
         if (textView != null) {
-            ViewTint.tintText(textView, WidgetStyler.current(prefs).black(WidgetStyle.Role.WIDGET_TEXT));
+            ViewTint.tintText(textView, WidgetStyler.current(prefs).tint(WidgetStyle.Role.WIDGET_TEXT));
         }
     }
 
@@ -4552,7 +4552,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                 count[0]++;
             }
         }
-        boolean text = style.black(WidgetStyle.Role.WIDGET_TEXT);
+        int text = style.tint(WidgetStyle.Role.WIDGET_TEXT);
         if (mUserMusicWidget != null) {
             ViewTint.tintText(mUserMusicWidget.findViewById(R.id.tv_musicName), text);
             ViewTint.tintText(mUserMusicWidget.findViewById(R.id.tv_artist), text);

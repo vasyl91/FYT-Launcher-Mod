@@ -39,7 +39,7 @@ public class DigitClock extends RelativeLayout {
     private TextView tv4;
     private TextView tv5;
     private SharedPreferences prefs;
-    private boolean blackTintWidgets;
+    private int blackTintWidgets;
     private boolean layoutInitialized = false;
     private static final float DIGIT_WIDTH_RATIO = 0.22f;
     private static final float DIGIT_HEIGHT_RATIO = 0.22f;
@@ -81,7 +81,7 @@ public class DigitClock extends RelativeLayout {
 
     private void initPreferences() {
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        blackTintWidgets = prefs.getBoolean(Keys.BLACK_WIDGETS, false);
+        blackTintWidgets = com.android.launcher66.WidgetStyler.widgetsTint(prefs);
     }
 
     private Runnable createTimeRunnable() {
@@ -256,7 +256,7 @@ public class DigitClock extends RelativeLayout {
      * which are shared with every other user of the resource, put on and taken off every second. Black, or the colours
      * of the digits. Main thread only.
      */
-    public void applyStyle(boolean black) {
+    public void applyStyle(int black) {
         blackTintWidgets = black;
         for (TextView digit : new TextView[] {tv1, tv2, tv3, tv4, tv5}) {
             com.android.launcher66.ViewTint.tintBackground(digit, black);

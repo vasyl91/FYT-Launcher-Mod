@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Háttérkép kiválasztása</string>
     <string name="black_widgets">A widgetek szövegének és gombjainak színe</string>
     <string name="black_bar">A vízszintes sáv szövegének és gombjainak színe</string>
-    <string name="black_color">Fekete</string>
-    <string name="white_color">Fehér</string>
     <string name="auto_hide_horizontal_bar">Vízszintes sáv automatikus elrejtése</string>
     <string name="auto_hide_timeout">Időtúllépés: %1$s mp</string>
     <string name="resizable_horizontal_bar">Átméretezhető vízszintes sáv</string>

@@ -375,8 +375,6 @@
     <string name="pick_image_manually">배경화면 선택</string>
     <string name="black_widgets">위젯 글자 및 버튼 색상</string>
     <string name="black_bar">가로 바 글자 및 버튼 색상</string>
-    <string name="black_color">검은색</string>
-    <string name="white_color">흰색</string>
     <string name="auto_hide_horizontal_bar">가로 바 자동 숨김</string>
     <string name="auto_hide_timeout">제한 시간: %1$s초</string>
     <string name="resizable_horizontal_bar">크기 조절 가능한 가로 바</string>

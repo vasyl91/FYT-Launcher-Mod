@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Chọn hình nền</string>
     <string name="black_widgets">Màu chữ và nút của widget</string>
     <string name="black_bar">Màu chữ và nút của thanh ngang</string>
-    <string name="black_color">Đen</string>
-    <string name="white_color">Trắng</string>
     <string name="auto_hide_horizontal_bar">Tự động ẩn thanh ngang</string>
     <string name="auto_hide_timeout">Thời gian chờ: %1$s giây</string>
     <string name="resizable_horizontal_bar">Thanh ngang có thể đổi kích thước</string>

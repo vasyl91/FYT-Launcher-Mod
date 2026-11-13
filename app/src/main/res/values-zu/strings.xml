@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Khetha isithombe sangemuva</string>
     <string name="black_widgets">Umbala wombhalo nezinkinobho zamawijethi</string>
     <string name="black_bar">Umbala wombhalo nezinkinobho zebha evundlile</string>
-    <string name="black_color">Omnyama</string>
-    <string name="white_color">Omhlophe</string>
     <string name="auto_hide_horizontal_bar">Fihla ibha evundlile ngokuzenzakalelayo</string>
     <string name="auto_hide_timeout">Isikhathi sokuphela: %1$s s</string>
     <string name="resizable_horizontal_bar">Ibha evundlile enosayizi onganikwa</string>

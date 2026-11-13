@@ -375,8 +375,6 @@
     <string name="pick_image_manually">Избор на тапет</string>
     <string name="black_widgets">Цвят на текста и бутоните на приспособленията</string>
     <string name="black_bar">Цвят на текста и бутоните на хоризонталната лента</string>
-    <string name="black_color">Черно</string>
-    <string name="white_color">Бяло</string>
     <string name="auto_hide_horizontal_bar">Автоматично скриване на хоризонталната лента</string>
     <string name="auto_hide_timeout">Време за изчакване: %1$s s</string>
     <string name="resizable_horizontal_bar">Хоризонтална лента с променлив размер</string>
