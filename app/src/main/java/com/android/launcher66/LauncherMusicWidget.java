@@ -997,6 +997,14 @@ final class LauncherMusicWidget {
         mBarSizer = null;
     }
 
+    /** Lets go of the bar's title and artist views; a bar that is no longer bound does not scroll (MarqueeRestart). */
+    void releaseBarTexts() {
+        MarqueeRestart.release(tvMusicNameTwo, null);
+        MarqueeRestart.release(tvAritstTwo, null);
+        tvMusicNameTwo = null;
+        tvAritstTwo = null;
+    }
+
     /** Sizes the widgets again, for after a wake and a rebuilt bar. */
     void refreshSizes() {
         if (mHomeSizer != null) {
@@ -1245,6 +1253,9 @@ final class LauncherMusicWidget {
             setBarButtonsTint(mMusicPrevButtonTwo);
             setBarButtonsTint(mMusicNextButtonTwo);
             updateFavoriteButtonState(MediaFavoriteController.FAVORITE_STATE_UNKNOWN);
+            // The bar that was bound before (the page's own, or its window) stops scrolling its texts
+            TextView titleBefore = tvMusicNameTwo;
+            TextView artistBefore = tvAritstTwo;
             tvMusicNameTwo = musicBarView.findViewById(ResValue.getInstance().tv_musicName_two);
             // A hidden cover is not set at all: every place that sets the bar's cover skips a null view
             ivALbumBgTwo = mLauncher.mPrefs.getBoolean(com.android.launcher66.settings.Keys.WIDGET_BAR_NO_COVER, false)
@@ -1256,6 +1267,15 @@ final class LauncherMusicWidget {
             }
             mBarSizer = MusicWidgetSizer.attach(musicWidget, true, this::onCompactChanged);
             render();
+            // The texts scroll in the bar that is bound, from the start, and in no other (MarqueeRestart)
+            MarqueeRestart.release(titleBefore, tvMusicNameTwo);
+            MarqueeRestart.release(artistBefore, tvAritstTwo);
+            MarqueeRestart.watch(tvMusicNameTwo);
+            MarqueeRestart.watch(tvAritstTwo);
+            if (titleBefore != tvMusicNameTwo) {
+                Log.d(Launcher.TAG, "Bar music texts bound to another bar: scrolling restarted there"
+                        + (titleBefore == null ? "" : ", stopped in the one before"));
+            }
         }
     }
 

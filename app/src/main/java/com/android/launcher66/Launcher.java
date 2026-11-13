@@ -3309,8 +3309,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mWorkspace = null;
         mMusicWidget.ivALbumBg = null;
         mMusicWidget.ivALbumBgTwo = null;
-        mMusicWidget.tvMusicNameTwo = null;
-        mMusicWidget.tvAritstTwo = null;
+        mMusicWidget.releaseBarTexts();
         weatherImg1 = null;
         weatherCity1 = null;
         weatherTemp = null;
@@ -4750,9 +4749,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mMusicWidget.mMusicPrevButtonTwo = null;
         mMusicWidget.mMusicNextButtonTwo = null;
         mMusicWidget.mMusicFavoriteButtonTwo = null;
-        mMusicWidget.tvMusicNameTwo = null;
         mMusicWidget.ivALbumBgTwo = null;
-        mMusicWidget.tvAritstTwo = null;
+        mMusicWidget.releaseBarTexts();
         mMusicWidget.releaseBarSizer();
         
         // Weather bar
@@ -5807,8 +5805,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 mWorkspace.clearWidgetReferences();
             }
             mMusicWidget.ivALbumBgTwo = null;
-            mMusicWidget.tvMusicNameTwo = null;
-            mMusicWidget.tvAritstTwo = null;
+            mMusicWidget.releaseBarTexts();
             weatherImg1 = null;
             weatherCity1 = null;
             // Was "weatherTemp = null": that cleared the hotseat weather widget's temperature on
