@@ -545,4 +545,5 @@
     <string name="fab_overlay_controls_summary">Piešķiriet lietotnes PiP logiem, kurus pārvalda šī peldošā poga</string>
     <string name="color_picker_alpha">Alfa: %1$d%%</string>
     <string name="color_picker_default">Noklusējums</string>
+    <string name="stats_in_app_page">Lietotnē</string>
 </resources>

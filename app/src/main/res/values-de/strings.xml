@@ -545,4 +545,5 @@
     <string name="fab_overlay_controls_summary">Weise den PiPs, die diese schwebende Schaltfläche steuert, Apps zu</string>
     <string name="color_picker_alpha">Alpha: %1$d%%</string>
     <string name="color_picker_default">Standard</string>
+    <string name="stats_in_app_page">In der App</string>
 </resources>

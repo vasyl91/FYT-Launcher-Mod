@@ -545,4 +545,5 @@
     <string name="fab_overlay_controls_summary">به PiPهایی که این دکمهٔ شناور کنترل می‌کند برنامه اختصاص دهید</string>
     <string name="color_picker_alpha">آلفا: %1$d%%</string>
     <string name="color_picker_default">پیش‌فرض</string>
+    <string name="stats_in_app_page">درون برنامه</string>
 </resources>

@@ -545,4 +545,5 @@
     <string name="fab_overlay_controls_summary">Wys apps toe aan die PiP\'s wat hierdie swewende knoppie beheer</string>
     <string name="color_picker_alpha">Alfa: %1$d%%</string>
     <string name="color_picker_default">Verstek</string>
+    <string name="stats_in_app_page">In app</string>
 </resources>

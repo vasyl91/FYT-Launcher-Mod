@@ -545,4 +545,5 @@
     <string name="fab_overlay_controls_summary">Attribuez des applications aux PiP commandés par ce bouton flottant</string>
     <string name="color_picker_alpha">Alpha : %1$d%%</string>
     <string name="color_picker_default">Par défaut</string>
+    <string name="stats_in_app_page">Dans l\'application</string>
 </resources>

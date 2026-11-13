@@ -545,4 +545,5 @@
     <string name="fab_overlay_controls_summary">이 플로팅 버튼이 제어하는 PiP에 앱을 지정하세요</string>
     <string name="color_picker_alpha">알파: %1$d%%</string>
     <string name="color_picker_default">기본값</string>
+    <string name="stats_in_app_page">앱 내</string>
 </resources>

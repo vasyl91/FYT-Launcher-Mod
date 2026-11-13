@@ -545,4 +545,5 @@
     <string name="fab_overlay_controls_summary">Հավելվածներ նշանակեք այն PiP-երին, որոնք կառավարում է այս լողացող կոճակը</string>
     <string name="color_picker_alpha">Ալֆա՝ %1$d%%</string>
     <string name="color_picker_default">Կանխադրված</string>
+    <string name="stats_in_app_page">Հավելվածում</string>
 </resources>

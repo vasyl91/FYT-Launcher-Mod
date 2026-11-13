@@ -545,4 +545,5 @@
     <string name="fab_overlay_controls_summary">Назначьте приложения тем PiP, которыми управляет эта плавающая кнопка</string>
     <string name="color_picker_alpha">Альфа: %1$d%%</string>
     <string name="color_picker_default">По умолчанию</string>
+    <string name="stats_in_app_page">В приложении</string>
 </resources>

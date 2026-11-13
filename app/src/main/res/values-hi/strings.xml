@@ -545,4 +545,5 @@
     <string name="fab_overlay_controls_summary">इस फ़्लोटिंग बटन से नियंत्रित PiP को ऐप्स असाइन करें</string>
     <string name="color_picker_alpha">अल्फ़ा: %1$d%%</string>
     <string name="color_picker_default">डिफ़ॉल्ट</string>
+    <string name="stats_in_app_page">ऐप में</string>
 </resources>

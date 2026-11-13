@@ -555,4 +555,5 @@
     <string name="fab_overlay_controls_summary">Assign apps to the PiPs controlled by this floating button</string>
     <string name="color_picker_alpha">Alpha: %1$d%%</string>
     <string name="color_picker_default">Default</string>
+    <string name="stats_in_app_page">In app</string>
 </resources>

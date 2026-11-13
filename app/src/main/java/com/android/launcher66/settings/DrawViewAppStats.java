@@ -81,16 +81,8 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
 
     // Bounds
     private int minBorderX, minBorderY, maxBorderX, maxBorderY;
-    /** A horizontal bar at the top takes this much of the canvas: the window is moved below it, never resized. */
-    private int topInset;
-    /** The button or the handle's strip of the page of the statistics, shown while the controls are hidden. */
-    private CreatorBarMarks mBarMarks;
-
-    /** @param marks the bars' marks of the page of the statistics; @param inset the horizontal bar at the top */
-    void setBars(CreatorBarMarks marks, int inset) {
-        mBarMarks = marks;
-        topInset = inset;
-    }
+    // No bar of the launcher takes anything from this canvas: the window is shown inside other apps, on the
+    // bare screen (CreatorAppStats). Its borders are the screen's, less the margin.
 
     private static boolean firstPip = false;
     private static boolean secondPip = false;
@@ -204,9 +196,6 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
                         creatorBar.setVisibility(View.GONE); 
                     } else {
                         creatorBar.setVisibility(View.VISIBLE); 
-                    }
-                    if (mBarMarks != null) {
-                        mBarMarks.setControlsShown(creatorBar.getVisibility() == View.VISIBLE);
                     }
                     return true; 
                 }
@@ -322,7 +311,8 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         float centerX = getWidth() / 2f;
         float centerY = SettingsActivity.screenHeight / 2f;
         float lineHeight = hint.getTextSize() * 1.2f; 
-        String centerText = getSafeContext().getString(R.string.double_tap, String.valueOf(("In app")));
+        String centerText = getSafeContext().getString(R.string.double_tap,
+                getSafeContext().getString(R.string.stats_in_app_page));
         String[] lines = centerText.split("\\n");
         float startY = centerY - ((lines.length - 1) * lineHeight / 2f);
         for (int i = 0; i < lines.length; i++) {
@@ -504,7 +494,7 @@ public class DrawViewAppStats extends View implements View.OnClickListener {
         }
 
         minBorderX = margin;
-        minBorderY = margin + topInset;
+        minBorderY = margin;
         maxBorderX = getWidth() - margin;
         maxBorderY = getHeight() - margin;
 
