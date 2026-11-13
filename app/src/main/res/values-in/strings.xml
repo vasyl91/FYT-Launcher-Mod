@@ -229,11 +229,6 @@
     <string name="rpm_code_text">Kode canbus RPM:</string>
     <string name="main_screen_stats_window">Tampilkan statistik bahan bakar di layar utama</string>
     <string name="color_picker">Warna teks statistik</string>
-    <string name="stats_bg">Latar belakang statistik</string>
-    <string name="bg_drawable">Latar belakang default</string>
-    <string name="bg_color">Latar belakang berwarna</string>
-    <string name="bg_color_picker">Atur warna latar belakang</string>
-    <string name="bg_alpha">Atur transparansi latar belakang berwarna</string>
     <string name="app_list_stats">Buka daftar aplikasi</string>
     <string name="app_list_stats_summary">Pilih aplikasi yang akan menampilkan jendela statistik bahan bakar</string>
     <string name="app_list_dialog">Aplikasi yang dipilih akan menampilkan jendela statistik</string>
@@ -546,4 +541,5 @@
     <string name="color_picker_alpha">Alfa: %1$d%%</string>
     <string name="color_picker_default">Default</string>
     <string name="stats_in_app_page">Dalam aplikasi</string>
+    <string name="stats_background_preference">Pilih latar belakang untuk statistik</string>
 </resources>

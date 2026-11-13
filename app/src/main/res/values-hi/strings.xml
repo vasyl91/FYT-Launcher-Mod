@@ -229,11 +229,6 @@
     <string name="rpm_code_text">RPM canbus कोड:</string>
     <string name="main_screen_stats_window">मुख्य स्क्रीन पर ईंधन आँकड़े दिखाएँ</string>
     <string name="color_picker">आँकड़ों के टेक्स्ट का रंग</string>
-    <string name="stats_bg">आँकड़ों की पृष्ठभूमि</string>
-    <string name="bg_drawable">डिफ़ॉल्ट पृष्ठभूमि</string>
-    <string name="bg_color">रंगीन पृष्ठभूमि</string>
-    <string name="bg_color_picker">पृष्ठभूमि का रंग सेट करें</string>
-    <string name="bg_alpha">रंगीन पृष्ठभूमि की पारदर्शिता सेट करें</string>
     <string name="app_list_stats">ऐप सूची खोलें</string>
     <string name="app_list_stats_summary">वे ऐप चुनें जो ईंधन आँकड़ों की विंडो दिखाएँगे</string>
     <string name="app_list_dialog">चुने गए ऐप आँकड़ों की विंडो दिखाएँगे</string>
@@ -546,4 +541,5 @@
     <string name="color_picker_alpha">अल्फ़ा: %1$d%%</string>
     <string name="color_picker_default">डिफ़ॉल्ट</string>
     <string name="stats_in_app_page">ऐप में</string>
+    <string name="stats_background_preference">आँकड़ों के लिए पृष्ठभूमि चुनें</string>
 </resources>

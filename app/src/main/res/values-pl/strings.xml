@@ -229,11 +229,6 @@
     <string name="rpm_code_text">RPM kod canbus:</string>
     <string name="main_screen_stats_window">Wyświetlaj statystyki na ekranie głównym</string>
     <string name="color_picker">Kolor tekstu</string>
-    <string name="stats_bg">Wyświetlaj tło</string>
-    <string name="bg_drawable">Domyślne tło</string>
-    <string name="bg_color">Kolorowe tło</string>
-    <string name="bg_color_picker">Ustaw kolor tła</string>
-    <string name="bg_alpha">Ustaw przezroczystość kolorowego tła</string>
     <string name="app_list_stats">Otwórz listę aplikacji</string>
     <string name="app_list_stats_summary">Zaznacz aplikacje, w których będą wyświetlane statystyki paliwa</string>
     <string name="app_list_dialog">Zaznaczone aplikacje będą wyświetlały statystyki paliwa</string>
@@ -546,4 +541,5 @@
     <string name="color_picker_alpha">Alfa: %1$d%%</string>
     <string name="color_picker_default">Domyślny</string>
     <string name="stats_in_app_page">W aplikacji</string>
+    <string name="stats_background_preference">Wybierz tło dla statystyk</string>
 </resources>

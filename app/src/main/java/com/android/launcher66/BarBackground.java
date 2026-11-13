@@ -69,6 +69,17 @@ public final class BarBackground {
         return degrees == 0 ? background : new RotatedDrawable(background, degrees);
     }
 
+    /**
+     * The choice for the statistics window. Unlike the others it starts from no background at all: that is what
+     * the window had before it got a selector, for everyone who never chose one.
+     */
+    public static BackgroundChoice statsChoice(SharedPreferences prefs) {
+        String colorKey = BackgroundChoice.colorKey(Keys.STATS_SELECTED_BACKGROUND);
+        boolean hasColor = prefs.contains(colorKey);
+        return BackgroundChoice.of(prefs.getString(Keys.STATS_SELECTED_BACKGROUND, BackgroundChoice.NONE),
+                WIDGETS_DEFAULT, hasColor, hasColor ? prefs.getInt(colorKey, 0) : 0);
+    }
+
     /** The background of a widget or of a PiP's placeholder. */
     public static Drawable widgets(Context context, SharedPreferences prefs) {
         return drawable(context, choice(prefs, Keys.WIDGETS_SELECTED_BACKGROUND, WIDGETS_DEFAULT),

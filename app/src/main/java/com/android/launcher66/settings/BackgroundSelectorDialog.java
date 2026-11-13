@@ -103,6 +103,10 @@ public class BackgroundSelectorDialog extends DialogFragment {
         if (tag.equals("widgets")) {
             choiceKey = Keys.WIDGETS_SELECTED_BACKGROUND;
             choiceDefault = null;
+        } else if (tag.equals("stats")) {
+            // the statistics window: the widgets' pictures, and a tile for no background (what it starts from)
+            choiceKey = Keys.STATS_SELECTED_BACKGROUND;
+            choiceDefault = null;
         } else if (tag.equals("vertical_bar")) {
             // hotseat_bg (the one the bar has) and the backgrounds of the horizontal bar
             choiceKey = Keys.VERTICAL_BAR_SELECTED_BACKGROUND;
@@ -569,11 +573,16 @@ public class BackgroundSelectorDialog extends DialogFragment {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
         // What is chosen now, read the way the home screen reads it (BackgroundChoice): a picture, or the
         // user's own colour, which has a tile of its own before the pictures
-        BackgroundChoice chosen = BarBackground.choice(sharedPreferences, key,
-                defaultBackground != null ? defaultBackground : backgrounds);
+        final boolean offersNone = Keys.STATS_SELECTED_BACKGROUND.equals(key);
+        BackgroundChoice chosen = offersNone ? BarBackground.statsChoice(sharedPreferences)
+                : BarBackground.choice(sharedPreferences, key,
+                        defaultBackground != null ? defaultBackground : backgrounds);
         String selectedBackground = chosen.kind == BackgroundChoice.Kind.PICTURE ? chosen.picture : null;
 
         gridLayout.addView(customColorTile(sharedPreferences, chosen, itemSize, halfGap, cornerRadiusPx));
+        if (offersNone) {
+            gridLayout.addView(noBackgroundTile(sharedPreferences, chosen, itemSize, halfGap, cornerRadiusPx));
+        }
 
         for (String bgName : backgroundNames) {
             CardView cardView = new CardView(requireContext());
@@ -708,6 +717,33 @@ public class BackgroundSelectorDialog extends DialogFragment {
                 return true;
             });
         }
+        return cardView;
+    }
+
+    /** The tile for no background at all: the chequered ground of a fully transparent colour. */
+    private View noBackgroundTile(SharedPreferences sharedPreferences, BackgroundChoice chosen, int itemSize,
+                                  int halfGap, int cornerRadiusPx) {
+        CardView cardView = new CardView(requireContext());
+        cardView.setCardBackgroundColor(Color.TRANSPARENT);
+        cardView.setRadius(cornerRadiusPx);
+        cardView.setCardElevation(0);
+        cardView.setUseCompatPadding(false);
+        cardView.setPreventCornerOverlap(false);
+        ImageView imageView = new ImageView(requireContext());
+        imageView.setImageDrawable(new ColorTileDrawable(Color.TRANSPARENT, cornerRadiusPx, dpToPx(10)));
+        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+        cardView.addView(imageView, new FrameLayout.LayoutParams(
+                android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.MATCH_PARENT));
+        GridLayout.LayoutParams lp = new GridLayout.LayoutParams();
+        lp.width = itemSize;
+        lp.height = itemSize;
+        lp.setMargins(halfGap, halfGap, halfGap, halfGap);
+        cardView.setLayoutParams(lp);
+        if (chosen.kind == BackgroundChoice.Kind.NONE) addFrame(cardView);
+        cardView.setOnClickListener(v -> {
+            sharedPreferences.edit().putString(key, BackgroundChoice.NONE).apply();
+            dismiss();
+        });
         return cardView;
     }
 

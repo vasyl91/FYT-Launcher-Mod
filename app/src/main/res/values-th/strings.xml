@@ -229,11 +229,6 @@
     <string name="rpm_code_text">รหัส canbus ของรอบเครื่องยนต์:</string>
     <string name="main_screen_stats_window">แสดงสถิติเชื้อเพลิงบนหน้าจอหลัก</string>
     <string name="color_picker">สีข้อความสถิติ</string>
-    <string name="stats_bg">พื้นหลังสถิติ</string>
-    <string name="bg_drawable">พื้นหลังเริ่มต้น</string>
-    <string name="bg_color">พื้นหลังสี</string>
-    <string name="bg_color_picker">ตั้งค่าสีพื้นหลัง</string>
-    <string name="bg_alpha">ตั้งค่าความโปร่งใสของพื้นหลังสี</string>
     <string name="app_list_stats">เปิดรายการแอป</string>
     <string name="app_list_stats_summary">เลือกแอปที่จะแสดงหน้าต่างสถิติเชื้อเพลิง</string>
     <string name="app_list_dialog">แอปที่เลือกจะแสดงหน้าต่างสถิติ</string>
@@ -546,4 +541,5 @@
     <string name="color_picker_alpha">อัลฟา: %1$d%%</string>
     <string name="color_picker_default">ค่าเริ่มต้น</string>
     <string name="stats_in_app_page">ในแอป</string>
+    <string name="stats_background_preference">เลือกพื้นหลังสำหรับสถิติ</string>
 </resources>

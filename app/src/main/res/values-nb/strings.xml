@@ -229,11 +229,6 @@
     <string name="rpm_code_text">Turtalls-canbus-kode:</string>
     <string name="main_screen_stats_window">Vis drivstoffstatistikken på hovedskjermen</string>
     <string name="color_picker">Tekstfarge for statistikk</string>
-    <string name="stats_bg">Bakgrunn for statistikk</string>
-    <string name="bg_drawable">Standardbakgrunn</string>
-    <string name="bg_color">Farget bakgrunn</string>
-    <string name="bg_color_picker">Angi bakgrunnsfarge</string>
-    <string name="bg_alpha">Angi gjennomsiktigheten til den fargede bakgrunnen</string>
     <string name="app_list_stats">Åpne applisten</string>
     <string name="app_list_stats_summary">Velg appene som skal vise vinduet med drivstoffstatistikk</string>
     <string name="app_list_dialog">Valgte apper viser statistikkvinduet</string>
@@ -546,4 +541,5 @@
     <string name="color_picker_alpha">Alfa: %1$d%%</string>
     <string name="color_picker_default">Standard</string>
     <string name="stats_in_app_page">I app</string>
+    <string name="stats_background_preference">Velg bakgrunn for statistikk</string>
 </resources>

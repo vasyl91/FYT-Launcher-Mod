@@ -50,7 +50,10 @@ import androidx.lifecycle.Lifecycle;
 import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.Folder;
+import com.android.launcher66.BackgroundChoice;
+import com.android.launcher66.BarBackground;
 import com.android.launcher66.Launcher;
+import com.android.launcher66.RoundedColorDrawable;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
 import com.android.launcher66.Workspace;
@@ -805,12 +808,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
         userStats = prefs.getBoolean(Keys.USER_STATS, false);
         if (userLayout && userStats) {
             textColor = prefs.getString("stats_color", "#FFFFFFFF");
-            String bgColor = prefs.getString("bg_stats_color", "#FF000000");
-            int bgAlpha = prefs.getInt(Keys.ALPHA_SEEK_BAR, 255);
-            boolean background = prefs.getBoolean("stats_bg", true);
+            // "Choose background for statistics": no background, a picture, or the user's own colour
+            BackgroundChoice statsBackground = BarBackground.statsChoice(prefs);
             boolean verticalBar = prefs.getBoolean(Keys.VERTICAL_BAR, false);
-            boolean drawableBg = prefs.getBoolean("bg_drawable", false);
-            boolean colorBg = prefs.getBoolean("bg_color", false);
             int margin = Integer.parseInt(prefs.getString(Keys.LAYOUT_MARGIN, "5"));
             int radius;
 
@@ -882,17 +882,15 @@ public class CanbusService extends Service implements PropertyChangeListener {
             // (or the margin changed since), the same measuring as the saved widths
             fitStatsText(this, statsWidthSelector, statsWidth, statsHeight, consumptionTV, consumptionTextView, mileageTV,
                     mileageTextView);
-            if (background) {
-                if (drawableBg) {
-                    absoluteStats.setBackground(ContextCompat.getDrawable(this, R.drawable.bg_custom));
-                } else if (colorBg) {
-                    GradientDrawable shape =  new GradientDrawable();
-                    shape.setCornerRadius(radius);
-                    shape.setColor(Color.parseColor(bgColor));
-                    shape.setAlpha(bgAlpha);
-                    absoluteStats.setBackground(shape);
-                }
-                
+            if (statsBackground.kind == BackgroundChoice.Kind.CUSTOM) {
+                // The colour with its transparency, in the rounded shape the coloured background always had
+                GradientDrawable shape =  new GradientDrawable();
+                shape.setCornerRadius(radius);
+                shape.setColor(statsBackground.color);
+                absoluteStats.setBackground(shape);
+            } else if (statsBackground.kind == BackgroundChoice.Kind.PICTURE) {
+                absoluteStats.setBackground(BarBackground.drawable(this, statsBackground, R.drawable.bg_custom,
+                        RoundedColorDrawable.WIDGET_CORNERS));
             }
 
             // --- compute workspace & page metrics early so we can compute final placement BEFORE adding view ---

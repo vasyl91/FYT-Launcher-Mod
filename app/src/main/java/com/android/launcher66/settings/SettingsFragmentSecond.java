@@ -100,12 +100,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     /** "Auto-hide handle": only with auto-hide on. */
     private Preference edgeHandleSide;
 
-    private int defaultColorR = 255;
-    private int defaultColorG = 255;
-    private int defaultColorB = 255;
-    private int bgDefaultColorR = 255;
-    private int bgDefaultColorG = 255;
-    private int bgDefaultColorB = 255;
     private static final int TIMER_DURATION = 1000;
     private int padding;
     private boolean pipBool = true;
@@ -118,9 +112,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private boolean resizableBarBool = false;
     private boolean dualPipGuard = false;
     private boolean userStatsBool = false;
-    private boolean backgroundBool = false;
-    private boolean drawableBgBool = false;
-    private boolean colorBgBool = false;
     private boolean displayCanbusReaderBool = false;
     private boolean tickRunnableBool = false;
     private boolean countDownTimerBool = false;
@@ -159,13 +150,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private EditText inspectorTimeoutEdit;
     private String codeInspectorTimeoutStr;
     private SwitchPreferenceCompat mainScreenStats;
-    private SwitchPreferenceCompat bgDrawable;
-    private SwitchPreferenceCompat bgColor;
     private Preference statsBg;
     private Preference colorPickerPref;
-    private Preference bgColorPickerPref;
-    private Preference bgAlpha;
-    private AlphaSeekBarPreference alphaSeekBar;
     private Preference appList;
     private Preference appStatsCoordinates;
     private Preference codesGuide;
@@ -198,7 +184,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private AlertDialog alertCodesInspectorDialog;
     private WeakReference<AppListStatsDialogFragment> appListStatsDialog;
     private WeakReference<ColorPicker> colorPicker;
-    private WeakReference<ColorPicker> bgColorPicker;
     private WeakReference<ColorPicker> tintPicker;
     private InputMethodManager imm;
     private RecyclerView recyclerView;
@@ -334,12 +319,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
         mainScreenStats = findPreference(Keys.MAIN_SCREEN_STATS);
         colorPickerPref = findPreference(Keys.COLOR_PICKER);
-        statsBg = findPreference(Keys.STATS_BG);
-        bgDrawable = findPreference(Keys.BG_DRAWABLE);
-        bgColor = findPreference(Keys.BG_COLOR);
-        bgColorPickerPref = findPreference(Keys.BG_COLOR_PICKER);
-        bgAlpha = findPreference("bg_alpha");
-        alphaSeekBar = findPreference(Keys.ALPHA_SEEK_BAR);
+        statsBg = findPreference(Keys.STATS_BACKGROUND);
         appList = findPreference(Keys.APP_LIST);
         appStatsCoordinates = findPreference(Keys.APP_STATS_COORDINATES);
 
@@ -395,12 +375,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         String marginStr = sharedPrefs.getString(Keys.LAYOUT_MARGIN, "5");
         margin.setSummary(marginStr);
 
-        defaultColorR = sharedPrefs.getInt("red", 255);
-        defaultColorG = sharedPrefs.getInt("green", 255);
-        defaultColorB = sharedPrefs.getInt("blue", 255);
-        bgDefaultColorR = sharedPrefs.getInt("bg_red", 255);
-        bgDefaultColorG = sharedPrefs.getInt("bg_green", 255);
-        bgDefaultColorB = sharedPrefs.getInt("bg_blue", 255);
 
         updatePipSummaries();
         sharedPrefs.registerOnSharedPreferenceChangeListener(pipPkgListener);        
@@ -673,31 +647,13 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             colorPickerPref.setVisible(userStatsBool);
         }
         if (statsBg != null) {
-            statsBg.setOnPreferenceClickListener(this);
+            // "Choose background for statistics": the selector the widgets and the bars have
+            statsBg.setOnPreferenceClickListener(preference -> {
+                BackgroundSelectorDialog.showWithLoadedBackground(getParentFragmentManager(), requireContext(),
+                        "stats", "bg_custom");
+                return true;
+            });
             statsBg.setVisible(userStatsBool);
-        }
-        backgroundBool = sharedPrefs.getBoolean(Keys.STATS_BG, false);
-        if (bgDrawable != null) {
-            bgDrawable.setVisible(statsBackgroundBool());
-            bgDrawable.setOnPreferenceClickListener(this);
-        }
-        if (bgColor != null) {
-            bgColor.setVisible(statsBackgroundBool());
-            bgColor.setOnPreferenceClickListener(this);
-        }
-        colorBgBool = sharedPrefs.getBoolean(Keys.BG_COLOR, false);
-        if (bgColorPickerPref != null) {   
-            bgColorPickerPref.setVisible(statsBackgroundBool() && colorBgBool);
-            bgColorPickerPref.setOnPreferenceClickListener(this);
-        }
-        if (bgAlpha != null) {   
-            bgAlpha.setVisible(statsBackgroundBool() && colorBgBool);
-            bgAlpha.setOnPreferenceClickListener(this);
-        }
-        if (alphaSeekBar != null) {   
-            alphaSeekBar.setVisible(statsBackgroundBool() && colorBgBool);
-            alphaSeekBar.setOnPreferenceClickListener(this);
-            storeAlphaDefault(alphaSeekBar, Keys.ALPHA_SEEK_BAR, 255);
         }
         if (appList != null) {
             appList.setOnPreferenceClickListener(this);
@@ -761,9 +717,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     @Override
     public boolean onPreferenceClick(@NonNull Preference preference) {
         userStatsBool = sharedPrefs.getBoolean(Keys.USER_STATS, false);
-        backgroundBool = sharedPrefs.getBoolean(Keys.STATS_BG, false);
-        drawableBgBool = sharedPrefs.getBoolean(Keys.BG_DRAWABLE, false);
-        colorBgBool = sharedPrefs.getBoolean(Keys.BG_COLOR, false);
         displayCanbusReaderBool = sharedPrefs.getBoolean(Keys.DISPLAY_CANBUS_READER, false);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -933,61 +886,20 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 fitDialogWindow(alertExtraCodesDialog);
                 break;
             case Keys.COLOR_PICKER:
-                ColorPicker picker = ColorPicker.newInstance(defaultColorR, defaultColorG, defaultColorB);
+                // "Statistics text color": the colour picker in its text mode. The colour is stored as text
+                // under "stats_color", as it always was; nothing is stored unless "Select" is pressed.
+                ColorPicker picker = ColorPicker.newTextInstance(
+                        StatsBackgroundMigration.parse(sharedPrefs.getString("stats_color", "#FFFFFFFF")), false);
                 colorPicker = new WeakReference<>(picker);
 
                 picker.enableAutoClose();
 
                 ColorPickerCallback callback = color -> {
-                    defaultColorR = Color.red(color);
-                    defaultColorG = Color.green(color);
-                    defaultColorB = Color.blue(color);
                     editor.putString("stats_color", String.format("#%06X", (0xFFFFFF & color)));
-                    editor.putInt("red", Color.red(color));
-                    editor.putInt("green", Color.green(color));
-                    editor.putInt("blue", Color.blue(color));
                     editor.apply();
                 };
                 picker.setCallback(callback);
                 picker.show(getParentFragmentManager(), "ColorPicker");
-                break;
-            case Keys.STATS_BG:
-                bgDrawable.setVisible(backgroundBool);
-                bgColor.setVisible(backgroundBool);
-                bgColorPickerPref.setVisible(backgroundBool && colorBgBool);
-                bgAlpha.setVisible(backgroundBool && colorBgBool);
-                alphaSeekBar.setVisible(backgroundBool && colorBgBool);
-                break;
-            case Keys.BG_DRAWABLE:
-                bgColor.setChecked(!drawableBgBool);
-                bgColorPickerPref.setVisible(!drawableBgBool);
-                bgAlpha.setVisible(!drawableBgBool);
-                alphaSeekBar.setVisible(!drawableBgBool);
-                break;
-            case Keys.BG_COLOR:
-                bgDrawable.setChecked(!colorBgBool);
-                bgColorPickerPref.setVisible(colorBgBool);
-                bgAlpha.setVisible(colorBgBool);
-                alphaSeekBar.setVisible(colorBgBool);
-                break;
-            case Keys.BG_COLOR_PICKER:
-                ColorPicker bgPicker = ColorPicker.newInstance(bgDefaultColorR, bgDefaultColorG, bgDefaultColorB);
-                bgColorPicker = new WeakReference<>(bgPicker);
-
-                bgPicker.enableAutoClose();
-
-                ColorPickerCallback bgCallback = color -> {
-                    bgDefaultColorR = Color.red(color);
-                    bgDefaultColorG = Color.green(color);
-                    bgDefaultColorB = Color.blue(color);
-                    editor.putString("bg_stats_color", String.format("#%06X", (0xff4285f4 & color)));
-                    editor.putInt("bg_red", Color.red(color));
-                    editor.putInt("bg_green", Color.green(color));
-                    editor.putInt("bg_blue", Color.blue(color));
-                    editor.apply();
-                };
-                bgPicker.setCallback(bgCallback);
-                bgPicker.show(getParentFragmentManager(), "ColorPicker");
                 break;
             case Keys.APP_LIST:
                 Log.i("checkStatsPermission()", String.valueOf(checkStatsPermission()));
@@ -1427,14 +1339,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             }
             tintPicker = null;
         }
-        if (bgColorPicker != null) {
-            ColorPicker bgDialog = bgColorPicker.get();
-            if (bgDialog != null && bgDialog.isAdded()) {
-                bgDialog.dismissAllowingStateLoss();
-                getParentFragmentManager().executePendingTransactions();
-            }
-            bgColorPicker = null;
-        }
         if (appListStatsDialog != null) {
             AppListStatsDialogFragment statsDialog = appListStatsDialog.get();
             if (statsDialog != null && statsDialog.isAdded()) {
@@ -1523,17 +1427,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                             : R.string.horizontal_bar_height_landscape));
         }
     };
-
-    /**
-     * AlphaSeekBarPreference shows 0 for a value that was never saved (it ignores
-     * android:defaultValue).
-     * Saving the shared default once makes the bar show the value that is actually applied.
-     */
-    private void storeAlphaDefault(AlphaSeekBarPreference seekPreference, String key, int value) {
-        if (!sharedPrefs.contains(key)) {
-            seekPreference.resetPosition(value);
-        }
-    }
 
     public void setCountDownTimer(int delay) {
         countDownTimerBool = true;
@@ -1706,28 +1599,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             statsBg.setVisible(true);
             appList.setVisible(true);
             appStatsCoordinates.setVisible(true);
-            if (backgroundBool) {
-                bgDrawable.setVisible(true);
-                bgColor.setVisible(true);
-                if (colorBgBool && !drawableBgBool) {
-                    bgColor.setChecked(true);
-                    bgDrawable.setChecked(false);
-                    bgColorPickerPref.setVisible(true);
-                    bgAlpha.setVisible(true);
-                    alphaSeekBar.setVisible(true);
-                } else {
-                    bgDrawable.setChecked(true);
-                    bgColorPickerPref.setVisible(false);
-                    bgAlpha.setVisible(false);
-                    alphaSeekBar.setVisible(false);
-                }
-            } else {
-                bgDrawable.setVisible(false);
-                bgColor.setVisible(false);
-                bgColorPickerPref.setVisible(false);
-                bgAlpha.setVisible(false);
-                alphaSeekBar.setVisible(false);
-            }
         } else {
             statsScreen.setVisible(false);
             statsCodes.setVisible(false);
@@ -1737,11 +1608,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             statsBg.setVisible(false);
             appList.setVisible(false);
             appStatsCoordinates.setVisible(false);
-            bgDrawable.setVisible(false);
-            bgColor.setVisible(false);
-            bgColorPickerPref.setVisible(false);
-            bgAlpha.setVisible(false);
-            alphaSeekBar.setVisible(false);
         }
     }
 
@@ -1762,10 +1628,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             skipZeroCodes.setVisible(false);
         }
         updateCanbusLibraryPrefs();
-    }
-
-    private boolean statsBackgroundBool() {
-        return userStatsBool && backgroundBool;
     }
 
     private boolean checkStatsPermission() {

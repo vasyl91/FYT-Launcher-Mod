@@ -86,4 +86,5 @@
     <string name="color_picker_alpha">透明度：%1$d%%</string>
     <string name="color_picker_default">預設</string>
     <string name="stats_in_app_page">應用程式內</string>
+    <string name="stats_background_preference">選擇統計背景</string>
 </resources>

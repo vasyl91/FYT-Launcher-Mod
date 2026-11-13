@@ -229,11 +229,6 @@
     <string name="rpm_code_text">Drehzahl-Canbus-Code:</string>
     <string name="main_screen_stats_window">Kraftstoffstatistik auf dem Hauptbildschirm anzeigen</string>
     <string name="color_picker">Textfarbe der Statistik</string>
-    <string name="stats_bg">Hintergrund der Statistik</string>
-    <string name="bg_drawable">Standardhintergrund</string>
-    <string name="bg_color">Farbiger Hintergrund</string>
-    <string name="bg_color_picker">Hintergrundfarbe festlegen</string>
-    <string name="bg_alpha">Transparenz des farbigen Hintergrunds festlegen</string>
     <string name="app_list_stats">App-Liste öffnen</string>
     <string name="app_list_stats_summary">Apps auswählen, die das Fenster mit der Kraftstoffstatistik anzeigen</string>
     <string name="app_list_dialog">Ausgewählte Apps zeigen das Statistikfenster an</string>
@@ -546,4 +541,5 @@
     <string name="color_picker_alpha">Alpha: %1$d%%</string>
     <string name="color_picker_default">Standard</string>
     <string name="stats_in_app_page">In der App</string>
+    <string name="stats_background_preference">Hintergrund für die Statistik wählen</string>
 </resources>

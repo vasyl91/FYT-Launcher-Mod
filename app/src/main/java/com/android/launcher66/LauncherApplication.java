@@ -189,6 +189,9 @@ public class LauncherApplication extends Application {
             migrateTint(prefs, tints, Keys.BLACK_BAR, Keys.BAR_TINT_COLOR);
             tints.apply();
         }
+        // The background of the statistics window was three switches, a colour and a transparency and became one
+        // choice, once: what the window really showed is what it keeps (StatsBackgroundMigration).
+        com.android.launcher66.settings.StatsBackgroundMigration.run(prefs);
         // The widget bar's one-line switch became three choices (CustomNestedThreePreference), once.
         if (prefs.contains(Keys.WIDGET_BAR_ONE_LINE)) {
             prefs.edit()

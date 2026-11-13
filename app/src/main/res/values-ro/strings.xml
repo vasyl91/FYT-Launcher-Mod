@@ -229,11 +229,6 @@
     <string name="rpm_code_text">Cod canbus turație:</string>
     <string name="main_screen_stats_window">Afișează statisticile de combustibil pe ecranul principal</string>
     <string name="color_picker">Culoarea textului statisticilor</string>
-    <string name="stats_bg">Fundalul statisticilor</string>
-    <string name="bg_drawable">Fundal implicit</string>
-    <string name="bg_color">Fundal colorat</string>
-    <string name="bg_color_picker">Setați culoarea fundalului</string>
-    <string name="bg_alpha">Setați transparența fundalului colorat</string>
     <string name="app_list_stats">Deschide lista de aplicații</string>
     <string name="app_list_stats_summary">Selectați aplicațiile care vor afișa fereastra cu statistici de combustibil</string>
     <string name="app_list_dialog">Aplicațiile selectate vor afișa fereastra de statistici</string>
@@ -546,4 +541,5 @@
     <string name="color_picker_alpha">Alfa: %1$d%%</string>
     <string name="color_picker_default">Implicit</string>
     <string name="stats_in_app_page">În aplicație</string>
+    <string name="stats_background_preference">Alegeți fundalul pentru statistici</string>
 </resources>

@@ -229,11 +229,6 @@
     <string name="rpm_code_text">Pöörete canbusi kood:</string>
     <string name="main_screen_stats_window">Kuva kütusestatistikat põhiekraanil</string>
     <string name="color_picker">Statistika teksti värv</string>
-    <string name="stats_bg">Statistika taust</string>
-    <string name="bg_drawable">Vaiketaust</string>
-    <string name="bg_color">Värviline taust</string>
-    <string name="bg_color_picker">Määra tausta värv</string>
-    <string name="bg_alpha">Määra värvilise tausta läbipaistvus</string>
     <string name="app_list_stats">Ava rakenduste loend</string>
     <string name="app_list_stats_summary">Valige rakendused, mis kuvavad kütusestatistika akent</string>
     <string name="app_list_dialog">Valitud rakendused kuvavad statistika akent</string>
@@ -546,4 +541,5 @@
     <string name="color_picker_alpha">Alfa: %1$d%%</string>
     <string name="color_picker_default">Vaikimisi</string>
     <string name="stats_in_app_page">Rakenduses</string>
+    <string name="stats_background_preference">Vali statistika taust</string>
 </resources>

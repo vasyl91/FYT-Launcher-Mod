@@ -104,7 +104,20 @@ public final class Keys {
     /** The canbus code of the speed for the fuel estimate; "0" or none = the code reader's, else the GPS. */
     public static final String SPEED_CODE = "speed_code_int";
     public static final String MAIN_SCREEN_STATS = "main_screen_stats";
+    /** The row "Statistics text color"; the colour is stored as text under "stats_color". */
     public static final String COLOR_PICKER = "color_picker";
+    /** The row "Choose background for statistics"; it stores nothing itself. */
+    public static final String STATS_BACKGROUND = "choose_stats_background";
+    /**
+     * The background of the statistics window: BackgroundChoice.NONE (also when nothing is stored), a picture,
+     * or BackgroundChoice.CUSTOM with the colour below (an int, ARGB), as for the widgets and the bars.
+     */
+    public static final String STATS_SELECTED_BACKGROUND = "stats_selected_background";
+    public static final String STATS_CUSTOM_BACKGROUND_COLOR = "stats_custom_background_color";
+    /**
+     * The old settings of that background (three switches, a colour and its transparency). Read only once, at
+     * the start, to become the choice above (StatsBackgroundMigration); nothing else may read them.
+     */
     public static final String STATS_BG = "stats_bg";
     /** boolean: we raised maximum_obscuring_opacity_for_touch for the stats window (StatsOverlayAlpha) */
     public static final String STATS_OBSCURING_RAISED = "stats_obscuring_raised";
@@ -112,7 +125,7 @@ public final class Keys {
     public static final String STATS_OBSCURING_ORIGINAL = "stats_obscuring_original";
     public static final String BG_DRAWABLE = "bg_drawable";
     public static final String BG_COLOR = "bg_color";
-    public static final String BG_COLOR_PICKER = "bg_color_picker";
+    public static final String BG_STATS_COLOR = "bg_stats_color";
     public static final String ALPHA_SEEK_BAR = "alpha_seek_bar";
     public static final String APP_LIST = "app_list";
     public static final String APP_STATS_WIDTH = "app_stats_width";

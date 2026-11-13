@@ -229,11 +229,6 @@
     <string name="rpm_code_text">Sūkių canbus kodas:</string>
     <string name="main_screen_stats_window">Rodyti degalų statistiką pagrindiniame ekrane</string>
     <string name="color_picker">Statistikos teksto spalva</string>
-    <string name="stats_bg">Statistikos fonas</string>
-    <string name="bg_drawable">Numatytasis fonas</string>
-    <string name="bg_color">Spalvotas fonas</string>
-    <string name="bg_color_picker">Nustatyti fono spalvą</string>
-    <string name="bg_alpha">Nustatyti spalvoto fono skaidrumą</string>
     <string name="app_list_stats">Atidaryti programų sąrašą</string>
     <string name="app_list_stats_summary">Pasirinkite programas, kurios rodys degalų statistikos langą</string>
     <string name="app_list_dialog">Pasirinktos programos rodys statistikos langą</string>
@@ -546,4 +541,5 @@
     <string name="color_picker_alpha">Alfa: %1$d%%</string>
     <string name="color_picker_default">Numatytoji</string>
     <string name="stats_in_app_page">Programoje</string>
+    <string name="stats_background_preference">Pasirinkti statistikos foną</string>
 </resources>

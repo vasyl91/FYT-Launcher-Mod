@@ -229,11 +229,6 @@
     <string name="rpm_code_text">Toerental-canbus-code:</string>
     <string name="main_screen_stats_window">De brandstofstatistieken op het hoofdscherm tonen</string>
     <string name="color_picker">Tekstkleur van statistieken</string>
-    <string name="stats_bg">Achtergrond van statistieken</string>
-    <string name="bg_drawable">Standaardachtergrond</string>
-    <string name="bg_color">Gekleurde achtergrond</string>
-    <string name="bg_color_picker">Achtergrondkleur instellen</string>
-    <string name="bg_alpha">Transparantie van de gekleurde achtergrond instellen</string>
     <string name="app_list_stats">Applijst openen</string>
     <string name="app_list_stats_summary">Selecteer de apps die het venster met brandstofstatistieken tonen</string>
     <string name="app_list_dialog">Geselecteerde apps tonen het statistiekenvenster</string>
@@ -546,4 +541,5 @@
     <string name="color_picker_alpha">Alfa: %1$d%%</string>
     <string name="color_picker_default">Standaard</string>
     <string name="stats_in_app_page">In app</string>
+    <string name="stats_background_preference">Achtergrond voor statistieken kiezen</string>
 </resources>

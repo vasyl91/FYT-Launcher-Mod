@@ -229,11 +229,6 @@
     <string name="rpm_code_text">Canbus-код обертів:</string>
     <string name="main_screen_stats_window">Показувати статистику витрати пального на головному екрані</string>
     <string name="color_picker">Колір тексту статистики</string>
-    <string name="stats_bg">Тло статистики</string>
-    <string name="bg_drawable">Тло за умовчанням</string>
-    <string name="bg_color">Кольорове тло</string>
-    <string name="bg_color_picker">Вибрати колір тла</string>
-    <string name="bg_alpha">Задати прозорість кольорового тла</string>
     <string name="app_list_stats">Відкрити список застосунків</string>
     <string name="app_list_stats_summary">Виберіть застосунки, у яких показуватиметься вікно статистики витрати пального</string>
     <string name="app_list_dialog">Вибрані застосунки показуватимуть вікно статистики</string>
@@ -546,4 +541,5 @@
     <string name="color_picker_alpha">Альфа: %1$d%%</string>
     <string name="color_picker_default">Типово</string>
     <string name="stats_in_app_page">У застосунку</string>
+    <string name="stats_background_preference">Вибрати тло для статистики</string>
 </resources>

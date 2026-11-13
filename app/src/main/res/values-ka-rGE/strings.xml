@@ -229,11 +229,6 @@
     <string name="rpm_code_text">ბრუნვების canbus კოდი:</string>
     <string name="main_screen_stats_window">საწვავის სტატისტიკის ჩვენება მთავარ ეკრანზე</string>
     <string name="color_picker">სტატისტიკის ტექსტის ფერი</string>
-    <string name="stats_bg">სტატისტიკის ფონი</string>
-    <string name="bg_drawable">ნაგულისხმევი ფონი</string>
-    <string name="bg_color">ფერადი ფონი</string>
-    <string name="bg_color_picker">ფონის ფერის დაყენება</string>
-    <string name="bg_alpha">ფერადი ფონის გამჭვირვალობის დაყენება</string>
     <string name="app_list_stats">აპების სიის გახსნა</string>
     <string name="app_list_stats_summary">აირჩიეთ აპები, რომლებიც საწვავის სტატისტიკის ფანჯარას აჩვენებს</string>
     <string name="app_list_dialog">არჩეული აპები სტატისტიკის ფანჯარას აჩვენებენ</string>
@@ -546,4 +541,5 @@
     <string name="color_picker_alpha">ალფა: %1$d%%</string>
     <string name="color_picker_default">ნაგულისხმევი</string>
     <string name="stats_in_app_page">აპში</string>
+    <string name="stats_background_preference">სტატისტიკის ფონის არჩევა</string>
 </resources>

@@ -11,9 +11,6 @@
     <string name="youtube_revanced_kids_off">Videos that return madeForKids=true never correctly reflect the like state due to a YouTube API bug – videos liked on YouTube appear as not liked in the widget. The Favourite button will be disabled to prevent confusion.</string>
 
     <string name="color_picker">Statistics text colour</string>
-    <string name="bg_color">Coloured background</string>
-    <string name="bg_color_picker">Set the background colour</string>
-    <string name="bg_alpha">Set the transparency of the coloured background</string>
 
     <string name="cover_splash">PiP splash colour</string>
     <string name="cover_splash_icon">Average colour of the app icon\'s opaque pixels</string>
@@ -79,4 +76,5 @@
     <string name="color_picker_alpha">Alpha: %1$d%%</string>
     <string name="color_picker_default">Default</string>
     <string name="stats_in_app_page">In app</string>
+    <string name="stats_background_preference">Choose background for statistics</string>
 </resources>

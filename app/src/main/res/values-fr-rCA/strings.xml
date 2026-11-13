@@ -83,4 +83,5 @@
     <string name="color_picker_alpha">Alpha : %1$d%%</string>
     <string name="color_picker_default">Par défaut</string>
     <string name="stats_in_app_page">Dans l\'application</string>
+    <string name="stats_background_preference">Choisir l\'arrière-plan des statistiques</string>
 </resources>
