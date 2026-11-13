@@ -42,6 +42,29 @@ class PageBoxTest {
     }
 
     @Test
+    void thePageAtRestStartsAtTheScreenEdgeAlthoughTheWorkspaceStartsFarLeftOfIt() {
+        // The phone of the log (1080 x 2340): the pager is 10121 px wide and centred, so its left edge is at
+        // -4520; its first page lies 4520 px inside it and the pager rests on it at scroll 0.
+        assertEquals(0, PageBox.pageRestLeft(-4520, 4520, 0));
+        // The third page lies two pages further and the pager rests on it two pages further too
+        assertEquals(0, PageBox.pageRestLeft(-4520, 4520 + 2 * 1130, 2 * 1130));
+    }
+
+    @Test
+    void theBoxOfThePhoneIsTheScreenNotThePager() {
+        PageBox.Box box = PageBox.of(0, 89, 1080, PageBox.pageRestLeft(-4520, 4520, 0));
+        assertEquals(0, box.left);
+        assertEquals(1080, box.right);
+        assertEquals(89, box.top);
+    }
+
+    @Test
+    void aPageNarrowerThanTheScreenRestsCentred() {
+        // 20 px of padding on both sides: the page rests 20 px from the edge
+        assertEquals(20, PageBox.pageRestLeft(-4520, 4540, 0));
+    }
+
+    @Test
     void aLayoutInsetInItsPageMovesTheBox() {
         PageBox.Box box = PageBox.of(40, 48, 1880, 0);
         assertEquals(40, box.left);

@@ -6,7 +6,11 @@ package com.android.launcher66;
  * rectangle, on the same side, whatever the bar layout's arithmetic gives. So the horizontal place and the width
  * come from the measured bar of the first page when it is known, and from {@link BarLayout} only before the
  * first measurement. The vertical place and the height always come from the layout (they depend on the page the
- * window is for: whether it has the horizontal bar and the button). Pure Java, so that it has a test.
+ * window is for: whether it has the horizontal bar and the button).
+ *
+ * <p>A measurement is trusted only while it lies inside the box of the page: a bar measured outside it is not
+ * where any page's bar can be (a wrong reference once gave x = -3582 on a 1080 px screen), and then the layout
+ * decides as before the first measurement. Pure Java, so that it has a test.
  */
 final class VerticalWindowFrame {
 
@@ -38,14 +42,21 @@ final class VerticalWindowFrame {
      * @param band         {left, top, right, bottom} of the window from BarLayout.verticalWindow(), in the box
      * @param boxLeft      the box's left edge on the screen
      * @param boxTop       the box's top edge on the screen
+     * @param boxRight     the box's right edge on the screen
      */
-    static Frame of(int[] pageBar, int[] band, int boxLeft, int boxTop) {
+    static Frame of(int[] pageBar, int[] band, int boxLeft, int boxTop, int boxRight) {
         int y = boxTop + band[1];
         int h = band[3] - band[1];
-        if (pageBar != null && pageBar[1] > pageBar[0]) {
+        if (trusted(pageBar, boxLeft, boxRight)) {
             return new Frame(pageBar[0], y, pageBar[1] - pageBar[0], h);
         }
         return new Frame(boxLeft + band[0], y, band[2] - band[0], h);
+    }
+
+    /** Whether the measured bar is a bar of a page in this box: not empty, and inside the box (a pixel of slack). */
+    static boolean trusted(int[] pageBar, int boxLeft, int boxRight) {
+        return pageBar != null && pageBar[1] > pageBar[0]
+                && pageBar[0] >= boxLeft - 1 && pageBar[1] <= boxRight + 1;
     }
 
     /**

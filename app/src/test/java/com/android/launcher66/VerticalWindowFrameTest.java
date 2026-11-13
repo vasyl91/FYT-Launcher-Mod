@@ -12,12 +12,12 @@ class VerticalWindowFrameTest {
 
     @Test
     void beforeTheFirstMeasurementTheLayoutDecidesOnBothSides() {
-        VerticalWindowFrame.Frame left = VerticalWindowFrame.of(null, BAND_LEFT, 0, 48);
+        VerticalWindowFrame.Frame left = VerticalWindowFrame.of(null, BAND_LEFT, 0, 48, 1920);
         assertEquals(0, left.x);
         assertEquals(48, left.y);
         assertEquals(137, left.w);
         assertEquals(560, left.h);
-        VerticalWindowFrame.Frame right = VerticalWindowFrame.of(null, BAND_RIGHT, 0, 48);
+        VerticalWindowFrame.Frame right = VerticalWindowFrame.of(null, BAND_RIGHT, 0, 48, 1920);
         assertEquals(1783, right.x);
         assertEquals(137, right.w);
     }
@@ -25,29 +25,49 @@ class VerticalWindowFrameTest {
     @Test
     void afterItTheBarOfTheFirstPageDecidesTheSide() {
         // the first page's bar is on the right; even a band computed for the left puts the window on the right
-        VerticalWindowFrame.Frame f = VerticalWindowFrame.of(new int[] {1783, 1920}, BAND_LEFT, 0, 48);
+        VerticalWindowFrame.Frame f = VerticalWindowFrame.of(new int[] {1783, 1920}, BAND_LEFT, 0, 48, 1920);
         assertEquals(1783, f.x);
         assertEquals(137, f.w);
         // the height and the place from the top are the layout's
         assertEquals(48, f.y);
         assertEquals(560, f.h);
-        VerticalWindowFrame.Frame onTheLeft = VerticalWindowFrame.of(new int[] {0, 137}, BAND_RIGHT, 0, 48);
+        VerticalWindowFrame.Frame onTheLeft = VerticalWindowFrame.of(new int[] {0, 137}, BAND_RIGHT, 0, 48, 1920);
         assertEquals(0, onTheLeft.x);
     }
 
     @Test
     void aCutoutAtTheSideMovesTheMeasuredBarAndTheBox() {
         // the first page starts after a 120 px cut-out: the bar on the right still ends at the edge of the box
-        VerticalWindowFrame.Frame f = VerticalWindowFrame.of(new int[] {2263, 2400}, new int[] {2143, 0, 2280, 560}, 120, 72);
+        VerticalWindowFrame.Frame f = VerticalWindowFrame.of(new int[] {2263, 2400}, new int[] {2143, 0, 2280, 560}, 120, 72, 2400);
         assertEquals(2263, f.x);
         // before the measurement the box's left edge is added to the band
-        VerticalWindowFrame.Frame before = VerticalWindowFrame.of(null, new int[] {2143, 0, 2280, 560}, 120, 72);
+        VerticalWindowFrame.Frame before = VerticalWindowFrame.of(null, new int[] {2143, 0, 2280, 560}, 120, 72, 2400);
         assertEquals(2263, before.x);
     }
 
     @Test
+    void aBarMeasuredOutsideTheBoxIsNotUsed() {
+        // the phone of the log: 1080 px wide, the bar 142 px on the right, measured at -3582 by a wrong reference
+        int[] band = {938, 0, 1080, 2116};
+        VerticalWindowFrame.Frame f = VerticalWindowFrame.of(new int[] {-3582, -3440}, band, 0, 89, 1080);
+        assertEquals(938, f.x);
+        assertEquals(142, f.w);
+        assertEquals(0, VerticalWindowFrame.offset(f, 1080, true));
+        // and the other way round, past the right edge
+        VerticalWindowFrame.Frame g = VerticalWindowFrame.of(new int[] {4520, 4662}, new int[] {0, 0, 142, 2116}, 0, 89, 1080);
+        assertEquals(0, g.x);
+    }
+
+    @Test
+    void theBarOfThePhoneMeasuredFromThePageAtRestIsUsed() {
+        VerticalWindowFrame.Frame f = VerticalWindowFrame.of(new int[] {938, 1080}, new int[] {938, 0, 1080, 2116}, 0, 89, 1080);
+        assertEquals(938, f.x);
+        assertEquals(0, VerticalWindowFrame.offset(f, 1080, true));
+    }
+
+    @Test
     void anEmptyMeasurementIsNotUsed() {
-        VerticalWindowFrame.Frame f = VerticalWindowFrame.of(new int[] {500, 500}, BAND_RIGHT, 0, 48);
+        VerticalWindowFrame.Frame f = VerticalWindowFrame.of(new int[] {500, 500}, BAND_RIGHT, 0, 48, 1920);
         assertEquals(1783, f.x);
     }
 

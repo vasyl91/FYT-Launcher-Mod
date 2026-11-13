@@ -1618,9 +1618,13 @@ public class Workspace extends SmoothPagedView
             page.getLocationOnScreen(mBarBoxPageAt);
             int[] workspaceAt = new int[2];
             getLocationOnScreen(workspaceAt);
-            PageBox.Box box = PageBox.of(mBarRootAt[0] - mBarBoxPageAt[0], mBarRootAt[1], root.getWidth(), workspaceAt[0]);
+            // Where the page lies when it is the one shown: not the workspace's own left edge, which is far
+            // to the left of the screen because the pager is measured wider than it (PageBox)
+            int pageRestLeft = PageBox.pageRestLeft(workspaceAt[0], page.getLeft(),
+                    getScrollForPage(indexOfChild(page)));
+            PageBox.Box box = PageBox.of(mBarRootAt[0] - mBarBoxPageAt[0], mBarRootAt[1], root.getWidth(), pageRestLeft);
             mBarBox.set(box.left, box.top, box.right, box.top + root.getHeight());
-            measurePageVerticalBar(root, workspaceAt[0], mBarRootAt, mBarBoxPageAt);
+            measurePageVerticalBar(root, pageRestLeft, mBarRootAt, mBarBoxPageAt);
         } else if (mBarBox.isEmpty()) {
             int left = 0;
             int top = mLauncher == null ? 0 : mLauncher.getStatusBarHeight();
@@ -1639,13 +1643,13 @@ public class Workspace extends SmoothPagedView
 
     /**
      * The vertical bar of the first page on the screen, {left, top, right, bottom}, as if that page were shown (the
-     * same way as the box: its place in the page plus the workspace's left edge). Null before it is measured or
+     * same way as the box: its place in the page plus the left edge of the page at rest). Null before it is measured or
      * without that bar. The window of the vertical bar on the other pages lies on this rectangle.
      */
     private int[] mPageVerticalBar;
     private final int[] mVerticalBarAt = new int[2];
 
-    private void measurePageVerticalBar(View root, int workspaceLeft, int[] rootAt, int[] pageAt) {
+    private void measurePageVerticalBar(View root, int pageRestLeft, int[] rootAt, int[] pageAt) {
         View bar = root.findViewById(R.id.rl_vertical_bar);
         if (bar == null) {
             mPageVerticalBar = null;
@@ -1655,7 +1659,7 @@ public class Workspace extends SmoothPagedView
             return;   // not laid out yet: the last measurement stays
         }
         bar.getLocationOnScreen(mVerticalBarAt);
-        int left = workspaceLeft + (mVerticalBarAt[0] - pageAt[0]);
+        int left = pageRestLeft + (mVerticalBarAt[0] - pageAt[0]);
         mPageVerticalBar = new int[] {left, mVerticalBarAt[1], left + bar.getWidth(),
                 mVerticalBarAt[1] + bar.getHeight()};
     }
@@ -3275,7 +3279,7 @@ public class Workspace extends SmoothPagedView
         int[] w = layout.verticalWindow(withCorner[0]);
         // The side and the width are those of the first page's bar, as measured (VerticalWindowFrame)
         int[] pageBar = mPageVerticalBar == null ? null : new int[] {mPageVerticalBar[0], mPageVerticalBar[2]};
-        return VerticalWindowFrame.of(pageBar, w, box.left, box.top).toArray();
+        return VerticalWindowFrame.of(pageBar, w, box.left, box.top, box.right).toArray();
     }
 
     private String mVerticalFrameLogged;
