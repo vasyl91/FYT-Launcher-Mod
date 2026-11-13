@@ -542,4 +542,5 @@
     <string name="color_picker_default">Chaguomsingi</string>
     <string name="stats_in_app_page">Ndani ya programu</string>
     <string name="stats_background_preference">Chagua mandharinyuma ya takwimu</string>
+    <string name="wallpaper_unreadable">Mandhari ya sasa haiwezi kusomwa kwenye kifaa hiki. Ungependa kuchagua picha ya hali ya %1$s badala yake?</string>
 </resources>

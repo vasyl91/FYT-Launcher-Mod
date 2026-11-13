@@ -542,4 +542,5 @@
     <string name="color_picker_default">預設</string>
     <string name="stats_in_app_page">應用程式內</string>
     <string name="stats_background_preference">選擇統計背景</string>
+    <string name="wallpaper_unreadable">此裝置無法讀取目前的桌布。要改為替%1$s模式選擇圖片嗎？</string>
 </resources>

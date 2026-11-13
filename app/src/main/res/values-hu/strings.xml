@@ -542,4 +542,5 @@
     <string name="color_picker_default">Alapértelmezett</string>
     <string name="stats_in_app_page">Alkalmazásban</string>
     <string name="stats_background_preference">Statisztika hátterének kiválasztása</string>
+    <string name="wallpaper_unreadable">A jelenlegi háttérkép nem olvasható ezen az eszközön. Választ helyette egy képet a(z) %1$s módhoz?</string>
 </resources>

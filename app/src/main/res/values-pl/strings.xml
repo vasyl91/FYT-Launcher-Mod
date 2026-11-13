@@ -542,4 +542,5 @@
     <string name="color_picker_default">Domyślny</string>
     <string name="stats_in_app_page">W aplikacji</string>
     <string name="stats_background_preference">Wybierz tło dla statystyk</string>
+    <string name="wallpaper_unreadable">Na tym urządzeniu nie można odczytać bieżącej tapety. Wybrać zamiast niej obraz dla trybu %1$s?</string>
 </resources>

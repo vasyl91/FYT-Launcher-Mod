@@ -542,4 +542,5 @@
     <string name="color_picker_default">پیش‌فرض</string>
     <string name="stats_in_app_page">درون برنامه</string>
     <string name="stats_background_preference">انتخاب پس‌زمینه آمار</string>
+    <string name="wallpaper_unreadable">کاغذدیواری فعلی در این دستگاه قابل خواندن نیست. به‌جای آن تصویری برای حالت %1$s انتخاب شود؟</string>
 </resources>

@@ -542,4 +542,5 @@
     <string name="color_picker_default">Okuzenzakalelayo</string>
     <string name="stats_in_app_page">Ku-app</string>
     <string name="stats_background_preference">Khetha isizinda sezibalo</string>
+    <string name="wallpaper_unreadable">Isithombe sangemuva samanje asikwazi ukufundwa kule divayisi. Khetha isithombe semodi ye-%1$s esikhundleni salokho?</string>
 </resources>

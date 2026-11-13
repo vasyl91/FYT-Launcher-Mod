@@ -11,6 +11,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -1953,16 +1954,84 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
     }
 
+    /** The home screen's wallpaper could not be read by any way this device has (HomeWallpaperSource). */
+    private static final class WallpaperUnreadable extends Exception {
+        WallpaperUnreadable() {
+            super("the home screen's wallpaper cannot be read on this device");
+        }
+    }
+
+    private static final int REQ_PICK_DAY_WALLPAPER = 5101;
+    private static final int REQ_PICK_NIGHT_WALLPAPER = 5102;
+
+    /**
+     * The wallpaper cannot be read here (from Android 13 an app needs access to all files for it, and no
+     * privileged host gave it either): the user is told so, and can pick the image to use for this mode
+     * instead. Nothing was saved and nothing was changed.
+     */
+    private void offerWallpaperPick(String daytime) {
+        if (!isAdded()) {
+            return;
+        }
+        new AlertDialog.Builder(requireContext())
+                .setMessage(getString(R.string.wallpaper_unreadable, daytime))
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(R.string.pick_image_manually, (dialog, which) -> {
+                    try {
+                        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                        intent.addCategory(Intent.CATEGORY_OPENABLE);
+                        intent.setType("image/*");
+                        startActivityForResult(intent,
+                                "Night".equals(daytime) ? REQ_PICK_NIGHT_WALLPAPER : REQ_PICK_DAY_WALLPAPER);
+                    } catch (ActivityNotFoundException e) {
+                        Log.w(TAG, "No app to pick an image with: " + e.getMessage());
+                    }
+                })
+                .show();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if ((requestCode == REQ_PICK_DAY_WALLPAPER || requestCode == REQ_PICK_NIGHT_WALLPAPER)
+                && resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
+            helpers.setCorrectionChanged(true);
+            wallpaperSet = true;
+            new SaveWallpaperTask(data.getData())
+                    .execute(requestCode == REQ_PICK_NIGHT_WALLPAPER ? "Night" : "Day");
+        }
+    }
+
     private class SaveWallpaperTask extends AsyncTask<String, Void, Boolean> {
         private final WallpaperManager mWallpaperManager;
         private String daytime = "";
+        /** The image the user picked for this mode; null to take the home screen's wallpaper. */
+        private final Uri pickedImage;
         
         public SaveWallpaperTask() {
+            this(null);
+        }
+
+        SaveWallpaperTask(Uri pickedImage) {
             mWallpaperManager = WallpaperManager.getInstance(LauncherApplication.sApp);
+            this.pickedImage = pickedImage;
+        }
+
+        /** The picture to save: the picked image, else the home screen's wallpaper; null when there is none. */
+        private Bitmap sourceBitmap() {
+            if (pickedImage == null) {
+                return HomeWallpaperSource.read(LauncherApplication.sApp);
+            }
+            try (java.io.InputStream in = LauncherApplication.sApp.getContentResolver().openInputStream(pickedImage)) {
+                return in == null ? null : BitmapFactory.decodeStream(in);
+            } catch (IOException | SecurityException e) {
+                Log.w(TAG, "The picked image could not be read: " + e);
+                return null;
+            }
         }
 
         @Override
-        protected Boolean doInBackground(String[] input) {
+        protected Boolean doInBackground(String[] input) throws Exception {
             daytime = input[0];
             saveWallpaper(input[0]);
             return true;
@@ -1973,11 +2042,14 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             //
         }
 
-        private void saveWallpaper(String name) {
+        private void saveWallpaper(String name) throws WallpaperUnreadable {
             requireActivity().runOnUiThread(() -> showLoading(name));
-            Drawable mWallpaper = mWallpaperManager.getDrawable();
-            assert mWallpaper != null;
-            Bitmap mBitmap = drawableToBitmap(mWallpaper);
+            // The home screen's wallpaper by the best way this device has, never the lock screen's, and never
+            // an exception of the system as the result: where it cannot be read the user picks an image
+            Bitmap mBitmap = sourceBitmap();
+            if (mBitmap == null) {
+                throw new WallpaperUnreadable();
+            }
             File mFile = new File(LauncherApplication.sApp.getFilesDir(), "wallpaper_img"); // dir: /data/user/0/com.android.launcher66/files/wallpaper_img
             Log.i("dir", String.valueOf(LauncherApplication.sApp.getFilesDir()));
             boolean doSave = true;
@@ -1992,21 +2064,14 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             try {
                 // setting wallpaper that has just been saved to file allows to get accurate hash code
                 mWallpaperManager.setBitmap(bitmap);
-                // get hash of newly saved and set wallpaper
-                saveBitmapHash(daytime); 
+                // the hash of the wallpaper just saved and set (from the picture itself: reading the wallpaper
+                // back is what the system refuses on newer Android versions)
+                saveBitmapHash(daytime, bitmap);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
     
-        public Bitmap drawableToBitmap(Drawable drawable) {
-            Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(bitmap);
-            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-            drawable.draw(canvas);
-            return bitmap;
-        }
-
         public Bitmap normalizeBitmap(Bitmap bitmap) {
             Bitmap normalizedBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(normalizedBitmap);
@@ -2014,11 +2079,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             return normalizedBitmap;
         }
 
-        public void saveBitmapHash(String name) {
-            Drawable mWallpaper = mWallpaperManager.getDrawable();
-            assert mWallpaper != null;
-            Bitmap currentWallpaperBitmap = drawableToBitmap(mWallpaper);
-
+        public void saveBitmapHash(String name, Bitmap currentWallpaperBitmap) {
             Bitmap normalizedBitmap = normalizeBitmap(currentWallpaperBitmap);
             
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -2087,7 +2148,12 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         
         @Override
         protected void onBackgroundError(Exception e) {
-            Log.e("SettingsFragmentFirst", "Background error, wallpaper was not saved: " + e.getMessage());     
+            Log.e("SettingsFragmentFirst", "Background error, wallpaper was not saved: " + e.getMessage());
+            if (e instanceof WallpaperUnreadable) {
+                // Not an error to show as text: the wallpaper cannot be read here, the user picks an image
+                hideLoadingSafely(4, "");
+                return;
+            }
             hideLoadingSafely(3, String.valueOf(e.getMessage()));
         }
 
@@ -2118,6 +2184,8 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                             showToast(LauncherApplication.sApp.getString(R.string.wallpaper_not_set, daytime));
                         } else if (where == 3) {
                             showToast(LauncherApplication.sApp.getString(R.string.wallpaper_error, daytime) + e);
+                        } else if (where == 4) {
+                            offerWallpaperPick(daytime);
                         }
                         
                     }

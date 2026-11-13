@@ -542,4 +542,5 @@
     <string name="color_picker_default">Standard</string>
     <string name="stats_in_app_page">In der App</string>
     <string name="stats_background_preference">Hintergrund für die Statistik wählen</string>
+    <string name="wallpaper_unreadable">Das aktuelle Hintergrundbild kann auf diesem Gerät nicht gelesen werden. Stattdessen ein Bild für den Modus %1$s auswählen?</string>
 </resources>

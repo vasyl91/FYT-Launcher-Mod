@@ -542,4 +542,5 @@
     <string name="color_picker_default">Par défaut</string>
     <string name="stats_in_app_page">Dans l\'application</string>
     <string name="stats_background_preference">Choisir l\'arrière-plan des statistiques</string>
+    <string name="wallpaper_unreadable">Le fond d\'écran actuel ne peut pas être lu sur cet appareil. Choisir plutôt une image pour le mode %1$s ?</string>
 </resources>

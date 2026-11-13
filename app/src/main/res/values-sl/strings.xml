@@ -542,4 +542,5 @@
     <string name="color_picker_default">Privzeto</string>
     <string name="stats_in_app_page">V aplikaciji</string>
     <string name="stats_background_preference">Izberi ozadje za statistiko</string>
+    <string name="wallpaper_unreadable">Trenutnega ozadja v tej napravi ni mogoče prebrati. Želite namesto tega izbrati sliko za način %1$s?</string>
 </resources>

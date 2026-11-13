@@ -542,4 +542,5 @@
     <string name="color_picker_default">Mặc định</string>
     <string name="stats_in_app_page">Trong ứng dụng</string>
     <string name="stats_background_preference">Chọn nền cho thống kê</string>
+    <string name="wallpaper_unreadable">Không thể đọc hình nền hiện tại trên thiết bị này. Chọn một hình ảnh cho chế độ %1$s thay thế?</string>
 </resources>

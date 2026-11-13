@@ -542,4 +542,5 @@
     <string name="color_picker_default">Noklusējums</string>
     <string name="stats_in_app_page">Lietotnē</string>
     <string name="stats_background_preference">Izvēlēties statistikas fonu</string>
+    <string name="wallpaper_unreadable">Pašreizējo fona tapeti šajā ierīcē nevar nolasīt. Vai tā vietā izvēlēties attēlu režīmam %1$s?</string>
 </resources>

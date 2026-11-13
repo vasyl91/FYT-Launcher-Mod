@@ -542,4 +542,5 @@
     <string name="color_picker_default">Կանխադրված</string>
     <string name="stats_in_app_page">Հավելվածում</string>
     <string name="stats_background_preference">Ընտրել ֆոն վիճակագրության համար</string>
+    <string name="wallpaper_unreadable">Ընթացիկ պաստառը հնարավոր չէ կարդալ այս սարքում։ Փոխարենը ընտրե՞լ պատկեր %1$s ռեժիմի համար։</string>
 </resources>

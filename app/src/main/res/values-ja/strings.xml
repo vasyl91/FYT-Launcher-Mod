@@ -542,4 +542,5 @@
     <string name="color_picker_default">デフォルト</string>
     <string name="stats_in_app_page">アプリ内</string>
     <string name="stats_background_preference">統計の背景を選択</string>
+    <string name="wallpaper_unreadable">このデバイスでは現在の壁紙を読み取れません。代わりに %1$s モード用の画像を選択しますか？</string>
 </resources>

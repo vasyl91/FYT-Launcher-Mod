@@ -542,4 +542,5 @@
     <string name="color_picker_default">លំនាំដើម</string>
     <string name="stats_in_app_page">ក្នុងកម្មវិធី</string>
     <string name="stats_background_preference">ជ្រើសរើសផ្ទៃខាងក្រោយសម្រាប់ស្ថិតិ</string>
+    <string name="wallpaper_unreadable">មិនអាចអានផ្ទាំងរូបភាពបច្ចុប្បន្ននៅលើឧបករណ៍នេះបានទេ។ ជ្រើសរើសរូបភាពសម្រាប់មុខងារ %1$s ជំនួសវិញ?</string>
 </resources>

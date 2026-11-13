@@ -11,7 +11,6 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Outline;
 import android.graphics.drawable.BitmapDrawable;
@@ -54,8 +53,6 @@ import com.android.launcher66.R;
 
 import java.io.FileDescriptor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -116,59 +113,9 @@ public class BackgroundSelectorDialog extends DialogFragment {
             choiceDefault = null;
         }
         loaderExecutor.submit(() -> {
-            Bitmap bmp = null;
-            try {
-                WallpaperManager wm = WallpaperManager.getInstance(ctx);
-
-                // 1) reflective getBitmap()
-                try {
-                    Method m = wm.getClass().getMethod("getBitmap");
-                    Object o = m.invoke(wm);
-                    if (o instanceof Bitmap) bmp = (Bitmap) o;
-                } catch (NoSuchMethodException ignored) {
-                } catch (InvocationTargetException ite) {
-                    Throwable cause = ite.getCause();
-                    if (cause instanceof SecurityException) {
-                        Log.w(TAG, "Loader: SecurityException from getBitmap(): " + cause.getMessage());
-                    } else {
-                        Log.w(TAG, "Loader: getBitmap() threw: " + cause);
-                    }
-                } catch (Throwable t) {
-                    Log.w(TAG, "Loader: error invoking getBitmap(): ", t);
-                }
-
-                // 2) getWallpaperFile()
-                if (bmp == null) {
-                    try (ParcelFileDescriptor pfd = wm.getWallpaperFile(WallpaperManager.FLAG_SYSTEM)) {
-                        if (pfd != null) {
-                            FileDescriptor fd = pfd.getFileDescriptor();
-                            if (fd != null) bmp = BitmapFactory.decodeFileDescriptor(fd);
-                        }
-                    } catch (SecurityException se) {
-                        Log.w(TAG, "Loader: SecurityException reading wallpaper file: " + se.getMessage());
-                    } catch (Throwable t) {
-                        Log.w(TAG, "Loader: failed to decode wallpaper file: ", t);
-                    }
-                }
-
-                // 3) getDrawable() -> render
-                if (bmp == null) {
-                    try {
-                        Drawable d = wm.getDrawable();
-                        if (d != null) {
-                            int targetW = Math.max(300, Math.round(Launcher.screenWidth * 0.8f));
-                            int targetH = Math.max(300, Math.round(Launcher.screenHeight * 0.7f));
-                            bmp = drawableToBitmapForSizeStatic(d, targetW, targetH);
-                        }
-                    } catch (SecurityException se) {
-                        Log.w(TAG, "Loader: SecurityException getting drawable: " + se.getMessage());
-                    } catch (Throwable t) {
-                        Log.w(TAG, "Loader: failed rendering drawable: ", t);
-                    }
-                }
-            } catch (Throwable t) {
-                Log.w(TAG, "Loader: unexpected error: ", t);
-            }
+            // The home screen's wallpaper, by the best way this device has (HomeWallpaperSource); null
+            // where it cannot be read, and the dialog then shows its colours and the "Pick wallpaper" button
+            Bitmap bmp = HomeWallpaperSource.read(ctx);
 
             final Bitmap finalBmp = bmp;
             mainHandler.post(() -> {
@@ -187,26 +134,6 @@ public class BackgroundSelectorDialog extends DialogFragment {
                 }
             });
         });
-    }
-
-    private static Bitmap drawableToBitmapForSizeStatic(Drawable drawable, int targetW, int targetH) {
-        if (drawable == null || targetW <= 0 || targetH <= 0) return null;
-        int intrinsicW = drawable.getIntrinsicWidth();
-        int intrinsicH = drawable.getIntrinsicHeight();
-        Bitmap out = Bitmap.createBitmap(targetW, targetH, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(out);
-        if (intrinsicW > 0 && intrinsicH > 0) {
-            float scale = Math.max((float) targetW / intrinsicW, (float) targetH / intrinsicH);
-            int drawW = Math.round(intrinsicW * scale);
-            int drawH = Math.round(intrinsicH * scale);
-            int left = (targetW - drawW) / 2;
-            int top = (targetH - drawH) / 2;
-            drawable.setBounds(left, top, left + drawW, top + drawH);
-        } else {
-            drawable.setBounds(0, 0, targetW, targetH);
-        }
-        drawable.draw(canvas);
-        return out;
     }
 
     public void setPreloadedBackground(@NonNull Bitmap bmp) {
@@ -354,54 +281,13 @@ public class BackgroundSelectorDialog extends DialogFragment {
         loaderExecutor.submit(() -> {
             if (userPickedUri) return;
 
-            final WallpaperManager wm = WallpaperManager.getInstance(requireContext());
-            Bitmap bmp = null;
-
-            // reflection getBitmap()
-            try {
-                Method m = wm.getClass().getMethod("getBitmap");
-                Object o = m.invoke(wm);
-                if (o instanceof Bitmap) bmp = (Bitmap) o;
-            } catch (NoSuchMethodException ignored) {
-            } catch (InvocationTargetException ite) {
-                Throwable cause = ite.getCause();
-                if (cause instanceof SecurityException) {
-                    Log.w(TAG, "SecurityException from getBitmap(): " + cause.getMessage());
-                } else {
-                    Log.w(TAG, "getBitmap invocation failed: " + cause);
-                }
-            } catch (Throwable t) {
-                Log.w(TAG, "Error invoking getBitmap reflectively: ", t);
-            }
-
-            // getWallpaperFile
-            if (bmp == null) {
-                try (ParcelFileDescriptor pfd = wm.getWallpaperFile(WallpaperManager.FLAG_SYSTEM)) {
-                    if (pfd != null) {
-                        FileDescriptor fd = pfd.getFileDescriptor();
-                        if (fd != null) bmp = BitmapFactory.decodeFileDescriptor(fd);
-                    }
-                } catch (SecurityException se) {
-                    Log.w(TAG, "SecurityException reading wallpaper file: " + se.getMessage());
-                } catch (Throwable t) {
-                    Log.w(TAG, "Failed to decode wallpaper file: ", t);
-                }
-            }
-
-            // drawable render
-            if (bmp == null) {
-                try {
-                    Drawable d = wm.getDrawable();
-                    if (d != null) bmp = drawableToBitmapForSizeStatic(d, targetW, targetH);
-                } catch (SecurityException se) {
-                    Log.w(TAG, "SecurityException getting drawable: " + se.getMessage());
-                } catch (Throwable t) {
-                    Log.w(TAG, "Failed to render drawable: ", t);
-                }
-            }
+            final Context context = getContext();
+            if (context == null) return;
+            Bitmap bmp = HomeWallpaperSource.read(context);
 
             final Bitmap finalBmp = bmp;
             mainHandler.post(() -> {
+                if (!isAdded() || rootView == null) return;
                 if (finalBmp != null) {
                     Bitmap cropped = getCenterCroppedBitmap(finalBmp, targetW, targetH);
                     rootView.setBackground(new BitmapDrawable(getResources(), cropped));
@@ -409,9 +295,11 @@ public class BackgroundSelectorDialog extends DialogFragment {
                     return;
                 }
 
-                // fallback to colors & show pick button
-                boolean colors = applyWallpaperColorsFallback(rootView);
-                showPickButton(colors);
+                // No picture could be had: the wallpaper's colours as the backdrop where the system gives
+                // them, and the button to pick an image in any case (it used to stay hidden when the colours
+                // failed too, which left nothing to do)
+                applyWallpaperColorsFallback(rootView);
+                showPickButton(true);
             });
         });
     }

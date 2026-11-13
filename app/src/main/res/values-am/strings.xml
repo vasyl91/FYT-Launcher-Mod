@@ -542,4 +542,5 @@
     <string name="color_picker_default">ነባሪ</string>
     <string name="stats_in_app_page">በመተግበሪያ ውስጥ</string>
     <string name="stats_background_preference">ለስታቲስቲክስ ዳራ ምረጥ</string>
+    <string name="wallpaper_unreadable">የአሁኑ ልጣፍ በዚህ መሣሪያ ላይ ሊነበብ አይችልም። በምትኩ ለ%1$s ሁነታ ምስል ይምረጡ?</string>
 </resources>

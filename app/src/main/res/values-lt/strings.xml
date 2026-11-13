@@ -542,4 +542,5 @@
     <string name="color_picker_default">Numatytoji</string>
     <string name="stats_in_app_page">Programoje</string>
     <string name="stats_background_preference">Pasirinkti statistikos foną</string>
+    <string name="wallpaper_unreadable">Dabartinio ekrano fono šiame įrenginyje nuskaityti nepavyksta. Pasirinkti vaizdą režimui %1$s?</string>
 </resources>

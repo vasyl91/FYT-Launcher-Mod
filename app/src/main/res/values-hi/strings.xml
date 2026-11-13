@@ -542,4 +542,5 @@
     <string name="color_picker_default">डिफ़ॉल्ट</string>
     <string name="stats_in_app_page">ऐप में</string>
     <string name="stats_background_preference">आँकड़ों के लिए पृष्ठभूमि चुनें</string>
+    <string name="wallpaper_unreadable">इस डिवाइस पर मौजूदा वॉलपेपर पढ़ा नहीं जा सकता। इसके बजाय %1$s मोड के लिए कोई इमेज चुनें?</string>
 </resources>

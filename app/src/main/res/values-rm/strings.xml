@@ -542,4 +542,5 @@
     <string name="color_picker_default">Standard</string>
     <string name="stats_in_app_page">En l\'app</string>
     <string name="stats_background_preference">Tscherner il fund per las statisticas</string>
+    <string name="wallpaper_unreadable">Il maletg da fund actual na po betg vegnir legì sin quest apparat. Tscherner empè in maletg per il modus %1$s?</string>
 </resources>

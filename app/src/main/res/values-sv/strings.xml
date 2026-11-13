@@ -542,4 +542,5 @@
     <string name="color_picker_default">Standard</string>
     <string name="stats_in_app_page">I appen</string>
     <string name="stats_background_preference">Välj bakgrund för statistik</string>
+    <string name="wallpaper_unreadable">Den aktuella bakgrunden kan inte läsas på den här enheten. Välja en bild för läget %1$s i stället?</string>
 </resources>

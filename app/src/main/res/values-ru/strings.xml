@@ -542,4 +542,5 @@
     <string name="color_picker_default">По умолчанию</string>
     <string name="stats_in_app_page">В приложении</string>
     <string name="stats_background_preference">Выбрать фон для статистики</string>
+    <string name="wallpaper_unreadable">Текущие обои невозможно прочитать на этом устройстве. Выбрать вместо них изображение для режима %1$s?</string>
 </resources>

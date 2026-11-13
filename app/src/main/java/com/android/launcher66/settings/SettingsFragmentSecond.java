@@ -1041,23 +1041,20 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }
     }
 
+    /**
+     * The permission to ask for before a background selector, so that it can show the wallpaper behind its
+     * tiles: the old storage permission, and only where it exists and helps (WallpaperAccess: below Android
+     * 13, and not for the system version). From Android 13 neither it nor the permission for pictures lets an
+     * app read the wallpaper; asking for them there put a request, or its refusal, before every opening of a
+     * selector. The selector reads the wallpaper through HomeWallpaperSource and has its own fallback.
+     */
     private static List<String> getMissingReadWallpaperPermissions(@NonNull Context ctx) {
         List<String> perms = new ArrayList<>();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_MEDIA_IMAGES)
-                    != PackageManager.PERMISSION_GRANTED) {
-                perms.add(Manifest.permission.READ_MEDIA_IMAGES);
-            }
-            // Some OEM/Platform implementations still require legacy READ_EXTERNAL_STORAGE; request it if not granted.
-            if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                perms.add(Manifest.permission.READ_EXTERNAL_STORAGE);
-            }
-        } else {
-            if (ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                perms.add(Manifest.permission.READ_EXTERNAL_STORAGE);
-            }
+        boolean systemApp = android.os.Process.myUid() == android.os.Process.SYSTEM_UID;
+        if (WallpaperAccess.storagePermissionHelps(Build.VERSION.SDK_INT, systemApp)
+                && ContextCompat.checkSelfPermission(ctx, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            perms.add(Manifest.permission.READ_EXTERNAL_STORAGE);
         }
         return perms;
     }

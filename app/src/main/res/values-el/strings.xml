@@ -542,4 +542,5 @@
     <string name="color_picker_default">Προεπιλογή</string>
     <string name="stats_in_app_page">Εντός εφαρμογής</string>
     <string name="stats_background_preference">Επιλογή φόντου για τα στατιστικά</string>
+    <string name="wallpaper_unreadable">Η τρέχουσα ταπετσαρία δεν μπορεί να διαβαστεί σε αυτήν τη συσκευή. Να επιλέξετε μια εικόνα για τη λειτουργία %1$s;</string>
 </resources>

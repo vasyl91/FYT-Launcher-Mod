@@ -542,4 +542,5 @@
     <string name="color_picker_default">Default</string>
     <string name="stats_in_app_page">Sa app</string>
     <string name="stats_background_preference">Pumili ng background para sa istatistika</string>
+    <string name="wallpaper_unreadable">Hindi mabasa ang kasalukuyang wallpaper sa device na ito. Pumili na lang ng larawan para sa %1$s mode?</string>
 </resources>

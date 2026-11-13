@@ -542,4 +542,5 @@
     <string name="color_picker_default">Per defecte</string>
     <string name="stats_in_app_page">Dins de l\'aplicació</string>
     <string name="stats_background_preference">Tria el fons de les estadístiques</string>
+    <string name="wallpaper_unreadable">No es pot llegir el fons de pantalla actual en aquest dispositiu. Voleu triar una imatge per al mode %1$s?</string>
 </resources>

@@ -542,4 +542,5 @@
     <string name="color_picker_default">По подразбиране</string>
     <string name="stats_in_app_page">В приложение</string>
     <string name="stats_background_preference">Избор на фон за статистиката</string>
+    <string name="wallpaper_unreadable">Текущият тапет не може да бъде прочетен на това устройство. Да изберете ли изображение за режим %1$s вместо него?</string>
 </resources>

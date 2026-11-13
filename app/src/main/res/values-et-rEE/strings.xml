@@ -80,4 +80,5 @@
     <string name="color_picker_default">Vaikimisi</string>
     <string name="stats_in_app_page">Rakenduses</string>
     <string name="stats_background_preference">Vali statistika taust</string>
+    <string name="wallpaper_unreadable">Praegust taustapilti ei saa selles seadmes lugeda. Kas valida selle asemel režiimi %1$s jaoks pilt?</string>
 </resources>

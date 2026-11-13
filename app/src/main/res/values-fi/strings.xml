@@ -542,4 +542,5 @@
     <string name="color_picker_default">Oletus</string>
     <string name="stats_in_app_page">Sovelluksessa</string>
     <string name="stats_background_preference">Valitse tilastojen tausta</string>
+    <string name="wallpaper_unreadable">Nykyistä taustakuvaa ei voi lukea tällä laitteella. Valitaanko sen sijaan kuva tilaa %1$s varten?</string>
 </resources>

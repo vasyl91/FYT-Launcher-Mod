@@ -194,4 +194,5 @@
     <string name="color_picker_default">Predefinição</string>
     <string name="stats_in_app_page">Na app</string>
     <string name="stats_background_preference">Escolher a imagem de fundo das estatísticas</string>
+    <string name="wallpaper_unreadable">Não é possível ler a imagem de fundo atual neste dispositivo. Escolher uma imagem para o modo %1$s?</string>
 </resources>

@@ -542,4 +542,5 @@
     <string name="color_picker_default">Výchozí</string>
     <string name="stats_in_app_page">V aplikaci</string>
     <string name="stats_background_preference">Vybrat pozadí pro statistiky</string>
+    <string name="wallpaper_unreadable">Aktuální tapetu nelze na tomto zařízení přečíst. Vybrat místo ní obrázek pro režim %1$s?</string>
 </resources>

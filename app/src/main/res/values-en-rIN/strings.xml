@@ -77,4 +77,5 @@
     <string name="color_picker_default">Default</string>
     <string name="stats_in_app_page">In app</string>
     <string name="stats_background_preference">Choose background for statistics</string>
+    <string name="wallpaper_unreadable">The current wallpaper cannot be read on this device. Pick an image for the %1$s mode instead?</string>
 </resources>

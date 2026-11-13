@@ -542,4 +542,5 @@
     <string name="color_picker_default">ຄ່າເລີ່ມຕົ້ນ</string>
     <string name="stats_in_app_page">ໃນແອັບ</string>
     <string name="stats_background_preference">ເລືອກພື້ນຫຼັງສຳລັບສະຖິຕິ</string>
+    <string name="wallpaper_unreadable">ບໍ່ສາມາດອ່ານຮູບພື້ນຫຼັງປັດຈຸບັນໃນອຸປະກອນນີ້ໄດ້. ເລືອກຮູບສຳລັບໂໝດ %1$s ແທນບໍ?</string>
 </resources>

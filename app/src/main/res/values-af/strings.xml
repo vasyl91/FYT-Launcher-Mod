@@ -542,4 +542,5 @@
     <string name="color_picker_default">Verstek</string>
     <string name="stats_in_app_page">In app</string>
     <string name="stats_background_preference">Kies agtergrond vir statistiek</string>
+    <string name="wallpaper_unreadable">Die huidige muurpapier kan nie op hierdie toestel gelees word nie. Kies eerder \'n prent vir die %1$s-modus?</string>
 </resources>

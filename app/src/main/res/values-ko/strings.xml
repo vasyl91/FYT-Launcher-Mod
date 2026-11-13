@@ -542,4 +542,5 @@
     <string name="color_picker_default">기본값</string>
     <string name="stats_in_app_page">앱 내</string>
     <string name="stats_background_preference">통계 배경 선택</string>
+    <string name="wallpaper_unreadable">이 기기에서는 현재 배경화면을 읽을 수 없습니다. 대신 %1$s 모드용 이미지를 선택하시겠습니까?</string>
 </resources>

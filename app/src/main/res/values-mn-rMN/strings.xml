@@ -542,4 +542,5 @@
     <string name="color_picker_default">Өгөгдмөл</string>
     <string name="stats_in_app_page">Апп дотор</string>
     <string name="stats_background_preference">Статистикийн дэвсгэрийг сонгох</string>
+    <string name="wallpaper_unreadable">Одоогийн дэлгэцийн зургийг энэ төхөөрөмж дээр унших боломжгүй. Оронд нь %1$s горимд зураг сонгох уу?</string>
 </resources>

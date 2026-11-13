@@ -542,4 +542,5 @@
     <string name="color_picker_default">ნაგულისხმევი</string>
     <string name="stats_in_app_page">აპში</string>
     <string name="stats_background_preference">სტატისტიკის ფონის არჩევა</string>
+    <string name="wallpaper_unreadable">მიმდინარე ფონის წაკითხვა ამ მოწყობილობაზე შეუძლებელია. აირჩევთ სურათს %1$s რეჟიმისთვის?</string>
 </resources>

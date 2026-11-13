@@ -542,4 +542,5 @@
     <string name="color_picker_default">Подразумевано</string>
     <string name="stats_in_app_page">У апликацији</string>
     <string name="stats_background_preference">Изабери позадину за статистику</string>
+    <string name="wallpaper_unreadable">Тренутну позадину није могуће прочитати на овом уређају. Изабрати слику за режим %1$s уместо ње?</string>
 </resources>

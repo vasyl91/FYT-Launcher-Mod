@@ -77,4 +77,5 @@
     <string name="color_picker_default">Lalai</string>
     <string name="stats_in_app_page">Dalam apl</string>
     <string name="stats_background_preference">Pilih latar belakang untuk statistik</string>
+    <string name="wallpaper_unreadable">Kertas dinding semasa tidak dapat dibaca pada peranti ini. Pilih imej untuk mod %1$s sebagai ganti?</string>
 </resources>

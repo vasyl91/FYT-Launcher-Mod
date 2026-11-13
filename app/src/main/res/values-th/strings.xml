@@ -542,4 +542,5 @@
     <string name="color_picker_default">ค่าเริ่มต้น</string>
     <string name="stats_in_app_page">ในแอป</string>
     <string name="stats_background_preference">เลือกพื้นหลังสำหรับสถิติ</string>
+    <string name="wallpaper_unreadable">ไม่สามารถอ่านวอลเปเปอร์ปัจจุบันบนอุปกรณ์นี้ได้ เลือกรูปภาพสำหรับโหมด %1$s แทนหรือไม่</string>
 </resources>

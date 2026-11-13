@@ -542,4 +542,5 @@
     <string name="color_picker_default">Varsayılan</string>
     <string name="stats_in_app_page">Uygulama içi</string>
     <string name="stats_background_preference">İstatistikler için arka plan seçin</string>
+    <string name="wallpaper_unreadable">Geçerli duvar kağıdı bu cihazda okunamıyor. Bunun yerine %1$s modu için bir resim seçilsin mi?</string>
 </resources>

@@ -542,4 +542,5 @@
     <string name="color_picker_default">Default</string>
     <string name="stats_in_app_page">Dalam aplikasi</string>
     <string name="stats_background_preference">Pilih latar belakang untuk statistik</string>
+    <string name="wallpaper_unreadable">Wallpaper saat ini tidak dapat dibaca di perangkat ini. Pilih gambar untuk mode %1$s sebagai gantinya?</string>
 </resources>

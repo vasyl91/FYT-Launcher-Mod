@@ -542,4 +542,5 @@
     <string name="color_picker_default">Predefinito</string>
     <string name="stats_in_app_page">Nell\'app</string>
     <string name="stats_background_preference">Scegli lo sfondo delle statistiche</string>
+    <string name="wallpaper_unreadable">Lo sfondo attuale non può essere letto su questo dispositivo. Scegliere invece un\'immagine per la modalità %1$s?</string>
 </resources>

@@ -542,4 +542,5 @@
     <string name="color_picker_default">Па змаўчанні</string>
     <string name="stats_in_app_page">У праграме</string>
     <string name="stats_background_preference">Выбраць фон для статыстыкі</string>
+    <string name="wallpaper_unreadable">Бягучыя шпалеры немагчыма прачытаць на гэтай прыладзе. Выбраць замест іх выяву для рэжыму %1$s?</string>
 </resources>

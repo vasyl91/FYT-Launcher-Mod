@@ -542,4 +542,5 @@
     <string name="color_picker_default">الافتراضي</string>
     <string name="stats_in_app_page">داخل التطبيق</string>
     <string name="stats_background_preference">اختيار خلفية الإحصاءات</string>
+    <string name="wallpaper_unreadable">تعذّرت قراءة الخلفية الحالية على هذا الجهاز. هل تريد اختيار صورة لوضع %1$s بدلاً منها؟</string>
 </resources>

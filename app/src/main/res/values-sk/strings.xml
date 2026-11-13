@@ -542,4 +542,5 @@
     <string name="color_picker_default">Predvolené</string>
     <string name="stats_in_app_page">V aplikácii</string>
     <string name="stats_background_preference">Vybrať pozadie pre štatistiky</string>
+    <string name="wallpaper_unreadable">Aktuálnu tapetu nie je možné na tomto zariadení prečítať. Vybrať namiesto nej obrázok pre režim %1$s?</string>
 </resources>
