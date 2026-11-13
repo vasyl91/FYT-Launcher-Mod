@@ -359,7 +359,6 @@
     <string name="fab_overlay_button">በPiPዎች መካከል መተግበሪያዎችን የሚለዋውጥ ተንሳፋፊ አዝራር አሳይ፦ <b>የግራ ባለሁለት/መጀመሪያ ↔ ሦስተኛ</b> እና <b>የቀኝ ባለሁለት/ሁለተኛ ↔ አራተኛ</b></string>
     <string name="fab_overlay_button_left">በPiPዎች መካከል መተግበሪያዎችን የሚለዋውጥ ተንሳፋፊ አዝራር አሳይ፦ <b>የግራ ባለሁለት/መጀመሪያ ↔ ሦስተኛ</b></string>
     <string name="fab_overlay_button_right">በPiPዎች መካከል መተግበሪያዎችን የሚለዋውጥ ተንሳፋፊ አዝራር አሳይ፦ <b>የቀኝ ባለሁለት/ሁለተኛ ↔ አራተኛ</b></string>
-    <string name="fab_overlay_summary">ለእያንዳንዱ PiP መተግበሪያ ይመድቡ እና ይህን አዝራር ለማሳየት የመስኮት ሁነታን ብቻ ይጠቀሙ።</string>
     <string name="extended_divider">በመከፋፈያው ሦስት ነጥቦች ዙሪያ ያለውን የንክኪ አካባቢ አስፋ</string>
     <string name="cover_splash">የPiP የመክፈቻ ማያ ቀለም</string>
     <string name="cover_splash_icon">የመተግበሪያ አዶው ግልጽ ያልሆኑ ፒክሰሎች አማካይ</string>
@@ -545,4 +544,5 @@
     <string name="widget_bar_two_lines_artist_first">ሁለት መስመር፦ አርቲስት ከርዕስ በላይ</string>
     <string name="pip_restart_button">ዳግም አስጀምር %1$d</string>
     <string name="start_page_missing">ገጽ %1$d የለም፦ የመነሻ ማያ ገጹ %2$d ገጾች አሉት።</string>
+    <string name="fab_overlay_controls_summary">ይህ ተንሳፋፊ አዝራር ለሚቆጣጠራቸው PiPዎች መተግበሪያዎችን መድብ</string>
 </resources>

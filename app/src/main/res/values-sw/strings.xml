@@ -359,7 +359,6 @@
     <string name="fab_overlay_button">Onyesha kitufe kinachoelea kinachobadilisha programu kati ya PiP: <b>kushoto mbili/ya kwanza ↔ ya tatu</b> na <b>kulia mbili/ya pili ↔ ya nne</b></string>
     <string name="fab_overlay_button_left">Onyesha kitufe kinachoelea kinachobadilisha programu kati ya PiP: <b>kushoto mbili/ya kwanza ↔ ya tatu</b></string>
     <string name="fab_overlay_button_right">Onyesha kitufe kinachoelea kinachobadilisha programu kati ya PiP: <b>kulia mbili/ya pili ↔ ya nne</b></string>
-    <string name="fab_overlay_summary">Kabidhi programu kwa kila PiP na utumie hali ya Dirisha pekee kuonyesha kitufe hiki.</string>
     <string name="extended_divider">Kuza eneo la kugusa kuzunguka vitone vitatu vya kigawanyaji</string>
     <string name="cover_splash">Rangi ya skrini ya kuanza ya PiP</string>
     <string name="cover_splash_icon">Wastani wa pikseli zisizoonekana ndani za aikoni ya programu</string>
@@ -545,4 +544,5 @@
     <string name="widget_bar_two_lines_artist_first">Mistari miwili: msanii juu ya kichwa</string>
     <string name="pip_restart_button">Anzisha upya %1$d</string>
     <string name="start_page_missing">Ukurasa %1$d haupo: skrini ya kwanza ina kurasa %2$d.</string>
+    <string name="fab_overlay_controls_summary">Weka programu kwenye PiP zinazodhibitiwa na kitufe hiki kinachoelea</string>
 </resources>

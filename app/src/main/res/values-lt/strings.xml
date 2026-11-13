@@ -359,7 +359,6 @@
     <string name="fab_overlay_button">Rodyti slankųjį mygtuką, kuris keičia programas tarp PiP: <b>kairysis dvigubas / pirmasis ↔ trečiasis</b> ir <b>dešinysis dvigubas / antrasis ↔ ketvirtasis</b></string>
     <string name="fab_overlay_button_left">Rodyti slankųjį mygtuką, kuris keičia programas tarp PiP: <b>kairysis dvigubas / pirmasis ↔ trečiasis</b></string>
     <string name="fab_overlay_button_right">Rodyti slankųjį mygtuką, kuris keičia programas tarp PiP: <b>dešinysis dvigubas / antrasis ↔ ketvirtasis</b></string>
-    <string name="fab_overlay_summary">Priskirkite programą kiekvienam PiP ir šiam mygtukui rodyti naudokite tik lango režimą.</string>
     <string name="extended_divider">Padidinti lietimo sritį aplink tris skirtuko taškus</string>
     <string name="cover_splash">PiP užsklandos spalva</string>
     <string name="cover_splash_icon">Programos piktogramos nepermatomų taškų vidurkis</string>
@@ -545,4 +544,5 @@
     <string name="widget_bar_two_lines_artist_first">Dvi eilutės: atlikėjas virš pavadinimo</string>
     <string name="pip_restart_button">Paleisti iš naujo %1$d</string>
     <string name="start_page_missing">Puslapio %1$d nėra: pagrindiniame ekrane yra %2$d puslapiai.</string>
+    <string name="fab_overlay_controls_summary">Priskirkite programas PiP langams, kuriuos valdo šis slankusis mygtukas</string>
 </resources>

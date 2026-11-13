@@ -427,7 +427,6 @@
     <string name="fab_overlay_button">Show floating button that switches apps between PiPs: <b>left dual/first ↔ third</b> and <b>right dual/second ↔ fourth</b></string>
     <string name="fab_overlay_button_left">Show floating button that switches apps between PiPs: <b>left dual/first ↔ third</b></string>
     <string name="fab_overlay_button_right">Show floating button that switches apps between PiPs: <b>right dual/second ↔ fourth</b></string>
-    <string name="fab_overlay_summary">Assign an app to every PiP and use only Window mode to show this button.</string>
     <string name="extended_divider">Enlarge the touch area around the divider\'s three dots</string>
     <string name="cover_splash">PiP splash color</string>
     <string name="cover_splash_icon">Average color of the app icon\'s opaque pixels</string>
@@ -555,4 +554,5 @@
     <string name="widget_bar_two_lines_artist_first">Two lines: artist above title</string>
     <string name="pip_restart_button">Restart %1$d</string>
     <string name="start_page_missing">Page %1$d does not exist: the home screen has %2$d pages.</string>
+    <string name="fab_overlay_controls_summary">Assign apps to the PiPs controlled by this floating button</string>
 </resources>

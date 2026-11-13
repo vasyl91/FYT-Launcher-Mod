@@ -359,7 +359,6 @@
     <string name="fab_overlay_button">Показувати плаваючу кнопку, яка міняє застосунки місцями між PiP: <b>лівий подвійний/перший ↔ третій</b> і <b>правий подвійний/другий ↔ четвертий</b></string>
     <string name="fab_overlay_button_left">Показувати плаваючу кнопку, яка міняє застосунки місцями між PiP: <b>лівий подвійний/перший ↔ третій</b></string>
     <string name="fab_overlay_button_right">Показувати плаваючу кнопку, яка міняє застосунки місцями між PiP: <b>правий подвійний/другий ↔ четвертий</b></string>
-    <string name="fab_overlay_summary">Призначте застосунок кожному PiP і використовуйте лише режим «Вікно», щоб показати цю кнопку.</string>
     <string name="extended_divider">Збільшити область дотику навколо трьох крапок роздільника</string>
     <string name="cover_splash">Колір заставки PiP</string>
     <string name="cover_splash_icon">Середній колір непрозорих пікселів піктограми застосунку</string>
@@ -545,4 +544,5 @@
     <string name="widget_bar_two_lines_artist_first">Два рядки: виконавець над назвою</string>
     <string name="pip_restart_button">Перезапуск %1$d</string>
     <string name="start_page_missing">Сторінки %1$d не існує: на головному екрані %2$d сторінок.</string>
+    <string name="fab_overlay_controls_summary">Призначте застосунки тим PiP, якими керує ця плаваюча кнопка</string>
 </resources>

@@ -359,7 +359,6 @@
     <string name="fab_overlay_button">Показывать плавающую кнопку, которая меняет приложения местами между PiP: <b>левый двойной/первый ↔ третий</b> и <b>правый двойной/второй ↔ четвёртый</b></string>
     <string name="fab_overlay_button_left">Показывать плавающую кнопку, которая меняет приложения местами между PiP: <b>левый двойной/первый ↔ третий</b></string>
     <string name="fab_overlay_button_right">Показывать плавающую кнопку, которая меняет приложения местами между PiP: <b>правый двойной/второй ↔ четвёртый</b></string>
-    <string name="fab_overlay_summary">Назначьте приложение каждому PiP и используйте только режим «Окно», чтобы показать эту кнопку.</string>
     <string name="extended_divider">Увеличить область нажатия вокруг трёх точек разделителя</string>
     <string name="cover_splash">Цвет заставки PiP</string>
     <string name="cover_splash_icon">Средний цвет непрозрачных пикселей значка приложения</string>
@@ -545,4 +544,5 @@
     <string name="widget_bar_two_lines_artist_first">Две строки: исполнитель над названием</string>
     <string name="pip_restart_button">Перезапуск %1$d</string>
     <string name="start_page_missing">Страницы %1$d не существует: на главном экране %2$d страниц.</string>
+    <string name="fab_overlay_controls_summary">Назначьте приложения тем PiP, которыми управляет эта плавающая кнопка</string>
 </resources>

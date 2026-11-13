@@ -359,7 +359,6 @@
     <string name="fab_overlay_button">Ցուցադրել լողացող կոճակը, որը հավելվածները փոխանակում է PiP-երի միջև՝ <b>ձախ կրկնակի/առաջին ↔ երրորդ</b> և <b>աջ կրկնակի/երկրորդ ↔ չորրորդ</b></string>
     <string name="fab_overlay_button_left">Ցուցադրել լողացող կոճակը, որը հավելվածները փոխանակում է PiP-երի միջև՝ <b>ձախ կրկնակի/առաջին ↔ երրորդ</b></string>
     <string name="fab_overlay_button_right">Ցուցադրել լողացող կոճակը, որը հավելվածները փոխանակում է PiP-երի միջև՝ <b>աջ կրկնակի/երկրորդ ↔ չորրորդ</b></string>
-    <string name="fab_overlay_summary">Յուրաքանչյուր PiP-ին հավելված նշանակեք և այս կոճակը ցուցադրելու համար օգտագործեք միայն «Պատուհան» ռեժիմը։</string>
     <string name="extended_divider">Մեծացնել հպման տարածքը բաժանարարի երեք կետերի շուրջ</string>
     <string name="cover_splash">PiP-ի բացման էկրանի գույն</string>
     <string name="cover_splash_icon">Հավելվածի պատկերակի անթափանց պիքսելների միջինը</string>
@@ -545,4 +544,5 @@
     <string name="widget_bar_two_lines_artist_first">Երկու տող՝ կատարողը վերնագրից վերև</string>
     <string name="pip_restart_button">Վերագործարկել %1$d</string>
     <string name="start_page_missing">%1$d էջը գոյություն չունի. հիմնական էկրանն ունի %2$d էջ։</string>
+    <string name="fab_overlay_controls_summary">Հավելվածներ նշանակեք այն PiP-երին, որոնք կառավարում է այս լողացող կոճակը</string>
 </resources>

@@ -359,7 +359,6 @@
     <string name="fab_overlay_button">Показване на плаващ бутон, който разменя приложения между PiP: <b>ляв двоен/първи ↔ трети</b> и <b>десен двоен/втори ↔ четвърти</b></string>
     <string name="fab_overlay_button_left">Показване на плаващ бутон, който разменя приложения между PiP: <b>ляв двоен/първи ↔ трети</b></string>
     <string name="fab_overlay_button_right">Показване на плаващ бутон, който разменя приложения между PiP: <b>десен двоен/втори ↔ четвърти</b></string>
-    <string name="fab_overlay_summary">Задайте приложение за всеки PiP и използвайте само режим „Прозорец“, за да се показва този бутон.</string>
     <string name="extended_divider">Увеличаване на областта за докосване около трите точки на разделителя</string>
     <string name="cover_splash">Цвят на началния екран на PiP</string>
     <string name="cover_splash_icon">Средно на непрозрачните пиксели на иконата на приложението</string>
@@ -545,4 +544,5 @@
     <string name="widget_bar_two_lines_artist_first">Два реда: изпълнител над заглавие</string>
     <string name="pip_restart_button">Рестарт %1$d</string>
     <string name="start_page_missing">Страница %1$d не съществува: началният екран има %2$d страници.</string>
+    <string name="fab_overlay_controls_summary">Задайте приложения на PiP прозорците, управлявани от този плаващ бутон</string>
 </resources>

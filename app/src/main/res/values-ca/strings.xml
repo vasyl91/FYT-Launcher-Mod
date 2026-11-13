@@ -359,7 +359,6 @@
     <string name="fab_overlay_button">Mostra el botó flotant que intercanvia aplicacions entre els PiP: <b>esquerre doble/primer ↔ tercer</b> i <b>dret doble/segon ↔ quart</b></string>
     <string name="fab_overlay_button_left">Mostra el botó flotant que intercanvia aplicacions entre els PiP: <b>esquerre doble/primer ↔ tercer</b></string>
     <string name="fab_overlay_button_right">Mostra el botó flotant que intercanvia aplicacions entre els PiP: <b>dret doble/segon ↔ quart</b></string>
-    <string name="fab_overlay_summary">Assigna una aplicació a cada PiP i utilitza només el mode Finestra per mostrar aquest botó.</string>
     <string name="extended_divider">Amplia l\'àrea tàctil al voltant dels tres punts del separador</string>
     <string name="cover_splash">Color de la pantalla de presentació del PiP</string>
     <string name="cover_splash_icon">Mitjana dels píxels opacs de la icona de l\'aplicació</string>
@@ -545,4 +544,5 @@
     <string name="widget_bar_two_lines_artist_first">Dues línies: artista damunt del títol</string>
     <string name="pip_restart_button">Reinicia %1$d</string>
     <string name="start_page_missing">La pàgina %1$d no existeix: la pantalla d\'inici té %2$d pàgines.</string>
+    <string name="fab_overlay_controls_summary">Assigna aplicacions als PiP que controla aquest botó flotant</string>
 </resources>

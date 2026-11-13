@@ -359,7 +359,6 @@
     <string name="fab_overlay_button">عرض زر عائم يبدّل التطبيقات بين نوافذ PiP: <b>الأيسر المزدوج/الأول ↔ الثالث</b> و<b>الأيمن المزدوج/الثاني ↔ الرابع</b></string>
     <string name="fab_overlay_button_left">عرض زر عائم يبدّل التطبيقات بين نوافذ PiP: <b>الأيسر المزدوج/الأول ↔ الثالث</b></string>
     <string name="fab_overlay_button_right">عرض زر عائم يبدّل التطبيقات بين نوافذ PiP: <b>الأيمن المزدوج/الثاني ↔ الرابع</b></string>
-    <string name="fab_overlay_summary">عيّن تطبيقًا لكل PiP واستخدم وضع النافذة فقط لعرض هذا الزر.</string>
     <string name="extended_divider">توسيع منطقة اللمس حول نقاط الفاصل الثلاث</string>
     <string name="cover_splash">لون شاشة البداية لـ PiP</string>
     <string name="cover_splash_icon">متوسط البكسلات المعتمة لأيقونة التطبيق</string>
@@ -545,4 +544,5 @@
     <string name="widget_bar_two_lines_artist_first">سطران: الفنان فوق العنوان</string>
     <string name="pip_restart_button">إعادة تشغيل %1$d</string>
     <string name="start_page_missing">الصفحة %1$d غير موجودة: تحتوي الشاشة الرئيسية على %2$d صفحات.</string>
+    <string name="fab_overlay_controls_summary">عيّن تطبيقات لنوافذ PiP التي يتحكم بها هذا الزر العائم</string>
 </resources>

@@ -359,7 +359,6 @@
     <string name="fab_overlay_button">Vis flytende knapp som bytter apper mellom PiP-er: <b>venstre dobbel/første ↔ tredje</b> og <b>høyre dobbel/andre ↔ fjerde</b></string>
     <string name="fab_overlay_button_left">Vis flytende knapp som bytter apper mellom PiP-er: <b>venstre dobbel/første ↔ tredje</b></string>
     <string name="fab_overlay_button_right">Vis flytende knapp som bytter apper mellom PiP-er: <b>høyre dobbel/andre ↔ fjerde</b></string>
-    <string name="fab_overlay_summary">Tilordne en app til hver PiP, og bruk bare vindusmodus for å vise denne knappen.</string>
     <string name="extended_divider">Forstørr berøringsområdet rundt skillelinjens tre prikker</string>
     <string name="cover_splash">PiP-startfarge</string>
     <string name="cover_splash_icon">Gjennomsnitt av appikonets ugjennomsiktige piksler</string>
@@ -545,4 +544,5 @@
     <string name="widget_bar_two_lines_artist_first">To linjer: artist over tittel</string>
     <string name="pip_restart_button">Omstart %1$d</string>
     <string name="start_page_missing">Side %1$d finnes ikke: startskjermen har %2$d sider.</string>
+    <string name="fab_overlay_controls_summary">Tilordne apper til PiP-ene som denne flytende knappen styrer</string>
 </resources>

@@ -359,7 +359,6 @@
     <string name="fab_overlay_button">แสดงปุ่มลอยที่สลับแอประหว่าง PiP: <b>ซ้ายคู่/แรก ↔ ที่สาม</b> และ <b>ขวาคู่/ที่สอง ↔ ที่สี่</b></string>
     <string name="fab_overlay_button_left">แสดงปุ่มลอยที่สลับแอประหว่าง PiP: <b>ซ้ายคู่/แรก ↔ ที่สาม</b></string>
     <string name="fab_overlay_button_right">แสดงปุ่มลอยที่สลับแอประหว่าง PiP: <b>ขวาคู่/ที่สอง ↔ ที่สี่</b></string>
-    <string name="fab_overlay_summary">กำหนดแอปให้ทุก PiP และใช้โหมดหน้าต่างเท่านั้นเพื่อแสดงปุ่มนี้</string>
     <string name="extended_divider">ขยายพื้นที่สัมผัสรอบจุดสามจุดของตัวแบ่ง</string>
     <string name="cover_splash">สีหน้าจอเริ่มต้นของ PiP</string>
     <string name="cover_splash_icon">ค่าเฉลี่ยของพิกเซลทึบของไอคอนแอป</string>
@@ -545,4 +544,5 @@
     <string name="widget_bar_two_lines_artist_first">สองบรรทัด: ศิลปินอยู่เหนือชื่อเพลง</string>
     <string name="pip_restart_button">รีสตาร์ท %1$d</string>
     <string name="start_page_missing">ไม่มีหน้า %1$d: หน้าจอหลักมี %2$d หน้า</string>
+    <string name="fab_overlay_controls_summary">กำหนดแอปให้ PiP ที่ปุ่มลอยนี้ควบคุม</string>
 </resources>

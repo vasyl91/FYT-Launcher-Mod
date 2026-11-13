@@ -359,7 +359,6 @@
     <string name="fab_overlay_button">Rādīt peldošo pogu, kas apmaina lietotnes starp PiP: <b>kreisais dubultais/pirmais ↔ trešais</b> un <b>labais dubultais/otrais ↔ ceturtais</b></string>
     <string name="fab_overlay_button_left">Rādīt peldošo pogu, kas apmaina lietotnes starp PiP: <b>kreisais dubultais/pirmais ↔ trešais</b></string>
     <string name="fab_overlay_button_right">Rādīt peldošo pogu, kas apmaina lietotnes starp PiP: <b>labais dubultais/otrais ↔ ceturtais</b></string>
-    <string name="fab_overlay_summary">Piešķiriet lietotni katram PiP un, lai rādītu šo pogu, izmantojiet tikai loga režīmu.</string>
     <string name="extended_divider">Palielināt pieskāriena zonu ap atdalītāja trim punktiem</string>
     <string name="cover_splash">PiP sākuma ekrāna krāsa</string>
     <string name="cover_splash_icon">Lietotnes ikonas necaurspīdīgo pikseļu vidējā krāsa</string>
@@ -545,4 +544,5 @@
     <string name="widget_bar_two_lines_artist_first">Divas rindas: izpildītājs virs nosaukuma</string>
     <string name="pip_restart_button">Pārstartēt %1$d</string>
     <string name="start_page_missing">Lapa %1$d nepastāv: sākuma ekrānā ir %2$d lapas.</string>
+    <string name="fab_overlay_controls_summary">Piešķiriet lietotnes PiP logiem, kurus pārvalda šī peldošā poga</string>
 </resources>

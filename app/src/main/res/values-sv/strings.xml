@@ -359,7 +359,6 @@
     <string name="fab_overlay_button">Visa flytande knapp som byter appar mellan PiP: <b>vänster dubbel/första ↔ tredje</b> och <b>höger dubbel/andra ↔ fjärde</b></string>
     <string name="fab_overlay_button_left">Visa flytande knapp som byter appar mellan PiP: <b>vänster dubbel/första ↔ tredje</b></string>
     <string name="fab_overlay_button_right">Visa flytande knapp som byter appar mellan PiP: <b>höger dubbel/andra ↔ fjärde</b></string>
-    <string name="fab_overlay_summary">Tilldela en app till varje PiP och använd endast fönsterläge för att visa den här knappen.</string>
     <string name="extended_divider">Förstora tryckytan runt avdelarens tre punkter</string>
     <string name="cover_splash">PiP-startfärg</string>
     <string name="cover_splash_icon">Genomsnitt av appikonens täckande pixlar</string>
@@ -545,4 +544,5 @@
     <string name="widget_bar_two_lines_artist_first">Två rader: artist ovanför titel</string>
     <string name="pip_restart_button">Starta om %1$d</string>
     <string name="start_page_missing">Sida %1$d finns inte: startskärmen har %2$d sidor.</string>
+    <string name="fab_overlay_controls_summary">Tilldela appar till de PiP som den här flytande knappen styr</string>
 </resources>

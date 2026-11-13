@@ -359,7 +359,6 @@
     <string name="fab_overlay_button">បង្ហាញប៊ូតុងអណ្តែតដែលប្តូរកម្មវិធីរវាង PiP៖ <b>ពីរខាងឆ្វេង/ទីមួយ ↔ ទីបី</b> និង <b>ពីរខាងស្តាំ/ទីពីរ ↔ ទីបួន</b></string>
     <string name="fab_overlay_button_left">បង្ហាញប៊ូតុងអណ្តែតដែលប្តូរកម្មវិធីរវាង PiP៖ <b>ពីរខាងឆ្វេង/ទីមួយ ↔ ទីបី</b></string>
     <string name="fab_overlay_button_right">បង្ហាញប៊ូតុងអណ្តែតដែលប្តូរកម្មវិធីរវាង PiP៖ <b>ពីរខាងស្តាំ/ទីពីរ ↔ ទីបួន</b></string>
-    <string name="fab_overlay_summary">កំណត់កម្មវិធីទៅ PiP នីមួយៗ ហើយប្រើតែមុខងារបង្អួចដើម្បីបង្ហាញប៊ូតុងនេះ។</string>
     <string name="extended_divider">ពង្រីកតំបន់ប៉ះជុំវិញចំណុចបីរបស់ឧបករណ៍ចែក</string>
     <string name="cover_splash">ពណ៌ផ្ទាំងបើក PiP</string>
     <string name="cover_splash_icon">ពណ៌មធ្យមនៃភីកសែលស្រអាប់របស់រូបតំណាងកម្មវិធី</string>
@@ -545,4 +544,5 @@
     <string name="widget_bar_two_lines_artist_first">ពីរបន្ទាត់៖ សិល្បករនៅលើចំណងជើង</string>
     <string name="pip_restart_button">ចាប់ផ្តើមឡើងវិញ %1$d</string>
     <string name="start_page_missing">មិនមានទំព័រ %1$d ទេ៖ អេក្រង់ដើមមាន %2$d ទំព័រ។</string>
+    <string name="fab_overlay_controls_summary">កំណត់កម្មវិធីទៅ PiP ដែលប៊ូតុងអណ្តែតនេះគ្រប់គ្រង</string>
 </resources>

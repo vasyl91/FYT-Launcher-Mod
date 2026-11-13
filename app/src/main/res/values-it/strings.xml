@@ -359,7 +359,6 @@
     <string name="fab_overlay_button">Mostra il pulsante flottante che scambia le app tra i PiP: <b>sinistro doppio/primo ↔ terzo</b> e <b>destro doppio/secondo ↔ quarto</b></string>
     <string name="fab_overlay_button_left">Mostra il pulsante flottante che scambia le app tra i PiP: <b>sinistro doppio/primo ↔ terzo</b></string>
     <string name="fab_overlay_button_right">Mostra il pulsante flottante che scambia le app tra i PiP: <b>destro doppio/secondo ↔ quarto</b></string>
-    <string name="fab_overlay_summary">Assegna un\'app a ogni PiP e usa solo la modalità Finestra per mostrare questo pulsante.</string>
     <string name="extended_divider">Ingrandisci l\'area touch attorno ai tre punti del divisore</string>
     <string name="cover_splash">Colore di avvio del PiP</string>
     <string name="cover_splash_icon">Media dei pixel opachi dell\'icona dell\'app</string>
@@ -545,4 +544,5 @@
     <string name="widget_bar_two_lines_artist_first">Due righe: artista sopra il titolo</string>
     <string name="pip_restart_button">Riavvia %1$d</string>
     <string name="start_page_missing">La pagina %1$d non esiste: la schermata Home ha %2$d pagine.</string>
+    <string name="fab_overlay_controls_summary">Assegna le app ai PiP controllati da questo pulsante mobile</string>
 </resources>

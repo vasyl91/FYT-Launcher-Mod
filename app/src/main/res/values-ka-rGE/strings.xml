@@ -359,7 +359,6 @@
     <string name="fab_overlay_button">მოტივტივე ღილაკის ჩვენება, რომელიც აპებს PiP-ებს შორის ცვლის: <b>მარცხენა ორმაგი/პირველი ↔ მესამე</b> და <b>მარჯვენა ორმაგი/მეორე ↔ მეოთხე</b></string>
     <string name="fab_overlay_button_left">მოტივტივე ღილაკის ჩვენება, რომელიც აპებს PiP-ებს შორის ცვლის: <b>მარცხენა ორმაგი/პირველი ↔ მესამე</b></string>
     <string name="fab_overlay_button_right">მოტივტივე ღილაკის ჩვენება, რომელიც აპებს PiP-ებს შორის ცვლის: <b>მარჯვენა ორმაგი/მეორე ↔ მეოთხე</b></string>
-    <string name="fab_overlay_summary">მიანიჭეთ აპი თითოეულ PiP-ს და ამ ღილაკის საჩვენებლად გამოიყენეთ მხოლოდ „ფანჯრის“ რეჟიმი.</string>
     <string name="extended_divider">შეხების არეის გაზრდა გამყოფის სამი წერტილის გარშემო</string>
     <string name="cover_splash">PiP-ის გაშვების ეკრანის ფერი</string>
     <string name="cover_splash_icon">აპის ხატულის გაუმჭვირვალე პიქსელების საშუალო</string>
@@ -545,4 +544,5 @@
     <string name="widget_bar_two_lines_artist_first">ორი ხაზი: შემსრულებელი სათაურის ზემოთ</string>
     <string name="pip_restart_button">გადატვირთვა %1$d</string>
     <string name="start_page_missing">გვერდი %1$d არ არსებობს: მთავარ ეკრანს %2$d გვერდი აქვს.</string>
+    <string name="fab_overlay_controls_summary">მიანიჭეთ აპები იმ PiP-ებს, რომლებსაც ეს მცურავი ღილაკი მართავს</string>
 </resources>

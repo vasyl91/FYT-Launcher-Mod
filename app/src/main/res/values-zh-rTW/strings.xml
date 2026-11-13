@@ -359,7 +359,6 @@
     <string name="fab_overlay_button">顯示浮動按鈕，用於在子母畫面之間切換應用程式：<b>左雙畫/第一個 ↔ 第三個</b> 和 <b>右雙畫/第二個 ↔ 第四個</b></string>
     <string name="fab_overlay_button_left">顯示浮動按鈕，用於在子母畫面之間切換應用程式：<b>左雙畫/第一個 ↔ 第三個</b></string>
     <string name="fab_overlay_button_right">顯示浮動按鈕，用於在子母畫面之間切換應用程式：<b>右雙畫/第二個 ↔ 第四個</b></string>
-    <string name="fab_overlay_summary">為每個子母畫面設定應用程式，僅使用「視窗」模式時顯示此按鈕。</string>
     <string name="extended_divider">擴大分隔線三點的可點選區域</string>
     <string name="cover_splash">子母畫面啟動畫面顏色</string>
     <string name="cover_splash_icon">應用程式圖示不透明像素的平均值</string>
@@ -545,4 +544,5 @@
     <string name="widget_bar_two_lines_artist_first">雙行：歌手顯示在標題上方</string>
     <string name="pip_restart_button">重新啟動 %1$d</string>
     <string name="start_page_missing">第 %1$d 頁不存在：主畫面共有 %2$d 頁。</string>
+    <string name="fab_overlay_controls_summary">為此懸浮按鈕控制的子母畫面視窗指定應用程式</string>
 </resources>

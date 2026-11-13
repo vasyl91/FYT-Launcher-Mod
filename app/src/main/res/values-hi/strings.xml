@@ -359,7 +359,6 @@
     <string name="fab_overlay_button">वह फ़्लोटिंग बटन दिखाएँ जो PiP के बीच ऐप अदला-बदली करता है: <b>बायाँ डुअल/पहला ↔ तीसरा</b> और <b>दायाँ डुअल/दूसरा ↔ चौथा</b></string>
     <string name="fab_overlay_button_left">वह फ़्लोटिंग बटन दिखाएँ जो PiP के बीच ऐप अदला-बदली करता है: <b>बायाँ डुअल/पहला ↔ तीसरा</b></string>
     <string name="fab_overlay_button_right">वह फ़्लोटिंग बटन दिखाएँ जो PiP के बीच ऐप अदला-बदली करता है: <b>दायाँ डुअल/दूसरा ↔ चौथा</b></string>
-    <string name="fab_overlay_summary">हर PiP को एक ऐप दें और यह बटन दिखाने के लिए केवल विंडो मोड इस्तेमाल करें।</string>
     <string name="extended_divider">विभाजक के तीन बिंदुओं के आसपास स्पर्श क्षेत्र बढ़ाएँ</string>
     <string name="cover_splash">PiP स्प्लैश का रंग</string>
     <string name="cover_splash_icon">ऐप आइकन के अपारदर्शी पिक्सल का औसत</string>
@@ -545,4 +544,5 @@
     <string name="widget_bar_two_lines_artist_first">दो पंक्तियाँ: कलाकार शीर्षक के ऊपर</string>
     <string name="pip_restart_button">रीस्टार्ट %1$d</string>
     <string name="start_page_missing">पेज %1$d मौजूद नहीं है: होम स्क्रीन में %2$d पेज हैं।</string>
+    <string name="fab_overlay_controls_summary">इस फ़्लोटिंग बटन से नियंत्रित PiP को ऐप्स असाइन करें</string>
 </resources>

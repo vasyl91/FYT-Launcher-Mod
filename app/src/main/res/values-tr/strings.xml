@@ -359,7 +359,6 @@
     <string name="fab_overlay_button">Uygulamaları PiP\'ler arasında değiştiren yüzen düğmeyi göster: <b>sol çift/birinci ↔ üçüncü</b> ve <b>sağ çift/ikinci ↔ dördüncü</b></string>
     <string name="fab_overlay_button_left">Uygulamaları PiP\'ler arasında değiştiren yüzen düğmeyi göster: <b>sol çift/birinci ↔ üçüncü</b></string>
     <string name="fab_overlay_button_right">Uygulamaları PiP\'ler arasında değiştiren yüzen düğmeyi göster: <b>sağ çift/ikinci ↔ dördüncü</b></string>
-    <string name="fab_overlay_summary">Her PiP\'e bir uygulama atayın ve bu düğmeyi göstermek için yalnızca Pencere modunu kullanın.</string>
     <string name="extended_divider">Ayırıcının üç noktası çevresindeki dokunma alanını büyüt</string>
     <string name="cover_splash">PiP açılış rengi</string>
     <string name="cover_splash_icon">Uygulama simgesinin opak piksellerinin ortalama rengi</string>
@@ -545,4 +544,5 @@
     <string name="widget_bar_two_lines_artist_first">İki satır: sanatçı başlığın üstünde</string>
     <string name="pip_restart_button">%1$d yeniden başlat</string>
     <string name="start_page_missing">%1$d. sayfa yok: ana ekranda %2$d sayfa var.</string>
+    <string name="fab_overlay_controls_summary">Bu kayan düğmenin denetlediği PiP\'lere uygulama atayın</string>
 </resources>

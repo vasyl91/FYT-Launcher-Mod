@@ -359,7 +359,6 @@
     <string name="fab_overlay_button">Прикажи плутајуће дугме које мења апликације између PiP-ова: <b>леви двоструки/први ↔ трећи</b> и <b>десни двоструки/други ↔ четврти</b></string>
     <string name="fab_overlay_button_left">Прикажи плутајуће дугме које мења апликације између PiP-ова: <b>леви двоструки/први ↔ трећи</b></string>
     <string name="fab_overlay_button_right">Прикажи плутајуће дугме које мења апликације између PiP-ова: <b>десни двоструки/други ↔ четврти</b></string>
-    <string name="fab_overlay_summary">Доделите апликацију сваком PiP-у и користите само режим Прозор да бисте приказали ово дугме.</string>
     <string name="extended_divider">Повећај површину додира око три тачке раздвојника</string>
     <string name="cover_splash">Боја почетног екрана PiP-а</string>
     <string name="cover_splash_icon">Просек непровидних пиксела иконе апликације</string>
@@ -545,4 +544,5 @@
     <string name="widget_bar_two_lines_artist_first">Два реда: извођач изнад наслова</string>
     <string name="pip_restart_button">Поново покрени %1$d</string>
     <string name="start_page_missing">Страница %1$d не постоји: почетни екран има %2$d страница.</string>
+    <string name="fab_overlay_controls_summary">Доделите апликације PiP прозорима којима управља ово плутајуће дугме</string>
 </resources>

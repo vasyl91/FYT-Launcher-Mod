@@ -359,7 +359,6 @@
     <string name="fab_overlay_button">Ipakita ang floating button na nagpapalit ng mga app sa pagitan ng mga PiP: <b>kaliwang dual/una ↔ ikatlo</b> at <b>kanang dual/ikalawa ↔ ikaapat</b></string>
     <string name="fab_overlay_button_left">Ipakita ang floating button na nagpapalit ng mga app sa pagitan ng mga PiP: <b>kaliwang dual/una ↔ ikatlo</b></string>
     <string name="fab_overlay_button_right">Ipakita ang floating button na nagpapalit ng mga app sa pagitan ng mga PiP: <b>kanang dual/ikalawa ↔ ikaapat</b></string>
-    <string name="fab_overlay_summary">Magtalaga ng app sa bawat PiP at gamitin lang ang Window mode para ipakita ang button na ito.</string>
     <string name="extended_divider">Palakihin ang touch area sa paligid ng tatlong tuldok ng divider</string>
     <string name="cover_splash">Kulay ng splash ng PiP</string>
     <string name="cover_splash_icon">Average ng mga opaque na pixel ng icon ng app</string>
@@ -545,4 +544,5 @@
     <string name="widget_bar_two_lines_artist_first">Dalawang linya: artist sa itaas ng pamagat</string>
     <string name="pip_restart_button">I-restart ang %1$d</string>
     <string name="start_page_missing">Walang pahina %1$d: may %2$d pahina ang home screen.</string>
+    <string name="fab_overlay_controls_summary">Magtalaga ng mga app sa mga PiP na kinokontrol ng floating button na ito</string>
 </resources>

@@ -46,19 +46,19 @@
             android:key="fab_overlay_button"
             android:defaultValue="false"
             android:title="@string/fab_overlay_button"
-            app:summary="@string/fab_overlay_summary"
+            app:summary="@string/fab_overlay_controls_summary"
             app:layout="@layout/nested_preference_category_switch" />
         <com.android.launcher66.settings.CustomSwitchPreference
             android:key="fab_overlay_button_left"
             android:defaultValue="false"
             android:title="@string/fab_overlay_button_left"
-            app:summary="@string/fab_overlay_summary"
+            app:summary="@string/fab_overlay_controls_summary"
             app:layout="@layout/nested_preference_category_switch" />
         <com.android.launcher66.settings.CustomSwitchPreference
             android:key="fab_overlay_button_right"
             android:defaultValue="false"
             android:title="@string/fab_overlay_button_right"
-            app:summary="@string/fab_overlay_summary"
+            app:summary="@string/fab_overlay_controls_summary"
             app:layout="@layout/nested_preference_category_switch" />
         <com.android.launcher66.settings.CustomSwitchPreference
             android:key="extended_divider"

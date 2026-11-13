@@ -359,7 +359,6 @@
     <string name="fab_overlay_button">Zwevende knop tonen die apps tussen PiP\'s wisselt: <b>links dubbel/eerste ↔ derde</b> en <b>rechts dubbel/tweede ↔ vierde</b></string>
     <string name="fab_overlay_button_left">Zwevende knop tonen die apps tussen PiP\'s wisselt: <b>links dubbel/eerste ↔ derde</b></string>
     <string name="fab_overlay_button_right">Zwevende knop tonen die apps tussen PiP\'s wisselt: <b>rechts dubbel/tweede ↔ vierde</b></string>
-    <string name="fab_overlay_summary">Wijs een app toe aan elke PiP en gebruik alleen de venstermodus om deze knop te tonen.</string>
     <string name="extended_divider">Aanraakgebied rond de drie stippen van de scheidingslijn vergroten</string>
     <string name="cover_splash">PiP-opstartkleur</string>
     <string name="cover_splash_icon">Gemiddelde van de dekkende pixels van het app-pictogram</string>
@@ -545,4 +544,5 @@
     <string name="widget_bar_two_lines_artist_first">Twee regels: artiest boven titel</string>
     <string name="pip_restart_button">Herstart %1$d</string>
     <string name="start_page_missing">Pagina %1$d bestaat niet: het startscherm heeft %2$d pagina\'s.</string>
+    <string name="fab_overlay_controls_summary">Wijs apps toe aan de PiP\'s die deze zwevende knop bedient</string>
 </resources>

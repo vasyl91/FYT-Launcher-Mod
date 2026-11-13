@@ -79,4 +79,5 @@
     <string name="widget_bar_two_lines_title_first">Deux lignes : titre au-dessus de l\'artiste</string>
     <string name="widget_bar_two_lines_artist_first">Deux lignes : artiste au-dessus du titre</string>
     <string name="pip_restart_button">Redémarrer %1$d</string>
+    <string name="fab_overlay_controls_summary">Attribuez des applications aux PiP commandés par ce bouton flottant</string>
 </resources>

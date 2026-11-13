@@ -103,4 +103,5 @@
     <string name="widget_bar_two_lines_title_first">Dos líneas: título encima del artista</string>
     <string name="widget_bar_two_lines_artist_first">Dos líneas: artista encima del título</string>
     <string name="pip_restart_button">Reiniciar %1$d</string>
+    <string name="fab_overlay_controls_summary">Asigna apps a los PiP que controla este botón flotante</string>
 </resources>

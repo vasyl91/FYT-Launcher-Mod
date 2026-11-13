@@ -359,7 +359,6 @@
     <string name="fab_overlay_button">Kuva ujuv nupp, mis vahetab rakendusi PiP-ide vahel: <b>vasak topelt/esimene ↔ kolmas</b> ja <b>parem topelt/teine ↔ neljas</b></string>
     <string name="fab_overlay_button_left">Kuva ujuv nupp, mis vahetab rakendusi PiP-ide vahel: <b>vasak topelt/esimene ↔ kolmas</b></string>
     <string name="fab_overlay_button_right">Kuva ujuv nupp, mis vahetab rakendusi PiP-ide vahel: <b>parem topelt/teine ↔ neljas</b></string>
-    <string name="fab_overlay_summary">Määrake igale PiP-ile rakendus ja kasutage selle nupu kuvamiseks ainult akna režiimi.</string>
     <string name="extended_divider">Suurenda puuteala eraldaja kolme punkti ümber</string>
     <string name="cover_splash">PiP käivituskuva värv</string>
     <string name="cover_splash_icon">Rakenduse ikooni läbipaistmatute pikslite keskmine</string>
@@ -545,4 +544,5 @@
     <string name="widget_bar_two_lines_artist_first">Kaks rida: esitaja pealkirja kohal</string>
     <string name="pip_restart_button">Taaskäivita %1$d</string>
     <string name="start_page_missing">Lehte %1$d ei ole: avakuval on %2$d lehte.</string>
+    <string name="fab_overlay_controls_summary">Määra rakendused PiP-akendele, mida see hõljuv nupp juhib</string>
 </resources>

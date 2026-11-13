@@ -359,7 +359,6 @@
     <string name="fab_overlay_button">Lebegő gomb megjelenítése, amely az alkalmazásokat cseréli a PiP-ek között: <b>bal kettős/első ↔ harmadik</b> és <b>jobb kettős/második ↔ negyedik</b></string>
     <string name="fab_overlay_button_left">Lebegő gomb megjelenítése, amely az alkalmazásokat cseréli a PiP-ek között: <b>bal kettős/első ↔ harmadik</b></string>
     <string name="fab_overlay_button_right">Lebegő gomb megjelenítése, amely az alkalmazásokat cseréli a PiP-ek között: <b>jobb kettős/második ↔ negyedik</b></string>
-    <string name="fab_overlay_summary">Rendeljen alkalmazást minden PiP-hez, és csak az Ablak módot használja e gomb megjelenítéséhez.</string>
     <string name="extended_divider">Az elválasztó három pontja körüli érintési terület növelése</string>
     <string name="cover_splash">PiP indítóképernyő színe</string>
     <string name="cover_splash_icon">Az alkalmazásikon átlátszatlan képpontjainak átlaga</string>
@@ -545,4 +544,5 @@
     <string name="widget_bar_two_lines_artist_first">Két sor: előadó a cím felett</string>
     <string name="pip_restart_button">%1$d. újraindítása</string>
     <string name="start_page_missing">A(z) %1$d. oldal nem létezik: a kezdőképernyőnek %2$d oldala van.</string>
+    <string name="fab_overlay_controls_summary">Rendeljen alkalmazásokat a lebegő gomb által vezérelt PiP-ablakokhoz</string>
 </resources>

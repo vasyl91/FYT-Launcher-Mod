@@ -34,9 +34,9 @@ final class LauncherFab {
         String thirdPkg = mLauncher.mPrefs.getString(Keys.PIP_THIRD_PACKAGE, "");
         String fourthPkg = mLauncher.mPrefs.getString(Keys.PIP_FOURTH_PACKAGE, "");
 
-        if (!firstPkg.isEmpty() && !secondPkg.isEmpty() && !thirdPkg.isEmpty() && !fourthPkg.isEmpty()) {
-            return true;
-        } else return false;
+        // Each button needs an app only in the PiPs it controls (FabButtons)
+        return FabButtons.anyUsable(floatingBtn, floatingBtnLeft, floatingBtnRight,
+                !firstPkg.isEmpty(), !secondPkg.isEmpty(), !thirdPkg.isEmpty(), !fourthPkg.isEmpty());
     }
 
     /**

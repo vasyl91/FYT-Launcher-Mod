@@ -359,7 +359,6 @@
     <string name="fab_overlay_button">نمایش دکمه شناور که برنامه‌ها را بین PiPها جابه‌جا می‌کند: <b>چپ دوتایی/اول ↔ سوم</b> و <b>راست دوتایی/دوم ↔ چهارم</b></string>
     <string name="fab_overlay_button_left">نمایش دکمه شناور که برنامه‌ها را بین PiPها جابه‌جا می‌کند: <b>چپ دوتایی/اول ↔ سوم</b></string>
     <string name="fab_overlay_button_right">نمایش دکمه شناور که برنامه‌ها را بین PiPها جابه‌جا می‌کند: <b>راست دوتایی/دوم ↔ چهارم</b></string>
-    <string name="fab_overlay_summary">برای هر PiP یک برنامه تعیین کنید و برای نمایش این دکمه فقط از حالت پنجره استفاده کنید.</string>
     <string name="extended_divider">بزرگ‌تر کردن ناحیه لمس اطراف سه نقطه جداکننده</string>
     <string name="cover_splash">رنگ صفحه آغازین PiP</string>
     <string name="cover_splash_icon">میانگین پیکسل‌های مات نماد برنامه</string>
@@ -545,4 +544,5 @@
     <string name="widget_bar_two_lines_artist_first">دو خط: خواننده بالای عنوان</string>
     <string name="pip_restart_button">راه‌اندازی مجدد %1$d</string>
     <string name="start_page_missing">صفحهٔ %1$d وجود ندارد: صفحهٔ اصلی %2$d صفحه دارد.</string>
+    <string name="fab_overlay_controls_summary">به PiPهایی که این دکمهٔ شناور کنترل می‌کند برنامه اختصاص دهید</string>
 </resources>

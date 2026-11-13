@@ -129,7 +129,6 @@
     <string name="fab_overlay_button">Mostrar o botão flutuante que alterna apps entre os PiPs: <b>esquerdo duplo/primeiro ↔ terceiro</b> e <b>direito duplo/segundo ↔ quarto</b></string>
     <string name="fab_overlay_button_left">Mostrar o botão flutuante que alterna apps entre os PiPs: <b>esquerdo duplo/primeiro ↔ terceiro</b></string>
     <string name="fab_overlay_button_right">Mostrar o botão flutuante que alterna apps entre os PiPs: <b>direito duplo/segundo ↔ quarto</b></string>
-    <string name="fab_overlay_summary">Atribua um app a cada PiP e use apenas o modo Janela para mostrar este botão.</string>
     <string name="swipe_detector">Detecção de deslize para a barra de estado</string>
     <string name="swipe_detector_summary">A parte central inferior da barra de estado detectará deslizes e permitirá rolar entre as páginas. Isso pode ser útil quando a visualização PiP ocupa a maior parte do ecrã visível.</string>
 
@@ -191,4 +190,5 @@
     <string name="widget_bar_two_lines_artist_first">Duas linhas: artista acima do título</string>
     <string name="pip_restart_button">Reiniciar %1$d</string>
     <string name="start_page_missing">A página %1$d não existe: o ecrã principal tem %2$d páginas.</string>
+    <string name="fab_overlay_controls_summary">Atribua apps aos PiP controlados por este botão flutuante</string>
 </resources>
