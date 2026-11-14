@@ -5,8 +5,8 @@
 the audit written for it is [`audit_blueprint_2026-11-12.md`](audit_blueprint_2026-11-12.md).
 
 **What "done" means here.** Every commit builds in both flavors and the unit tests pass: 1011 tests in 110
-files at the end, 866 before the round. CI was green on every push that had finished when this was written
-(runs 473 and 475–479; 474 was cancelled by a newer push). **Nothing was run on a device.** No lint and no
+files at the end, about 866 before the round. CI was green on every push of the round (runs 473 and
+475–480; 474 was cancelled by a newer push); run 480 is the last code commit, `ca27a7637`. **Nothing was run on a device.** No lint and no
 release build were run: neither is part of this project's checks (`KNOWN_ISSUES.md` KI-17). Each row below
 says what the owner's device test has to show.
 
@@ -123,6 +123,6 @@ Removed: `widget_bar_one_line_off`, `fab_overlay_summary`, `black_color`, `white
 |---|---|
 | New | `workspace_grid_long`, `workspace_grid_short` (absent = 10 × 6), `workspace_grid_arranged_landscape` / `_portrait`, `widgets_tint_color`, `bar_tint_color`, `widgets_custom_background_color`, `bar_custom_background_color`, `vertical_bar_custom_background_color`, `stats_selected_background`, `stats_custom_background_color` |
 | New value | `custom` in the three `…_selected_background` keys; `two_artist_first` in `widget_bar_line_mode` |
-| Migrated once, then removed | `black_widgets`, `black_bar`; `stats_bg`, `bg_drawable`, `bg_color`, `alpha_seek_bar` |
+| Migrated once, then removed | `black_widgets`, `black_bar`; `stats_bg`, `bg_drawable`, `bg_color`, `bg_stats_color`, `alpha_seek_bar` and the picker's `red`/`green`/`blue`, `bg_red`/`bg_green`/`bg_blue` |
 | Forced off where hidden | `cold_start_last_app_delay` |
 | Reset when it names no page | `start_page` |

@@ -1,8 +1,8 @@
 # Project state
 
 **Snapshot: 2026-11-13, `testBranch` after round 13 (`4e73d1178` … `ca27a7637`, then the documentation
-commits). CI is green on every push of the round up to `7242003c8` (run 479); the run for `ca27a7637` was
-still going when this was written. Nothing of round 13 has been run on a device.** This file is the authoritative entry point for a new session. Update it at the
+commits). CI is green on every push of the round, the last code commit `ca27a7637` included (run 480).
+Nothing of round 13 has been run on a device.** This file is the authoritative entry point for a new session. Update it at the
 end of every round (see `CLAUDE.md`).
 
 Status tags: [V] verified in code, git or CI · [H] historical, from the owner, a brief or a chat report ·
