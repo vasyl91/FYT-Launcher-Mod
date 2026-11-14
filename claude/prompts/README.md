@@ -147,6 +147,7 @@ Work that was done from a written brief which is not in this folder.
 | Date | What | Where the brief is | Implemented as | Source |
 |---|---|---|---|---|
 | 2026-10-23 → 10-26 | FYT stock sources behind the music widget (work packages WP1–WP12; P3 optional) | **Not in the repository.** A session note about it is: `archive/analysis/memory-2026-10-26-stock-sources-7870.md`. The brief itself was `docs/prompts/sonnet_stock_media_sources.md`, with a tester's guide `docs/7870-stock-sources-test.md`, in a local commit `0b722649` that was never pushed | `ded0e6ef`, `d5030a6e`, `4ad0bed2`, `f1773cc1` [V]. P3 (online radio logos, BT cover) came later with brief 22 (`b574e758`) | CHAT_06 |
+| 2026-11-12 → 11-13 | **Round 13:** the owner's 19 tasks (settings texts, bar windows, backgrounds and colours, the stats window, the wallpaper, fYT Rating, the grid of the home screen) | The owner's request was given in the conversation and is not stored. The audit written for it, which stood in for a brief: `../reports/audit_blueprint_2026-11-12.md` | `4e73d1178` … `ca27a7637` (25 commits, the subjects the audit lists where it lists them), `52d75131c` and the documentation commit after it. One session audited, decided and implemented; there was no separate review | `../reports/implementation_report_2026-11-13.md`. No device result yet (`KNOWN_ISSUES.md` KI-30) |
 
 Before 2026-10-27 the work was directed in conversation, without brief files. Those conversations are
 covered by the reports CHAT_01 … CHAT_06.

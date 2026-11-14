@@ -1,7 +1,8 @@
 # Project state
 
-**Snapshot: 2026-11-12, `testBranch` at `ee8e4f91` plus documentation commits (`e3ba694e`, `5ba38ec2` and
-the one that carries this text), with the owner's answers of that day. CI is green on `ee8e4f91` (run 468), the last commit that touched the build.** This file is the authoritative entry point for a new session. Update it at the
+**Snapshot: 2026-11-13, `testBranch` after round 13 (`4e73d1178` … `ca27a7637`, then the documentation
+commits). CI is green on every push of the round up to `7242003c8` (run 479); the run for `ca27a7637` was
+still going when this was written. Nothing of round 13 has been run on a device.** This file is the authoritative entry point for a new session. Update it at the
 end of every round (see `CLAUDE.md`).
 
 Status tags: [V] verified in code, git or CI · [H] historical, from the owner, a brief or a chat report ·
@@ -28,11 +29,12 @@ What the owner wants from it, as the briefs and chat reports show [H]:
 | | |
 |---|---|
 | Last release | **v1.2.1**, 2026-10-06 [V]. `versionName` in `app/build.gradle.kts` is still 1.2.1 [V]. |
-| Unreleased work | At `ee8e4f91`: 536 commits since `v1.2.1`, and `testBranch` 141 commits ahead of `main` (last merge: PR #33, 2026-11-01) [V]. |
+| Unreleased work | At `ee8e4f91`: 536 commits since `v1.2.1`, and `testBranch` 141 commits ahead of `main` (last merge: PR #33, 2026-11-01) [V]. Round 13 added 26 more. |
 | Next version | 1.2.2. README, the updater and `release-assets.yml` already describe `system_release_1.2.2.apk` [V]. **No release date is recorded** [U]. |
 | Development phase | Short feature and fix rounds on `testBranch`, driven by device logs (Opus brief → Sonnet commits → owner test). 33 briefs since 2026-10-27, all implemented [V]. |
 | Active brief | **None.** `prompts/active/` is empty [V]. |
-| Last code change | Round 12 (G1–G3), 2026-11-08: `e3136f45`, `b1fe254c`, `3dd71894` [V]. The owner confirmed it on 2026-11-12: "It works as intended." [H] |
+| Last code change | **Round 13, 2026-11-12/13: the owner's 19 tasks**, 25 code commits `4e73d1178` … `ca27a7637` and `52d75131c` (README), done in one session from an audit instead of a brief [V]. **Waiting for the owner's device test** (`KNOWN_ISSUES.md` KI-30). Reports: `reports/audit_blueprint_2026-11-12.md`, `reports/implementation_report_2026-11-13.md`. |
+| Before that | Round 12 (G1–G3), 2026-11-08: `e3136f45`, `b1fe254c`, `3dd71894` [V]. The owner confirmed it on 2026-11-12: "It works as intended." [H] |
 | Since then | Documentation and repository layout only: `claude/` created (`a30c9a72`), reference material moved to `archive/` (`8bfc5a8d`), 15 chat reports added (`754c8258`), `android-36.jar` moved back (`ee8e4f91`), the folder unified as `claude/` (`e3ba694e`) [V]. |
 | Open GitHub issues | 0 [V] (2026-11-10). |
 
@@ -72,6 +74,10 @@ All features below are implemented [V]. Details are in `ARCHITECTURE.md`; user-f
 | Baseline Profile with on-device compilation | — | The profile in the repo is probably stale (KI-04). |
 | Standard flavor on root or Shizuku (VD host protocol 3) | both phones [H] | Overlay, notification access and install permissions granted through the host. |
 | Round 12: load restart, live widget colors, overlap rule | owner confirmed 2026-11-12 [H] | D-17. |
+| Round 13: rows and columns of the home screen, bars cut out of the grid | **no device result** | D-52. The first start after the update moves the items that lay under a bar. |
+| Round 13: a colour of one's own for backgrounds, any text colour, backgrounds turned with the bar, the stats window's background | **no device result** | D-54, D-55; two migrations of stored settings. |
+| Round 13: the wallpaper read from one source with fallbacks | **no device result** | D-53; the root way needs the module built from this version. |
+| Round 13: fixes (bar windows' side, title scrolling, the leak of the bar window, radio tap without a radio, cell view ids, start page, stats over another launcher, settings texts) | **no device result** | KI-28, KI-30. |
 
 Not implemented:
 
@@ -95,7 +101,7 @@ install. See `ARCHITECTURE.md`.
 
 Java with some Kotlin; AGP 9.3.2, Kotlin 2.4.10, Gradle 9.8.0, JDK 21; compileSdk 37, targetSdk 36, minSdk 26.
 The modules are `:app`, `:baselineprofile`, `:hiddenapi-stubs`, `:vdhost-shared` and `:vdhost-server`.
-JUnit 5 JVM tests: 95 files, about 866 tests, no instrumented tests. CI runs on GitHub Actions [V].
+JUnit 5 JVM tests: 110 files, 1011 tests, no instrumented tests. CI runs on GitHub Actions [V].
 
 ## Constraints that shape every change
 
@@ -112,8 +118,10 @@ JUnit 5 JVM tests: 95 files, about 866 tests, no instrumented tests. CI runs on 
 
 ## Active tasks
 
-None. Every round so far is implemented and reviewed. The next one starts when the owner asks for
-something new or the tester's 7870 results arrive.
+**The owner's device review of round 13.** It is implemented, builds and passes its tests; none of it has
+been seen on a device. `reports/implementation_report_2026-11-13.md` lists what to check for each of the 19
+tasks and the choices that were made without the owner (D-57). The next round records the result, as every
+round does.
 
 ## Blocked or waiting
 
@@ -130,6 +138,8 @@ in mind before a release, from `KNOWN_ISSUES.md`:
 1. The Baseline Profile is probably stale (KI-04).
 2. Something does not work on the tester's 7870, and it is not yet known what (KI-29).
 3. Several earlier changes have no device confirmation on record (KI-25).
+4. **Round 13 is untested on devices (KI-30).** It changes the grid of every page with a bar and rewrites
+   the cells of the items there once; test it on a phone before the 7862.
 
 The hardcoded OpenWeather key is **not** an open issue: the owner decided to keep it (D-26).
 
@@ -148,9 +158,9 @@ The hardcoded OpenWeather key is **not** an open issue: the owner decided to kee
 |---|---|
 | [`CLAUDE.md`](CLAUDE.md) | Rules, commands, Opus/Sonnet workflow |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | What exists and where: modules, subsystems, data, services, privileges |
-| [`DECISIONS.md`](DECISIONS.md) | Why: 51 decisions with status, who decided and the source |
+| [`DECISIONS.md`](DECISIONS.md) | Why: 57 decisions with status, who decided and the source |
 | [`ROADMAP.md`](ROADMAP.md) | History in milestones, confirmed plans, recommendations |
 | [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md) | Confirmed problems, accepted limitations, unverified reports |
 | [`prompts/README.md`](prompts/README.md) | Catalogue of all briefs → commits → status |
 | [`chat_archive/README.md`](chat_archive/README.md) | Index of the 15 conversation reports and what was taken from each |
-| [`reports/`](reports/) | The audits of 2026-11-10 and the consolidation report of 2026-11-12 |
+| [`reports/`](reports/) | The audits of 2026-11-10, the consolidation report of 2026-11-12, and round 13's audit and implementation report |

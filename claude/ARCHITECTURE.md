@@ -1,6 +1,7 @@
 # Architecture
 
-State of `ee8e4f91` (2026-11-12). Everything here was checked in the code [V] unless it is tagged otherwise.
+State of `ca27a7637` (2026-11-13, after round 13). Everything here was checked in the code [V] unless it is
+tagged otherwise.
 The reasons behind the design are in `DECISIONS.md`; this file says what exists and where.
 Abbreviations used in paths below:
 
@@ -99,6 +100,9 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   - The protocol is `vdhost/shared/.../VdHostProtocol` (`VERSION = 3`, `MIN_VERSION = 2`). The errands are
     in `HostServices`, and `HostFilePolicy` limits `readFile`. The table of what each host can do is in
     `vdhost/README.md`.
+  - `readHomeWallpaper` (2026-11-13) is a new transaction added **without** a new protocol number or module
+    version (`DECISIONS.md` D-53): a host that does not know it answers nothing and the launcher goes on to
+    its next way of getting the wallpaper. Only the daemon can do it; through Shizuku it answers nothing.
 - **FYT firmware code** (`com.syu.*`, decompiled) runs behind the fuse `S/FytCompat`: a
   `RuntimeException`/`LinkageError` is logged and written once to `compat_pid_<time>.txt` instead of crashing.
 - **`S/CrashLoopGuard`:** three crashes within two minutes make the next start a safe one, without custom
@@ -116,6 +120,26 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   lives.
   - Page 1 is the *user page*, with the bars. It is not in the screens table.
   - Empty pages that nothing asks for are removed, and the page numbers saved in the preferences follow.
+- **Grid** (2026-11-13, `DECISIONS.md` D-52):
+  - `L/WorkspaceGrid` (plain Java) is the grid of a page: the rows and columns the user chose, stored as
+    cells along the long and the short edge of the screen (default 10 × 6, each from two below to four
+    above), one column fewer on a page with the vertical bar and one row fewer on a page with a horizontal
+    bar that does not hide. The bars' strips are cut out of the page and the cells share the rest.
+  - `S/WorkspaceGrids` builds it from the settings for the first page or for the others; the page
+    (`CellLayout.useWorkspaceGrid`), the loader (`LauncherModel`) and the settings ask there.
+  - `CellLayout` keeps its children at the whole page. Only the cells start beside the bars: an offset in
+    `ShortcutAndWidgetContainer` and in the page's cell arithmetic. The elements placed by pixels are not
+    moved by it.
+  - `L/GridOverflow` (plain Java) says where items go when the grid of their page changes; the loader runs
+    it once per change, before it reads the items (`LoaderTask.arrangeItemsForGrid`). An item keeps its
+    place on the screen, one without a cell gets the nearest free one, nothing is deleted, and a turn of
+    the screen alone moves nothing (the grid the items were arranged for is stored per orientation).
+  - The app drawer and the folders still take their grid from `L/DynamicGrid` / `L/DeviceProfile`.
+  - `L/CellChildId` gives the views of a page ids outside the resource id range.
+- **Start page:** `S/StartPageRule` (plain Java) accepts only a page that exists; the screen plan resets a
+  stored number that names none.
+- **Taps on the widgets:** `L/WidgetLaunchRule` decides what a tap on the radio (and the other stock
+  shortcuts) can start; the panes and the music are touched only when something starts.
 - **Custom elements:** `L/CustomElement` lists the nine elements: the date, music and radio widgets, five
   PiP placeholders and the stats placeholder. Their on/off defaults live only there;
   `L/CustomElementPrefs` reads them.
@@ -155,7 +179,15 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   - `L/PersistentBarWindow` is the logic of the window that stays put while the pages move (pre-built, so
     showing it costs nothing); `L/VerticalBarWindow` is the vertical bar's window.
   - `L/PageBox` and `L/TopBarFrame` keep the windows on the page's box, below the status bar and the
-    cut-out.
+    cut-out. The box is taken from a page **at rest** (`PageBox.pageRestLeft`), never from the pager's own
+    edge: the pager is measured much wider than the screen and centred, so its left edge is thousands of
+    pixels off screen (the cause of the vertical bar's window on the wrong side, fixed 2026-11-13).
+    `L/VerticalWindowFrame` trusts the measured bar only when it lies inside that box.
+- **Backgrounds** (2026-11-13): `L/BackgroundChoice` (a picture by name, the user's own colour, or none),
+  `L/BarBackground` (the one resolver for the first page's bars, both windows, the widgets, the stats window
+  and the creators), `L/BackgroundAngle` + `L/RotatedDrawable` (the picture turned for the side the bar is
+  on; the view is not turned), `L/RoundedColorDrawable`. The bar backgrounds are part of the live look
+  (`WidgetStyler.isLookSetting`, `Workspace.applyBarBackgrounds`).
 - **Auto-hide and the edge handle:**
   - `L/HorizontalBarEdgeHandle` is the window, on the left or right edge.
   - `L/HorizontalBarEdgeGesture` recognises the inward swipe; `L/EdgeHandleGeometry`, `L/EdgeHandleInput`
@@ -163,14 +195,17 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   - On Android 10 system units the handle window takes no touches. `L/EdgeSwipeMonitor` and
     `L/EdgeMonitorTracker` watch an input monitor and pilfer only the opening swipe.
 - **Widget bar** (the music widget on the horizontal bar): `L/WidgetBarLayout`, `L/WidgetBarPlan`,
-  `L/WidgetBarLines`.
+  `L/WidgetBarLines` (four arrangements: two lines either way round, or one line either way round).
+  `L/MarqueeRestart` keeps the title scrolling in whichever of the two bars is bound.
 
 ## 6. Layout creator
 
 - `S/CreatorScreen.newInstance(page)` + `S/DrawViewScreen` is one creator for every page (since 2026-11-08).
 - `S/CreatorPage` is the pure description of a page; `L/CreatorBars` and `S/CreatorBarMarks` draw the
   bars as they look on the home screen.
-- `S/CreatorAppStats` + `S/DrawViewAppStats` is the creator of the stats window.
+- `S/CreatorAppStats` + `S/DrawViewAppStats` is the creator of the stats window **over other apps**. It
+  shows the bare screen, without the launcher's bars, because no bar is there when the window is shown.
+  (The stats window of the home screen is placed in the page creator above.)
 - `S/RectangleTouchHelper` and `S/GridGeometry` handle touch and the grid.
 
 ## 7. PiP panes
@@ -206,7 +241,8 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
 - **Views:** `L/LauncherMusicWidget`, `L/LauncherRadioWidget`. Sizing and text: `L/MusicWidgetPlan`,
   `L/MusicWidgetSizer`, `L/MusicWidgetText`, `L/RadioWidgetPlan`, `L/RadioWidgetSizer`. Look:
   `L/WidgetStyle` + `L/WidgetStyler` + `L/ViewTint`. Colors are view tints, never color filters on shared
-  drawables (rule R2, 2026-11-08).
+  drawables (rule R2, 2026-11-08). Since 2026-11-13 the tint is any colour or none ("Default"), chosen in
+  `L/colorpicker/ColorPicker` (a text mode, and a background mode with an alpha slider; `L/ColorAlpha`).
 - **Any player:** `L/NotificationListener.kt` (media sessions) and `L/MediaTransportController`. With no
   cover the player's app icon is shown; with no session a widget button opens the last player.
 - **Sound channel:** `com.syu.ms` switches the MCU's sound channel when a media app comes up (1 radio,
@@ -223,7 +259,9 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
     (`C/SyuMediaRadioFavorites`).
   - The like status comes from `S/SpotifyRating` (Spotify Web API, PKCE, a client ID the user enters, the
     refresh token in preferences) or `S/FytRating` (the separate *fYT Rating* app `vasyl.fytrating`; the
-    launcher holds no Google credentials; `S/FytRatingBridgeStarter` starts it).
+    launcher holds no Google credentials; `S/FytRatingBridgeStarter` starts it). `S/RatingReplyRule`
+    handles a bridge that answers without a rating: its reason is logged and its wake activity is started
+    once (`KNOWN_ISSUES.md` KI-32).
 - **App widgets:** `com/syu/widget/*Provider` (date, music, navigation, radio, time).
 
 ## 9. CAN bus and fuel statistics
@@ -231,7 +269,7 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
 - **FYT IPC:** `com/syu/ipc` and `com/syu/module` (decompiled) connect to `com.syu.ms` over binder: modules,
   `DATA[]` codes, callbacks. The per-car callbacks are in `com/syu/module/canbus` (729 files), including the
   7870's own path (`com/syu/module/canbus/HandlerCanbus7870`).
-- **Service:** `S/CanbusService`, a foreground service.
+- **Service:** `S/CanbusService`, a started (sticky) service; it does not call `startForeground`.
   - It reads the fuel, range, speed and RPM codes and draws the stats window over the home screen and
     chosen apps.
   - The current app comes from `S/StateAccessibilityService` or `S/ForegroundAppTracker` (through the host).
@@ -250,6 +288,11 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   `S/RoadGrade`, `S/FuelUnit`, `S/ConsumptionUnits`.
 - **Stats window:** `S/StatsWindowSize`, `S/StatsOverlayAlpha` (full alpha through the host),
   `S/StatsBarFit` (the bars move the window, never resize it).
+  - `S/StatsWindowRule` (plain Java, 2026-11-13) says which window may be shown: the home screen's only
+    while the launcher is in front, an app's only over that app. `CanbusService` removes a window that
+    does not belong to what is in front (`onLauncherStopped`, `enforceWindowOwner`).
+  - Its background is a `BackgroundChoice` like the widgets'; `S/StatsBackgroundMigration` turned the old
+    six settings into it once.
 - **Background** [H]: newer `com.syu.canbus` builds shift the `DATA[n]` indices (+11 for the PSA family).
   `claude/prompts/archive/analysis/canbus-app-comparison-2026-10-30.md` has the details.
 
@@ -259,6 +302,10 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   api.sunrise-sunset.org, with a fallback); `S/DayNightBrightness` (a minimum night brightness on the 7870);
   `S/HeadlightNightMode`. It changes the wallpaper and brightness, not the system dark mode. The launcher
   declares `uiMode` so that it is not recreated.
+- **Reading the wallpaper** (2026-11-13): `S/HomeWallpaperSource` is the one place; `S/WallpaperAccess`
+  (plain Java) lists the ways worth trying on a device, in order: the system's API where it gives the real
+  picture, then the privileged host, then no picture (the colours, and the user picks an image). Used by
+  the background selectors and by "Save the day / night wallpaper".
 - **Location:** `S/DeviceLocation`. The platform location comes first; Play services (`S/GmsLocation`) is
   used only as a way out (`S/LocationChoice`).
 - **Weather:** `com/syu/weather/WeatherManager` (OpenWeather), `L/LauncherWeather`, `L/WeatherNeed`. It
@@ -295,6 +342,12 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
 - **Settings:** `S/SettingsActivity` with `S/SettingsFragmentFirst` and `S/SettingsFragmentSecond` (2.1k and
   2.6k lines), the preferences in `res/xml/`, and many `S/Custom*Preference` classes. `S/Keys` holds the
   preference keys; their stored values are kept across renames (`DECISIONS.md` D-09).
+  - The second screen (reachable while the user layout is on) starts with "Home screen layout": the rows
+    and columns sliders (`S/GridSeekBarPreference`), the start page and the two icon text sizes
+    (`S/IconTextSizeRows`).
+  - Small pieces: `S/ButtonTextFit` (the text of the small buttons in a row), `S/CompatInfoText` (FYT-only
+    lines of two info texts), `S/BackgroundSelectorDialog` with `S/ColorTileDrawable` and
+    `S/SelectedFrameDrawable`, `L/FabButtons`.
 - **Updater:** `S/VersionChecker` reads `github.com/vasyl91/FYT-Launcher-Mod/releases/latest`, downloads
   `system_release_<v>.apk` or `standard_release_<v>.apk`, and installs it with Ackpine. `S/ReleasesPage`
   copies the link when there is no browser.
@@ -336,7 +389,7 @@ There is no server and there are no user accounts.
 - `L/Launcher` keeps delegates for the ten helper classes split out of it (`LauncherWeather`,
   `HomeLayoutRecovery`, `LauncherWake`, `LauncherPipStarter`, `LauncherPermissionFlow`, `LauncherFab`,
   `LauncherAppBars`, `LauncherMusicWidget`, `LauncherRadioWidget`, `LauncherWallpaperPicker`; D-36).
-- Logic in plain Java classes with JUnit 5 tests (95 test files under `app/src/test/java`).
+- Logic in plain Java classes with JUnit 5 tests (110 test files under `app/src/test/java`, 1011 tests).
 - Rules R1–R3 (2026-11-08) are written in the Javadoc of the classes that enforce them:
   - R1 in `WorkspaceLoadWatch` and `LauncherModel`;
   - R2 in `WidgetStyle`, `WidgetStyler` and `ViewTint`;

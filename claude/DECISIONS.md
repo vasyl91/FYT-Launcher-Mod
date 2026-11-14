@@ -2,7 +2,7 @@
 
 Important technical and product decisions. Last consolidated on 2026-11-12 from the code, git, the briefs
 (`prompts/archive/`), the 15 chat reports (`chat_archive/CHAT_01.MD` … `CHAT_15.MD`) and the owner's answers
-of that day.
+of that day. D-52 … D-57 were added on 2026-11-13 with round 13.
 
 ## How to read this file
 
@@ -83,6 +83,12 @@ entry that replaces it.
 | D-49 | Rejected proposals (table) | REJECTED | Owner |
 | D-50 | History before 1.2.1 is not reconstructed | ACTIVE | Owner |
 | D-51 | Room and Compose are not planned | ACTIVE | Owner |
+| D-52 | The grid of a page is the area the bars leave; rows and columns can be set | ACTIVE | Owner |
+| D-53 | The wallpaper from one source with fallbacks; a host errand without a new module version | ACTIVE | Owner |
+| D-54 | Text and button colour: any colour, or "Default" | ACTIVE | Owner |
+| D-55 | One background choice for the fuel stats window | ACTIVE | Owner |
+| D-56 | "Home screen layout" on the second settings screen | ACTIVE | Owner |
+| D-57 | Choices the assistant made in round 13 (table) | UNDER_REVIEW | Assistant |
 
 ---
 
@@ -469,9 +475,11 @@ entry that replaces it.
 ### D-15 Framework warnings that are not fixed
 - **Status:** ACTIVE. **By:** owner, through the brief.
 - **Decision:** `Parcel: Expecting binder but got null!` and `SurfaceSyncer: Failed to find sync` are
-  Android 13 framework warnings. Their code stays as it is. The same holds for the wallpaper
+  Android 13 framework warnings. Their code stays as it is. The same held for the wallpaper
   `SecurityException` on Android 16 (missing `READ_EXTERNAL_STORAGE`; the colors fall back): "to nie błąd"
   (brief 2026-11-08, CHAT_15).
+- **Changed 2026-11-13:** the wallpaper part is superseded by D-53. The owner reported the same exception
+  as an error toast from "Save the day wallpaper", a path with no fallback. The two framework warnings stay.
 - **Source:** `vdhost/README.md`, brief 2026-11-05 media C3 [H].
 
 ### D-27 Wake and sleep from every signal, for the whole process
@@ -504,7 +512,8 @@ entry that replaces it.
   (e.g. `HORIZONTAL_BAR_EVERY_PAGE = "bottom_bar_every_page"`). Users' settings are not migrated unless a
   brief or the owner says so.
 - **Exceptions made so far:** `launcher_home` → two keys (D-30); the `_v2` capacity keys (D-40); the user
-  rectangles `…UserLeft/Top/Right/Bottom` (brief 2026-11-02).
+  rectangles `…UserLeft/Top/Right/Bottom` (brief 2026-11-02); the text colours and the stats background
+  (D-54, D-55, asked for by the owner on 2026-11-12).
 - **Source:** commit `d0e67aaf`, `app/src/main/java/com/android/launcher66/settings/Keys.java` [V].
 
 ### D-10 Strings in all 59 languages
@@ -657,4 +666,73 @@ entry that replaces it.
 - **Status:** ACTIVE. **By:** owner, 2026-11-12.
 - **Decision:** neither is planned; they may be removed if unused. They are unused (`KNOWN_ISSUES.md` KI-03).
 - **Next:** `ROADMAP.md` P-12.
+
+## Added on 2026-11-13 (round 13: the owner's 19 tasks)
+
+The round had no brief: the owner's request and the audit written for it are in
+`reports/audit_blueprint_2026-11-12.md`, the result in `reports/implementation_report_2026-11-13.md`.
+
+### D-52 The grid of a page is the area the bars leave
+- **Status:** ACTIVE. **By:** owner, 2026-11-12 (chosen from three models: "Usable-area grid").
+- **Decision:** a bar that stays on a page takes its strip out of the page. A page with the vertical bar has
+  one column fewer, a page with a horizontal bar that does not hide one row fewer, and the cells are spread
+  evenly over what is left. The size of an icon does not change. An item whose row or column is gone is
+  moved to a free cell, never deleted.
+- **Also the owner's:** the rows and columns can be set from two below to four above the grid the launcher
+  had (10 × 6), and an update changes nobody's grid.
+- **Where:** `WorkspaceGrid`, `GridOverflow` (their Javadoc holds the rules), commits `405793b42`,
+  `c96a8fd8a`, `ca27a7637`.
+
+### D-53 The wallpaper is read from one source with fallbacks, and the host gets an errand for it
+- **Status:** ACTIVE. **By:** owner, 2026-11-12. **Replaces:** the wallpaper sentence of D-15.
+- **Decision:** the home screen's wallpaper (never the lock screen's) is read through the system's API where
+  that gives the real picture, else through the privileged host, else not at all: the selectors then show
+  the colours, and saving the day or night wallpaper offers to pick an image. `READ_EXTERNAL_STORAGE` is
+  requested only below Android 13; access to all files is not requested.
+- **The host:** "Add a host errand - but don't change the version of the Magisk module host (current one has
+  never been officially published)". So `readHomeWallpaper` is a new transaction with the protocol number
+  and the module version unchanged (D-37 holds); a host without it answers nothing.
+- **Where:** `HomeWallpaperSource`, `WallpaperAccess`, `HostServices.readHomeWallpaper`; `b5b4ffb54`,
+  `78f037578`.
+
+### D-54 The text and button colour is any colour, or "Default"
+- **Status:** ACTIVE. **By:** owner, 2026-11-12 ("Add a 'Default' action").
+- **Decision:** "Widget text and button color" and the bar's are chosen in the colour picker. "Default"
+  stores no colour: the views' own look, which is what "White" used to mean. The colour is still a tint of
+  the view (D-17 R2).
+- **Migration (asked for):** `black_widgets` / `black_bar` on become black under `widgets_tint_color` /
+  `bar_tint_color`; off stores nothing. The old keys are removed. `7faf0d09b`.
+
+### D-55 The fuel stats window has one background choice
+- **Status:** ACTIVE. **By:** owner (task 4G of the request).
+- **Decision:** seven rows became two: a background chooser like the widgets' (none, a picture, a colour of
+  one's own with its transparency) and the text colour.
+- **Migration (asked for):** from what the service really drew, so the window looks the same after the
+  update; with nothing stored that is no background (`StatsBackgroundMigration`). `5deeff937`.
+
+### D-56 Where the grid's settings and the icon text sizes are
+- **Status:** ACTIVE. **By:** owner (task 17D of the request).
+- **Decision:** a category above "Widgets" on the second settings screen holds the rows and columns, "Set
+  the start page" (from "Bars") and the two icon text sizes (from "Miscellaneous" on the first screen).
+- **Consequence [V]:** the second screen opens only while the user layout is on, so the text sizes and the
+  grid can be changed only then (`KNOWN_ISSUES.md` KI-33). The category's name, "Home screen layout", is
+  the assistant's.
+
+### D-57 Choices the assistant made in round 13
+- **Status:** UNDER_REVIEW. **By:** assistant; the owner asked for the round to be implemented with
+  autonomous decisions and has not reviewed these. None is an owner decision.
+
+| Choice | Why |
+|---|---|
+| `hotseat_bg` is drawn for the left edge: 0° at the left, 180° at the right; the other pictures 0° bottom, 180° top, 90° left, 270° right (`BackgroundAngle`) | the pictures' own direction |
+| In the creator of the in-app stats window a double tap on the rectangle still saves; elsewhere it toggles the strip | the owner's wording asked that the strip can always be hidden |
+| The floating button starts when the panes of the enabled button are set, as its service already required (`FabButtons`) | the launcher asked for all four panes, the service only for the button's own |
+| Items are re-arranged only when the grid of the orientation in use changed, never by a turn of the screen | the items have one cell for both orientations |
+| The app drawer and the folders keep their grid; only the home screen's pages follow the new setting | the task names the workspace |
+| An auto-hide bar keeps no corner cell where its handle lies in the vertical bar's strip | the strip is no cell any more |
+| The vertical bar takes a column only in the user layout | the built-in first page is not made of cells |
+| The stats window rule was added as a guard beside `CanbusService`'s existing conditions, not as a rewrite | the 7862's daily behaviour runs through that code |
+| Shizuku answers nothing to `readHomeWallpaper` | shell cannot open the wallpaper file; not tested |
+| The fYT Rating app was not changed; the launcher wakes the bridge once and logs its reason | its source is not in this repository |
+| StrictMode reports seen in the owner's log of 2026-11-09 were not fixed | outside the 19 tasks (`KNOWN_ISSUES.md` KI-31) |
 

@@ -1,6 +1,6 @@
 # Known issues
 
-As of 2026-11-12 (`ee8e4f91` plus documentation commits), with the owner's answers of the same day. Sources: the code, git, CI, the
+As of 2026-11-13 (`ca27a7637`, after round 13), with the owner's answers of 2026-11-12. Sources: the code, git, CI, the
 briefs and the chat reports (`chat_archive/`).
 
 The file has three parts, because they call for different handling:
@@ -31,6 +31,7 @@ Add new issues at the end of their part with the next number. Numbers are never 
 | KI-20 | `display_pip` is read with two different defaults | Bug risk | Low | open |
 | KI-23 | Translations are machine-written and unreviewed | Quality | Low | open |
 | KI-24 | Round 12 (G1–G3) had no device result | Verification | Medium | fixed 2026-11-12: confirmed by the owner |
+| KI-33 | The icon text sizes and the grid can be set only while the user layout is on | Usability | Low | open |
 
 ### KI-03 Room and Compose declared but unused
 - **Where:** `app/build.gradle.kts` (`room-runtime`, `ksp(room-compiler)`, the Compose BOM, runtime and
@@ -51,7 +52,7 @@ Add new issues at the end of their part with the next number. Numbers are never 
 - **Next:** regenerate on a device before 1.2.2 (P-3, `baselineProfile/README.md` §10).
 
 ### KI-06 No instrumented or UI tests
-- **What exists [V]:** 95 JVM test files (about 866 tests), which cover the plain-Java logic.
+- **What exists [V]:** 110 JVM test files (1011 tests), which cover the plain-Java logic.
 - **Not covered:** views, windows, panes, the IPC with FYT apps, and the settings UI. These are verified only
   by the owner and the tester on their devices. `:baselineprofile` holds Macrobenchmark journeys, not tests,
   and CI does not run it.
@@ -119,6 +120,12 @@ page, the handle on either edge, the Bars category). Updated in `a30c9a72`. Keep
 - **Still unknown:** where the 2026-11-08 15:03 load stopped (KI-28). The new loader log lines are meant to
   show it if it happens again.
 
+### KI-33 The icon text sizes and the grid can be set only while the user layout is on
+The two text-size rows moved from the first settings screen to "Home screen layout" on the second one, as
+the owner asked (D-56). The second screen can be opened only while "User layout" is on [V], so a user of
+the built-in layout can no longer change the sizes; the stored values still apply. Fix, if wanted: show the
+category on the first screen while the user layout is off.
+
 ## Part B: accepted limitations
 
 | ID | Limitation | Why accepted |
@@ -164,7 +171,9 @@ launcher on such firmware; that is inherent to the platform key.
 
 ### KI-13 Shizuku host limits
 - Apps with `FLAG_SECURE` (streaming, banking) show black in a pane.
-- The panes come up only once Shizuku runs (about 30 s after boot).
+- The panes come up only once Shizuku runs. How long that takes depends on the Shizuku in use; `README.MD`
+  recommends Shizuku Next, whose server starts right after a boot on most devices when "Start without
+  Wi-Fi" is available and enabled (2026-11-13).
 - Shizuku without root must be started again after each reboot.
 - Starting Shizuku with root is expected to fail before Android 14, because root owns no package.
 - Shizuku Next can disconnect and reconnect at boot: its server needs about 9–10 s to start, and its own
@@ -188,7 +197,8 @@ Its updater downloads the system build, which it cannot install. It needs one up
 
 ### KI-18 Framework warnings
 `W Parcel: Expecting binder but got null!` and `E SurfaceSyncer: Failed to find sync for id=0` (Android 13),
-and the wallpaper `SecurityException` on Android 16, have no effect. Won't fix (D-15).
+have no effect. Won't fix (D-15). The wallpaper `SecurityException` on Android 16 that stood here is
+handled since 2026-11-13: the wallpaper is read from one source with fallbacks (D-53).
 
 ### KI-27 Limits of the home-screen guard
 Stated to the owner when the guard was finished (CHAT_04) [H]:
@@ -220,6 +230,9 @@ Nothing here is confirmed. Each item needs a check in the code or on a device be
 | KI-26 | Code observations from reviews | a re-check in today's code |
 | KI-28 | Root causes that were never found | a log of the next occurrence |
 | KI-29 | "Changes do not work on the 7870" | the tester's reply |
+| KI-30 | Round 13 (the 19 tasks) has no device result | the owner's test of each item |
+| KI-31 | StrictMode reports in the owner's log of 2026-11-09 | a look at each place in the code |
+| KI-32 | fYT Rating answers without a rating until its screen was opened | a log with the bridge's reason |
 
 ### KI-05 Android 8–10 through the VD host never run on a device
 The path for a non-system launcher on 8.0, 8.1/9 and 10 (module daemon or Shizuku) was written from the
@@ -280,10 +293,14 @@ longer apply.
   the app's own bug; not investigated (CHAT_02).
 
 ### KI-28 Root causes that were never found
-Both were mitigated with guards and extra logging [V]; the cause is unknown [U].
-- The vertical bar's window appeared on the left on other pages with the bar set to the right (`fc5cac17`;
-  logs `Persistent vertical bar frame: …`, `… window is at …`).
+- ~~The vertical bar's window appeared on the left on other pages with the bar set to the right.~~
+  **Cause found 2026-11-13** [V]: the window's place was counted from the pager's own left edge, and the
+  pager is measured far wider than the screen and centred (on the 1080 px phone its edge is at −4520, which
+  the owner's log shows as `box -4520,89,-3440,2205`). Fixed in `1d5a87aa9` (`PageBox.pageRestLeft`); the
+  device result is open (KI-30). The owner also reported the bar on the right with the setting "left"; the
+  cause found does not explain that case [U].
 - A workspace load after leaving the settings bound nothing for 30 s (`e3136f45`; logs `Loader <id> …`).
+  Mitigated with a guard and logging [V]; the cause is unknown [U].
 
 ### KI-29 "Changes do not work on the 7870" (waiting for the tester)
 The planning report quotes the owner saying earlier that changes worked "za wyjątkiem tych z urządzenia
@@ -293,3 +310,29 @@ Questions the 7870's logs were meant to answer since 2026-10-26, from the sessio
 - does `com.syu.ms` push the current values when the launcher registers (the first radio or BT display)?
 - does `com.syu.media` give up its channel (8 → 0) when it pauses for a pane app?
 - Bluetooth times in milliseconds against `Launcher.refreshBtInfo`, which expects seconds (KI-26).
+
+### KI-30 Round 13 (the 19 tasks) has no device result
+Commits `4e73d1178` … `ca27a7637` (2026-11-12/13) were built and unit-tested (1011 tests, CI green) and
+never run on a device [V]. What each needs is listed in `reports/implementation_report_2026-11-13.md`. The
+ones most worth a look first:
+- the grid (D-52): the first start after the update re-numbers the cells of the items on a page with a bar
+  at the left or the top and moves the items that lay under a bar; then dragging, the overview, the creator's
+  elements beside icons, both orientations, the 7862;
+- the bar windows on their side on every page (KI-28) and the title scrolling on the other pages;
+- the stats window gone over another launcher and after a wake; its look after the migration;
+- the colour and background choices after an update with old values stored;
+- the wallpaper on Android 10 (system), 14 (root, needs the module built from this version) and 16 (Shizuku);
+- the ADJUST / Restart button text and the wrapped titles at several font sizes.
+
+### KI-31 StrictMode reports in the owner's log of 2026-11-09
+Seen in the A55 log supplied for round 13 [H], not looked at in the code, not fixed (outside the tasks):
+disk reads on the main thread from `VdHostProtocol$Proxy.startActivity` (three, about 169 ms),
+`WindowHostVdShizuku.maybeBind`, `LauncherAppWidgetHostView.onLayout`, and the toast at
+`FytRating.handlePreferenceClick`. The project rule is that StrictMode stays silent (D-07).
+
+### KI-32 fYT Rating answers without a rating until its screen was opened
+In the same log the bridge answers the ping (signed in, launcher allowed) and five rating requests within a
+second each, all without a rating; after its screen was opened once, ratings come [H]. Why is inside the
+fYT Rating app, whose source is not here [U]. Since `7242003c8` the launcher logs the bridge's reason and
+starts its wake activity once for this case; whether that is enough is not known. If not, the fix belongs in
+fYT Rating (getting its token on the receiver's path).
