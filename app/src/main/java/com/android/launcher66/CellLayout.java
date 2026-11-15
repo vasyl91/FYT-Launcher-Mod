@@ -480,6 +480,28 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         return px == standard ? 0 : px;
     }
 
+    /** The picture of the bars on this page while the pages are small (BarGhostRule); made when first needed. */
+    private PageBarGhost mBarGhost;
+
+    /** Whether this is a page of the home screen after the first one. */
+    boolean isLaterWorkspacePage() {
+        return mFirstPage != null && !mFirstPage;
+    }
+
+    /** The view that shows the pictures of the bars on this page, on top of everything else of the page. */
+    PageBarGhost barGhost() {
+        if (mBarGhost == null) {
+            mBarGhost = new PageBarGhost(getContext());
+            addView(mBarGhost);
+        }
+        return mBarGhost;
+    }
+
+    /** The picture view if this page has one already, else null: nothing is made just to be cleared. */
+    PageBarGhost barGhostIfAny() {
+        return mBarGhost;
+    }
+
     /** The x of the first cell in this view: after the padding and a bar at the left. */
     private int gridLeft() {
         return getPaddingLeft() + mGridInsetLeft;

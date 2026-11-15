@@ -3149,6 +3149,8 @@ public class Workspace extends SmoothPagedView
      * @param standbyDue called by the delay that waited before building the window in standby
      */
     private void updatePersistentBar(String reason, boolean standbyDue) {
+        // Before a window is put away: its picture for the pages that are small now (BarGhostRule)
+        updateBarPictures(reason);
         updateVerticalBarWindow(reason, false);
         boolean mode = mEveryPage && !autoHideHorizontalBar && workspaceView != null && mLauncher != null
                 && mPrefs != null && mPrefs.getBoolean(Keys.USER_LAYOUT, false);
@@ -3191,6 +3193,117 @@ public class Workspace extends SmoothPagedView
             default:
                 break;
         }
+    }
+
+    // ---------------------------------------------------------------------------------------------
+    // The pictures of the bars on the pages after the first, while the pages are small (BarGhostRule)
+    // ---------------------------------------------------------------------------------------------
+
+    private boolean mBarPicturesShown;
+    /** The pictures are about to go: decided once the call that set the new state is over. */
+    private boolean mBarPicturesLeaving;
+    private Bitmap mHorizontalBarPicture;
+    private Bitmap mVerticalBarPicture;
+
+    /**
+     * Puts the pictures of the bars on the pages after the first while the pages are small, and takes them
+     * away when the pages are at full size again. Called with everything that puts the bars' windows away
+     * or brings them back, and when a change of size has ended.
+     */
+    private void updateBarPictures(String reason) {
+        boolean small = mState == State.OVERVIEW || mState == State.SPRING_LOADED;
+        boolean wanted = BarGhostRule.shown(small, mIsSwitchingState) && mPrefs != null && mLauncher != null
+                && mPrefs.getBoolean(Keys.USER_LAYOUT, false);
+        if (!wanted) {
+            if (mBarPicturesShown && !mBarPicturesLeaving) {
+                // The state is set before the way back to full size is marked as begun: looked at again
+                // once this call is over, when the way back (if there is one) has begun. Its end clears.
+                mBarPicturesLeaving = true;
+                post(() -> {
+                    mBarPicturesLeaving = false;
+                    boolean stillSmall = mState == State.OVERVIEW || mState == State.SPRING_LOADED;
+                    if (!BarGhostRule.shown(stillSmall, mIsSwitchingState)) {
+                        clearBarPictures(reason);
+                    }
+                });
+            } else if (!mBarPicturesShown) {
+                clearBarPictures(reason);
+            }
+            return;
+        }
+        boolean horizontalStays = WorkspaceGrids.reserve(mPrefs, false) == HorizontalBarPlacement.Reserve.ROW;
+        boolean verticalStays = WorkspaceGrids.verticalBar(mPrefs, false);
+        if (mBarPicturesShown) {
+            // Already up: only a page made since (the empty one for a drag) is given them too
+            putBarPicturesOnPages(horizontalStays, verticalStays);
+            return;
+        }
+        if (!small) {
+            return;   // none is put up on the way back to full size
+        }
+        if (!BarGhostRule.onPage(false, horizontalStays) && !BarGhostRule.onPage(false, verticalStays)) {
+            return;
+        }
+        Bitmap horizontal = horizontalStays && mOverlayPersistent ? PageBarGhost.snapshot(overlayHorizontalBar) : null;
+        Bitmap vertical = verticalStays && mVerticalWindow != null ? PageBarGhost.snapshot(mVerticalWindow.view()) : null;
+        if (horizontal == null && vertical == null) {
+            Log.i(TAG, "No picture of the bars for the small pages (" + reason + "): their windows are not there");
+            return;
+        }
+        mHorizontalBarPicture = horizontal;
+        mVerticalBarPicture = vertical;
+        mBarPicturesShown = true;
+        int pages = putBarPicturesOnPages(horizontalStays, verticalStays);
+        Log.d(TAG, "Pictures of the bars on " + pages + " small pages (" + reason + "): horizontal "
+                + (horizontal != null) + ", vertical " + (vertical != null));
+    }
+
+    /** Gives every page after the first the pictures, each in the strip its bar has there (BarLayout). */
+    private int putBarPicturesOnPages(boolean horizontalStays, boolean verticalStays) {
+        int pages = 0;
+        Rect horizontalAt = new Rect();
+        Rect verticalAt = new Rect();
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            if (!(child instanceof CellLayout) || !((CellLayout) child).isLaterWorkspacePage()
+                    || child.getWidth() <= 0 || child.getHeight() <= 0) {
+                continue;
+            }
+            BarLayout bars = BarLayouts.of(mPrefs, child.getWidth(), child.getHeight(),
+                    mLauncher.getHorizontalBarHeight(), Launcher.calculatedVerticalBarWidth, verticalStays, horizontalStays);
+            horizontalAt.set(0, bars.horizontalBarTop(), child.getWidth(), bars.horizontalBarBottom());
+            int[] band = bars.verticalWindow(false);
+            verticalAt.set(band[0], band[1], band[2], band[3]);
+            ((CellLayout) child).barGhost().show(mHorizontalBarPicture, horizontalAt, mVerticalBarPicture, verticalAt);
+            pages++;
+        }
+        return pages;
+    }
+
+    /** Takes the pictures off the pages and frees them. */
+    private void clearBarPictures(String reason) {
+        if (!mBarPicturesShown && mHorizontalBarPicture == null && mVerticalBarPicture == null) {
+            return;
+        }
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            if (child instanceof CellLayout) {
+                PageBarGhost ghost = ((CellLayout) child).barGhostIfAny();
+                if (ghost != null) {
+                    ghost.clear();
+                }
+            }
+        }
+        if (mHorizontalBarPicture != null) {
+            mHorizontalBarPicture.recycle();
+            mHorizontalBarPicture = null;
+        }
+        if (mVerticalBarPicture != null) {
+            mVerticalBarPicture.recycle();
+            mVerticalBarPicture = null;
+        }
+        mBarPicturesShown = false;
+        Log.d(TAG, "Pictures of the bars taken off the pages (" + reason + ")");
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -3792,6 +3905,8 @@ public class Workspace extends SmoothPagedView
         mEdgeHandleMode = false;
         releaseEdgeHandle();
         removeVerticalWindow("workspace released");
+        // The pictures of the bars on the small pages are bitmaps: freed with the windows they were taken of
+        clearBarPictures("workspace released");
         mAdapterLateLoggedFor = null;
 
         // Nullify local view references
@@ -6088,6 +6203,11 @@ public class Workspace extends SmoothPagedView
 
     private void onTransitionEnd() {
         mIsSwitchingState = false;
+        // At full size again: the bars' windows are back, their pictures on the pages go (BarGhostRule)
+        boolean stillSmall = mState == State.OVERVIEW || mState == State.SPRING_LOADED;
+        if (!BarGhostRule.shown(stillSmall, false)) {
+            clearBarPictures("transition end");
+        }
         updateChildrenLayersEnabled(false);
         // The code in getChangeStateAnimation to determine initialAlpha and finalAlpha will ensure
         // ensure that only the current page is visible during (and subsequently, after) the

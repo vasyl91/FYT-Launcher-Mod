@@ -75,6 +75,11 @@ final class VerticalBarWindow {
         return root != null;
     }
 
+    /** The window's view, for a picture of the bar while the pages are small (PageBarGhost); null without a window. */
+    android.view.View view() {
+        return root;
+    }
+
     boolean isShown() {
         return root != null && shown;
     }
