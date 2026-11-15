@@ -234,6 +234,71 @@ public class CanbusService extends Service implements PropertyChangeListener {
         return sRunning;
     }
 
+    /** The home screen's statistics as a picture, and where they are; for the page that shows it while the pages move. */
+    public static final class PagePicture {
+        public final android.graphics.Bitmap bitmap;
+        public final int page;
+        /** The left edge in the statistics' page, as the window's place is worked out. */
+        public final int xOnPage;
+        /** Where the view is on the screen now; x is only right while its page is the one shown. */
+        public final int xOnScreen;
+        public final int yOnScreen;
+        public final int width;
+        public final int height;
+        public final float alpha;
+
+        PagePicture(android.graphics.Bitmap bitmap, int page, int xOnPage, int xOnScreen, int yOnScreen,
+                    int width, int height, float alpha) {
+            this.bitmap = bitmap;
+            this.page = page;
+            this.xOnPage = xOnPage;
+            this.xOnScreen = xOnScreen;
+            this.yOnScreen = yOnScreen;
+            this.width = width;
+            this.height = height;
+            this.alpha = alpha;
+        }
+    }
+
+    /** Where updateStatsPositionForScroll() last put the statistics: their page and their x in it. */
+    private int mPicturePage = -1;
+    private int mPictureXOnPage;
+
+    /**
+     * Main thread. A picture of the home screen's statistics window for the page to show while the pages
+     * move (StatsPagePicture); null when that window is not shown or has no place yet.
+     */
+    public static PagePicture pictureForMovingPages() {
+        CanbusService service = sInstance;
+        View stats = service != null ? service.absoluteStats : null;
+        if (stats == null || !"main".equals(stats.getTag()) || !stats.isAttachedToWindow()
+                || stats.getVisibility() != View.VISIBLE || stats.getWidth() <= 0 || stats.getHeight() <= 0
+                || service.mPicturePage < 0) {
+            return null;
+        }
+        android.graphics.Bitmap bitmap = com.android.launcher66.PageBarGhost.snapshot(stats);
+        if (bitmap == null) {
+            return null;
+        }
+        float alpha = service.statsLayoutParams != null ? service.statsLayoutParams.alpha : 1f;
+        int[] at = new int[2];
+        stats.getLocationOnScreen(at);
+        return new PagePicture(bitmap, service.mPicturePage, service.mPictureXOnPage, at[0], at[1],
+                stats.getWidth(), stats.getHeight(), alpha);
+    }
+
+    /**
+     * Main thread. The statistics' own view is made invisible while their page shows the picture, and visible
+     * again after; the window stays and goes on being moved. A window made since is visible by itself.
+     */
+    public static void hideForPagePicture(boolean hide) {
+        CanbusService service = sInstance;
+        View stats = service != null ? service.absoluteStats : null;
+        if (stats != null) {
+            stats.setAlpha(hide ? 0f : 1f);
+        }
+    }
+
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     @Override
     public void onCreate() {
@@ -1153,6 +1218,10 @@ public class CanbusService extends Service implements PropertyChangeListener {
         }
         if (placeholderW == 0) placeholderW = statsLayoutParams.width > 0 ? statsLayoutParams.width : absoluteStats.getWidth();
         if (placeholderH == 0) placeholderH = statsLayoutParams.height > 0 ? statsLayoutParams.height : absoluteStats.getHeight();
+
+        // For the picture of the statistics in their page while the pages move (pictureForMovingPages())
+        mPicturePage = statsScreen;
+        mPictureXOnPage = placeholderX;
 
         // compute desired screen X
         int pipAbsoluteX = (statsScreen * pageWidth) + placeholderX;

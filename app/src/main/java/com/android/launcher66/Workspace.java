@@ -3196,6 +3196,78 @@ public class Workspace extends SmoothPagedView
     }
 
     // ---------------------------------------------------------------------------------------------
+    // The picture of the fuel statistics in their page while the pages move (StatsPagePicture)
+    // ---------------------------------------------------------------------------------------------
+
+    private Bitmap mStatsPicture;
+    private PageBarGhost mStatsPictureOn;
+    private final Runnable mStatsPictureGiveUp = () -> endStatsPicture("gave up waiting for the pages to settle");
+
+    /** The pages begin to move: the statistics' page shows their picture, and their window becomes invisible. */
+    private void showStatsPicture() {
+        if (mStatsPicture != null || !StatsPagePicture.applies(Build.VERSION.SDK_INT,
+                mState == State.NORMAL && !mIsDragOccuring, CanbusService.isRunning())) {
+            return;
+        }
+        CanbusService.PagePicture picture = CanbusService.pictureForMovingPages();
+        if (picture == null) {
+            return;
+        }
+        View page = getChildAt(picture.page);
+        if (!(page instanceof CellLayout) || page.getWidth() <= 0) {
+            picture.bitmap.recycle();
+            return;
+        }
+        int[] pageAt = new int[2];
+        page.getLocationOnScreen(pageAt);
+        mStatsPicture = picture.bitmap;
+        mStatsPictureOn = ((CellLayout) page).barGhost();
+        // Where the window really is, so that the picture takes its place exactly. Where its page is not
+        // the one shown, or the pages were caught while still settling, the window's own arithmetic says
+        // where it is in its page
+        boolean shownPage = picture.page == getCurrentPage() && getScrollX() == getScrollForPage(getCurrentPage());
+        int xOnPage = shownPage ? picture.xOnScreen - pageAt[0] : picture.xOnPage;
+        mStatsPictureOn.showStats(picture.bitmap, StatsPagePicture.rectOnPage(xOnPage, picture.yOnScreen,
+                pageAt[1], picture.width, picture.height), picture.alpha);
+        // The window a frame later than the picture: for that frame both are there, in the same place
+        post(() -> {
+            if (mStatsPicture != null) {
+                CanbusService.hideForPagePicture(true);
+            }
+        });
+        mainHandler.removeCallbacks(mStatsPictureGiveUp);
+        mainHandler.postDelayed(mStatsPictureGiveUp, StatsPagePicture.GIVE_UP_MS);
+    }
+
+    /**
+     * The pages have stopped (or the launcher is leaving, or the move was never ended): the window is shown
+     * again, in the place it was moved to meanwhile, and the picture goes a moment later.
+     */
+    private void endStatsPicture(String reason) {
+        if (mStatsPicture == null) {
+            return;
+        }
+        mainHandler.removeCallbacks(mStatsPictureGiveUp);
+        CanbusService.hideForPagePicture(false);
+        final Bitmap picture = mStatsPicture;
+        final PageBarGhost on = mStatsPictureOn;
+        mStatsPicture = null;
+        mStatsPictureOn = null;
+        Runnable remove = () -> {
+            if (on != null) {
+                on.clearStats();
+            }
+            picture.recycle();
+        };
+        if (isAttachedToWindow()) {
+            mainHandler.postDelayed(remove, StatsPagePicture.OVERLAP_MS);
+        } else {
+            remove.run();
+        }
+        Log.d(TAG, "Statistics: their window is shown again, the picture in the page goes (" + reason + ")");
+    }
+
+    // ---------------------------------------------------------------------------------------------
     // The pictures of the bars on the pages after the first, while the pages are small (BarGhostRule)
     // ---------------------------------------------------------------------------------------------
 
@@ -3907,6 +3979,7 @@ public class Workspace extends SmoothPagedView
         removeVerticalWindow("workspace released");
         // The pictures of the bars on the small pages are bitmaps: freed with the windows they were taken of
         clearBarPictures("workspace released");
+        endStatsPicture("workspace released");
         mAdapterLateLoggedFor = null;
 
         // Nullify local view references
@@ -4484,6 +4557,11 @@ public class Workspace extends SmoothPagedView
 
     protected void onWindowVisibilityChanged (int visibility) {
         mLauncher.onWindowVisibilityChanged(visibility);
+        if (visibility != View.VISIBLE) {
+            // The launcher's window is going: a move of the pages that is never ended must not leave the
+            // statistics' window invisible
+            endStatsPicture("the launcher's window is not visible");
+        }
     }
 
     @Override
@@ -4784,6 +4862,7 @@ public class Workspace extends SmoothPagedView
     protected void onPageBeginMoving() {
         super.onPageBeginMoving();
         Log.i(TAG, "onPageBeginMoving()");
+        showStatsPicture();
         WindowUtil.onPagesBeginMoving();
         postPaneFrame();
         if (getChildCount() > 1) {
@@ -4822,6 +4901,7 @@ public class Workspace extends SmoothPagedView
     protected void onPageEndMoving() {
         super.onPageEndMoving(); 
         WindowUtil.onPagesSettled();
+        endStatsPicture("pages settled");
         /*Log.d(TAG, "onPageEndMoving: " + "isInOverviewMode() = " + String.valueOf(helpers.isInOverviewMode())
                                        + "; openedFromOverviewBoolean() = " + String.valueOf(helpers.openedFromOverviewBoolean())
                                        + "; getChildCount() = " + String.valueOf(getChildCount())
@@ -5898,6 +5978,9 @@ public class Workspace extends SmoothPagedView
 
     private void setState(State state) {
         mState = state;
+        if (state != State.NORMAL) {
+            endStatsPicture("workspace state " + state);
+        }
         updateInteractionForState();
         updateAccessibilityFlags();
         updateEdgeHandle("workspace state " + state);
