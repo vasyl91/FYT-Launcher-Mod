@@ -1924,6 +1924,8 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             try {
                 // setting wallpaper that has just been saved to file allows to get accurate hash code
                 mWallpaperManager.setBitmap(bitmap);
+                // The copy the launcher keeps of what it set, where it cannot read the wallpaper back
+                OwnWallpaperCopy.note(LauncherApplication.sApp, image);
                 // the hash of the wallpaper just saved and set (from the picture itself: reading the wallpaper
                 // back is what the system refuses on newer Android versions)
                 saveBitmapHash(daytime, bitmap);

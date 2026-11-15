@@ -717,6 +717,11 @@ public class WallpaperCropActivity extends AppCompatActivity {
                     Log.w(LOGTAG, "cannot write stream to wallpaper", e);
                     failure = true;
                 }
+                if (!failure) {
+                    // The picture again, for the copy the launcher keeps of what it set (OwnWallpaperCopy)
+                    regenerateInputStream();
+                    com.android.launcher66.settings.OwnWallpaperCopy.note(mContext, mInStream);
+                }
                 return !failure;
             }
             if (mInStream != null) {
@@ -866,6 +871,8 @@ public class WallpaperCropActivity extends AppCompatActivity {
                         try {
                             byte[] outByteArray = tmpOut.toByteArray();
                             wallpaperManager.setStream(new ByteArrayInputStream(outByteArray));
+                            // The copy the launcher keeps of what it set (OwnWallpaperCopy)
+                            com.android.launcher66.settings.OwnWallpaperCopy.note(mContext, outByteArray);
                             if (mOnBitmapCroppedHandler != null) {
                                 mOnBitmapCroppedHandler.onBitmapCropped(outByteArray);
                             }

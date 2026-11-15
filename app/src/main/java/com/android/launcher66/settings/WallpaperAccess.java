@@ -10,8 +10,10 @@ import java.util.List;
  * it as the day or the night wallpaper. The rules:
  * <ul>
  *   <li>the best way that needs the least comes first, and a later one is tried only when the earlier ones
- *       gave nothing: the system's own API; then the privileged host (the root module, or Shizuku); then no
- *       picture at all, where the user is shown the wallpaper's colours and can pick an image;</li>
+ *       gave nothing: the system's own API; where that does not give the picture, the copy the launcher
+ *       kept of a wallpaper it set itself (OwnWallpaperCopy: free, exact, and valid only while that wallpaper
+ *       is still set); then the privileged host (the root module, or Shizuku); then no picture at all, where
+ *       the user is shown the wallpaper's colours and can pick a wallpaper;</li>
  *   <li>it is always the home screen's wallpaper that is asked for, never the lock screen's;</li>
  *   <li>the API is used only where it gives the real picture. Up to Android 12 that needs the storage
  *       permission. From Android 13 an app built for it gets the picture only with access to all files (or
@@ -32,6 +34,8 @@ final class WallpaperAccess {
     enum Level {
         /** WallpaperManager, with FLAG_SYSTEM. */
         SYSTEM_API,
+        /** The copy of the wallpaper the launcher set itself, while it is still the one set. */
+        OWN_COPY,
         /** The privileged host's readHomeWallpaper(). */
         HOST,
         /** No picture: the wallpaper's colours, and the "Pick wallpaper" button. */
@@ -54,6 +58,8 @@ final class WallpaperAccess {
         List<Level> levels = new ArrayList<>();
         if (apiGivesThePicture(sdk, systemApp, storageGranted, allFilesAccess)) {
             levels.add(Level.SYSTEM_API);
+        } else {
+            levels.add(Level.OWN_COPY);
         }
         if (hostAvailable) {
             levels.add(Level.HOST);

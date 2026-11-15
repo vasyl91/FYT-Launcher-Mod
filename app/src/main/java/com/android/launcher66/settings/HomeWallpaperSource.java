@@ -53,6 +53,8 @@ final class HomeWallpaperSource {
             Bitmap bitmap = null;
             if (level == WallpaperAccess.Level.SYSTEM_API) {
                 bitmap = fromSystem(app);
+            } else if (level == WallpaperAccess.Level.OWN_COPY) {
+                bitmap = OwnWallpaperCopy.read(app);
             } else if (level == WallpaperAccess.Level.HOST) {
                 bitmap = fromHost();
             }

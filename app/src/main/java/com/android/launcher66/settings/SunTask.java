@@ -357,6 +357,8 @@ public class SunTask extends AsyncTask<String, Void, String> {
                     }
                     // Signature calculated from the SOURCE FILE, not from what WallpaperManager returns.
                     rememberApplied(name, SOURCE_FILE, signature, wallpaperId);
+                    // The copy the launcher keeps of what it set, where it cannot read the wallpaper back
+                    OwnWallpaperCopy.note(mContext, imageFile);
                     Log.d(TAG, "Wallpaper set from file: " + name + " (id=" + wallpaperId + ")");
                 } catch (IOException | IllegalStateException | IllegalArgumentException e) {
                     retryOrFallback(imageFile, name, retryCount, delayMs, String.valueOf(e.getMessage()));
@@ -409,6 +411,9 @@ public class SunTask extends AsyncTask<String, Void, String> {
                     return;
                 }
                 rememberApplied(name, SOURCE_DEFAULT, signature, wallpaperId);
+                try (java.io.InputStream picture = mContext.getResources().openRawResource(drawableId)) {
+                    OwnWallpaperCopy.note(mContext, picture);
+                }
                 Log.d(TAG, "Default wallpaper set: " + name + " (wallpaperId=" + wallpaperId + ", res=" + drawableId + ")");
             } catch (IOException e) {
                 Log.e(TAG, "Failed setting the default wallpaper: " + e.getMessage());
