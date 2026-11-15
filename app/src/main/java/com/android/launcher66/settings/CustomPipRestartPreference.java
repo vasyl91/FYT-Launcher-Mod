@@ -191,6 +191,12 @@ public class CustomPipRestartPreference extends Preference {
 
         float txtPx= Math.max(1, btnH * TXT_PCT_OF_BTN_H);
 
+        // The four buttons share one row: each gets the same width, a little under a quarter of the row's
+        // part for them, and its label on one line inside it (ButtonTextFit)
+        View container = mBoundItemView.findViewById(R.id.btnScreenContainer);
+        int containerW = container != null && container.getWidth() > 0 ? container.getWidth() : Math.round(prefW * 0.75f);
+        int btnW = Math.max(1, Math.round(containerW * 0.235f));
+
         // Colors
         accent = ContextCompat.getColor(getContext(), R.color.colorAccent);
 
@@ -198,9 +204,17 @@ public class CustomPipRestartPreference extends Preference {
             if (button != null) {
                 ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) button.getLayoutParams();
                 lp.height = btnH;
+                lp.width = btnW;
+                if (lp instanceof com.google.android.flexbox.FlexboxLayout.LayoutParams) {
+                    // The width set here counts, not the share of the row the layout file names
+                    com.google.android.flexbox.FlexboxLayout.LayoutParams flex =
+                            (com.google.android.flexbox.FlexboxLayout.LayoutParams) lp;
+                    flex.setFlexBasisPercent(-1f);
+                    flex.setFlexShrink(0f);
+                }
                 button.setLayoutParams(lp);
-                // The whole line of the text inside the height of the button (ButtonTextFit)
-                ButtonTextFit.apply(button, btnH, txtPx);
+                // The whole label on one line inside the height and the width of the button (ButtonTextFit)
+                ButtonTextFit.apply(button, btnH, txtPx, btnW);
                 button.setAllCaps(false);
                 GradientDrawable posBg = new GradientDrawable();
                 if (button == mRestartFirstButton) {
