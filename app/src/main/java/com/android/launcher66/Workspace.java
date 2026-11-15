@@ -1959,7 +1959,9 @@ public class Workspace extends SmoothPagedView
                     cleanupOverlayImmediately();
                 }
             }
-            overlayWindowManager = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+            // The launcher's own window manager: a panel is added to the launcher's window (BarWindows)
+            overlayWindowManager = mLauncher != null ? mLauncher.getWindowManager()
+                    : (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
 
             // Calculate dimensions - same height as the regular bar (resizable when enabled). The
             // window, the inset listener and forceOriginalSizes() below all derive from it.
@@ -1975,7 +1977,8 @@ public class Workspace extends SmoothPagedView
             overlayWindowParams = new WindowManager.LayoutParams(
                     WindowManager.LayoutParams.MATCH_PARENT,
                     horizontalBarHeight,
-                    WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                    // A panel of the launcher's window, under every floating button (BarWindows)
+                    BarWindows.TYPE,
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                             | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
                             | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
@@ -2088,8 +2091,10 @@ public class Workspace extends SmoothPagedView
                 }
             } catch (Exception e) {
                 Log.e("OverlayHorizontalBar", "Failed to add overlay view", e);
-                if (mOverlayPersistent) {
-                    mPersistentFailed = true;   // typically no permission to draw over other apps
+                if (mOverlayPersistent && BarWindows.parentReady(mLauncher)) {
+                    // Not tried again until the page is rebuilt; without the launcher's window the next
+                    // update tries again
+                    mPersistentFailed = true;
                 }
                 cleanupOverlayImmediately();
             } finally {
@@ -3576,7 +3581,9 @@ public class Workspace extends SmoothPagedView
         logVerticalFrame(frame, true);
         if (!mVerticalWindow.build(frame, cornerSize, sides.top, corner[0], sides.right, standby,
                 Launcher.screenWidth)) {
-            mVerticalWindowFailed = true;   // typically no permission; asked again after the next rebuild
+            if (BarWindows.parentReady(mLauncher)) {
+                mVerticalWindowFailed = true;   // tried again after the next rebuild
+            }
             return;
         }
         Log.d(TAG, (standby ? "Persistent vertical bar: window built, in standby (" : "Persistent vertical bar: shown (")

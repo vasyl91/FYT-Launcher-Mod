@@ -94,7 +94,7 @@ final class VerticalBarWindow {
      * @param withCorner the page has the button now, so the window takes the corner
      * @param right      the bar is at the right edge
      * @param displayWidth the width of the display, for the offset from the right edge
-     * @return false if it could not be added (no permission for windows over other apps)
+     * @return false if it could not be added (the launcher's window is not there)
      */
     boolean build(int[] frame, int cornerSize, boolean cornerTop, boolean withCorner, boolean right,
                   boolean standby, int displayWidth) {
@@ -102,7 +102,8 @@ final class VerticalBarWindow {
             return true;
         }
         Context context = launcher;
-        windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        // The launcher's own window manager: a panel is added to the launcher's window (BarWindows)
+        windowManager = launcher.getWindowManager();
         if (windowManager == null) {
             return false;
         }
@@ -146,8 +147,9 @@ final class VerticalBarWindow {
             arrow.setRotation(right ? 180f : 0f);
         }
 
+        // A panel of the launcher's window, under every floating button (BarWindows)
         params = new WindowManager.LayoutParams(frame[2], frame[3],
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                BarWindows.TYPE,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                         | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
                         | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
