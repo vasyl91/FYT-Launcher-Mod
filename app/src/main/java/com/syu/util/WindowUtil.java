@@ -2438,6 +2438,42 @@ public class WindowUtil {
                         prefs.getString(Keys.PIP_THIRD_PACKAGE, ""), prefs.getString(Keys.PIP_FOURTH_PACKAGE, "")});
     }
 
+    /** Counts the pinned starts that end with the app full screen in front (PinnedPipHealth); it only logs. */
+    private static final com.android.launcher66.PinnedPipHealth sPinnedHealth = new com.android.launcher66.PinnedPipHealth();
+
+    /**
+     * A few seconds after a pinned start: did the app land as a pinned PiP, or is it in front full screen
+     * in the launcher's place? Only told in the log (PinnedPipHealth says why nothing more). The task is
+     * read off the main thread: a call into system_server.
+     */
+    private static void watchPinnedStart(final Launcher launcher, final String packageName) {
+        launcher.handler.postDelayed(() -> {
+            final boolean launcherInFront = launcher.getLifecycle().getCurrentState()
+                    .isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED);
+            final boolean touched = UserTouches.sinceLastInputMs() < com.android.launcher66.PinnedPipHealth.CHECK_AFTER_MS;
+            android.os.AsyncTask.THREAD_POOL_EXECUTOR.execute(() -> {
+                try {
+                    ActivityManager am = (ActivityManager) LauncherApplication.sApp
+                            .getSystemService(Context.ACTIVITY_SERVICE);
+                    ActivityManager.RunningTaskInfo front = am != null ? DefaultDisplayTask.topTask(am) : null;
+                    boolean frontIsPinnedApp = front != null && front.topActivity != null
+                            && packageName.equals(front.topActivity.getPackageName());
+                    boolean failed = com.android.launcher66.PinnedPipHealth.failed(frontIsPinnedApp, launcherInFront, touched);
+                    if (sPinnedHealth.note(failed)) {
+                        Log.w(TAG, "Pinned PiP: " + packageName + " came to the front full screen after "
+                                + sPinnedHealth.failuresInARow() + " pinned starts in a row, with no touch in"
+                                + " between: the pinned PiP may not work on this unit");
+                    } else if (failed) {
+                        Log.i(TAG, "Pinned PiP: " + packageName + " is in front full screen after a pinned start ("
+                                + sPinnedHealth.failuresInARow() + " in a row)");
+                    }
+                } catch (RuntimeException e) {
+                    Log.w(TAG, "watchPinnedStart(" + packageName + ") failed: " + e);
+                }
+            });
+        }, com.android.launcher66.PinnedPipHealth.CHECK_AFTER_MS);
+    }
+
     private static void startPinnedPip(String packageName) {
         final Launcher launcher = Launcher.getLauncher();
         if (launcher == null) return;
@@ -2468,6 +2504,7 @@ public class WindowUtil {
                     Log.i(TAG, "startPinnedPip(" + packageName + "): " + (coldStart ? "cold" : "warm")
                             + " start, " + (sPinnedStartUptimeMs - sPagesStoppedUptimeMs)
                             + " ms after the pages last stopped");
+                    watchPinnedStart(launcher, packageName);
                 } catch (RuntimeException e) {
                     Log.w(TAG, "startPinnedPip(" + packageName + ") failed: " + e);
                 }
