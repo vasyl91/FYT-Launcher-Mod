@@ -18,7 +18,12 @@ import androidx.constraintlayout.widget.Guideline;
  * is moved to the other edge by itself; the content is mirrored. At the top the content is mirrored
  * vertically, on the right horizontally; the bar's own arrangement from left to right is left alone.
  *
- * <p>The percentages and ratios of the XML are not touched.
+ * <p>The percentages and ratios of the XML are not touched, with one exception: the vertical bar of a portrait
+ * layout gives its width as a share of its own height, which is not the width the rest of the launcher counts
+ * with (the grid, the panels, the statistics, the creator: {@code Launcher.calculatedVerticalBarWidth}). Where
+ * the caller passes that width, the bar takes it ({@link #widthReplacesRatio}), so that an element the creator
+ * puts at the margin from the bar lies at that margin on the screen too. In landscape the layout's percentage
+ * gives the same width and is left as it is.
  */
 public final class BarConstraints {
 
@@ -47,7 +52,7 @@ public final class BarConstraints {
      */
     public static void apply(ConstraintLayout root, int barId, int fullHeightId, boolean top, boolean right,
                              boolean verticalFullHeight, int verticalWidthPx) {
-        if (root == null || (!top && !right && !verticalFullHeight)) {
+        if (root == null || (!top && !right && !verticalFullHeight && verticalWidthPx <= 0)) {
             return;
         }
         for (int i = 0; i < root.getChildCount(); i++) {
@@ -76,8 +81,15 @@ public final class BarConstraints {
                     flipVertically(lp);
                 }
             }
-            if (verticalFullHeight && child.getId() == R.id.rl_vertical_bar) {
-                fillVerticalBar(lp, top, verticalWidthPx);
+            if (child.getId() == R.id.rl_vertical_bar) {
+                if (verticalFullHeight) {
+                    fillVerticalBar(lp, top);
+                }
+                if (widthReplacesRatio(lp.dimensionRatio, verticalWidthPx)) {
+                    // Its width was a share of its height: the width the rest of the launcher counts with
+                    lp.dimensionRatio = null;
+                    lp.width = verticalWidthPx;
+                }
             }
             if (right && !bar) {
                 flipHorizontally(lp);
@@ -93,7 +105,7 @@ public final class BarConstraints {
     }
 
     /** The vertical bar to the edge of the layout on the horizontal bar's side (after the flip for the top). */
-    private static void fillVerticalBar(ConstraintLayout.LayoutParams lp, boolean top, int widthPx) {
+    private static void fillVerticalBar(ConstraintLayout.LayoutParams lp, boolean top) {
         if (top) {
             lp.topToBottom = UNSET;
             lp.topToTop = PARENT;
@@ -101,11 +113,17 @@ public final class BarConstraints {
             lp.bottomToTop = UNSET;
             lp.bottomToBottom = PARENT;
         }
-        if (lp.dimensionRatio != null && widthPx > 0) {
-            // Its width was a share of its height: keep it the width the rest of the launcher counts with
-            lp.dimensionRatio = null;
-            lp.width = widthPx;
-        }
+    }
+
+    /**
+     * Whether the vertical bar takes the given width instead of the layout's ratio: when the layout gives its
+     * width as a ratio (portrait) and a width is given. A width in percent of the layout (landscape) stays.
+     *
+     * @param dimensionRatio the bar's ratio in the layout, null without one
+     * @param widthPx        the width the launcher counts with, 0 to keep the layout's
+     */
+    static boolean widthReplacesRatio(String dimensionRatio, int widthPx) {
+        return dimensionRatio != null && !dimensionRatio.isEmpty() && widthPx > 0;
     }
 
     /** The bar itself, or a view that hangs on the edge of the bar (not one that ends at its edge). */

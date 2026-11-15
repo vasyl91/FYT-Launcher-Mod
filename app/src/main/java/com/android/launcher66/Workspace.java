@@ -1795,7 +1795,8 @@ public class Workspace extends SmoothPagedView
         boolean right = verticalBarOn && BarLayouts.sides(mPrefs, true).right;
         // An auto-hide bar with no button in the corner leaves it free: the vertical bar fills it
         boolean fullHeight = verticalBarOn && autoHideApplies && !BarLayouts.sides(mPrefs, true).cornerTaken();
-        int verticalWidth = Launcher.calculatedVerticalBarWidth;
+        // The first page of the user layout: its vertical bar as wide as the launcher counts it (BarConstraints)
+        int verticalWidth = autoHideApplies && verticalBarOn ? Launcher.calculatedVerticalBarWidth : 0;
         BarConstraints.apply((androidx.constraintlayout.widget.ConstraintLayout) layoutRoot, R.id.iv_list_bg, 0, top,
                 right, fullHeight, verticalWidth);
         // The arrow of the collapsed button points to the middle of the screen: turned when the bar is on the right
