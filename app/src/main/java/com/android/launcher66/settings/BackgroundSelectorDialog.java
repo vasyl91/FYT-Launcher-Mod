@@ -1,27 +1,21 @@
 package com.android.launcher66.settings;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.WallpaperColors;
 import android.app.WallpaperManager;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Outline;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -51,7 +45,6 @@ import com.android.launcher66.Launcher;
 import com.android.launcher66.colorpicker.ColorPicker;
 import com.android.launcher66.R;
 
-import java.io.FileDescriptor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,10 +65,10 @@ public class BackgroundSelectorDialog extends DialogFragment {
     private String key;
     /** The background the choice starts from when none was chosen; null = the name given to show(). */
     private String defaultBackground;
-    private static final int REQ_PICK_WALLPAPER = 5001;
     /** The colour the picker starts from the first time: a dark grey that lets a fifth of the wallpaper through. */
     private static final int DEFAULT_CUSTOM_COLOR = 0xCC212121;
-    private static final String PREF_KEY_SELECTED_BG_URI = "selected_background_uri";
+    /** Where an older version kept an image picked as the backdrop of this dialog; removed when found. */
+    private static final String OLD_KEY_PICKED_IMAGE = "selected_background_uri";
 
     private GridLayout gridLayout;
     private View rootView;
@@ -83,7 +76,8 @@ public class BackgroundSelectorDialog extends DialogFragment {
 
     private List<String> backgroundNames;
 
-    private boolean userPickedUri = false;
+    /** The wallpaper picker was opened from the button: the wallpaper is read again on the way back. */
+    private boolean pickerOpened = false;
     private boolean hasPreloadedBackground = false;
     private Bitmap preloadedBackgroundBitmap = null;
 
@@ -233,33 +227,17 @@ public class BackgroundSelectorDialog extends DialogFragment {
         Window window = getDialog() != null ? getDialog().getWindow() : null;
         if (window != null) window.setLayout(dialogWidthPx, dialogHeightPx);
 
-        // If preloaded background was applied already, avoid reloading system wallpaper.
-        String persistedUri = PreferenceManager.getDefaultSharedPreferences(requireContext())
-                .getString(PREF_KEY_SELECTED_BG_URI, null);
+        // An image picked for this dialog alone by an older version is no longer used: the backdrop is the wallpaper
+        SharedPreferences stored = PreferenceManager.getDefaultSharedPreferences(requireContext());
+        if (stored.contains(OLD_KEY_PICKED_IMAGE)) {
+            stored.edit().remove(OLD_KEY_PICKED_IMAGE).apply();
+        }
         if (hasPreloadedBackground) {
-            if (persistedUri != null) {
-                userPickedUri = true;
-                showPickButton(true);
-            } else {
-                showPickButton(false);
-            }
+            showPickButton(false);
         } else {
-            // If user previously picked a URI use it; otherwise start async load (dialog already shown but will be updated)
-            if (persistedUri != null) {
-                Uri uri = Uri.parse(persistedUri);
-                userPickedUri = true;
-                mainHandler.post(() -> {
-                    int w = rootView.getWidth() > 0 ? rootView.getWidth() : dialogWidthPx;
-                    int h = rootView.getHeight() > 0 ? rootView.getHeight() : dialogHeightPx;
-                    boolean applied = applyPickedImageAsBackground(uri, w, h);
-                    Log.i(TAG, "Applied persisted picked wallpaper? " + applied);
-                    showPickButton(true);
-                });
-            } else {
-                // Try to load system wallpaper async and update the dialog when ready
-                mainHandler.post(() -> loadWallpaperAsync(rootView.getWidth() > 0 ? rootView.getWidth() : dialogWidthPx,
-                        rootView.getHeight() > 0 ? rootView.getHeight() : dialogHeightPx));
-            }
+            // The wallpaper could not be read before the dialog came up: once more, and with nothing still
+            // its colours and the button that opens the wallpaper picker
+            mainHandler.post(this::reloadWallpaper);
         }
 
         if (gridLayout != null) {
@@ -277,10 +255,27 @@ public class BackgroundSelectorDialog extends DialogFragment {
         pickButton.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
+    /** Reads the wallpaper again and shows it behind the tiles; without a picture its colours and the button. */
+    private void reloadWallpaper() {
+        if (rootView == null) {
+            return;
+        }
+        loadWallpaperAsync(rootView.getWidth() > 0 ? rootView.getWidth() : dialogWidthPx,
+                rootView.getHeight() > 0 ? rootView.getHeight() : dialogHeightPx);
+    }
+
+    /** Back from the wallpaper picker the button opened: the wallpaper may be another one now. */
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (pickerOpened) {
+            pickerOpened = false;
+            reloadWallpaper();
+        }
+    }
+
     private void loadWallpaperAsync(int targetW, int targetH) {
         loaderExecutor.submit(() -> {
-            if (userPickedUri) return;
-
             final Context context = getContext();
             if (context == null) return;
             Bitmap bmp = HomeWallpaperSource.read(context);
@@ -351,77 +346,9 @@ public class BackgroundSelectorDialog extends DialogFragment {
         return Color.argb(a, r, g, b);
     }
 
+    /** "Pick wallpaper": the wallpaper picker of the settings, the same one as the row under "Miscellaneous". */
     private void launchPickWallpaper() {
-        try {
-            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
-            intent.setType("image/*");
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
-            startActivityForResult(intent, REQ_PICK_WALLPAPER);
-        } catch (ActivityNotFoundException e) {
-            Log.w(TAG, "No picker available: " + e.getMessage());
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQ_PICK_WALLPAPER && resultCode == Activity.RESULT_OK && data != null) {
-            Uri uri = data.getData();
-            if (uri != null) {
-                int takeFlags = data.getFlags() & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                if ((takeFlags & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION)) == 0) {
-                    takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
-                }
-                try {
-                    // Attempt to take persistable permission (may or may not be provided by the picker)
-                    requireContext().getContentResolver().takePersistableUriPermission(uri, takeFlags);
-                } catch (Exception e) {
-                    Log.w(TAG, "Failed to take persistable permission: " + e.getMessage());
-                }
-
-                userPickedUri = true;
-                PreferenceManager.getDefaultSharedPreferences(requireContext())
-                        .edit().putString(PREF_KEY_SELECTED_BG_URI, uri.toString()).apply();
-
-                int w = rootView.getWidth() > 0 ? rootView.getWidth() : dialogWidthPx;
-                int h = rootView.getHeight() > 0 ? rootView.getHeight() : dialogHeightPx;
-
-                // Use background loader thread for decoding large images to avoid stalling UI.
-                loaderExecutor.submit(() -> {
-                    boolean applied = applyPickedImageAsBackground(uri, w, h);
-                    Log.i(TAG, "Applied picked wallpaper? " + applied);
-                    mainHandler.post(() -> {
-                        if (applied) showPickButton(true);
-                    });
-                });
-            }
-        }
-    }
-    
-    private boolean applyPickedImageAsBackground(@NonNull Uri uri, int targetW, int targetH) {
-        try (ParcelFileDescriptor pfd = requireContext().getContentResolver().openFileDescriptor(uri, "r")) {
-            if (pfd == null) return false;
-            FileDescriptor fd = pfd.getFileDescriptor();
-            if (fd == null) return false;
-
-            Bitmap decoded = BitmapFactory.decodeFileDescriptor(fd);
-            if (decoded == null) return false;
-
-            Bitmap cropped = getCenterCroppedBitmap(decoded, targetW, targetH);
-
-            // Update UI on main thread (caller may already be on main thread)
-            if (Looper.myLooper() == Looper.getMainLooper()) {
-                rootView.setBackground(new BitmapDrawable(getResources(), cropped));
-            } else {
-                final Bitmap finalCropped = cropped;
-                mainHandler.post(() -> rootView.setBackground(new BitmapDrawable(getResources(), finalCropped)));
-            }
-            return true;
-        } catch (Exception e) {
-            Log.w(TAG, "Failed to load picked image: " + e.getMessage(), e);
-            return false;
-        }
+        pickerOpened = WallpaperPickerLauncher.open(requireContext(), pickButton);
     }
 
     private void loadBackgrounds() {

@@ -7,7 +7,6 @@ import android.app.WallpaperManager;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,7 +17,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -67,7 +65,6 @@ import com.android.launcher66.DeviceIdentity;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.MediaFavoriteController;
 import com.android.launcher66.R;
-import com.android.launcher66.WallpaperPickerActivity;
 import com.android.launcher66.perf.BaselineProfileCompiler;
 import com.syu.util.WindowHostVdClient;
 import com.fyt.skin.SkinAttribute;
@@ -602,6 +599,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     @Override
     public void onResume() {
         super.onResume();
+        retryPendingWallpaperSave();
         if (oauthForYoutubeRevanced != null && youtubeRevancedKids != null) {
             FytRating.syncPreference(requireContext(), oauthForYoutubeRevanced, youtubeRevancedKids);
             // Drawn again after each answer of the starter (or its silence)
@@ -1748,51 +1746,9 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         || helpers.hasCorrectionChanged();
     }
 
+    /** "Wallpaper picker": the system's picker or the launcher's own, as "Wallpaper picker source" says. */
     public void onClickWallpaperPicker(View v) {
-        if (sharedPrefs.getBoolean(Keys.WALLPAPER_PICKER_SOURCE, false)) {
-            startWallpaperSystem(v);
-        } else {
-            startWallpaperInApp();
-        }
-    }
-
-    protected void startWallpaperSystem(View v) {
-        Intent intent = new Intent(Intent.ACTION_SET_WALLPAPER);
-
-        String pickerPackage = "com.android.wallpaper";
-        boolean hasTargetPackage = !TextUtils.isEmpty(pickerPackage);
-        try {
-            if (hasTargetPackage && LauncherApplication.sApp.getPackageManager().getApplicationInfo(pickerPackage, 0).enabled) {
-                intent.setPackage(pickerPackage);
-            }
-        } catch (PackageManager.NameNotFoundException ex) {
-            Log.e(TAG, "Error on startWallpaperSystem: " + ex.getMessage());
-        }
-
-        intent.setSourceBounds(getViewBounds(v));
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        try {
-            LauncherApplication.sApp.startActivity(intent);
-        } catch (ActivityNotFoundException e) {
-            Toast.makeText(this.mContext, "activity_not_found", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    protected void startWallpaperInApp() {
-        final Intent pickWallpaper = new Intent(Intent.ACTION_SET_WALLPAPER);
-        pickWallpaper.setComponent(getWallpaperPickerComponent());
-        pickWallpaper.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        LauncherApplication.sApp.startActivity(pickWallpaper);
-    }
-
-    protected ComponentName getWallpaperPickerComponent() {
-        return new ComponentName(LauncherApplication.sApp.getPackageName(), WallpaperPickerActivity.class.getName());
-    }
-
-    public Rect getViewBounds(View v) {
-        int[] pos = new int[2];
-        v.getLocationOnScreen(pos);
-        return new Rect(pos[0], pos[1], pos[0] + v.getWidth(), pos[1] + v.getHeight());
+        WallpaperPickerLauncher.open(requireContext(), v);
     }
 
     public void showLoading(String state) {
@@ -1821,13 +1777,16 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
     }
 
-    private static final int REQ_PICK_DAY_WALLPAPER = 5101;
-    private static final int REQ_PICK_NIGHT_WALLPAPER = 5102;
+    /** The mode ("Day" or "Night") whose wallpaper is saved once the user is back from the picker; null for none. */
+    private String mPendingWallpaperMode;
+    /** The id of the wallpaper that could not be read: the save is tried again only for another one. */
+    private volatile int mUnreadableWallpaperId = -1;
 
     /**
      * The wallpaper cannot be read here (from Android 13 an app needs access to all files for it, and no
-     * privileged host gave it either): the user is told so, and can pick the image to use for this mode
-     * instead. Nothing was saved and nothing was changed.
+     * privileged host gave it either): the user is told so and can choose a wallpaper in the wallpaper
+     * picker of the settings. Nothing was saved and nothing was changed. Back from the picker, the save is
+     * tried once more if the wallpaper is another one (onResume).
      */
     private void offerWallpaperPick(String daytime) {
         if (!isAdded()) {
@@ -1837,57 +1796,57 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 .setMessage(getString(R.string.wallpaper_unreadable, daytime))
                 .setNegativeButton(android.R.string.cancel, null)
                 .setPositiveButton(R.string.pick_image_manually, (dialog, which) -> {
-                    try {
-                        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                        intent.addCategory(Intent.CATEGORY_OPENABLE);
-                        intent.setType("image/*");
-                        startActivityForResult(intent,
-                                "Night".equals(daytime) ? REQ_PICK_NIGHT_WALLPAPER : REQ_PICK_DAY_WALLPAPER);
-                    } catch (ActivityNotFoundException e) {
-                        Log.w(TAG, "No app to pick an image with: " + e.getMessage());
+                    if (WallpaperPickerLauncher.open(requireContext(), null)) {
+                        mPendingWallpaperMode = daytime;
                     }
                 })
                 .show();
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if ((requestCode == REQ_PICK_DAY_WALLPAPER || requestCode == REQ_PICK_NIGHT_WALLPAPER)
-                && resultCode == Activity.RESULT_OK && data != null && data.getData() != null) {
-            helpers.setCorrectionChanged(true);
-            wallpaperSet = true;
-            new SaveWallpaperTask(data.getData())
-                    .execute(requestCode == REQ_PICK_NIGHT_WALLPAPER ? "Night" : "Day");
+    /**
+     * Back from the wallpaper picker that the offer above opened: if the wallpaper is another one now, it is
+     * saved for the mode that was asked for. Once: a wallpaper that still cannot be read brings the offer
+     * back by itself, and the same wallpaper as before means the user chose nothing.
+     */
+    private void retryPendingWallpaperSave() {
+        final String mode = mPendingWallpaperMode;
+        if (mode == null) {
+            return;
         }
+        mPendingWallpaperMode = null;
+        final int before = mUnreadableWallpaperId;
+        final Handler main = new Handler(Looper.getMainLooper());
+        AsyncTask.THREAD_POOL_EXECUTOR.execute(() -> {
+            int now;
+            try {
+                now = WallpaperManager.getInstance(LauncherApplication.sApp).getWallpaperId(WallpaperManager.FLAG_SYSTEM);
+            } catch (RuntimeException e) {
+                return;
+            }
+            if (now == before) {
+                Log.i(TAG, "Back from the wallpaper picker with the same wallpaper: nothing saved for " + mode);
+                return;
+            }
+            main.post(() -> {
+                if (isAdded()) {
+                    helpers.setCorrectionChanged(true);
+                    wallpaperSet = true;
+                    new SaveWallpaperTask().execute(mode);
+                }
+            });
+        });
     }
 
     private class SaveWallpaperTask extends AsyncTask<String, Void, Boolean> {
         private final WallpaperManager mWallpaperManager;
         private String daytime = "";
-        /** The image the user picked for this mode; null to take the home screen's wallpaper. */
-        private final Uri pickedImage;
-        
         public SaveWallpaperTask() {
-            this(null);
-        }
-
-        SaveWallpaperTask(Uri pickedImage) {
             mWallpaperManager = WallpaperManager.getInstance(LauncherApplication.sApp);
-            this.pickedImage = pickedImage;
         }
 
-        /** The picture to save: the picked image, else the home screen's wallpaper; null when there is none. */
+        /** The picture to save: the home screen's wallpaper by the best way this device has; null when there is none. */
         private Bitmap sourceBitmap() {
-            if (pickedImage == null) {
-                return HomeWallpaperSource.read(LauncherApplication.sApp);
-            }
-            try (java.io.InputStream in = LauncherApplication.sApp.getContentResolver().openInputStream(pickedImage)) {
-                return in == null ? null : BitmapFactory.decodeStream(in);
-            } catch (IOException | SecurityException e) {
-                Log.w(TAG, "The picked image could not be read: " + e);
-                return null;
-            }
+            return HomeWallpaperSource.read(LauncherApplication.sApp);
         }
 
         @Override
@@ -1908,6 +1867,12 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             // an exception of the system as the result: where it cannot be read the user picks an image
             Bitmap mBitmap = sourceBitmap();
             if (mBitmap == null) {
+                // Which wallpaper it was that could not be read: the save is tried again only for another one
+                try {
+                    mUnreadableWallpaperId = mWallpaperManager.getWallpaperId(WallpaperManager.FLAG_SYSTEM);
+                } catch (RuntimeException e) {
+                    mUnreadableWallpaperId = -1;
+                }
                 throw new WallpaperUnreadable();
             }
             File mFile = new File(LauncherApplication.sApp.getFilesDir(), "wallpaper_img"); // dir: /data/user/0/com.android.launcher66/files/wallpaper_img
