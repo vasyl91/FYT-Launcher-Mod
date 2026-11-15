@@ -760,6 +760,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                     startPageEditText.setSelection(startPageEditText.getText().length());
                 });
 
+                // One field: the keyboard opens with the dialog (DialogKeyboard)
+                DialogKeyboard.openFor(alertStartPageDialog, startPageEditText);
                 alertStartPageDialog.show();
                 break;
             case Keys.HORIZONTAL_BAR_EVERY_PAGE:
@@ -854,6 +856,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                     marginEditText.setSelection(marginEditText.getText().length());
                 });
 
+                // One field: the keyboard opens with the dialog (DialogKeyboard)
+                DialogKeyboard.openFor(alertMarginsDialog, marginEditText);
                 alertMarginsDialog.show();
                 break;
             case Keys.USER_STATS:
@@ -951,6 +955,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                     skipCodesEditText.setSelection(skipCodesEditText.getText().length());
                 });
 
+                // One field: the keyboard opens with the dialog (DialogKeyboard)
+                DialogKeyboard.openFor(alertSkipCodesDialog, skipCodesEditText);
                 alertSkipCodesDialog.show();
                 break;
             case Keys.CANBUS_LIBRARY_IMPORT:
@@ -989,6 +995,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                     inspectorTimeoutEdit.setSelection(inspectorTimeoutEdit.getText().length());
                 });
 
+                // One field: the keyboard opens with the dialog (DialogKeyboard)
+                DialogKeyboard.openFor(alertCodesInspectorDialog, inspectorTimeoutEdit);
                 alertCodesInspectorDialog.show();
                 break;
             default:

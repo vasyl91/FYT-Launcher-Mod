@@ -790,6 +790,8 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                     clientIdEditText.setSelection(clientIdEditText.getText().length());
                 });
 
+                // One field: the keyboard opens with the dialog (DialogKeyboard)
+                DialogKeyboard.openFor(alertClientIdDialog, clientIdEditText);
                 alertClientIdDialog.show();
                 break;                
             case Keys.OAUTH_FOR_SPOTIFY:
@@ -982,6 +984,8 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 break;
             case Keys.LOGCAT_SERVICE_TIMEOUT:
                 alertLogcatServiceTimeoutDialog = displayLogcatServiceTimeoutDialog().create();
+                // One field: the keyboard opens with the dialog (DialogKeyboard)
+                DialogKeyboard.openFor(alertLogcatServiceTimeoutDialog, logcatServiceTimeoutEditText);
                 alertLogcatServiceTimeoutDialog.show();
 
                 Button negativeButtonL = alertLogcatServiceTimeoutDialog.getButton(DialogInterface.BUTTON_NEGATIVE);

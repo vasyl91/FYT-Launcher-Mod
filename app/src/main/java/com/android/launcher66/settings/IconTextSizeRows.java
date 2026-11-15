@@ -93,6 +93,8 @@ final class IconTextSizeRows {
             }
             return false;
         });
+        // One field: the keyboard opens with the dialog (DialogKeyboard)
+        DialogKeyboard.openFor(shown, input);
         shown.show();
 
         // As the other number dialogs of the settings: the buttons apart, the field with a margin
