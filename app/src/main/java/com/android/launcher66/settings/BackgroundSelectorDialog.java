@@ -549,7 +549,7 @@ public class BackgroundSelectorDialog extends DialogFragment {
     /**
      * The first tile: the user's own colour for this component. Without one it is the "+" of an empty place in
      * the horizontal bar, and a tap closes the selector and opens the colour picker. With one it shows the
-     * colour and its transparency; a tap chooses it, and a tap on it while it is the chosen one, or a long
+     * colour with its transparency over what is behind the selector; a tap chooses it, and a tap on it while it is the chosen one, or a long
      * press, opens the picker to change it. The colour is stored only when "Select" is pressed in the picker.
      */
     private View customColorTile(SharedPreferences sharedPreferences, BackgroundChoice chosen, int itemSize,
@@ -568,7 +568,7 @@ public class BackgroundSelectorDialog extends DialogFragment {
 
         ImageView imageView = new ImageView(requireContext());
         if (hasColor) {
-            imageView.setImageDrawable(new ColorTileDrawable(color, cornerRadiusPx, dpToPx(10)));
+            imageView.setImageDrawable(new ColorTileDrawable(color, cornerRadiusPx, dpToPx(1), false));
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
         } else {
             GradientDrawable ground = new GradientDrawable();
@@ -608,7 +608,7 @@ public class BackgroundSelectorDialog extends DialogFragment {
         return cardView;
     }
 
-    /** The tile for no background at all: the chequered ground of a fully transparent colour. */
+    /** The tile for no background at all: what is behind the selector, in an outline with a line across it. */
     private View noBackgroundTile(SharedPreferences sharedPreferences, BackgroundChoice chosen, int itemSize,
                                   int halfGap, int cornerRadiusPx) {
         CardView cardView = new CardView(requireContext());
@@ -618,7 +618,7 @@ public class BackgroundSelectorDialog extends DialogFragment {
         cardView.setUseCompatPadding(false);
         cardView.setPreventCornerOverlap(false);
         ImageView imageView = new ImageView(requireContext());
-        imageView.setImageDrawable(new ColorTileDrawable(Color.TRANSPARENT, cornerRadiusPx, dpToPx(10)));
+        imageView.setImageDrawable(new ColorTileDrawable(Color.TRANSPARENT, cornerRadiusPx, dpToPx(1), true));
         imageView.setScaleType(ImageView.ScaleType.FIT_XY);
         cardView.addView(imageView, new FrameLayout.LayoutParams(
                 android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.MATCH_PARENT));

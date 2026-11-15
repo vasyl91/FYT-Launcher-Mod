@@ -2,28 +2,30 @@ package com.android.launcher66.settings;
 
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
-import android.graphics.LinearGradient;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Shader;
+import android.graphics.SweepGradient;
 import android.graphics.drawable.Drawable;
 
 /**
  * The frame around the chosen tile of a background selector: one look for every selector and every kind of
  * tile (a picture, the user's colour, no background).
  *
- * <p>The rule: the frame is seen on any background. Its band is a gradient of three neighbouring colours that
- * runs across the tile, teal to blue to violet, which no background picture and no plain colour matches along
- * its whole length; and the band lies between two thin lines, a white one outside and a dark one inside, so
- * that one of the two always contrasts with what is beside it, on a light tile, a dark one, or a transparent
- * one with the wallpaper behind it. It is not a rainbow: the colours stay within a third of the colour circle.
+ * <p>The rule: the frame is seen on any background. Its band is a gradient of five colours that runs once
+ * round the tile: cyan, blue, violet, magenta and a warm orange, and back to cyan. No background picture and
+ * no plain colour matches it along its whole length, cold or warm. The band lies between two thin lines, a
+ * white one outside and a dark one inside, so that one of the two always contrasts with what is beside it,
+ * on a light tile, a dark one, or a transparent one with the wallpaper behind it. It is not a rainbow: green
+ * and yellow are left out, and the colours follow each other from the cold side of the circle to the warm.
  */
 final class SelectedFrameDrawable extends Drawable {
 
-    /** Teal, blue, violet. */
-    private static final int[] BAND = {0xFF00C2A8, 0xFF2D7FF9, 0xFF8E5CF7};
+    /** Cyan, blue, violet, magenta, warm orange, and cyan again where the round closes. */
+    private static final int[] BAND = {0xFF14C8F0, 0xFF2D7FF9, 0xFF8E5CF7, 0xFFE052C8, 0xFFFF8A3D, 0xFF14C8F0};
     private static final int OUTER_LINE = 0xFFFFFFFF;
     private static final int INNER_LINE = 0xCC101418;
 
@@ -51,8 +53,12 @@ final class SelectedFrameDrawable extends Drawable {
 
     @Override
     protected void onBoundsChange(Rect bounds) {
-        band.setShader(new LinearGradient(bounds.left, bounds.top, bounds.right, bounds.bottom, BAND, null,
-                Shader.TileMode.CLAMP));
+        // Once round the tile, beginning at its top left corner
+        Shader shader = new SweepGradient(bounds.exactCenterX(), bounds.exactCenterY(), BAND, null);
+        Matrix turn = new Matrix();
+        turn.setRotate(225f, bounds.exactCenterX(), bounds.exactCenterY());
+        shader.setLocalMatrix(turn);
+        band.setShader(shader);
     }
 
     @Override
