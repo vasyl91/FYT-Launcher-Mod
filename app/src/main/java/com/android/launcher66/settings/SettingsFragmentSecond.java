@@ -483,7 +483,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 swipeDetector.setVisible(false);
             }
         }  
-        pipBool = sharedPrefs.getBoolean(Keys.DISPLAY_PIP, false);
+        pipBool = sharedPrefs.getBoolean(Keys.DISPLAY_PIP, true);
         setPipGroupVisible(pipBool);
         if (userDate != null) {
             userDate.setOnPreferenceClickListener(this);
@@ -731,7 +731,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         params.setMargins(0, 0, 80, 0);
         switch (preference.getKey()) {
             case Keys.DISPLAY_PIP:
-                pipBool = sharedPrefs.getBoolean(Keys.DISPLAY_PIP, false);
+                pipBool = sharedPrefs.getBoolean(Keys.DISPLAY_PIP, true);
                 setPipGroupVisible(pipBool);
                 if (!pipBool) {
                     // Turn off all PiP switches when hidden

@@ -213,7 +213,7 @@ public class DrawViewScreen extends View implements View.OnClickListener {
         int minWidth = SettingsActivity.calculatedPipMinWidth;
         int minHeight = SettingsActivity.calculatedPipMinHeight;
         boolean enabled = false;
-        boolean pip = sharedPrefs.getBoolean(Keys.DISPLAY_PIP, false);
+        boolean pip = sharedPrefs.getBoolean(Keys.DISPLAY_PIP, true);
         boolean dualPip = sharedPrefs.getBoolean(Keys.PIP_DUAL, false);
 
         switch (key) {
