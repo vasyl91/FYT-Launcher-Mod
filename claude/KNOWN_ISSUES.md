@@ -382,7 +382,7 @@ starts its wake activity once for this case; whether that is enough is not known
 fYT Rating (getting its token on the receiver's path). **Closed 2026-11-15:** the owner, "works" [H].
 
 ### KI-34 Round 14 has no device result
-Commits `6fbd5605b` … `c7ed19880` (2026-11-15) build and pass the unit tests (1083), CI green up to run 490
+Commits `6fbd5605b` … `c7ed19880` (2026-11-15) build and pass the unit tests (1083), CI green up to run 491
 [V]; none has run on a device. `reports/implementation_report_2026-11-15.md` lists what each needs. The ones
 that change what the 7862 shows: the bars while the pages move and in the overview (`476013cf4`,
 `1ca81e616`), the cells' centring (`4e983e0f5`), the play/pause symbol (`605c2818d`), the night mode

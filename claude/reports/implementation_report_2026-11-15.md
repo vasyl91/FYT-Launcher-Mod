@@ -4,8 +4,8 @@
 2026-11-15 (in Polish, outside the repository) after the owner's device test of round 13, then extended the
 same day with six items from a second test on the 7862 ("round 14b"). There was no brief.
 
-**State:** every commit builds; 123 test files, 1083 JVM tests, all pass locally; CI green on every push up
-to run 490 (`1ca81e616`), the last two code commits are in run 491. **Nothing of this round has been run on
+**State:** every commit builds; 123 test files, 1083 JVM tests, all pass locally; CI green on every push,
+the last code commit included (run 491). **Nothing of this round has been run on
 a device.** Tags as in `CLAUDE.md`: [V] code/git/CI · [H] owner · [A] assumed · [U] unknown.
 
 ## The owner's result for round 13 (2026-11-15) [H]
