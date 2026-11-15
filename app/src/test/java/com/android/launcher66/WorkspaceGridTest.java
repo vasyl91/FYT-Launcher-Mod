@@ -133,4 +133,17 @@ class WorkspaceGridTest {
                 new WorkspaceGrid.Cells(6, 10, 0, 0));
         assertNull(WorkspaceGrid.arrangedFor(null, "9x5+1+0;10x6+0+0", false, now));
     }
+
+    @Test
+    void onlyTheCellsAreCentredTheBarStripStartsAtTheEdge() {
+        // A55 in portrait: 1080 px, a vertical bar of 142 px at the left, five columns of 187 px leave 3 px
+        int cell = WorkspaceGrid.cellSize(1080, 142, 0, 5);
+        int slack = 1080 - 142 - 5 * cell;
+        assertEquals(3, slack);
+        assertEquals(142 + 2, WorkspaceGrid.firstCellX(142, slack));
+        // Without a bar the cells begin after half of the slack, rounded up as before
+        assertEquals(2, WorkspaceGrid.firstCellX(0, 3));
+        assertEquals(0, WorkspaceGrid.firstCellX(0, 0));
+        assertEquals(142, WorkspaceGrid.firstCellX(142, 0));
+    }
 }

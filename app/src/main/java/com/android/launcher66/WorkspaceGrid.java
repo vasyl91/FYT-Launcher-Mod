@@ -24,6 +24,12 @@ package com.android.launcher66;
  * and {@link Cells#offsetY} say how many columns and rows of the page without bars lie before that first cell
  * (one where a bar is at the left or at the top), which is what lets an item keep its place on the screen
  * when a bar is switched on or moved ({@link GridOverflow}). Pure Java, so that it has a test.
+ *
+ * <p><b>What is centred.</b> The pixels that are left over when the width beside the bars is shared among the
+ * columns go half before the first column and half after the last ({@link #firstCellX}). Only the cells move
+ * by that half: the page's other children (the first page's bars, the container of the cells, the elements the
+ * creator places by pixels) keep the page's own corner, so that a bar touches the edge of the screen and an
+ * element lies where the creator put it, at the margin from the bar that the user set.
  */
 public final class WorkspaceGrid {
 
@@ -152,6 +158,17 @@ public final class WorkspaceGrid {
     public static int cellSize(int pageSize, int insetBefore, int insetAfter, int count) {
         int cells = Math.max(1, count);
         return Math.max(cells, pageSize - insetBefore - insetAfter) / cells;
+    }
+
+    /**
+     * Where the first column begins, counted from the page's left edge inside its padding: after a bar at the
+     * left, and after half of the pixels the columns leave over (rounded up, as the cells always were).
+     *
+     * @param insetLeft the bar's strip at the left, 0 without one
+     * @param slackX    the width beside the bars minus the width of all the columns
+     */
+    public static int firstCellX(int insetLeft, int slackX) {
+        return insetLeft + (int) Math.ceil(slackX / 2f);
     }
 
     /**

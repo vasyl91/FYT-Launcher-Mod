@@ -58,6 +58,18 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
         }
     }
 
+    /**
+     * The same, from the page's own measure, just before it measures this container: the container is measured
+     * again (its children's places are computed there), without asking the whole window for another pass.
+     */
+    void setGridOffsetWhileMeasuring(int x, int y) {
+        if (x != mGridOffsetX || y != mGridOffsetY) {
+            mGridOffsetX = x;
+            mGridOffsetY = y;
+            forceLayout();
+        }
+    }
+
     public ShortcutAndWidgetContainer(Context context) {
         super(context);
         mContext = context;

@@ -512,12 +512,6 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         return getPaddingTop() + mGridInsetTop;
     }
 
-    /** The pixels left over when the width beside the bars is shared among the columns. */
-    private int gridSlackX() {
-        return getMeasuredWidth() - getPaddingLeft() - getPaddingRight() - mGridInsetLeft - mGridInsetRight
-                - (mCountX * mCellWidth);
-    }
-
     // Set whether or not to invert the layout horizontally if the layout is in RTL mode.
     public void setInvertIfRtl(boolean invert) {
         mShortcutsAndWidgets.setInvertIfRtl(invert);
@@ -627,8 +621,8 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
             final int padding = mPressedOrFocusedIcon.getPressedOrFocusedBackgroundPadding();
             final Bitmap b = mPressedOrFocusedIcon.getPressedOrFocusedBackground();
             if (b != null) {
-                int offset = gridSlackX();
-                int left = getPaddingLeft() + (int) Math.ceil(offset / 2f);
+                // The icon's place is in the container, which lies at the page's corner
+                int left = getPaddingLeft();
                 int top = getPaddingTop();
                 canvas.drawBitmap(b,
                         mPressedOrFocusedIcon.getLeft() + left - padding,
@@ -1178,6 +1172,13 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
             mWidthGap = mOriginalWidthGap;
             mHeightGap = mOriginalHeightGap;
         }
+        // The cells are centred in the width beside the bars, the page's other children are not (WorkspaceGrid):
+        // the pixels left over when that width, of the width this view is about to take, is shared among the columns
+        int ownWidth = mFixedWidth > 0 && mFixedHeight > 0 ? newWidth : widthSize;
+        int slackX = ownWidth - getPaddingLeft() - getPaddingRight() - mGridInsetLeft - mGridInsetRight
+                - (mCountX * mCellWidth);
+        mShortcutsAndWidgets.setGridOffsetWhileMeasuring(WorkspaceGrid.firstCellX(mGridInsetLeft, slackX),
+                mGridInsetTop);
         int count = getChildCount();
         int maxWidth = 0;
         int maxHeight = 0;
@@ -1215,10 +1216,9 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        // Every child has the whole page: the layout of the first page with its bars, and the container
-        // of the cells, which begins the cells beside the bars itself (setGridOffset())
-        int offset = gridSlackX();
-        int left = getPaddingLeft() + (int) Math.ceil(offset / 2f);
+        // Every child has the whole page from its corner: the layout of the first page with its bars, and the
+        // container of the cells, which begins and centres the cells itself (setGridOffset(), WorkspaceGrid)
+        int left = getPaddingLeft();
         int top = getPaddingTop();
         int count = getChildCount();
         for (int i = 0; i < count; i++) {
