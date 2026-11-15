@@ -422,6 +422,13 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         int barHeight = mLauncher != null ? mLauncher.getHorizontalBarHeight() : 0;
         int[] insets = WorkspaceGrids.insets(p, landscape, firstPage, barHeight, Launcher.calculatedVerticalBarWidth);
         mFirstPage = firstPage;
+        // For the size of the icons, which is one for all pages (IconFit): the grid of the other kind of
+        // page, the height of a label, and whether the user changed the grid at all
+        mOtherCells = WorkspaceGrids.cells(p, landscape, !firstPage);
+        mOtherInsets = WorkspaceGrids.insets(p, landscape, !firstPage, barHeight, Launcher.calculatedVerticalBarWidth);
+        mDefaultGrid = WorkspaceGrids.longCells(p) == WorkspaceGrid.DEFAULT_LONG
+                && WorkspaceGrids.shortCells(p) == WorkspaceGrid.DEFAULT_SHORT;
+        mIconLabelPx = iconLabelHeight(p);
         mGridInsetLeft = insets[0];
         mGridInsetTop = insets[1];
         mGridInsetRight = insets[2];
@@ -430,6 +437,47 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         setGridSize(cells.countX, cells.countY);
         Log.i(TAG, (firstPage ? "First page" : "Page") + " grid " + cells + ", strips of the bars "
                 + java.util.Arrays.toString(insets));
+    }
+
+    /** The grid and the bars' strips of the other kind of page (the first one, or the others); see IconFit. */
+    private WorkspaceGrid.Cells mOtherCells;
+    private int[] mOtherInsets;
+    private boolean mDefaultGrid = true;
+    private int mIconLabelPx;
+
+    /** The height the label below an icon takes: one line of the text size the user set for the home screen. */
+    private static int iconLabelHeight(SharedPreferences p) {
+        float textPx;
+        try {
+            textPx = Integer.parseInt(p.getString(Keys.WORKSPACE_TEXT_SIZE, String.valueOf(Launcher.textSizeWorkspace)));
+        } catch (NumberFormatException e) {
+            textPx = Launcher.textSizeWorkspace;
+        }
+        if (textPx <= 0) {
+            return 0;
+        }
+        android.text.TextPaint paint = new android.text.TextPaint();
+        paint.setTypeface(android.graphics.Typeface.create("sans-serif-condensed", android.graphics.Typeface.NORMAL));
+        paint.setTextSize(textPx);
+        Paint.FontMetrics metrics = paint.getFontMetrics();
+        return (int) Math.ceil(metrics.bottom - metrics.top);
+    }
+
+    /**
+     * The size of the icons on this page: the standard one, or smaller where the cells of a denser grid
+     * cannot hold it with its label, and the same on every page (IconFit).
+     */
+    private int fitIconPx(int pageWidth, int pageHeight) {
+        int standard = Utilities.sIconTextureWidth;
+        if (mFirstPage == null || mOtherCells == null || standard <= 0) {
+            return 0;
+        }
+        int width = Math.min(mCellWidth,
+                WorkspaceGrid.cellSize(pageWidth, mOtherInsets[0], mOtherInsets[2], mOtherCells.countX));
+        int height = Math.min(mCellHeight,
+                WorkspaceGrid.cellSize(pageHeight, mOtherInsets[1], mOtherInsets[3], mOtherCells.countY));
+        int px = IconFit.iconPx(standard, width, height, mIconLabelPx, mDefaultGrid);
+        return px == standard ? 0 : px;
     }
 
     /** The x of the first cell in this view: after the padding and a bar at the left. */
@@ -1077,6 +1125,9 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
                 mCellHeight = ch;
                 mShortcutsAndWidgets.setCellDimensions(mCellWidth, mCellHeight, mWidthGap,
                         mHeightGap, mCountX, mCountY);
+            }
+            if (mFirstPage != null) {
+                mShortcutsAndWidgets.setFitIconPx(fitIconPx(childWidthSize, childHeightSize));
             }
         }
 

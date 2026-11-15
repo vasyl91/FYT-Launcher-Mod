@@ -444,6 +444,34 @@ public class FolderIcon extends LinearLayout implements FolderListener {
         onDrop(item, d.dragView, null, 1.0f, mInfo.contents.size(), d.postAnimationRunnable, d);
     }
 
+    /** The size the page gave its icons (IconFit); 0 for the standard size. */
+    private int mFitIconPx;
+
+    /**
+     * The page's size for its icons (IconFit): the folder's picture is made smaller by the same share as
+     * the icons beside it, never larger than its standard size.
+     *
+     * @param px         the size of an icon on this page, 0 for the standard one
+     * @param standardPx the standard size of an icon
+     */
+    void setFitIconPx(int px, int standardPx) {
+        if (px == mFitIconPx || mPreviewBackground == null) {
+            return;
+        }
+        mFitIconPx = px;
+        int full = Launcher.workspaceIconAndFolderSize;
+        int size = px > 0 && standardPx > 0 ? Math.min(full, Math.round(full * (float) px / standardPx)) : full;
+        ViewGroup.LayoutParams lp = mPreviewBackground.getLayoutParams();
+        if (size > 0 && (lp.width != size || lp.height != size)) {
+            lp.width = size;
+            lp.height = size;
+            mPreviewBackground.setLayoutParams(lp);
+            // The little icons inside are placed from the picture's size: worked out again at the next draw
+            mTotalWidth = -1;
+            invalidate();
+        }
+    }
+
     private void computePreviewDrawingParams(int drawableSize, int totalSize) {
         if (mIntrinsicIconSize != drawableSize || mTotalWidth != totalSize) {
             LauncherAppState app = LauncherAppState.getInstance();

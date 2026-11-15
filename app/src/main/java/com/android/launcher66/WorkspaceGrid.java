@@ -142,6 +142,19 @@ public final class WorkspaceGrid {
     }
 
     /**
+     * The size of a cell along one axis: what the bars leave of the page, shared among the cells.
+     *
+     * @param pageSize    the width or the height of the page
+     * @param insetBefore the bar's strip before the first cell
+     * @param insetAfter  the bar's strip after the last cell
+     * @param count       the columns or the rows
+     */
+    public static int cellSize(int pageSize, int insetBefore, int insetAfter, int count) {
+        int cells = Math.max(1, count);
+        return Math.max(cells, pageSize - insetBefore - insetAfter) / cells;
+    }
+
+    /**
      * Whether the auto-hide bar keeps the corner cell under its handle.
      *
      * @param reserve     what the horizontal bar takes on this page

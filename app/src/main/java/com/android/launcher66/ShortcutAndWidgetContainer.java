@@ -31,6 +31,17 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
         mRowPadding = rowPadding;
     }
 
+    /** The size of the icons of this page (IconFit); 0 leaves every icon at its standard size. */
+    private int mFitIconPx;
+
+    /** The page's size for its icons, smaller than the standard one where a denser grid needs it (IconFit). */
+    void setFitIconPx(int px) {
+        if (px != mFitIconPx) {
+            mFitIconPx = px;
+            requestLayout();
+        }
+    }
+
     /** Where the first cell lies in this container: beside a bar at the left, below one at the top (WorkspaceGrid). */
     private int mGridOffsetX;
     private int mGridOffsetY;
@@ -189,6 +200,14 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
                 lp.rowPadding = mRowPadding;
                 lp.setup(mCellWidth, mCellHeight, this.mWidthGap, this.mHeightGap, invertLayoutHorizontally(), this.mCountX);
                 offsetToGrid(lp);
+                // The icon in the size its page has for it, before the child is measured (IconFit)
+                if (!mIsHotseatLayout) {
+                    if (child instanceof BubbleTextView) {
+                        ((BubbleTextView) child).setFitIconPx(mFitIconPx);
+                    } else if (child instanceof FolderIcon) {
+                        ((FolderIcon) child).setFitIconPx(mFitIconPx, Utilities.sIconTextureWidth);
+                    }
+                }
                 int cHeight = getCellContentHeight();
                 int cellPaddingY = (int) Math.max(0.0f, (lp.height - cHeight) / 2.0f);
                 int cellPaddingX = (int) (grid.edgeMarginPx / 2.0f);

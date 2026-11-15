@@ -91,13 +91,39 @@ public class BubbleTextView extends androidx.appcompat.widget.AppCompatTextView 
         setShadowLayer(SHADOW_LARGE_RADIUS, 0.0f, SHADOW_Y_OFFSET, SHADOW_LARGE_COLOUR);
     }
 
+    /** The size the page gave this icon (IconFit); 0 for the standard size. */
+    private int mFitIconPx;
+
+    /**
+     * The page's size for its icons (IconFit): smaller than the standard one where the cells of a denser
+     * grid cannot hold it, never larger. Kept, so that an icon that is drawn anew keeps it.
+     */
+    void setFitIconPx(int px) {
+        if (px == mFitIconPx) {
+            return;
+        }
+        mFitIconPx = px;
+        android.graphics.drawable.Drawable icon = getCompoundDrawables()[1];
+        if (icon == null) {
+            return;
+        }
+        int size = px > 0 ? px : Utilities.sIconTextureWidth;
+        if (size > 0 && icon.getBounds().width() != size) {
+            icon.setBounds(0, 0, size, size);
+            setCompoundDrawables(null, icon, null, null);
+        }
+    }
+
     public void applyFromShortcutInfo(ShortcutInfo info, IconCache iconCache) {
         Bitmap b = info.getIcon(iconCache);
         LauncherAppState app = LauncherAppState.getInstance();
         DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
 
-        setCompoundDrawables(null,
-                Utilities.createIconDrawable(b), null, null);
+        android.graphics.drawable.Drawable fresh = Utilities.createIconDrawable(b);
+        if (mFitIconPx > 0) {
+            fresh.setBounds(0, 0, mFitIconPx, mFitIconPx);
+        }
+        setCompoundDrawables(null, fresh, null, null);
 
         setCompoundDrawablePadding((int) ((grid.folderIconSizePx - grid.iconSizePx) / 2f));
 
