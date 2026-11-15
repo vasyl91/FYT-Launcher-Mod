@@ -930,19 +930,12 @@ final class LauncherMusicWidget {
     }
 
     /**
-     * Null, blank, literal "null" and "Unknown" all mean the track supplied no
-     * value, and have to be stored as such - skipping the write is what leaves
-     * the previous track's title or artist behind.
+     * A value that is no value (TitleTag: blank, "null", "Unknown", "<unknown>") is stored as such - skipping
+     * the write is what leaves the previous track's title or artist behind.
      */
     static String normalizeMediaText(String value) {
-        if (value == null) {
-            return "";
-        }
-        String trimmed = value.trim();
-        if (trimmed.isEmpty() || "null".equalsIgnoreCase(trimmed) || "Unknown".equalsIgnoreCase(trimmed)) {
-            return "";
-        }
-        return trimmed;
+        String valid = TitleTag.valid(value);
+        return valid == null ? "" : valid;
     }
 
     void applyMusicTitle(String rawTitle) {

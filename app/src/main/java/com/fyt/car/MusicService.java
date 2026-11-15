@@ -88,7 +88,8 @@ public class MusicService extends Service {
             state = Boolean.valueOf(bundle.getBoolean(PLAY_STATE));
             album = nonNull(bundle.getString(PLAY_ALBUM));
 
-            boolean hasTitle = !music_name.isEmpty() && !music_name.contains("Unknown");
+            // "Unknown" is no title, "Unknown Pleasures" is one (TitleTag)
+            boolean hasTitle = com.android.launcher66.TitleTag.isValue(music_name);
             if (hasTitle) {
                 sendData();
             }
@@ -266,7 +267,8 @@ public class MusicService extends Service {
         state = s.playing;
         album = s.album;
 
-        boolean hasTitle = !music_name.isEmpty() && !music_name.contains("Unknown");
+        // "Unknown" is no title, "Unknown Pleasures" is one (TitleTag)
+        boolean hasTitle = com.android.launcher66.TitleTag.isValue(music_name);
         if (hasTitle) {
             Intent intent = new Intent(TITLES_RECEIVER);
             Bundle bundle = new Bundle();

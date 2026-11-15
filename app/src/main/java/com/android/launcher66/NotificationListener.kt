@@ -406,7 +406,7 @@ class NotificationListener : NotificationListenerService() {
                     setStatus(2)
                 }
             }
-            if (MusicService.state && MusicService.music_name != "" && MusicService.music_name != "Unknown") {
+            if (MusicService.state && TitleTag.isValue(MusicService.music_name)) {
                 postDelayedIfAlive(2000) {
                     startFytTimeLoop()
                     setStatus(1)
@@ -767,9 +767,8 @@ class NotificationListener : NotificationListenerService() {
             takeSourceForMcu(sourcePackage)
         }
 
-        val isValidMusicName = currentMusicName.isNotEmpty() &&
-                !currentMusicName.contains("Unknown", ignoreCase = true) &&
-                !currentMusicName.contains("null", ignoreCase = true)
+        // The whole title is compared: "Unknown Pleasures" is a title (TitleTag)
+        val isValidMusicName = TitleTag.isValue(currentMusicName)
 
         if (isValidMusicName) {
             fytSet = false
@@ -1621,10 +1620,10 @@ class NotificationListener : NotificationListenerService() {
         if (fytData || (stock != null && !stock.localFile)) { // from metadata
             songFyt = musicName
             artist = authorName
-            if (artist == null || artist?.isEmpty() == true || artist == "Unknown"){
+            if (!TitleTag.isValue(artist)) {
                 artist = fytAlbum
             }
-            if (artist == null || artist?.isEmpty() == true || artist == "Unknown") {
+            if (!TitleTag.isValue(artist)) {
                 artist = "\u0020"
             }       
         } else if (!fytData) { // from file title
