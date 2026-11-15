@@ -1308,6 +1308,15 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         return true;
     }
 
+    /**
+     * Whether a child of the page takes its cells (CustomElement.takesCells): every one but the placeholder
+     * of the statistics window, which only says where the window lies. It is left out of every reorder and of
+     * the cells taken, so an icon or a widget can be dropped under the window.
+     */
+    boolean takesCells(View child) {
+        return child == null || child != mStatsPlaceholder || CustomElement.STATS.takesCells();
+    }
+
     private View getCustomElementView(CustomElement element) {
         switch (element) {
             case DATE:
@@ -2636,6 +2645,9 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         int childCount = mShortcutsAndWidgets.getChildCount();
         for (int i = 0; i < childCount; i++) {
             View child = mShortcutsAndWidgets.getChildAt(i);
+            if (!takesCells(child)) {
+                continue;   // not an obstacle to any reorder, and never committed to mOccupied
+            }
             LayoutParams lp = (LayoutParams) child.getLayoutParams();
             CellAndSpan c;
             if (temp) {
@@ -3016,7 +3028,7 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         final int count = mShortcutsAndWidgets.getChildCount();
         for (int i = 0; i < count; i++) {
             View child = mShortcutsAndWidgets.getChildAt(i);
-            if (child == dragView) continue;
+            if (child == dragView || !takesCells(child)) continue;
             LayoutParams lp = (LayoutParams) child.getLayoutParams();
             r1.set(lp.cellX, lp.cellY, lp.cellX + lp.cellHSpan, lp.cellY + lp.cellVSpan);
             if (Rect.intersects(r0, r1)) {
@@ -3628,7 +3640,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
      * otherwise cellX/cellY) to ensure temporary/resizing coordinates are honored.
      */
     public void markCellsAsOccupiedForView(View view, boolean[][] occupied) {
-        if (view == null || view.getParent() != mShortcutsAndWidgets) return;
+        if (view == null || view.getParent() != mShortcutsAndWidgets || !takesCells(view)) return;
         LayoutParams lp = (LayoutParams) view.getLayoutParams();
 
         // Use temporary coords if available (the resize/reorder flows set these).
@@ -3649,7 +3661,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
      * Uses the view's "effective" coordinates (tmpCellX/tmpCellY when useTmpCoords==true).
      */
     public void markCellsAsUnoccupiedForView(View view, boolean occupied[][]) {
-        if (view == null || view.getParent() != mShortcutsAndWidgets) return;
+        if (view == null || view.getParent() != mShortcutsAndWidgets || !takesCells(view)) return;
         LayoutParams lp = (LayoutParams) view.getLayoutParams();
 
         final int useX = (lp.useTmpCoords ? lp.tmpCellX : lp.cellX);

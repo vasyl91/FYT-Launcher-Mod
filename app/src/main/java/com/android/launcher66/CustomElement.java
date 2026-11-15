@@ -46,6 +46,18 @@ public enum CustomElement {
         return this != DATE && this != MUSIC && this != RADIO && this != STATS;
     }
 
+    /**
+     * Whether the element takes the cells under it, so that no icon or widget can be put there.
+     *
+     * <p>The rule: the statistics are a window that lies over the page and lets every touch through, so the
+     * cells under them stay free for icons and widgets (the owner, 2026-11-15); the window keeps the place
+     * the creator gave it. Every other element - the panes, the date, the music and the radio widget - is
+     * drawn in the page and takes its cells.
+     */
+    public boolean takesCells() {
+        return this != STATS;
+    }
+
     /** The element with this {@link #label}, or null when there is none. */
     public static CustomElement fromLabel(String label) {
         if (label == null) {

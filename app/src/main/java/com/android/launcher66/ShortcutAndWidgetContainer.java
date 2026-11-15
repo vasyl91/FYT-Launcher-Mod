@@ -90,8 +90,12 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
 
     public View getChildAt(int x, int y) {
         int count = getChildCount();
+        CellLayout parent = getParent() instanceof CellLayout ? (CellLayout) getParent() : null;
         for (int i = 0; i < count; i++) {
             View child = getChildAt(i);
+            if (parent != null && !parent.takesCells(child)) {
+                continue;   // the statistics window: what lies in the cell is the icon under it
+            }
             CellLayout.LayoutParams lp = (CellLayout.LayoutParams) child.getLayoutParams();
             if (lp.cellX <= x && x < lp.cellX + lp.cellHSpan && lp.cellY <= y && y < lp.cellY + lp.cellVSpan) {
                 return child;
