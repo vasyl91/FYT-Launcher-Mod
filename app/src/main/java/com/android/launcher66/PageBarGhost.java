@@ -20,7 +20,7 @@ import android.view.View;
  * <p>The pictures are taken of the bars' windows ({@link #snapshot}) and are shared by all pages; the
  * workspace gives them and takes them back.
  */
-public final class PageBarGhost extends View {
+final class PageBarGhost extends View {
 
     private static final String TAG = "PageBarGhost";
 
@@ -29,10 +29,6 @@ public final class PageBarGhost extends View {
     private final Rect verticalAt = new Rect();
     private Bitmap horizontal;
     private Bitmap vertical;
-    /** The picture of the fuel statistics while the pages move (StatsPagePicture); drawn over the bars'. */
-    private final Paint statsPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
-    private final Rect statsAt = new Rect();
-    private Bitmap stats;
 
     PageBarGhost(Context context) {
         super(context);
@@ -58,46 +54,24 @@ public final class PageBarGhost extends View {
         if (verticalAt != null) {
             this.verticalAt.set(verticalAt);
         }
-        updateVisibility();
+        setVisibility(horizontal != null || vertical != null ? VISIBLE : GONE);
+        invalidate();
     }
 
-    /** The pictures of the bars are let go of (the workspace recycles them); the view stays on its page. */
+    /** The pictures are let go of (the workspace recycles them); the view stays on its page, hidden. */
     void clear() {
         horizontal = null;
         vertical = null;
-        updateVisibility();
-    }
-
-    /**
-     * @param picture the picture of the fuel statistics
-     * @param at      where it lies on the page: {left, top, right, bottom}
-     * @param alpha   the transparency of the statistics' window, 0..1
-     */
-    void showStats(Bitmap picture, int[] at, float alpha) {
-        stats = picture;
-        statsAt.set(at[0], at[1], at[2], at[3]);
-        statsPaint.setAlpha(Math.round(255 * Math.max(0f, Math.min(1f, alpha))));
-        updateVisibility();
-    }
-
-    void clearStats() {
-        stats = null;
-        updateVisibility();
-    }
-
-    private void updateVisibility() {
-        setVisibility(horizontal != null || vertical != null || stats != null ? VISIBLE : GONE);
-        invalidate();
+        setVisibility(GONE);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        draw(canvas, vertical, verticalAt, paint);
-        draw(canvas, horizontal, horizontalAt, paint);
-        draw(canvas, stats, statsAt, statsPaint);
+        draw(canvas, vertical, verticalAt);
+        draw(canvas, horizontal, horizontalAt);
     }
 
-    private void draw(Canvas canvas, Bitmap picture, Rect at, Paint paint) {
+    private void draw(Canvas canvas, Bitmap picture, Rect at) {
         if (picture == null || picture.isRecycled() || at.isEmpty()) {
             return;
         }
@@ -118,7 +92,7 @@ public final class PageBarGhost extends View {
      * the graphics hardware keeps (an album cover can be such a picture; drawing it onto a plain canvas
      * throws). Before, onto a plain canvas, and a view that cannot be drawn that way gives no picture.
      */
-    public static Bitmap snapshot(View view) {
+    static Bitmap snapshot(View view) {
         if (view == null) {
             return null;
         }
