@@ -14,6 +14,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 
+import com.android.launcher66.settings.WallpaperAccess;
 import com.syu.util.HostAwait;
 import com.syu.util.WindowHostVdClient;
 
@@ -45,7 +46,9 @@ final class LauncherPermissionFlow {
      * share one system dialog; each of the others has a Settings screen of its own.
      */
     private enum PermissionStep {
-        RUNTIME, OVERLAY, NOTIFICATION_ACCESS, WRITE_SETTINGS, INSTALL_PACKAGES
+        RUNTIME, OVERLAY, NOTIFICATION_ACCESS, WRITE_SETTINGS, INSTALL_PACKAGES,
+        /** Access to all files: from Android 13 the system gives the wallpaper's picture only with it (WallpaperAccess). */
+        ALL_FILES
     }
 
     /**
@@ -129,6 +132,10 @@ final class LauncherPermissionFlow {
                 return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
                         && !LauncherApplication.hasSystemPrivileges()
                         && !mLauncher.getPackageManager().canRequestPackageInstalls();
+            case ALL_FILES:
+                // The picture of the wallpaper for the selectors and the night mode
+                return WallpaperAccess.allFilesStepNeeded(Build.VERSION.SDK_INT,
+                        LauncherApplication.hasSystemPrivileges(), hasAllFilesAccess());
             default:
                 return false;
         }
@@ -146,7 +153,8 @@ final class LauncherPermissionFlow {
     /** The steps a VD host (or the system) can grant without the trip to Settings. */
     private static boolean canGoThroughHost(PermissionStep step) {
         return step == PermissionStep.OVERLAY || step == PermissionStep.NOTIFICATION_ACCESS
-                || step == PermissionStep.WRITE_SETTINGS || step == PermissionStep.INSTALL_PACKAGES;
+                || step == PermissionStep.WRITE_SETTINGS || step == PermissionStep.INSTALL_PACKAGES
+                || step == PermissionStep.ALL_FILES;
     }
 
     /**
@@ -238,6 +246,10 @@ final class LauncherPermissionFlow {
                 case INSTALL_PACKAGES:
                     report = WindowHostVdClient.allowAppOp(pkg, "REQUEST_INSTALL_PACKAGES");
                     break;
+                case ALL_FILES:
+                    // A host from before 2026-11-15 refuses it: the screen of Settings follows
+                    report = WindowHostVdClient.allowAppOp(pkg, "MANAGE_EXTERNAL_STORAGE");
+                    break;
                 case NOTIFICATION_ACCESS:
                     report = WindowHostVdClient.allowNotificationListener(
                             new ComponentName(mLauncher, NotificationListener.class).flattenToString());
@@ -290,6 +302,19 @@ final class LauncherPermissionFlow {
                     mLauncher.startActivityForResult(new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
                             Uri.parse("package:" + mLauncher.getPackageName())), Launcher.REQUEST_CODE_INSTALL_PACKAGES);
                     return true;
+                case ALL_FILES:
+                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                        return false;
+                    }
+                    try {
+                        mLauncher.startActivityForResult(new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+                                Uri.parse("package:" + mLauncher.getPackageName())), Launcher.REQUEST_CODE_ALL_FILES);
+                    } catch (ActivityNotFoundException e) {
+                        // A ROM without the screen of one app: the list of all of them
+                        mLauncher.startActivityForResult(new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION),
+                                Launcher.REQUEST_CODE_ALL_FILES);
+                    }
+                    return true;
                 default:
                     return false;
             }
@@ -332,7 +357,8 @@ final class LauncherPermissionFlow {
         return requestCode == Launcher.REQUEST_CODE_OVERLAY
                 || requestCode == Launcher.REQUEST_CODE_NOTIFICATION_ACCESS
                 || requestCode == Launcher.REQUEST_CODE_WRITE_SETTINGS
-                || requestCode == Launcher.REQUEST_CODE_INSTALL_PACKAGES;
+                || requestCode == Launcher.REQUEST_CODE_INSTALL_PACKAGES
+                || requestCode == Launcher.REQUEST_CODE_ALL_FILES;
     }
 
     /** Back from a Settings screen of the permission flow; see onActivityResult(). */
@@ -353,7 +379,14 @@ final class LauncherPermissionFlow {
             boolean granted = Build.VERSION.SDK_INT < Build.VERSION_CODES.O
                     || mLauncher.getPackageManager().canRequestPackageInstalls();
             Log.i(Launcher.TAG, "Permission flow: install unknown apps " + (granted ? "granted" : "not granted"));
+        } else if (requestCode == Launcher.REQUEST_CODE_ALL_FILES) {
+            Log.i(Launcher.TAG, "Permission flow: access to all files "
+                    + (hasAllFilesAccess() ? "granted" : "not granted"));
         }
+    }
+
+    boolean hasAllFilesAccess() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && android.os.Environment.isExternalStorageManager();
     }
     /** onRequestPermissionsResult() for the runtime permissions' dialog. */
     void onRuntimeRequestResult(String[] permissions, int[] grantResults) {

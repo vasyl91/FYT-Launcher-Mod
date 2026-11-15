@@ -68,4 +68,16 @@ class WallpaperAccessTest {
         assertFalse(WallpaperAccess.storagePermissionHelps(36, false));
         assertFalse(WallpaperAccess.storagePermissionHelps(29, true));
     }
+
+    @Test
+    void accessToAllFilesIsAskedFromAndroid13ForAnAppThatIsNotTheSystem() {
+        // The A55 (Android 16, Shizuku): asked until it is given
+        assertTrue(WallpaperAccess.allFilesStepNeeded(36, false, false));
+        assertFalse(WallpaperAccess.allFilesStepNeeded(36, false, true));
+        assertTrue(WallpaperAccess.allFilesStepNeeded(33, false, false));
+        // Below Android 13 the storage permission does the same; the 7862 is the system
+        assertFalse(WallpaperAccess.allFilesStepNeeded(32, false, false));
+        assertFalse(WallpaperAccess.allFilesStepNeeded(29, true, false));
+        assertFalse(WallpaperAccess.allFilesStepNeeded(36, true, false));
+    }
 }

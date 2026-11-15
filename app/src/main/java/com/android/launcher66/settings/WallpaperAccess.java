@@ -21,11 +21,16 @@ import java.util.List;
  *       of the user's, so it is not asked at all;</li>
  *   <li>the old storage permission is requested only where it still exists and helps: below Android 13. On
  *       13 and later it can never be granted to this app, and asking for it on every opening of a selector
- *       was pointless. Access to all files is not requested for a backdrop.</li>
+ *       was pointless;</li>
+ *   <li>access to all files is what the API needs from Android 13 on, and it is asked for with the
+ *       launcher's other permissions where it is missing ({@link #allFilesStepNeeded}; the owner,
+ *       2026-11-15, after the wallpaper showed on the A55 once it was given by hand): through the privileged
+ *       host where there is one, else on the screen of Settings. A system launcher does not need it, and
+ *       below Android 13 the storage permission does the same.</li>
  * </ul>
  * Pure Java, so that it has a test.
  */
-final class WallpaperAccess {
+public final class WallpaperAccess {
 
     /** Android 13: READ_EXTERNAL_STORAGE no longer exists for an app built for it. */
     static final int ANDROID_13 = 33;
@@ -66,6 +71,17 @@ final class WallpaperAccess {
         }
         levels.add(Level.USER_PICKS);
         return levels;
+    }
+
+    /**
+     * Whether the launcher asks for access to all files, with its other permissions.
+     *
+     * @param sdk            Build.VERSION.SDK_INT
+     * @param systemApp      the launcher runs as the system
+     * @param allFilesAccess the launcher has access to all files already
+     */
+    public static boolean allFilesStepNeeded(int sdk, boolean systemApp, boolean allFilesAccess) {
+        return !systemApp && sdk >= ANDROID_13 && !allFilesAccess;
     }
 
     static boolean apiGivesThePicture(int sdk, boolean systemApp, boolean storageGranted, boolean allFilesAccess) {
