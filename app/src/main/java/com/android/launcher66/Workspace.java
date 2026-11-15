@@ -3308,6 +3308,98 @@ public class Workspace extends SmoothPagedView
     }
 
     // ---------------------------------------------------------------------------------------------
+    // The first page's own bars under the bars' windows (PageBarSwap)
+    // ---------------------------------------------------------------------------------------------
+
+    private static final PageBarSwap.Alpha<View> VIEW_ALPHA = new PageBarSwap.Alpha<View>() {
+        @Override
+        public float get(View view) {
+            return view.getAlpha();
+        }
+
+        @Override
+        public void set(View view, float alpha) {
+            view.setAlpha(alpha);
+        }
+    };
+    private final PageBarSwap<View> mHorizontalSwap = new PageBarSwap<>(VIEW_ALPHA);
+    private final PageBarSwap<View> mVerticalSwap = new PageBarSwap<>(VIEW_ALPHA);
+
+    /**
+     * Hides the first page's own bar once the bar's window, just shown over it, has drawn itself: one bar is
+     * seen while the pages move, and it does not move.
+     *
+     * @param horizontal the horizontal bar, or the vertical one
+     * @param window     the root of the window that was shown
+     */
+    private void hidePageBarUnderWindow(boolean horizontal, View window) {
+        final PageBarSwap<View> swap = horizontal ? mHorizontalSwap : mVerticalSwap;
+        final int token = swap.windowShown();
+        afterNextDraw(window, () -> {
+            if (swap.windowDrawn(token, pageBarViews(horizontal))) {
+                Log.d(TAG, (horizontal ? "Horizontal" : "Vertical") + " bar of the first page hidden under its window");
+            }
+        });
+    }
+
+    /**
+     * The views of one bar in the first page's layout: the vertical bar itself, or every other child but the
+     * box of the user's elements (the horizontal bar, its button, list and widgets).
+     */
+    private List<View> pageBarViews(boolean horizontal) {
+        List<View> views = new ArrayList<>();
+        if (!(workspaceView instanceof ViewGroup)) {
+            return views;
+        }
+        ViewGroup root = (ViewGroup) workspaceView;
+        for (int i = 0; i < root.getChildCount(); i++) {
+            View child = root.getChildAt(i);
+            int id = child.getId();
+            if (child instanceof androidx.constraintlayout.widget.Guideline
+                    || id == R.id.user_layout || id == R.id.user_layout_left) {
+                continue;
+            }
+            if ((id == R.id.rl_vertical_bar) != horizontal) {
+                views.add(child);
+            }
+        }
+        return views;
+    }
+
+    /**
+     * Runs {@code then} once {@code view}'s window has drawn its next frame (on the main thread, after that
+     * frame). False, and nothing is run, when the view is not in a window.
+     */
+    private static boolean afterNextDraw(View view, Runnable then) {
+        if (view == null || !view.isAttachedToWindow()) {
+            return false;
+        }
+        final ViewTreeObserver observer = view.getViewTreeObserver();
+        if (!observer.isAlive()) {
+            return false;
+        }
+        final boolean[] posted = new boolean[1];
+        final ViewTreeObserver.OnDrawListener[] listener = new ViewTreeObserver.OnDrawListener[1];
+        listener[0] = () -> {
+            if (posted[0]) {
+                return;
+            }
+            posted[0] = true;
+            // A listener cannot be removed while the frame is being drawn
+            view.post(() -> {
+                ViewTreeObserver now = view.getViewTreeObserver();
+                if (now.isAlive()) {
+                    now.removeOnDrawListener(listener[0]);
+                }
+                then.run();
+            });
+        };
+        observer.addOnDrawListener(listener[0]);
+        view.invalidate();
+        return true;
+    }
+
+    // ---------------------------------------------------------------------------------------------
     // 'Vertical bar on every page': the window of the vertical bar on the pages that have none of their own
     // ---------------------------------------------------------------------------------------------
 
@@ -3367,12 +3459,24 @@ public class Workspace extends SmoothPagedView
                 mVerticalFrameLogged = null;   // logged at each activation
                 placeVerticalWindow();
                 mVerticalWindow.setShown(true);
+                hidePageBarUnderWindow(false, mVerticalWindow.view());
                 Log.d(TAG, "Persistent vertical bar: shown (" + reason + ") on page " + getCurrentPage());
                 break;
-            case PARK:
-                mVerticalWindow.setShown(false);
+            case PARK: {
+                // The first page's own bar first, the window after the page has drawn it (PageBarSwap)
+                final int swap = mVerticalSwap.windowLeaving();
+                final VerticalBarWindow window = mVerticalWindow;
+                window.park();
+                if (!afterNextDraw(workspaceView, () -> {
+                    if (mVerticalSwap.current(swap)) {
+                        window.finishPark();
+                    }
+                })) {
+                    window.finishPark();
+                }
                 Log.d(TAG, "Persistent vertical bar: parked (" + reason + ")");
                 break;
+            }
             default:
                 if (mVerticalWindow != null && mVerticalWindow.exists()) {
                     placeVerticalWindow();   // the page's shape may have changed (a horizontal bar, the button)
@@ -3470,6 +3574,7 @@ public class Workspace extends SmoothPagedView
 
     private void removeVerticalWindow(String reason) {
         mainHandler.removeCallbacks(mBuildVerticalStandbyRunnable);
+        mVerticalSwap.windowLeaving();   // the first page's own bar is seen again
         if (mVerticalWindow != null && mVerticalWindow.exists()) {
             mVerticalWindow.remove();
             Log.d(TAG, "Persistent vertical bar: removed (" + reason + ")");
@@ -3570,6 +3675,7 @@ public class Workspace extends SmoothPagedView
             bar.setTranslationY(0f);
             bar.setAlpha(1f);
             setOverlayTouchable(true);
+            hidePageBarUnderWindow(true, bar);
             Log.d(TAG, "Persistent horizontal bar shown (" + reason + ") on page " + getCurrentPage()
                     + ", from standby in " + (SystemClock.uptimeMillis() - started) + " ms");
         }
@@ -3592,6 +3698,8 @@ public class Workspace extends SmoothPagedView
             mOverlayTouchHeld = false;
             setOverlayTouchable(false);
             bar.animate().cancel();
+            // The first page's own bar is seen again first; the window goes after the page has drawn it
+            mHorizontalSwap.windowLeaving();
             final Runnable end = () -> {
                 synchronized (overlayLock) {
                     if (gen != mPersistentGen || bar != overlayHorizontalBar) {
@@ -3605,8 +3713,10 @@ public class Workspace extends SmoothPagedView
                 refreshWidgetBarAfterWake("persistent bar parked");
             };
             if (fadeMs <= 0 || !bar.isAttachedToWindow()) {
-                bar.setAlpha(0f);
-                mainHandler.post(end);
+                if (!bar.isAttachedToWindow() || !afterNextDraw(workspaceView, end)) {
+                    bar.setAlpha(0f);
+                    mainHandler.post(end);
+                }
             } else {
                 bar.animate().alpha(0f).setDuration(fadeMs).withEndAction(end).start();
             }
@@ -3622,6 +3732,7 @@ public class Workspace extends SmoothPagedView
                 return;
             }
             mPersistentGen++;   // a fade-out to standby that is running must not finish after this
+            mHorizontalSwap.windowLeaving();   // the first page's own bar is seen again
             if (bar == null || windowManager == null) {
                 mOverlayPersistent = false;
                 return;
@@ -3664,6 +3775,7 @@ public class Workspace extends SmoothPagedView
     }
 
     private void clearOverlayReferences() {
+        mHorizontalSwap.windowLeaving();   // no window is over the first page's own bar any more
         if (mLauncher != null) {
             mLauncher.clearBarWidgetReferences();
             mLauncher.removeCustomView(Config.WS_Music_Two);

@@ -305,6 +305,28 @@ final class VerticalBarWindow {
         setTouchable(value);
     }
 
+    /**
+     * The first step of putting the window away: it counts as put away and takes no touch at once, but is
+     * still seen until {@link #finishPark()}, so that the first page can draw its own bar under it first
+     * (PageBarSwap).
+     */
+    void park() {
+        if (root == null) {
+            return;
+        }
+        shown = false;
+        setTouchable(false);
+    }
+
+    /** The second step: the window is invisible, unless it was shown again since {@link #park()}. */
+    void finishPark() {
+        if (root == null || shown) {
+            return;
+        }
+        root.animate().cancel();
+        root.setAlpha(0f);
+    }
+
     /** Fades the button part (not the bar) with the bar's reveal and return. */
     void setButtonShown(boolean visible, long durationMs) {
         if (corner == null) {
