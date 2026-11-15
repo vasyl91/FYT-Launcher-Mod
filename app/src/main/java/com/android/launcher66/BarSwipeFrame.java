@@ -2,6 +2,7 @@ package com.android.launcher66;
 
 import android.content.Context;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 import android.widget.FrameLayout;
@@ -17,6 +18,8 @@ import android.widget.FrameLayout;
  * it, and the pages would stop following the finger.
  */
 final class BarSwipeFrame extends FrameLayout {
+
+    private static final String TAG = "BarSwipeFrame";
 
     interface Host {
         /** The event goes through the workspace's paging; false if the workspace cannot page now. */
@@ -75,6 +78,9 @@ final class BarSwipeFrame extends FrameLayout {
             feedCancel(ev);
         }
         if ((mask & BarSwipeGesture.CANCEL_CHILDREN) != 0) {
+            // Logged: a tap on a button of the bar that does nothing shows up here if the pages took it
+            Log.d(TAG, "The pages took the gesture from the bar's views at "
+                    + MotionEvent.actionToString(action) + " after " + (ev.getEventTime() - downTime) + " ms");
             final MotionEvent cancel = MotionEvent.obtain(ev);
             cancel.setAction(MotionEvent.ACTION_CANCEL);
             super.dispatchTouchEvent(cancel);

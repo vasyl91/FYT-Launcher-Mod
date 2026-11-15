@@ -2883,8 +2883,10 @@ public class Workspace extends SmoothPagedView
     }
 
     private void setOverlayTouchable(boolean touchable) {
+        // Added is enough: the window is attached only at its first frame, and a change asked for before
+        // that (a window parked or shown right after it was built) was dropped, leaving it as it was built
         if (overlayHorizontalBar == null || overlayWindowManager == null || overlayWindowParams == null
-                || !overlayHorizontalBar.isAttachedToWindow()) {
+                || overlayHorizontalBar.getParent() == null) {
             return;
         }
         // A copy with the height the window really has. overlayWindowParams is also the root
@@ -2982,6 +2984,7 @@ public class Workspace extends SmoothPagedView
     /** Called by Launcher.onResume() / onPause(): the launcher is (no longer) in front. */
     public void setEdgeHandleHostVisible(boolean visible) {
         mEdgeHandleHostVisible = visible;
+        endExternalSwipe(visible ? "resume" : "pause");
         // Hidden at once when leaving: the next activity is already coming in on top.
         updateEdgeHandle(visible ? "resume" : "pause", visible ? EDGE_HANDLE_FADE_MS : 0);
     }
@@ -4742,6 +4745,24 @@ public class Workspace extends SmoothPagedView
             setClickable(clickable);
             setLongClickable(longClickable);
         }
+    }
+
+    /**
+     * A gesture fed from a bar's window (or the status bar strip) that has not ended - the launcher left
+     * in the middle of it - is ended here, so that the next touch on a bar does not count as its rest and
+     * the pages are not left half way.
+     */
+    private void endExternalSwipe(String reason) {
+        if (!mExternalSwipeTracking) {
+            return;
+        }
+        boolean paging = mExternalSwipeScrolling;
+        long now = SystemClock.uptimeMillis();
+        MotionEvent cancel = MotionEvent.obtain(now, now, MotionEvent.ACTION_CANCEL, 0f, 0f, 0);
+        handleExternalSwipe(cancel);
+        cancel.recycle();
+        Log.d(TAG, "A swipe fed from a bar's window had not ended (" + reason + "), ended now"
+                + (paging ? ": the pages settle" : ""));
     }
 
     /** The paging has taken the status bar strip's or the auto-hide bar's gesture over. */

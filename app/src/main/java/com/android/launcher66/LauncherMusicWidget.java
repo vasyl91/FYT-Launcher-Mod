@@ -1506,6 +1506,7 @@ final class LauncherMusicWidget {
     }
 
     public void onPrevButtonClicked(boolean barView) {
+        Log.d(TAG_ICON, "previous tap on the " + (barView ? "bar" : "home screen") + " (src " + mediaSource + ")");
         if (barView) {
             mLauncher.mWorkspace.scheduleAutoHide();
         }
@@ -1597,6 +1598,7 @@ final class LauncherMusicWidget {
     private static final long PLAY_PAUSE_RECHECK_MS = 1500L;
 
     public void onNextButtonClicked(boolean barView) {
+        Log.d(TAG_ICON, "next tap on the " + (barView ? "bar" : "home screen") + " (src " + mediaSource + ")");
         if (barView) {
             mLauncher.mWorkspace.scheduleAutoHide();
         }
