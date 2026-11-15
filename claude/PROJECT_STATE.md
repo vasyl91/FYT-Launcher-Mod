@@ -1,7 +1,9 @@
 # Project state
 
-**Snapshot: 2026-11-15, `testBranch` after round 14 (`6fbd5605b` … `c7ed19880`, then the documentation
-commits). CI is green on every push of the round, the last code commit `c7ed19880` included (run 491). Nothing of round 14 has been run on a device.** This file is the authoritative entry point for a new session. Update it at the
+**Snapshot: 2026-11-16, `testBranch` after round 15 (`45673d58a` … `932d61d1c`, then the documentation
+commits). The owner tested round 14 on 2026-11-15 (A55): it works except four points, which round 15
+fixes. CI was green on every push up to `e0564df9a` (run 494) when this was written. Nothing of round 15
+has been run on a device.** This file is the authoritative entry point for a new session. Update it at the
 end of every round (see `CLAUDE.md`).
 
 Status tags: [V] verified in code, git or CI · [H] historical, from the owner, a brief or a chat report ·
@@ -32,7 +34,8 @@ What the owner wants from it, as the briefs and chat reports show [H]:
 | Next version | 1.2.2. README, the updater and `release-assets.yml` already describe `system_release_1.2.2.apk` [V]. **No release date is recorded** [U]. |
 | Development phase | Short feature and fix rounds on `testBranch`, driven by device logs (Opus brief → Sonnet commits → owner test). 33 briefs since 2026-10-27, all implemented [V]. |
 | Active brief | **None.** `prompts/active/` is empty [V]. |
-| Last code change | **Round 14, 2026-11-15:** the fixes from the owner's test of round 13, the open items of `KNOWN_ISSUES.md` (D-62), and six items from a second test on the 7862; 29 code commits `6fbd5605b` … `c7ed19880`, one of them a revert, done in one session from a plan agreed with the owner [V]. **Waiting for the owner's device test** (KI-34). Report: `reports/implementation_report_2026-11-15.md`. |
+| Last code change | **Round 15, 2026-11-15/16:** after the owner's test of round 14 on the A55 - icons and widgets under the statistics window (D-65), an overlap guard after loads (KI-37), the bars' windows as panels of the launcher's window under every floating button (D-64), access to all files asked for the wallpaper (D-60); 8 code commits `45673d58a` … `932d61d1c` [V]. **Waiting for the owner's device test** (KI-36). Report: `reports/implementation_report_2026-11-15.md`, section "Round 15". |
+| Round 14 | **2026-11-15:** the fixes from the owner's test of round 13, the open items of `KNOWN_ISSUES.md` (D-62), and six items from a second test on the 7862; 29 code commits `6fbd5605b` … `c7ed19880`, one of them a revert, done in one session from a plan agreed with the owner [V]. **Waiting for the owner's device test** (KI-34). Report: `reports/implementation_report_2026-11-15.md`. |
 | Before that | Round 13 (the owner's 19 tasks), 2026-11-12/13: `4e73d1178` … `ca27a7637` [V]. The owner tested it on 2026-11-15: 12 of 19 work, the rest went into round 14 [H]. Round 12 was confirmed on 2026-11-12 [H]. |
 | Since then | Documentation and repository layout only: `claude/` created (`a30c9a72`), reference material moved to `archive/` (`8bfc5a8d`), 15 chat reports added (`754c8258`), `android-36.jar` moved back (`ee8e4f91`), the folder unified as `claude/` (`e3ba694e`) [V]. |
 | Open GitHub issues | 0 [V] (2026-11-10). |
@@ -118,8 +121,8 @@ JUnit 5 JVM tests: 110 files, 1011 tests, no instrumented tests. CI runs on GitH
 
 ## Active tasks
 
-**The owner's device review of round 14.** It is implemented, builds and passes its tests (1083); none of
-it has been seen on a device. `reports/implementation_report_2026-11-15.md` lists what to check and the
+**The owner's device review of round 15** (KI-36), and of what round 14 left to watch (KI-34, KI-35). Round
+15 is implemented, builds and passes its tests; none of it has been seen on a device. Round 14: `reports/implementation_report_2026-11-15.md` lists what to check and the
 choices made without the owner (D-63). The bar's music buttons after an app (KI-35) have no known cause;
 the round adds the log lines that should show it. The next round records the result.
 
@@ -159,7 +162,7 @@ The hardcoded OpenWeather key is **not** an open issue: the owner decided to kee
 |---|---|
 | [`CLAUDE.md`](CLAUDE.md) | Rules, commands, Opus/Sonnet workflow |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | What exists and where: modules, subsystems, data, services, privileges |
-| [`DECISIONS.md`](DECISIONS.md) | Why: 63 decisions with status, who decided and the source |
+| [`DECISIONS.md`](DECISIONS.md) | Why: 65 decisions with status, who decided and the source |
 | [`ROADMAP.md`](ROADMAP.md) | History in milestones, confirmed plans, recommendations |
 | [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md) | Confirmed problems, accepted limitations, unverified reports |
 | [`prompts/README.md`](prompts/README.md) | Catalogue of all briefs → commits → status |

@@ -143,3 +143,35 @@ The 7862 first for items 1–4 of 14b (it is where they were seen), then the A55
    `StatsOverlayAlpha: the limit is 1.0, the window was laid out under 0.8`).
 7. A title such as "Unknown Pleasures" from the stock player and from a session player.
 8. Everything of part A in the table above.
+
+## Round 15 (2026-11-15/16): the owner's test of round 14 on the A55
+
+**The owner's result [H]:** round 14 works except four points. Still to watch: the bar's buttons on the FYT
+unit with `com.syu.music` (works on the phone), the media fixes (never seen), the statistics' alpha.
+
+| Commit | Subject | Owner's point |
+|---|---|---|
+| `45673d58a` | Workspace: an icon or a widget may lie under the statistics window | 1 (D-65) |
+| `d97219d98` | Tests: the grid's re-arrangement never puts two items in one cell | 2: the plan is not the cause |
+| `e0564df9a` | Workspace: two items never share a cell after a load | 2 (KI-37, cause unknown) |
+| `edce9c338` | Bars: the bars' windows lie in the launcher's window, under every floating button | 3 (D-64) |
+| `f79b380b6` | Bars: the edge handle lies in the launcher's window too | 3 |
+| `27cdb331e` | Bars: on every page without the permission to draw over other apps | 3, a consequence |
+| `d167945ad` | VD host: access to all files may be allowed as the user can in Settings | 11 |
+| `932d61d1c` | Permissions: access to all files is asked where the wallpaper needs it | 11 (D-60) |
+
+**What was found:**
+- **1 [V]:** the statistics window's placeholder took part in every reorder of a drop as an item that cannot
+  move, and the first committed reorder marked its cells as taken.
+- **2 [V/U]:** `GridOverflow` keeps the items apart on 3000 random home screens, and the loader refuses
+  overlapping rows, so the overlap comes about on the page by a way that is not known. The guard moves the
+  widget and logs `Items sharing cells on page …`.
+- **3 [V]:** the bars' windows were overlays of the same layer as every floating button, and added later, so
+  above them. As panels of the launcher's window they lie under every overlay of any app.
+- **11 [H]:** with "access to all files" given by hand the selectors show the wallpaper (the owner). The flow
+  asks for it now; the Shizuku host grants it at once, the root daemon once the module is built from this
+  version.
+
+**Deviations:** none from the plan; the edge handle was given the launcher activity explicitly (its window
+manager adds the panel). **Not tested on a device.** What to look at: `KNOWN_ISSUES.md` KI-36.
+

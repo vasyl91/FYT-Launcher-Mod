@@ -1,6 +1,6 @@
 # Known issues
 
-As of 2026-11-15 (`c7ed19880`, after round 14), with the owner's answers of 2026-11-12 and 2026-11-15. Sources: the code, git, CI, the
+As of 2026-11-16 (`932d61d1c`, after round 15), with the owner's answers of 2026-11-12 and 2026-11-15. Sources: the code, git, CI, the
 briefs and the chat reports (`chat_archive/`).
 
 The file has three parts, because they call for different handling:
@@ -261,8 +261,10 @@ Nothing here is confirmed. Each item needs a check in the code or on a device be
 | KI-30 | Round 13 (the 19 tasks) has no device result | closed 2026-11-15: the owner's result is recorded |
 | KI-31 | StrictMode reports in the owner's log of 2026-11-09 | one place fixed, three described (2026-11-15) |
 | KI-32 | fYT Rating answers without a rating until its screen was opened | closed 2026-11-15: the owner, "works" |
-| KI-34 | Round 14 has no device result | the owner's test of each item |
-| KI-35 | The bar's music buttons stop responding after an app | a log with the new tap lines |
+| KI-34 | Round 14 has no device result | partly: the owner tested it on 2026-11-15; three items wait |
+| KI-35 | The bar's music buttons stop responding after an app | works on the phone; the FYT unit with `com.syu.music` untested |
+| KI-36 | Round 15 has no device result | the owner's test of each item |
+| KI-37 | A widget lay over icons after a change of the grid | a log with the new `Items sharing cells` line |
 
 ### KI-05 Android 8–10 through the VD host never run on a device
 The path for a non-system launcher on 8.0, 8.1/9 and 10 (module daemon or Shizuku) was written from the
@@ -388,6 +390,12 @@ that change what the 7862 shows: the bars while the pages move and in the overvi
 `1ca81e616`), the cells' centring (`4e983e0f5`), the play/pause symbol (`605c2818d`), the night mode
 without a saved picture (`44ed8f4cb`), and the revert of the stats picture (`fe72e5a6f`).
 
+**The owner's result, 2026-11-15 (A55) [H]:** everything works except: an item could not be put under
+the statistics window, a change of the columns put the Shizuku widget over three icons, the floating
+buttons lay under the bars on the pages after the first, and the wallpaper was still not read with
+Shizuku (all four in round 15, KI-36). Still to watch: the bar's buttons on the FYT unit (KI-35), the
+media fixes (never seen by the owner), the statistics' alpha (too short a test).
+
 ### KI-35 The bar's music buttons stop responding after an app
 The owner, 2026-11-15 [H]: after opening any app and coming back, the buttons of the music widget on the
 horizontal bar stop responding; the home screen's widget works. The owner's log (17:28:29) has no trace of
@@ -397,3 +405,23 @@ after every park [V], so the binding is not the cause. `45c6cc18b` closes two wa
 touchability change asked for before the window's first frame was dropped; a swipe fed from a bar's window
 stayed in progress across a pause) and logs every tap and every gesture the pages take from the bar. The
 cause is unknown [U]; the next log with `play/pause tap on the …` or `BarSwipeFrame:` lines shows it.
+**2026-11-15 [H]:** works on the phone after `45c6cc18b`; the FYT unit with `com.syu.music`, where it was
+seen, is not tested yet.
+
+### KI-36 Round 15 has no device result
+Commits `45673d58a` … `932d61d1c` (2026-11-15/16) build and pass the unit tests, CI green [V]; none has
+run on a device. What to look at: an icon and a widget dropped under the statistics window; several
+changes of the columns and rows with widgets on the pages; the floating buttons (the launcher's and
+another app's) over both bars on the pages after the first, the bars while the pages move, the overview
+and auto-hide, on the 7862 and the A55 (the bars' windows are panels of the launcher's window now,
+`BarWindows`); the launcher's start on the A55 without "access to all files" (granted through Shizuku,
+log `Permission flow: ALL_FILES`), then the background selectors. The root daemon allows all-files access
+only once the module is built from this version.
+
+### KI-37 A widget lay over icons after a change of the grid
+The owner, 2026-11-15 [H]: after a change of the columns the Shizuku widget lay over the icons of Allegro,
+Apk info and Assistant. The re-arrangement is not the cause: `GridOverflowPropertyTest` tries 3000 random
+home screens without an overlap [V], and the loader refuses overlapping rows. The way it happens is not
+known [U]; the owner's logs name neither the widget's cells nor the icons'. Since `e0564df9a` every page
+moves an item that shares a cell with another (`CellOverlap`: icons stay, the widget moves) and logs
+`Items sharing cells on page …` with both, which should show the cause the next time.

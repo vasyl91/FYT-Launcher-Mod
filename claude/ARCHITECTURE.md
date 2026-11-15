@@ -1,6 +1,6 @@
 # Architecture
 
-State of `c7ed19880` (2026-11-15, after round 14). Everything here was checked in the code [V] unless it is
+State of `932d61d1c` (2026-11-16, after round 15). Everything here was checked in the code [V] unless it is
 tagged otherwise.
 The reasons behind the design are in `DECISIONS.md`; this file says what exists and where.
 Abbreviations used in paths below:
@@ -132,6 +132,10 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
     the bars and are centred in what the bars leave (`WorkspaceGrid.firstCellX`, an offset in
     `ShortcutAndWidgetContainer` set from the page's measure). The bars and the elements placed by pixels
     are not moved by it (until 2026-11-15 every child was moved by half the leftover pixels).
+  - The creator's elements take their cells (`CellLayout.handleConflictingViews` moves what lies there), except
+    the statistics window's placeholder, which only says where the window lies (`CustomElement.takesCells`,
+    D-65). After a load each page moves an item that shares a cell with another (`L/CellOverlap`: icons stay,
+    widgets move; KI-37).
   - `L/IconFit` (2026-11-15): an icon is made smaller where a denser grid leaves its cell too small for it
     with its label, never larger; one size for all pages of an orientation, the standard one at 10 × 6.
   - `L/GridOverflow` (plain Java) says where items go when the grid of their page changes; the loader runs
@@ -183,6 +187,9 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   - `L/HorizontalBarPlacement` and `L/VerticalBarPlacement` decide where each bar is drawn.
   - `L/PersistentBarWindow` is the logic of the window that stays put while the pages move (pre-built, so
     showing it costs nothing); `L/VerticalBarWindow` is the vertical bar's window.
+  - `L/BarWindows` (2026-11-16): the bars' windows, the auto-hide bar's and the edge handle's are panels of
+    the launcher's window (`TYPE_APPLICATION_PANEL`, through the activity's window manager): under every
+    floating button and overlay, no permission to draw over other apps needed (D-64).
   - `L/PageBarSwap` (2026-11-15): while a bar's window is shown over the first page, the page's own bar is
     hidden (after the window's first frame; shown again before the window goes), so one bar is seen.
   - `L/BarGhostRule` and `L/PageBarGhost`: while the pages are small (overview, dragging) every page after
@@ -323,7 +330,9 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   the background selectors and by "Save the day / night wallpaper". Since 2026-11-15 a copy of every wallpaper
   the launcher sets itself (`S/OwnWallpaperCopy`, valid while the system's wallpaper id is unchanged) comes
   after the system's API; "Pick wallpaper" opens the settings' picker (`S/WallpaperPickerLauncher`), and a
-  mode without a saved picture leaves the wallpaper (`S/NightWallpaperRule`).
+  mode without a saved picture leaves the wallpaper (`S/NightWallpaperRule`). From 2026-11-16 the permission
+  flow (`L/LauncherPermissionFlow`, step `ALL_FILES`) asks for access to all files on Android 13+, which the
+  system API needs for the picture: through the host's `allowAppOp`, else on the screen of Settings.
 - **Diagnostics added 2026-11-15:** `L/HiddenApiProbe` (one compat report when a hidden member the launcher
   looks up is missing; system flavour) and `L/PinnedPipHealth` (a log line when a pinned app keeps coming
   to the front).

@@ -57,9 +57,10 @@ with the owner and **waits for its device review** (P-16).
 | P-13 | The tester's answer on what did not work on the 7870 | the owner, 2026-11-12 | the tester |
 | P-14 | ~~**The owner's device review of round 13** (KI-30)~~ **Done 2026-11-15** (12 of 19 work; the rest went into round 14). The owner's word on D-57 is still open | the round's report | — |
 | P-15 | ~~*If the wake does not help:* fYT Rating gets its token on the receiver's path (KI-32)~~ **Not needed:** the owner, 2026-11-15, "works" | the owner's log of 2026-11-09 [H] | — |
-| P-16 | **The owner's device review of round 14** (KI-34), with the log lines that trace the bar's buttons (KI-35), and the owner's word on D-63 | `reports/implementation_report_2026-11-15.md` | devices: the 7862 first, the A55 in portrait |
+| P-16 | **The owner's device review of round 14** (KI-34): done on the A55, 2026-11-15, four points went into round 15; the bar's buttons on the FYT unit (KI-35) and the owner's word on D-63 are open | `reports/implementation_report_2026-11-15.md` | the FYT unit with `com.syu.music` |
+| P-19 | **The owner's device review of round 15** (KI-36): the statistics window, the grid guard, the bars under the floating buttons, access to all files | the same report, "Round 15" | the 7862 and the A55; the module built from this version for the root daemon |
 | P-17 | UI tests with Robolectric (KI-06), approved by the owner and left for a later round | D-62 | a network that reaches Maven Central's mirror for `nativeruntime-dist-compat` |
-| P-18 | *If the A55 shows the wallpaper service refusing the shell:* the host grants the launcher access to all files | D-60 | the A55 log `readHomeWallpaper: wallpaper service …` |
+| P-18 | ~~*If the A55 shows the wallpaper service refusing the shell:* the host grants the launcher access to all files~~ **Done 2026-11-16** in the permission flow (D-60, `932d61d1c`) | D-60 | — |
 
 ## Recommendations (not decided)
 

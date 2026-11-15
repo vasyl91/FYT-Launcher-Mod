@@ -2,7 +2,8 @@
 
 Important technical and product decisions. Last consolidated on 2026-11-12 from the code, git, the briefs
 (`prompts/archive/`), the 15 chat reports (`chat_archive/CHAT_01.MD` … `CHAT_15.MD`) and the owner's answers
-of that day. D-52 … D-57 were added on 2026-11-13 with round 13, D-58 … D-63 on 2026-11-15 with round 14.
+of that day. D-52 … D-57 were added on 2026-11-13 with round 13, D-58 … D-63 on 2026-11-15 with round 14,
+D-64 and D-65 on 2026-11-16 with round 15.
 
 ## How to read this file
 
@@ -95,6 +96,8 @@ entry that replaces it.
 | D-61 | The vertical bar is as wide as the launcher counts it | ACTIVE | Owner |
 | D-62 | The scope of round 14 in `KNOWN_ISSUES.md` | ACTIVE | Owner |
 | D-63 | Choices the assistant made in round 14 (table) | UNDER_REVIEW | Assistant |
+| D-64 | The bars' windows are panels of the launcher's window, under every floating button | ACTIVE | Owner (requirement) / Assistant |
+| D-65 | Icons and widgets may lie under the statistics window | ACTIVE | Owner |
 
 ---
 
@@ -772,6 +775,11 @@ The round had no brief; its result is in `reports/implementation_report_2026-11-
   only if the A55 shows that the service refuses the shell. A wallpaper the launcher set itself is kept as a
   copy, valid while the system's wallpaper id is unchanged.
 - **Where:** `WallpaperServiceCall`, `OwnWallpaperCopy`, `dfe91dc85`, `ed61469d0`.
+- **Second step, 2026-11-15 [H]:** the service gave shell nothing on the A55; with "access to all files"
+  given by hand the selectors showed the wallpaper. The owner: the launcher asks for it with its other
+  permissions where it is missing. Since `932d61d1c` the permission flow has the step (Android 13+, not for a
+  system launcher), granted through the host where there is one (`d167945ad`), else on the screen of
+  Settings.
 
 ### D-61 The vertical bar is as wide as the launcher counts it
 - **Status:** ACTIVE. **By:** owner, 2026-11-15 (chosen over keeping the narrower bar).
@@ -803,4 +811,24 @@ The round had no brief; its result is in `reports/implementation_report_2026-11-
 | A tap on play/pause is not taken while the one before waits for the player's answer, up to 2 s (`PlayPauseRequest`) | one tap, one change; the owner saw a tap toggle twice |
 | "Unknown" is compared as a whole value, as `validTag` of Display-Media-Titles (`TitleTag`); "null" only in lower case | copied as the owner asked |
 | The stats window is laid out again whenever the limit reaches 1 after it was laid out under less, with five late looks after a raise (`StatsOverlayAlpha.needsRelayout`) | the system takes a written limit up late after a long sleep |
+
+## Added on 2026-11-16 (round 15: the owner's test of round 14 on the A55)
+
+### D-64 The bars' windows are panels of the launcher's window, under every floating button
+- **Status:** ACTIVE. **By:** owner (the requirement: "floating buttons must always be above the bars, also
+  those of other apps", 2026-11-15); the assistant chose the means.
+- **Decision:** the windows of the bars on every page, of the auto-hide bar and of the edge handle are
+  sub-windows of the launcher's own window (`TYPE_APPLICATION_PANEL`, `BarWindows`), not overlays. Over the
+  pages and the panes, under every overlay of any app. They need no permission to draw over other apps.
+- **Rejected alternative:** adding the launcher's floating buttons again after the bars, which would leave
+  the buttons of other apps under them.
+- **Risk [A]:** a pinned PiP of FYT (a window of its own task) would be over a bar where it lay on one; the
+  creator keeps the panes beside the bars.
+- **Where:** `edce9c338`, `f79b380b6`, `27cdb331e`.
+
+### D-65 Icons and widgets may lie under the statistics window
+- **Status:** ACTIVE. **By:** owner, 2026-11-15 (reported as a fault: an item could not be put there).
+- **Decision:** the statistics are a window over the page that lets every touch through; its placeholder
+  takes no cells (`CustomElement.takesCells`). The panes and the creator's widgets take theirs as before.
+- **Where:** `45673d58a`.
 
