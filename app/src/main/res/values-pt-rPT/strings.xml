@@ -103,10 +103,8 @@
     <string name="default_wallpapers">Usar as imagens de fundo predefinidas</string>
     <string name="save_day_wallpaper">Guardar a imagem de fundo do dia</string>
     <string name="save_day_wallpaper_dialog">A guardar a imagem de fundo do dia</string>
-    <string name="save_day_wallpaper_summary">Defina a imagem de fundo que será mostrada no modo dia e toque aqui para guardá-la. Caso contrário, será usada a imagem de fundo predefinida. <b>Pode demorar um pouco – aguarde a mensagem de confirmação!</b></string>
     <string name="save_night_wallpaper">Guardar a imagem de fundo da noite</string>
     <string name="save_night_wallpaper_dialog">A guardar a imagem de fundo da noite</string>
-    <string name="save_night_wallpaper_summary">Defina a imagem de fundo que será mostrada no modo noite e toque aqui para guardá-la. Caso contrário, será usada a imagem de fundo predefinida. <b>Pode demorar um pouco – aguarde a mensagem de confirmação!</b></string>
     <string name="wallpaper_set">A imagem de fundo do modo %1$s foi definida!</string>
     <string name="wallpaper_not_set">Algo deu errado. A imagem de fundo do modo %1$s não foi definida!</string>
     <string name="wallpaper_error">Erro, a imagem de fundo do modo %1$s não foi definida:\u0020</string>
@@ -200,4 +198,6 @@
     <string name="workspace_grid_columns">Colunas: %1$d</string>
     <string name="workspace_grid_rows_note">Uma página que mostra a barra horizontal tem menos uma linha. Uma barra que se oculta automaticamente não ocupa nenhuma linha.</string>
     <string name="workspace_grid_columns_note">Uma página que mostra a barra vertical tem menos uma coluna.</string>
+    <string name="save_day_wallpaper_note">Defina a imagem de fundo que será mostrada no modo dia e toque aqui para guardá-la. Caso contrário, a imagem de fundo fica como está. <b>Pode demorar um pouco – aguarde a mensagem de confirmação!</b></string>
+    <string name="save_night_wallpaper_note">Defina a imagem de fundo que será mostrada no modo noite e toque aqui para guardá-la. Caso contrário, a imagem de fundo fica como está. <b>Pode demorar um pouco – aguarde a mensagem de confirmação!</b></string>
 </resources>

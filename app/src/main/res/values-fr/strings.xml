@@ -269,10 +269,8 @@
     <string name="default_wallpapers">Utiliser les fonds d\'écran par défaut</string>
     <string name="save_day_wallpaper">Enregistrer le fond d\'écran de jour</string>
     <string name="save_day_wallpaper_dialog">Enregistrement du fond d\'écran de jour</string>
-    <string name="save_day_wallpaper_summary">Définissez le fond d\'écran à afficher en mode jour, puis appuyez ici pour l\'enregistrer. Sinon, le fond d\'écran par défaut sera utilisé. <b>Cela peut prendre un moment – attendez le message de confirmation !</b></string>
     <string name="save_night_wallpaper">Enregistrer le fond d\'écran de nuit</string>
     <string name="save_night_wallpaper_dialog">Enregistrement du fond d\'écran de nuit</string>
-    <string name="save_night_wallpaper_summary">Définissez le fond d\'écran à afficher en mode nuit, puis appuyez ici pour l\'enregistrer. Sinon, le fond d\'écran par défaut sera utilisé. <b>Cela peut prendre un moment – attendez le message de confirmation !</b></string>
     <string name="wallpaper_set">Le fond d\'écran du mode %1$s a été défini !</string>
     <string name="wallpaper_not_set">Un problème est survenu. Le fond d\'écran du mode %1$s n\'a pas été défini !</string>
     <string name="wallpaper_error">Erreur, le fond d\'écran du mode %1$s n\'a pas été défini :\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">Colonnes : %1$d</string>
     <string name="workspace_grid_rows_note">Une page qui affiche la barre horizontale a une ligne de moins. Une barre à masquage automatique n\'occupe aucune ligne.</string>
     <string name="workspace_grid_columns_note">Une page qui affiche la barre verticale a une colonne de moins.</string>
+    <string name="save_day_wallpaper_note">Définissez le fond d\'écran à afficher en mode jour, puis appuyez ici pour l\'enregistrer. Sinon, le fond d\'écran reste tel quel. <b>Cela peut prendre un moment – attendez le message de confirmation !</b></string>
+    <string name="save_night_wallpaper_note">Définissez le fond d\'écran à afficher en mode nuit, puis appuyez ici pour l\'enregistrer. Sinon, le fond d\'écran reste tel quel. <b>Cela peut prendre un moment – attendez le message de confirmation !</b></string>
 </resources>

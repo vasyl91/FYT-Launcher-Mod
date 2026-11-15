@@ -269,10 +269,8 @@
     <string name="default_wallpapers">استخدام الخلفيات الافتراضية</string>
     <string name="save_day_wallpaper">حفظ خلفية النهار</string>
     <string name="save_day_wallpaper_dialog">جارٍ حفظ خلفية النهار</string>
-    <string name="save_day_wallpaper_summary">اضبط الخلفية التي تريد عرضها في وضع النهار، ثم المس هذا الخيار لحفظها. وإلا فسيتم استخدام الخلفية الافتراضية. <b>قد يستغرق الأمر بعض الوقت – انتظر رسالة التأكيد!</b></string>
     <string name="save_night_wallpaper">حفظ خلفية الليل</string>
     <string name="save_night_wallpaper_dialog">جارٍ حفظ خلفية الليل</string>
-    <string name="save_night_wallpaper_summary">اضبط الخلفية التي تريد عرضها في وضع الليل، ثم المس هذا الخيار لحفظها. وإلا فسيتم استخدام الخلفية الافتراضية. <b>قد يستغرق الأمر بعض الوقت – انتظر رسالة التأكيد!</b></string>
     <string name="wallpaper_set">تم ضبط خلفية وضع %1$s!</string>
     <string name="wallpaper_not_set">حدث خطأ ما. لم يتم ضبط خلفية وضع %1$s!</string>
     <string name="wallpaper_error">خطأ، لم يتم ضبط خلفية وضع %1$s:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">الأعمدة: %1$d</string>
     <string name="workspace_grid_rows_note">الصفحة التي تعرض الشريط الأفقي ينقص منها صف واحد. الشريط الذي يختفي تلقائيًا لا يأخذ أي صف.</string>
     <string name="workspace_grid_columns_note">الصفحة التي تعرض الشريط العمودي ينقص منها عمود واحد.</string>
+    <string name="save_day_wallpaper_note">اضبط الخلفية التي تريد عرضها في وضع النهار، ثم المس هذا الخيار لحفظها. وإلا فستبقى الخلفية كما هي. <b>قد يستغرق الأمر بعض الوقت – انتظر رسالة التأكيد!</b></string>
+    <string name="save_night_wallpaper_note">اضبط الخلفية التي تريد عرضها في وضع الليل، ثم المس هذا الخيار لحفظها. وإلا فستبقى الخلفية كما هي. <b>قد يستغرق الأمر بعض الوقت – انتظر رسالة التأكيد!</b></string>
 </resources>

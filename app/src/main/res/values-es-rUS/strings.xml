@@ -114,4 +114,6 @@
     <string name="workspace_grid_columns">Columnas: %1$d</string>
     <string name="workspace_grid_rows_note">Una página que muestra la barra horizontal tiene una fila menos. Una barra que se oculta automáticamente no ocupa ninguna fila.</string>
     <string name="workspace_grid_columns_note">Una página que muestra la barra vertical tiene una columna menos.</string>
+    <string name="save_day_wallpaper_note">Establece el fondo de pantalla que se mostrará en modo día y toca aquí para guardarlo. De lo contrario, el fondo se deja como está. <b>Puede tardar un poco: espera el mensaje de confirmación.</b></string>
+    <string name="save_night_wallpaper_note">Establece el fondo de pantalla que se mostrará en modo noche y toca aquí para guardarlo. De lo contrario, el fondo se deja como está. <b>Puede tardar un poco: espera el mensaje de confirmación.</b></string>
 </resources>

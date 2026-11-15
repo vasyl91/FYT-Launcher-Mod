@@ -269,10 +269,8 @@
     <string name="default_wallpapers">Koristi zadane pozadine</string>
     <string name="save_day_wallpaper">Spremi dnevnu pozadinu</string>
     <string name="save_day_wallpaper_dialog">Spremanje dnevne pozadine</string>
-    <string name="save_day_wallpaper_summary">Postavite pozadinu koju želite prikazivati u dnevnom načinu, a zatim dodirnite ovu postavku da biste je spremili. Inače će se koristiti zadana pozadina. <b>Može potrajati – pričekajte poruku potvrde!</b></string>
     <string name="save_night_wallpaper">Spremi noćnu pozadinu</string>
     <string name="save_night_wallpaper_dialog">Spremanje noćne pozadine</string>
-    <string name="save_night_wallpaper_summary">Postavite pozadinu koju želite prikazivati u noćnom načinu, a zatim dodirnite ovu postavku da biste je spremili. Inače će se koristiti zadana pozadina. <b>Može potrajati – pričekajte poruku potvrde!</b></string>
     <string name="wallpaper_set">Pozadina za način „%1$s” postavljena je!</string>
     <string name="wallpaper_not_set">Nešto je pošlo po zlu. Pozadina za način „%1$s” nije postavljena!</string>
     <string name="wallpaper_error">Pogreška, pozadina za način „%1$s” nije postavljena:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">Stupci: %1$d</string>
     <string name="workspace_grid_rows_note">Stranica koja prikazuje vodoravnu traku ima jedan redak manje. Traka koja se automatski skriva ne zauzima redak.</string>
     <string name="workspace_grid_columns_note">Stranica koja prikazuje okomitu traku ima jedan stupac manje.</string>
+    <string name="save_day_wallpaper_note">Postavite pozadinu koju želite prikazivati u dnevnom načinu, a zatim dodirnite ovu postavku da biste je spremili. Inače pozadina ostaje kakva jest. <b>Može potrajati – pričekajte poruku potvrde!</b></string>
+    <string name="save_night_wallpaper_note">Postavite pozadinu koju želite prikazivati u noćnom načinu, a zatim dodirnite ovu postavku da biste je spremili. Inače pozadina ostaje kakva jest. <b>Može potrajati – pričekajte poruku potvrde!</b></string>
 </resources>

@@ -269,10 +269,8 @@
     <string name="default_wallpapers">ነባሪ ልጣፎችን ተጠቀም</string>
     <string name="save_day_wallpaper">የቀን ልጣፍን አስቀምጥ</string>
     <string name="save_day_wallpaper_dialog">የቀን ልጣፍን በማስቀመጥ ላይ</string>
-    <string name="save_day_wallpaper_summary">በቀን ሁነታ ላይ ማሳየት የሚፈልጉትን ልጣፍ ያቀናብሩ፣ ከዚያ ለማስቀመጥ ይህን ምርጫ መታ ያድርጉ። ካልሆነ ነባሪው ልጣፍ ጥቅም ላይ ይውላል። <b>ትንሽ ጊዜ ሊወስድ ይችላል – የማረጋገጫ መልእክቱን ይጠብቁ!</b></string>
     <string name="save_night_wallpaper">የሌሊት ልጣፍን አስቀምጥ</string>
     <string name="save_night_wallpaper_dialog">የሌሊት ልጣፍን በማስቀመጥ ላይ</string>
-    <string name="save_night_wallpaper_summary">በሌሊት ሁነታ ላይ ማሳየት የሚፈልጉትን ልጣፍ ያቀናብሩ፣ ከዚያ ለማስቀመጥ ይህን ምርጫ መታ ያድርጉ። ካልሆነ ነባሪው ልጣፍ ጥቅም ላይ ይውላል። <b>ትንሽ ጊዜ ሊወስድ ይችላል – የማረጋገጫ መልእክቱን ይጠብቁ!</b></string>
     <string name="wallpaper_set">የ%1$s ሁነታ ልጣፍ ተቀናብሯል!</string>
     <string name="wallpaper_not_set">የሆነ ችግር ተፈጥሯል። የ%1$s ሁነታ ልጣፍ አልተቀናበረም!</string>
     <string name="wallpaper_error">ስህተት፣ የ%1$s ሁነታ ልጣፍ አልተቀናበረም፦\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">አምዶች፦ %1$d</string>
     <string name="workspace_grid_rows_note">አግድም አሞሌውን የሚያሳይ ገጽ አንድ ረድፍ ያንሰዋል። በራሱ የሚደበቅ አሞሌ ረድፍ አይወስድም።</string>
     <string name="workspace_grid_columns_note">ቋሚ አሞሌውን የሚያሳይ ገጽ አንድ አምድ ያንሰዋል።</string>
+    <string name="save_day_wallpaper_note">በቀን ሁነታ ላይ ማሳየት የሚፈልጉትን ልጣፍ ያቀናብሩ፣ ከዚያ ለማስቀመጥ ይህን ምርጫ መታ ያድርጉ። ካልሆነ ልጣፉ እንዳለ ይቀራል። <b>ትንሽ ጊዜ ሊወስድ ይችላል – የማረጋገጫ መልእክቱን ይጠብቁ!</b></string>
+    <string name="save_night_wallpaper_note">በሌሊት ሁነታ ላይ ማሳየት የሚፈልጉትን ልጣፍ ያቀናብሩ፣ ከዚያ ለማስቀመጥ ይህን ምርጫ መታ ያድርጉ። ካልሆነ ልጣፉ እንዳለ ይቀራል። <b>ትንሽ ጊዜ ሊወስድ ይችላል – የማረጋገጫ መልእክቱን ይጠብቁ!</b></string>
 </resources>

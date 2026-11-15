@@ -93,4 +93,6 @@
     <string name="workspace_grid_columns">欄數：%1$d</string>
     <string name="workspace_grid_rows_note">顯示橫欄的頁面會少一列。自動隱藏的橫欄不佔用任何一列。</string>
     <string name="workspace_grid_columns_note">顯示縱欄的頁面會少一欄。</string>
+    <string name="save_day_wallpaper_note">設定您希望用於日間模式的桌布，然後點選此選項儲存，否則桌布維持不變。<b>可能需要一點時間，請等待確認「Toast」提示！</b></string>
+    <string name="save_night_wallpaper_note">設定您希望用於夜間模式的桌布，然後點選此選項儲存，否則桌布維持不變。<b>可能需要一點時間，請等待確認「Toast」提示！</b></string>
 </resources>

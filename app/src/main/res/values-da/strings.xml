@@ -269,10 +269,8 @@
     <string name="default_wallpapers">Brug standardbaggrundene</string>
     <string name="save_day_wallpaper">Gem dagbaggrunden</string>
     <string name="save_day_wallpaper_dialog">Gemmer dagbaggrunden</string>
-    <string name="save_day_wallpaper_summary">Indstil den baggrund, der skal vises i dagtilstand, og tryk derefter på denne indstilling for at gemme den. Ellers bruges standardbaggrunden. <b>Det kan tage et øjeblik – vent på bekræftelsesbeskeden!</b></string>
     <string name="save_night_wallpaper">Gem nattebaggrunden</string>
     <string name="save_night_wallpaper_dialog">Gemmer nattebaggrunden</string>
-    <string name="save_night_wallpaper_summary">Indstil den baggrund, der skal vises i nattilstand, og tryk derefter på denne indstilling for at gemme den. Ellers bruges standardbaggrunden. <b>Det kan tage et øjeblik – vent på bekræftelsesbeskeden!</b></string>
     <string name="wallpaper_set">Baggrunden til tilstanden %1$s er indstillet!</string>
     <string name="wallpaper_not_set">Noget gik galt. Baggrunden til tilstanden %1$s er ikke indstillet!</string>
     <string name="wallpaper_error">Fejl, baggrunden til tilstanden %1$s er ikke indstillet:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">Kolonner: %1$d</string>
     <string name="workspace_grid_rows_note">En side, der viser den vandrette bjælke, har én række færre. En bjælke, der skjuler sig selv, optager ingen række.</string>
     <string name="workspace_grid_columns_note">En side, der viser den lodrette bjælke, har én kolonne færre.</string>
+    <string name="save_day_wallpaper_note">Indstil den baggrund, der skal vises i dagtilstand, og tryk derefter på denne indstilling for at gemme den. Ellers forbliver baggrunden, som den er. <b>Det kan tage et øjeblik – vent på bekræftelsesbeskeden!</b></string>
+    <string name="save_night_wallpaper_note">Indstil den baggrund, der skal vises i nattilstand, og tryk derefter på denne indstilling for at gemme den. Ellers forbliver baggrunden, som den er. <b>Det kan tage et øjeblik – vent på bekræftelsesbeskeden!</b></string>
 </resources>

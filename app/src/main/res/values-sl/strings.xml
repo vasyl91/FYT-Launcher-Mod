@@ -269,10 +269,8 @@
     <string name="default_wallpapers">Uporabi privzeta ozadja</string>
     <string name="save_day_wallpaper">Shrani dnevno ozadje</string>
     <string name="save_day_wallpaper_dialog">Shranjevanje dnevnega ozadja</string>
-    <string name="save_day_wallpaper_summary">Nastavite ozadje, ki naj se prikazuje v dnevnem načinu, nato se dotaknite te nastavitve, da ga shranite. Sicer bo uporabljeno privzeto ozadje. <b>To lahko traja nekaj časa – počakajte na potrditveno sporočilo!</b></string>
     <string name="save_night_wallpaper">Shrani nočno ozadje</string>
     <string name="save_night_wallpaper_dialog">Shranjevanje nočnega ozadja</string>
-    <string name="save_night_wallpaper_summary">Nastavite ozadje, ki naj se prikazuje v nočnem načinu, nato se dotaknite te nastavitve, da ga shranite. Sicer bo uporabljeno privzeto ozadje. <b>To lahko traja nekaj časa – počakajte na potrditveno sporočilo!</b></string>
     <string name="wallpaper_set">Ozadje za način »%1$s« je nastavljeno!</string>
     <string name="wallpaper_not_set">Nekaj je šlo narobe. Ozadje za način »%1$s« ni nastavljeno!</string>
     <string name="wallpaper_error">Napaka, ozadje za način »%1$s« ni nastavljeno:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">Stolpci: %1$d</string>
     <string name="workspace_grid_rows_note">Stran, ki prikazuje vodoravno vrstico, ima eno vrstico manj. Vrstica, ki se samodejno skrije, ne zasede nobene vrstice.</string>
     <string name="workspace_grid_columns_note">Stran, ki prikazuje navpično vrstico, ima en stolpec manj.</string>
+    <string name="save_day_wallpaper_note">Nastavite ozadje, ki naj se prikazuje v dnevnem načinu, nato se dotaknite te nastavitve, da ga shranite. Sicer ozadje ostane, kakršno je. <b>To lahko traja nekaj časa – počakajte na potrditveno sporočilo!</b></string>
+    <string name="save_night_wallpaper_note">Nastavite ozadje, ki naj se prikazuje v nočnem načinu, nato se dotaknite te nastavitve, da ga shranite. Sicer ozadje ostane, kakršno je. <b>To lahko traja nekaj časa – počakajte na potrditveno sporočilo!</b></string>
 </resources>

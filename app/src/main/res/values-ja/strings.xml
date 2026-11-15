@@ -269,10 +269,8 @@
     <string name="default_wallpapers">デフォルトの壁紙を使用</string>
     <string name="save_day_wallpaper">昼の壁紙を保存</string>
     <string name="save_day_wallpaper_dialog">昼の壁紙を保存中</string>
-    <string name="save_day_wallpaper_summary">昼モードで表示する壁紙を設定し、この項目をタップして保存してください。設定しない場合はデフォルトの壁紙が使われます。<b>少し時間がかかる場合があります。確認のメッセージが表示されるまでお待ちください。</b></string>
     <string name="save_night_wallpaper">夜の壁紙を保存</string>
     <string name="save_night_wallpaper_dialog">夜の壁紙を保存中</string>
-    <string name="save_night_wallpaper_summary">夜モードで表示する壁紙を設定し、この項目をタップして保存してください。設定しない場合はデフォルトの壁紙が使われます。<b>少し時間がかかる場合があります。確認のメッセージが表示されるまでお待ちください。</b></string>
     <string name="wallpaper_set">%1$sモードの壁紙を設定しました。</string>
     <string name="wallpaper_not_set">問題が発生しました。%1$sモードの壁紙は設定されていません。</string>
     <string name="wallpaper_error">エラー: %1$sモードの壁紙は設定されていません:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">列数: %1$d</string>
     <string name="workspace_grid_rows_note">横バーを表示するページは行が1つ少なくなります。自動的に隠れるバーは行を使いません。</string>
     <string name="workspace_grid_columns_note">縦バーを表示するページは列が1つ少なくなります。</string>
+    <string name="save_day_wallpaper_note">昼モードで表示する壁紙を設定し、この項目をタップして保存してください。保存しない場合、壁紙は変更されません。<b>少し時間がかかる場合があります。確認のメッセージが表示されるまでお待ちください。</b></string>
+    <string name="save_night_wallpaper_note">夜モードで表示する壁紙を設定し、この項目をタップして保存してください。保存しない場合、壁紙は変更されません。<b>少し時間がかかる場合があります。確認のメッセージが表示されるまでお待ちください。</b></string>
 </resources>

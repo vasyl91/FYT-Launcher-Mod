@@ -269,10 +269,8 @@
     <string name="default_wallpapers">Naudoti numatytuosius ekrano fonus</string>
     <string name="save_day_wallpaper">Išsaugoti dienos ekrano foną</string>
     <string name="save_day_wallpaper_dialog">Išsaugomas dienos ekrano fonas</string>
-    <string name="save_day_wallpaper_summary">Nustatykite ekrano foną, kuris bus rodomas dienos režimu, tada palieskite šį nustatymą, kad jį išsaugotumėte. Kitaip bus naudojamas numatytasis ekrano fonas. <b>Tai gali šiek tiek užtrukti – palaukite patvirtinimo pranešimo!</b></string>
     <string name="save_night_wallpaper">Išsaugoti nakties ekrano foną</string>
     <string name="save_night_wallpaper_dialog">Išsaugomas nakties ekrano fonas</string>
-    <string name="save_night_wallpaper_summary">Nustatykite ekrano foną, kuris bus rodomas nakties režimu, tada palieskite šį nustatymą, kad jį išsaugotumėte. Kitaip bus naudojamas numatytasis ekrano fonas. <b>Tai gali šiek tiek užtrukti – palaukite patvirtinimo pranešimo!</b></string>
     <string name="wallpaper_set">Režimo „%1$s“ ekrano fonas nustatytas!</string>
     <string name="wallpaper_not_set">Kažkas nepavyko. Režimo „%1$s“ ekrano fonas nenustatytas!</string>
     <string name="wallpaper_error">Klaida, režimo „%1$s“ ekrano fonas nenustatytas:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">Stulpeliai: %1$d</string>
     <string name="workspace_grid_rows_note">Puslapyje, kuriame rodoma horizontali juosta, yra viena eilute mažiau. Automatiškai slepiama juosta eilutės neužima.</string>
     <string name="workspace_grid_columns_note">Puslapyje, kuriame rodoma vertikali juosta, yra vienu stulpeliu mažiau.</string>
+    <string name="save_day_wallpaper_note">Nustatykite ekrano foną, kuris bus rodomas dienos režimu, tada palieskite šį nustatymą, kad jį išsaugotumėte. Kitaip ekrano fonas paliekamas toks, koks yra. <b>Tai gali šiek tiek užtrukti – palaukite patvirtinimo pranešimo!</b></string>
+    <string name="save_night_wallpaper_note">Nustatykite ekrano foną, kuris bus rodomas nakties režimu, tada palieskite šį nustatymą, kad jį išsaugotumėte. Kitaip ekrano fonas paliekamas toks, koks yra. <b>Tai gali šiek tiek užtrukti – palaukite patvirtinimo pranešimo!</b></string>
 </resources>

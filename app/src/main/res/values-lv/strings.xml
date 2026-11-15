@@ -269,10 +269,8 @@
     <string name="default_wallpapers">Izmantot noklusējuma fona tapetes</string>
     <string name="save_day_wallpaper">Saglabāt dienas fona tapeti</string>
     <string name="save_day_wallpaper_dialog">Notiek dienas fona tapetes saglabāšana</string>
-    <string name="save_day_wallpaper_summary">Iestatiet fona tapeti, ko vēlaties rādīt dienas režīmā, un pēc tam pieskarieties šim iestatījumam, lai to saglabātu. Pretējā gadījumā tiks izmantota noklusējuma fona tapete. <b>Tas var aizņemt kādu laiku — gaidiet apstiprinājuma ziņojumu!</b></string>
     <string name="save_night_wallpaper">Saglabāt nakts fona tapeti</string>
     <string name="save_night_wallpaper_dialog">Notiek nakts fona tapetes saglabāšana</string>
-    <string name="save_night_wallpaper_summary">Iestatiet fona tapeti, ko vēlaties rādīt nakts režīmā, un pēc tam pieskarieties šim iestatījumam, lai to saglabātu. Pretējā gadījumā tiks izmantota noklusējuma fona tapete. <b>Tas var aizņemt kādu laiku — gaidiet apstiprinājuma ziņojumu!</b></string>
     <string name="wallpaper_set">Režīma “%1$s” fona tapete iestatīta!</string>
     <string name="wallpaper_not_set">Kaut kas nogāja greizi. Režīma “%1$s” fona tapete nav iestatīta!</string>
     <string name="wallpaper_error">Kļūda, režīma “%1$s” fona tapete nav iestatīta:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">Kolonnas: %1$d</string>
     <string name="workspace_grid_rows_note">Lapā, kurā redzama horizontālā josla, ir par vienu rindu mazāk. Automātiski paslēpta josla rindu neaizņem.</string>
     <string name="workspace_grid_columns_note">Lapā, kurā redzama vertikālā josla, ir par vienu kolonnu mazāk.</string>
+    <string name="save_day_wallpaper_note">Iestatiet fona tapeti, ko vēlaties rādīt dienas režīmā, un pēc tam pieskarieties šim iestatījumam, lai to saglabātu. Pretējā gadījumā fona tapete paliek nemainīta. <b>Tas var aizņemt kādu laiku — gaidiet apstiprinājuma ziņojumu!</b></string>
+    <string name="save_night_wallpaper_note">Iestatiet fona tapeti, ko vēlaties rādīt nakts režīmā, un pēc tam pieskarieties šim iestatījumam, lai to saglabātu. Pretējā gadījumā fona tapete paliek nemainīta. <b>Tas var aizņemt kādu laiku — gaidiet apstiprinājuma ziņojumu!</b></string>
 </resources>

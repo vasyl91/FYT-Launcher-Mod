@@ -269,10 +269,8 @@
     <string name="default_wallpapers">De standaardachtergronden gebruiken</string>
     <string name="save_day_wallpaper">Dagachtergrond opslaan</string>
     <string name="save_day_wallpaper_dialog">Dagachtergrond wordt opgeslagen</string>
-    <string name="save_day_wallpaper_summary">Stel de achtergrond in die je in de dagmodus wilt tonen en tik dan op deze voorkeur om hem op te slaan. Anders wordt de standaardachtergrond gebruikt. <b>Dit kan even duren – wacht op de bevestigingsmelding!</b></string>
     <string name="save_night_wallpaper">Nachtachtergrond opslaan</string>
     <string name="save_night_wallpaper_dialog">Nachtachtergrond wordt opgeslagen</string>
-    <string name="save_night_wallpaper_summary">Stel de achtergrond in die je in de nachtmodus wilt tonen en tik dan op deze voorkeur om hem op te slaan. Anders wordt de standaardachtergrond gebruikt. <b>Dit kan even duren – wacht op de bevestigingsmelding!</b></string>
     <string name="wallpaper_set">Achtergrond voor de modus %1$s is ingesteld!</string>
     <string name="wallpaper_not_set">Er is iets misgegaan. De achtergrond voor de modus %1$s is niet ingesteld!</string>
     <string name="wallpaper_error">Fout, de achtergrond voor de modus %1$s is niet ingesteld:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">Kolommen: %1$d</string>
     <string name="workspace_grid_rows_note">Een pagina die de horizontale balk toont, heeft één rij minder. Een balk die zichzelf verbergt, neemt geen rij in.</string>
     <string name="workspace_grid_columns_note">Een pagina die de verticale balk toont, heeft één kolom minder.</string>
+    <string name="save_day_wallpaper_note">Stel de achtergrond in die je in de dagmodus wilt tonen en tik dan op deze voorkeur om hem op te slaan. Anders blijft de achtergrond zoals hij is. <b>Dit kan even duren – wacht op de bevestigingsmelding!</b></string>
+    <string name="save_night_wallpaper_note">Stel de achtergrond in die je in de nachtmodus wilt tonen en tik dan op deze voorkeur om hem op te slaan. Anders blijft de achtergrond zoals hij is. <b>Dit kan even duren – wacht op de bevestigingsmelding!</b></string>
 </resources>

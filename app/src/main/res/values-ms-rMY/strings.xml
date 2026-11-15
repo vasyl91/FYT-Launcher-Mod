@@ -83,4 +83,6 @@
     <string name="workspace_grid_columns">Lajur: %1$d</string>
     <string name="workspace_grid_rows_note">Halaman yang memaparkan bar mendatar mempunyai satu baris kurang. Bar yang tersembunyi secara automatik tidak mengambil baris.</string>
     <string name="workspace_grid_columns_note">Halaman yang memaparkan bar menegak mempunyai satu lajur kurang.</string>
+    <string name="save_day_wallpaper_note">Tetapkan kertas dinding yang anda mahu paparkan dalam mod siang, kemudian ketik keutamaan ini untuk menyimpannya. Jika tidak, kertas dinding dibiarkan seperti sedia ada. <b>Ia mungkin mengambil sedikit masa – tunggu mesej pengesahan!</b></string>
+    <string name="save_night_wallpaper_note">Tetapkan kertas dinding yang anda mahu paparkan dalam mod malam, kemudian ketik keutamaan ini untuk menyimpannya. Jika tidak, kertas dinding dibiarkan seperti sedia ada. <b>Ia mungkin mengambil sedikit masa – tunggu mesej pengesahan!</b></string>
 </resources>

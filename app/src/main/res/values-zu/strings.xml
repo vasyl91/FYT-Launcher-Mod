@@ -269,10 +269,8 @@
     <string name="default_wallpapers">Sebenzisa izithombe zangemuva ezizenzakalelayo</string>
     <string name="save_day_wallpaper">Gcina isithombe sangemuva sosuku</string>
     <string name="save_day_wallpaper_dialog">Igcina isithombe sangemuva sosuku</string>
-    <string name="save_day_wallpaper_summary">Setha isithombe sangemuva ofuna ukusibonisa kumodi yosuku, bese uthepha le nketho ukuze usigcine. Ngaphandle kwalokho kuzosetshenziswa isithombe sangemuva esizenzakalelayo. <b>Kungathatha isikhathi esithile – linda umlayezo wokuqinisekisa!</b></string>
     <string name="save_night_wallpaper">Gcina isithombe sangemuva sobusuku</string>
     <string name="save_night_wallpaper_dialog">Igcina isithombe sangemuva sobusuku</string>
-    <string name="save_night_wallpaper_summary">Setha isithombe sangemuva ofuna ukusibonisa kumodi yobusuku, bese uthepha le nketho ukuze usigcine. Ngaphandle kwalokho kuzosetshenziswa isithombe sangemuva esizenzakalelayo. <b>Kungathatha isikhathi esithile – linda umlayezo wokuqinisekisa!</b></string>
     <string name="wallpaper_set">Isithombe sangemuva semodi ye-%1$s sisethiwe!</string>
     <string name="wallpaper_not_set">Kukhona okungahambanga kahle. Isithombe sangemuva semodi ye-%1$s asisethiwe!</string>
     <string name="wallpaper_error">Iphutha, isithombe sangemuva semodi ye-%1$s asisethiwe:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">Amakholomu: %1$d</string>
     <string name="workspace_grid_rows_note">Ikhasi elibonisa ibha evundlile linomugqa owodwa ongaphansi. Ibha ezifihla yona ayithathi mugqa.</string>
     <string name="workspace_grid_columns_note">Ikhasi elibonisa ibha eqondile linekholomu elilodwa elingaphansi.</string>
+    <string name="save_day_wallpaper_note">Setha isithombe sangemuva ofuna ukusibonisa kumodi yosuku, bese uthepha le nketho ukuze usigcine. Ngaphandle kwalokho isithombe sangemuva sihlala sinjalo. <b>Kungathatha isikhathi esithile – linda umlayezo wokuqinisekisa!</b></string>
+    <string name="save_night_wallpaper_note">Setha isithombe sangemuva ofuna ukusibonisa kumodi yobusuku, bese uthepha le nketho ukuze usigcine. Ngaphandle kwalokho isithombe sangemuva sihlala sinjalo. <b>Kungathatha isikhathi esithile – linda umlayezo wokuqinisekisa!</b></string>
 </resources>

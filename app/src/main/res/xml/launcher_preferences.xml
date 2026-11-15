@@ -251,13 +251,13 @@
             <com.android.launcher66.settings.CustomPreference
                 android:key="save_day_wallpaper"
                 android:title="@string/save_day_wallpaper"
-                android:summary="@string/save_day_wallpaper_summary"
+                android:summary="@string/save_day_wallpaper_note"
                 android:maxLines="5"
                 app:layout="@layout/nested_preference_category_content" />
             <com.android.launcher66.settings.CustomPreference
                 android:key="save_night_wallpaper"
                 android:title="@string/save_night_wallpaper"
-                android:summary="@string/save_night_wallpaper_summary"
+                android:summary="@string/save_night_wallpaper_note"
                 android:maxLines="5"
                 app:layout="@layout/nested_preference_category_content" />
             

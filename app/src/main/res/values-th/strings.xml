@@ -269,10 +269,8 @@
     <string name="default_wallpapers">ใช้วอลเปเปอร์เริ่มต้น</string>
     <string name="save_day_wallpaper">บันทึกวอลเปเปอร์กลางวัน</string>
     <string name="save_day_wallpaper_dialog">กำลังบันทึกวอลเปเปอร์กลางวัน</string>
-    <string name="save_day_wallpaper_summary">ตั้งวอลเปเปอร์ที่ต้องการแสดงในโหมดกลางวัน แล้วแตะรายการนี้เพื่อบันทึก มิฉะนั้นจะใช้วอลเปเปอร์เริ่มต้น <b>อาจใช้เวลาสักครู่ – รอข้อความยืนยัน!</b></string>
     <string name="save_night_wallpaper">บันทึกวอลเปเปอร์กลางคืน</string>
     <string name="save_night_wallpaper_dialog">กำลังบันทึกวอลเปเปอร์กลางคืน</string>
-    <string name="save_night_wallpaper_summary">ตั้งวอลเปเปอร์ที่ต้องการแสดงในโหมดกลางคืน แล้วแตะรายการนี้เพื่อบันทึก มิฉะนั้นจะใช้วอลเปเปอร์เริ่มต้น <b>อาจใช้เวลาสักครู่ – รอข้อความยืนยัน!</b></string>
     <string name="wallpaper_set">ตั้งวอลเปเปอร์โหมด%1$sแล้ว!</string>
     <string name="wallpaper_not_set">เกิดข้อผิดพลาด ไม่ได้ตั้งวอลเปเปอร์โหมด%1$s!</string>
     <string name="wallpaper_error">ข้อผิดพลาด ไม่ได้ตั้งวอลเปเปอร์โหมด%1$s:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">คอลัมน์: %1$d</string>
     <string name="workspace_grid_rows_note">หน้าที่แสดงแถบแนวนอนจะมีแถวน้อยลงหนึ่งแถว แถบที่ซ่อนอัตโนมัติไม่ใช้แถว</string>
     <string name="workspace_grid_columns_note">หน้าที่แสดงแถบแนวตั้งจะมีคอลัมน์น้อยลงหนึ่งคอลัมน์</string>
+    <string name="save_day_wallpaper_note">ตั้งวอลเปเปอร์ที่ต้องการแสดงในโหมดกลางวัน แล้วแตะรายการนี้เพื่อบันทึก มิฉะนั้นวอลเปเปอร์จะคงเดิม <b>อาจใช้เวลาสักครู่ – รอข้อความยืนยัน!</b></string>
+    <string name="save_night_wallpaper_note">ตั้งวอลเปเปอร์ที่ต้องการแสดงในโหมดกลางคืน แล้วแตะรายการนี้เพื่อบันทึก มิฉะนั้นวอลเปเปอร์จะคงเดิม <b>อาจใช้เวลาสักครู่ – รอข้อความยืนยัน!</b></string>
 </resources>

@@ -269,10 +269,8 @@
     <string name="default_wallpapers">Dùng hình nền mặc định</string>
     <string name="save_day_wallpaper">Lưu hình nền ban ngày</string>
     <string name="save_day_wallpaper_dialog">Đang lưu hình nền ban ngày</string>
-    <string name="save_day_wallpaper_summary">Đặt hình nền bạn muốn hiển thị ở chế độ ban ngày, rồi nhấn tùy chọn này để lưu. Nếu không, hình nền mặc định sẽ được dùng. <b>Có thể mất một lúc – hãy đợi thông báo xác nhận!</b></string>
     <string name="save_night_wallpaper">Lưu hình nền ban đêm</string>
     <string name="save_night_wallpaper_dialog">Đang lưu hình nền ban đêm</string>
-    <string name="save_night_wallpaper_summary">Đặt hình nền bạn muốn hiển thị ở chế độ ban đêm, rồi nhấn tùy chọn này để lưu. Nếu không, hình nền mặc định sẽ được dùng. <b>Có thể mất một lúc – hãy đợi thông báo xác nhận!</b></string>
     <string name="wallpaper_set">Đã đặt hình nền chế độ %1$s!</string>
     <string name="wallpaper_not_set">Đã xảy ra lỗi. Chưa đặt được hình nền chế độ %1$s!</string>
     <string name="wallpaper_error">Lỗi, chưa đặt được hình nền chế độ %1$s:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">Cột: %1$d</string>
     <string name="workspace_grid_rows_note">Trang hiển thị thanh ngang có ít hơn một hàng. Thanh tự động ẩn không chiếm hàng nào.</string>
     <string name="workspace_grid_columns_note">Trang hiển thị thanh dọc có ít hơn một cột.</string>
+    <string name="save_day_wallpaper_note">Đặt hình nền bạn muốn hiển thị ở chế độ ban ngày, rồi nhấn tùy chọn này để lưu. Nếu không, hình nền được giữ nguyên. <b>Có thể mất một lúc – hãy đợi thông báo xác nhận!</b></string>
+    <string name="save_night_wallpaper_note">Đặt hình nền bạn muốn hiển thị ở chế độ ban đêm, rồi nhấn tùy chọn này để lưu. Nếu không, hình nền được giữ nguyên. <b>Có thể mất một lúc – hãy đợi thông báo xác nhận!</b></string>
 </resources>

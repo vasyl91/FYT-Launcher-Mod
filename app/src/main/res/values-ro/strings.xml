@@ -269,10 +269,8 @@
     <string name="default_wallpapers">Folosește imaginile de fundal implicite</string>
     <string name="save_day_wallpaper">Salvează imaginea de fundal de zi</string>
     <string name="save_day_wallpaper_dialog">Se salvează imaginea de fundal de zi</string>
-    <string name="save_day_wallpaper_summary">Setați imaginea de fundal pe care doriți să o afișați în modul zi, apoi atingeți această preferință pentru a o salva. Altfel va fi folosită imaginea de fundal implicită. <b>Poate dura puțin – așteptați mesajul de confirmare!</b></string>
     <string name="save_night_wallpaper">Salvează imaginea de fundal de noapte</string>
     <string name="save_night_wallpaper_dialog">Se salvează imaginea de fundal de noapte</string>
-    <string name="save_night_wallpaper_summary">Setați imaginea de fundal pe care doriți să o afișați în modul noapte, apoi atingeți această preferință pentru a o salva. Altfel va fi folosită imaginea de fundal implicită. <b>Poate dura puțin – așteptați mesajul de confirmare!</b></string>
     <string name="wallpaper_set">Imaginea de fundal pentru modul %1$s a fost setată!</string>
     <string name="wallpaper_not_set">Ceva nu a mers bine. Imaginea de fundal pentru modul %1$s nu a fost setată!</string>
     <string name="wallpaper_error">Eroare, imaginea de fundal pentru modul %1$s nu a fost setată:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">Coloane: %1$d</string>
     <string name="workspace_grid_rows_note">O pagină care afișează bara orizontală are un rând mai puțin. O bară care se ascunde automat nu ocupă niciun rând.</string>
     <string name="workspace_grid_columns_note">O pagină care afișează bara verticală are o coloană mai puțin.</string>
+    <string name="save_day_wallpaper_note">Setați imaginea de fundal pe care doriți să o afișați în modul zi, apoi atingeți această preferință pentru a o salva. Altfel imaginea de fundal rămâne așa cum este. <b>Poate dura puțin – așteptați mesajul de confirmare!</b></string>
+    <string name="save_night_wallpaper_note">Setați imaginea de fundal pe care doriți să o afișați în modul noapte, apoi atingeți această preferință pentru a o salva. Altfel imaginea de fundal rămâne așa cum este. <b>Poate dura puțin – așteptați mesajul de confirmare!</b></string>
 </resources>

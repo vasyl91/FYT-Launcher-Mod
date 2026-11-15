@@ -269,10 +269,8 @@
     <string name="default_wallpapers">Usar os planos de fundo padrão</string>
     <string name="save_day_wallpaper">Salvar o plano de fundo do dia</string>
     <string name="save_day_wallpaper_dialog">Salvando o plano de fundo do dia</string>
-    <string name="save_day_wallpaper_summary">Defina o plano de fundo que será exibido no modo dia e toque aqui para salvá-lo. Caso contrário, será usado o plano de fundo padrão. <b>Pode demorar um pouco – aguarde a mensagem de confirmação!</b></string>
     <string name="save_night_wallpaper">Salvar o plano de fundo da noite</string>
     <string name="save_night_wallpaper_dialog">Salvando o plano de fundo da noite</string>
-    <string name="save_night_wallpaper_summary">Defina o plano de fundo que será exibido no modo noite e toque aqui para salvá-lo. Caso contrário, será usado o plano de fundo padrão. <b>Pode demorar um pouco – aguarde a mensagem de confirmação!</b></string>
     <string name="wallpaper_set">O plano de fundo do modo %1$s foi definido!</string>
     <string name="wallpaper_not_set">Algo deu errado. O plano de fundo do modo %1$s não foi definido!</string>
     <string name="wallpaper_error">Erro, o plano de fundo do modo %1$s não foi definido:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">Colunas: %1$d</string>
     <string name="workspace_grid_rows_note">Uma página que mostra a barra horizontal tem uma linha a menos. Uma barra que se oculta automaticamente não ocupa nenhuma linha.</string>
     <string name="workspace_grid_columns_note">Uma página que mostra a barra vertical tem uma coluna a menos.</string>
+    <string name="save_day_wallpaper_note">Defina o plano de fundo que será exibido no modo dia e toque aqui para salvá-lo. Caso contrário, o plano de fundo fica como está. <b>Pode demorar um pouco – aguarde a mensagem de confirmação!</b></string>
+    <string name="save_night_wallpaper_note">Defina o plano de fundo que será exibido no modo noite e toque aqui para salvá-lo. Caso contrário, o plano de fundo fica como está. <b>Pode demorar um pouco – aguarde a mensagem de confirmação!</b></string>
 </resources>

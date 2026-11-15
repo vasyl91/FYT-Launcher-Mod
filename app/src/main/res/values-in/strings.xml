@@ -269,10 +269,8 @@
     <string name="default_wallpapers">Gunakan wallpaper default</string>
     <string name="save_day_wallpaper">Simpan wallpaper siang</string>
     <string name="save_day_wallpaper_dialog">Menyimpan wallpaper siang</string>
-    <string name="save_day_wallpaper_summary">Atur wallpaper yang ingin Anda tampilkan di mode siang, lalu ketuk preferensi ini untuk menyimpannya. Jika tidak, wallpaper default akan digunakan. <b>Mungkin perlu waktu sebentar – tunggu pesan konfirmasi!</b></string>
     <string name="save_night_wallpaper">Simpan wallpaper malam</string>
     <string name="save_night_wallpaper_dialog">Menyimpan wallpaper malam</string>
-    <string name="save_night_wallpaper_summary">Atur wallpaper yang ingin Anda tampilkan di mode malam, lalu ketuk preferensi ini untuk menyimpannya. Jika tidak, wallpaper default akan digunakan. <b>Mungkin perlu waktu sebentar – tunggu pesan konfirmasi!</b></string>
     <string name="wallpaper_set">Wallpaper mode %1$s telah diatur!</string>
     <string name="wallpaper_not_set">Terjadi kesalahan. Wallpaper mode %1$s belum diatur!</string>
     <string name="wallpaper_error">Kesalahan, wallpaper mode %1$s belum diatur:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">Kolom: %1$d</string>
     <string name="workspace_grid_rows_note">Halaman yang menampilkan bilah horizontal memiliki satu baris lebih sedikit. Bilah yang tersembunyi otomatis tidak memakai baris.</string>
     <string name="workspace_grid_columns_note">Halaman yang menampilkan bilah vertikal memiliki satu kolom lebih sedikit.</string>
+    <string name="save_day_wallpaper_note">Atur wallpaper yang ingin Anda tampilkan di mode siang, lalu ketuk preferensi ini untuk menyimpannya. Jika tidak, wallpaper dibiarkan apa adanya. <b>Mungkin perlu waktu sebentar – tunggu pesan konfirmasi!</b></string>
+    <string name="save_night_wallpaper_note">Atur wallpaper yang ingin Anda tampilkan di mode malam, lalu ketuk preferensi ini untuk menyimpannya. Jika tidak, wallpaper dibiarkan apa adanya. <b>Mungkin perlu waktu sebentar – tunggu pesan konfirmasi!</b></string>
 </resources>

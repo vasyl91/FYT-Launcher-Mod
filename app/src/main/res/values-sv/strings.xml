@@ -269,10 +269,8 @@
     <string name="default_wallpapers">Använd standardbakgrunderna</string>
     <string name="save_day_wallpaper">Spara dagbakgrunden</string>
     <string name="save_day_wallpaper_dialog">Sparar dagbakgrunden</string>
-    <string name="save_day_wallpaper_summary">Ställ in bakgrunden som ska visas i dagläge och tryck sedan på den här inställningen för att spara den. Annars används standardbakgrunden. <b>Det kan ta en stund – vänta på bekräftelsemeddelandet!</b></string>
     <string name="save_night_wallpaper">Spara nattbakgrunden</string>
     <string name="save_night_wallpaper_dialog">Sparar nattbakgrunden</string>
-    <string name="save_night_wallpaper_summary">Ställ in bakgrunden som ska visas i nattläge och tryck sedan på den här inställningen för att spara den. Annars används standardbakgrunden. <b>Det kan ta en stund – vänta på bekräftelsemeddelandet!</b></string>
     <string name="wallpaper_set">Bakgrunden för %1$s-läge har ställts in!</string>
     <string name="wallpaper_not_set">Något gick fel. Bakgrunden för %1$s-läge har inte ställts in!</string>
     <string name="wallpaper_error">Fel, bakgrunden för %1$s-läge har inte ställts in:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">Kolumner: %1$d</string>
     <string name="workspace_grid_rows_note">En sida som visar det vågräta fältet har en rad mindre. Ett fält som döljs automatiskt tar ingen rad.</string>
     <string name="workspace_grid_columns_note">En sida som visar det lodräta fältet har en kolumn mindre.</string>
+    <string name="save_day_wallpaper_note">Ställ in bakgrunden som ska visas i dagläge och tryck sedan på den här inställningen för att spara den. Annars lämnas bakgrunden som den är. <b>Det kan ta en stund – vänta på bekräftelsemeddelandet!</b></string>
+    <string name="save_night_wallpaper_note">Ställ in bakgrunden som ska visas i nattläge och tryck sedan på den här inställningen för att spara den. Annars lämnas bakgrunden som den är. <b>Det kan ta en stund – vänta på bekräftelsemeddelandet!</b></string>
 </resources>

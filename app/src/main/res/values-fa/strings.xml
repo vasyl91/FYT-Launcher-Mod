@@ -269,10 +269,8 @@
     <string name="default_wallpapers">استفاده از تصاویر زمینه پیش‌فرض</string>
     <string name="save_day_wallpaper">ذخیره تصویر زمینه روز</string>
     <string name="save_day_wallpaper_dialog">در حال ذخیره تصویر زمینه روز</string>
-    <string name="save_day_wallpaper_summary">تصویر زمینه‌ای را که می‌خواهید در حالت روز نمایش داده شود تنظیم کنید و سپس این گزینه را لمس کنید تا ذخیره شود. در غیر این صورت از تصویر زمینه پیش‌فرض استفاده می‌شود. <b>ممکن است کمی طول بکشد – منتظر پیام تأیید بمانید!</b></string>
     <string name="save_night_wallpaper">ذخیره تصویر زمینه شب</string>
     <string name="save_night_wallpaper_dialog">در حال ذخیره تصویر زمینه شب</string>
-    <string name="save_night_wallpaper_summary">تصویر زمینه‌ای را که می‌خواهید در حالت شب نمایش داده شود تنظیم کنید و سپس این گزینه را لمس کنید تا ذخیره شود. در غیر این صورت از تصویر زمینه پیش‌فرض استفاده می‌شود. <b>ممکن است کمی طول بکشد – منتظر پیام تأیید بمانید!</b></string>
     <string name="wallpaper_set">تصویر زمینه حالت %1$s تنظیم شد!</string>
     <string name="wallpaper_not_set">مشکلی پیش آمد. تصویر زمینه حالت %1$s تنظیم نشد!</string>
     <string name="wallpaper_error">خطا، تصویر زمینه حالت %1$s تنظیم نشد:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">ستون‌ها: %1$d</string>
     <string name="workspace_grid_rows_note">صفحه‌ای که نوار افقی را نشان می‌دهد یک ردیف کمتر دارد. نواری که خودکار پنهان می‌شود ردیفی نمی‌گیرد.</string>
     <string name="workspace_grid_columns_note">صفحه‌ای که نوار عمودی را نشان می‌دهد یک ستون کمتر دارد.</string>
+    <string name="save_day_wallpaper_note">تصویر زمینه‌ای را که می‌خواهید در حالت روز نمایش داده شود تنظیم کنید و سپس این گزینه را لمس کنید تا ذخیره شود. در غیر این صورت تصویر زمینه همان‌طور که هست می‌ماند. <b>ممکن است کمی طول بکشد – منتظر پیام تأیید بمانید!</b></string>
+    <string name="save_night_wallpaper_note">تصویر زمینه‌ای را که می‌خواهید در حالت شب نمایش داده شود تنظیم کنید و سپس این گزینه را لمس کنید تا ذخیره شود. در غیر این صورت تصویر زمینه همان‌طور که هست می‌ماند. <b>ممکن است کمی طول بکشد – منتظر پیام تأیید بمانید!</b></string>
 </resources>

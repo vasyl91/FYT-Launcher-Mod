@@ -269,10 +269,8 @@
     <string name="default_wallpapers">Kasuta vaiketaustapilte</string>
     <string name="save_day_wallpaper">Salvesta päevane taustapilt</string>
     <string name="save_day_wallpaper_dialog">Päevase taustapildi salvestamine</string>
-    <string name="save_day_wallpaper_summary">Määrake taustapilt, mida soovite päevarežiimis kuvada, ja puudutage selle salvestamiseks seda eelistust. Vastasel juhul kasutatakse vaiketaustapilti. <b>See võib veidi aega võtta – oodake kinnitusteadet!</b></string>
     <string name="save_night_wallpaper">Salvesta öine taustapilt</string>
     <string name="save_night_wallpaper_dialog">Öise taustapildi salvestamine</string>
-    <string name="save_night_wallpaper_summary">Määrake taustapilt, mida soovite öörežiimis kuvada, ja puudutage selle salvestamiseks seda eelistust. Vastasel juhul kasutatakse vaiketaustapilti. <b>See võib veidi aega võtta – oodake kinnitusteadet!</b></string>
     <string name="wallpaper_set">Režiimi „%1$s” taustapilt on määratud!</string>
     <string name="wallpaper_not_set">Midagi läks valesti. Režiimi „%1$s” taustapilti ei määratud!</string>
     <string name="wallpaper_error">Viga, režiimi „%1$s” taustapilti ei määratud:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">Veerud: %1$d</string>
     <string name="workspace_grid_rows_note">Lehel, mis näitab horisontaalset riba, on üks rida vähem. Automaatselt peituv riba rida ei võta.</string>
     <string name="workspace_grid_columns_note">Lehel, mis näitab vertikaalset riba, on üks veerg vähem.</string>
+    <string name="save_day_wallpaper_note">Määrake taustapilt, mida soovite päevarežiimis kuvada, ja puudutage selle salvestamiseks seda eelistust. Vastasel juhul jääb taustapilt muutmata. <b>See võib veidi aega võtta – oodake kinnitusteadet!</b></string>
+    <string name="save_night_wallpaper_note">Määrake taustapilt, mida soovite öörežiimis kuvada, ja puudutage selle salvestamiseks seda eelistust. Vastasel juhul jääb taustapilt muutmata. <b>See võib veidi aega võtta – oodake kinnitusteadet!</b></string>
 </resources>

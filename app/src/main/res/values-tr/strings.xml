@@ -269,10 +269,8 @@
     <string name="default_wallpapers">Varsayılan duvar kâğıtlarını kullan</string>
     <string name="save_day_wallpaper">Gündüz duvar kâğıdını kaydet</string>
     <string name="save_day_wallpaper_dialog">Gündüz duvar kâğıdı kaydediliyor</string>
-    <string name="save_day_wallpaper_summary">Gündüz modunda görüntülenecek duvar kâğıdını ayarlayın, sonra kaydetmek için bu tercihe dokunun. Aksi halde varsayılan duvar kâğıdı kullanılır. <b>Biraz zaman alabilir – onay mesajını bekleyin!</b></string>
     <string name="save_night_wallpaper">Gece duvar kâğıdını kaydet</string>
     <string name="save_night_wallpaper_dialog">Gece duvar kâğıdı kaydediliyor</string>
-    <string name="save_night_wallpaper_summary">Gece modunda görüntülenecek duvar kâğıdını ayarlayın, sonra kaydetmek için bu tercihe dokunun. Aksi halde varsayılan duvar kâğıdı kullanılır. <b>Biraz zaman alabilir – onay mesajını bekleyin!</b></string>
     <string name="wallpaper_set">%1$s modu duvar kâğıdı ayarlandı!</string>
     <string name="wallpaper_not_set">Bir şeyler ters gitti. %1$s modu duvar kâğıdı ayarlanmadı!</string>
     <string name="wallpaper_error">Hata, %1$s modu duvar kâğıdı ayarlanmadı:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">Sütunlar: %1$d</string>
     <string name="workspace_grid_rows_note">Yatay çubuğu gösteren sayfada bir satır eksik olur. Otomatik gizlenen çubuk satır kaplamaz.</string>
     <string name="workspace_grid_columns_note">Dikey çubuğu gösteren sayfada bir sütun eksik olur.</string>
+    <string name="save_day_wallpaper_note">Gündüz modunda görüntülenecek duvar kâğıdını ayarlayın, sonra kaydetmek için bu tercihe dokunun. Aksi halde duvar kâğıdı olduğu gibi kalır. <b>Biraz zaman alabilir – onay mesajını bekleyin!</b></string>
+    <string name="save_night_wallpaper_note">Gece modunda görüntülenecek duvar kâğıdını ayarlayın, sonra kaydetmek için bu tercihe dokunun. Aksi halde duvar kâğıdı olduğu gibi kalır. <b>Biraz zaman alabilir – onay mesajını bekleyin!</b></string>
 </resources>

@@ -269,10 +269,8 @@
     <string name="default_wallpapers">Az alapértelmezett háttérképek használata</string>
     <string name="save_day_wallpaper">Nappali háttérkép mentése</string>
     <string name="save_day_wallpaper_dialog">Nappali háttérkép mentése folyamatban</string>
-    <string name="save_day_wallpaper_summary">Állítsa be a nappali módban megjelenítendő háttérképet, majd koppintson erre a beállításra a mentéshez. Ellenkező esetben az alapértelmezett háttérkép lesz használva. <b>Eltarthat egy ideig – várja meg a megerősítő üzenetet!</b></string>
     <string name="save_night_wallpaper">Éjszakai háttérkép mentése</string>
     <string name="save_night_wallpaper_dialog">Éjszakai háttérkép mentése folyamatban</string>
-    <string name="save_night_wallpaper_summary">Állítsa be az éjszakai módban megjelenítendő háttérképet, majd koppintson erre a beállításra a mentéshez. Ellenkező esetben az alapértelmezett háttérkép lesz használva. <b>Eltarthat egy ideig – várja meg a megerősítő üzenetet!</b></string>
     <string name="wallpaper_set">A(z) %1$s mód háttérképe beállítva!</string>
     <string name="wallpaper_not_set">Valami hiba történt. A(z) %1$s mód háttérképe nincs beállítva!</string>
     <string name="wallpaper_error">Hiba, a(z) %1$s mód háttérképe nincs beállítva:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">Oszlopok: %1$d</string>
     <string name="workspace_grid_rows_note">Azon az oldalon, amely a vízszintes sávot mutatja, eggyel kevesebb sor van. Az automatikusan elrejtőző sáv nem foglal sort.</string>
     <string name="workspace_grid_columns_note">Azon az oldalon, amely a függőleges sávot mutatja, eggyel kevesebb oszlop van.</string>
+    <string name="save_day_wallpaper_note">Állítsa be a nappali módban megjelenítendő háttérképet, majd koppintson erre a beállításra a mentéshez. Ellenkező esetben a háttérkép változatlan marad. <b>Eltarthat egy ideig – várja meg a megerősítő üzenetet!</b></string>
+    <string name="save_night_wallpaper_note">Állítsa be az éjszakai módban megjelenítendő háttérképet, majd koppintson erre a beállításra a mentéshez. Ellenkező esetben a háttérkép változatlan marad. <b>Eltarthat egy ideig – várja meg a megerősítő üzenetet!</b></string>
 </resources>

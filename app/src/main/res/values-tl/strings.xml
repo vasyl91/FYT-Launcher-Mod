@@ -269,10 +269,8 @@
     <string name="default_wallpapers">Gamitin ang mga default na wallpaper</string>
     <string name="save_day_wallpaper">I-save ang wallpaper sa araw</string>
     <string name="save_day_wallpaper_dialog">Sine-save ang wallpaper sa araw</string>
-    <string name="save_day_wallpaper_summary">Itakda ang wallpaper na gusto mong ipakita sa day mode, pagkatapos ay i-tap ang kagustuhang ito para i-save ito. Kung hindi, gagamitin ang default na wallpaper. <b>Maaaring tumagal ito nang kaunti – hintayin ang mensahe ng kumpirmasyon!</b></string>
     <string name="save_night_wallpaper">I-save ang wallpaper sa gabi</string>
     <string name="save_night_wallpaper_dialog">Sine-save ang wallpaper sa gabi</string>
-    <string name="save_night_wallpaper_summary">Itakda ang wallpaper na gusto mong ipakita sa night mode, pagkatapos ay i-tap ang kagustuhang ito para i-save ito. Kung hindi, gagamitin ang default na wallpaper. <b>Maaaring tumagal ito nang kaunti – hintayin ang mensahe ng kumpirmasyon!</b></string>
     <string name="wallpaper_set">Naitakda na ang wallpaper ng %1$s mode!</string>
     <string name="wallpaper_not_set">Nagkaproblema. Hindi naitakda ang wallpaper ng %1$s mode!</string>
     <string name="wallpaper_error">Error, hindi naitakda ang wallpaper ng %1$s mode:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">Mga column: %1$d</string>
     <string name="workspace_grid_rows_note">Ang page na nagpapakita ng pahalang na bar ay may isang row na mas kaunti. Ang bar na kusang nagtatago ay hindi kumukuha ng row.</string>
     <string name="workspace_grid_columns_note">Ang page na nagpapakita ng patayong bar ay may isang column na mas kaunti.</string>
+    <string name="save_day_wallpaper_note">Itakda ang wallpaper na gusto mong ipakita sa day mode, pagkatapos ay i-tap ang kagustuhang ito para i-save ito. Kung hindi, mananatili ang wallpaper kung ano ito. <b>Maaaring tumagal ito nang kaunti – hintayin ang mensahe ng kumpirmasyon!</b></string>
+    <string name="save_night_wallpaper_note">Itakda ang wallpaper na gusto mong ipakita sa night mode, pagkatapos ay i-tap ang kagustuhang ito para i-save ito. Kung hindi, mananatili ang wallpaper kung ano ito. <b>Maaaring tumagal ito nang kaunti – hintayin ang mensahe ng kumpirmasyon!</b></string>
 </resources>

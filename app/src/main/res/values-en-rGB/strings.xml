@@ -83,4 +83,6 @@
     <string name="workspace_grid_columns">Columns: %1$d</string>
     <string name="workspace_grid_rows_note">A page that shows the horizontal bar has one row fewer. An auto-hiding bar takes no row.</string>
     <string name="workspace_grid_columns_note">A page that shows the vertical bar has one column fewer.</string>
+    <string name="save_day_wallpaper_note">Set the wallpaper you want to display in day mode, then tap this preference to save it. Otherwise the wallpaper is left as it is. <b>It might take a little while – wait for the confirmation toast!</b></string>
+    <string name="save_night_wallpaper_note">Set the wallpaper you want to display in night mode, then tap this preference to save it. Otherwise the wallpaper is left as it is. <b>It might take a little while – wait for the confirmation toast!</b></string>
 </resources>

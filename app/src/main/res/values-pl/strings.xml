@@ -269,10 +269,8 @@
     <string name="default_wallpapers">Używaj domyślnych tapet</string>
     <string name="save_day_wallpaper">Zapisz tapetę dla trybu dziennego</string>
     <string name="save_day_wallpaper_dialog">Zapisywanie tapaty dla trybu dziennego</string>
-    <string name="save_day_wallpaper_summary">Ustaw tapetę, którą chcesz aby launcher wyświetlał dla trybu dziennego i następnie naciśnij tutaj, aby ją zapisać. W innym wypadku zostanie użyta domyślna tapeta. <b>To może chwilę potrwać, zaczekaj na okno informujące o zakończeniu operacji!</b></string>
     <string name="save_night_wallpaper">Zapisz tapetę dla trybu nocnego</string>
     <string name="save_night_wallpaper_dialog">Zapisywanie tapaty dla trybu nocnego</string>
-    <string name="save_night_wallpaper_summary">Ustaw tapetę, którą chcesz aby launcher wyświetlał dla trybu nocnego i następnie naciśnij tutaj, aby ją zapisać. W  innym wypadku zostanie użyta domyślna tapeta. <b>To może chwilę potrwać, zaczekaj na okno informujące o zakończeniu operacji!</b></string>
     <string name="wallpaper_set">Zapisano tapetę dla trybu: "%1$s mode"</string>
     <string name="wallpaper_not_set">Coś poszło nie tak, Tapeta "%1$s mode" nie została zapisana!</string>
     <string name="wallpaper_error">Błąd, Tapeta "%1$s mode" nie została zapisana:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">Kolumny: %1$d</string>
     <string name="workspace_grid_rows_note">Strona, na której widać pasek poziomy, ma o jeden wiersz mniej. Pasek ukrywany automatycznie nie zajmuje wiersza.</string>
     <string name="workspace_grid_columns_note">Strona, na której widać pasek pionowy, ma o jedną kolumnę mniej.</string>
+    <string name="save_day_wallpaper_note">Ustaw tapetę, którą chcesz aby launcher wyświetlał dla trybu dziennego i następnie naciśnij tutaj, aby ją zapisać. W innym wypadku tapeta pozostaje bez zmian. <b>To może chwilę potrwać, zaczekaj na okno informujące o zakończeniu operacji!</b></string>
+    <string name="save_night_wallpaper_note">Ustaw tapetę, którą chcesz aby launcher wyświetlał dla trybu nocnego i następnie naciśnij tutaj, aby ją zapisać. W innym wypadku tapeta pozostaje bez zmian. <b>To może chwilę potrwać, zaczekaj na okno informujące o zakończeniu operacji!</b></string>
 </resources>

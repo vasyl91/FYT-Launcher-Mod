@@ -269,10 +269,8 @@
     <string name="default_wallpapers">使用默认壁纸</string>
     <string name="save_day_wallpaper">保存日间壁纸</string>
     <string name="save_day_wallpaper_dialog">正在保存日间壁纸</string>
-    <string name="save_day_wallpaper_summary">设置您希望用于日间模式的壁纸，然后点击此选项保存，否则将使用默认壁纸。<b>可能需要一点时间，请等待确认“Toast”提示！</b></string>
     <string name="save_night_wallpaper">保存夜间壁纸</string>
     <string name="save_night_wallpaper_dialog">正在保存夜间壁纸</string>
-    <string name="save_night_wallpaper_summary">设置您希望用于夜间模式的壁纸，然后点击此选项保存，否则将使用默认壁纸。<b>可能需要一点时间，请等待确认“Toast”提示！</b></string>
     <string name="wallpaper_set">%1$s模式壁纸已设置！</string>
     <string name="wallpaper_not_set">出现问题，%1$s模式壁纸未能设置！</string>
     <string name="wallpaper_error">错误，%1$s模式壁纸未能设置：\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">列数：%1$d</string>
     <string name="workspace_grid_rows_note">显示横栏的页面会少一行。自动隐藏的横栏不占用行。</string>
     <string name="workspace_grid_columns_note">显示纵栏的页面会少一列。</string>
+    <string name="save_day_wallpaper_note">设置您希望用于日间模式的壁纸，然后点击此选项保存，否则壁纸保持不变。<b>可能需要一点时间，请等待确认“Toast”提示！</b></string>
+    <string name="save_night_wallpaper_note">设置您希望用于夜间模式的壁纸，然后点击此选项保存，否则壁纸保持不变。<b>可能需要一点时间，请等待确认“Toast”提示！</b></string>
 </resources>

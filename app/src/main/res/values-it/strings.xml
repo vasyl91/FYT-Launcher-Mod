@@ -269,10 +269,8 @@
     <string name="default_wallpapers">Usa gli sfondi predefiniti</string>
     <string name="save_day_wallpaper">Salva lo sfondo diurno</string>
     <string name="save_day_wallpaper_dialog">Salvataggio dello sfondo diurno</string>
-    <string name="save_day_wallpaper_summary">Imposta lo sfondo da mostrare in modalità giorno, poi tocca qui per salvarlo. In caso contrario verrà usato lo sfondo predefinito. <b>Potrebbe volerci un po\' – attendi il messaggio di conferma!</b></string>
     <string name="save_night_wallpaper">Salva lo sfondo notturno</string>
     <string name="save_night_wallpaper_dialog">Salvataggio dello sfondo notturno</string>
-    <string name="save_night_wallpaper_summary">Imposta lo sfondo da mostrare in modalità notte, poi tocca qui per salvarlo. In caso contrario verrà usato lo sfondo predefinito. <b>Potrebbe volerci un po\' – attendi il messaggio di conferma!</b></string>
     <string name="wallpaper_set">Lo sfondo della modalità %1$s è stato impostato!</string>
     <string name="wallpaper_not_set">Qualcosa è andato storto. Lo sfondo della modalità %1$s non è stato impostato!</string>
     <string name="wallpaper_error">Errore, lo sfondo della modalità %1$s non è stato impostato:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">Colonne: %1$d</string>
     <string name="workspace_grid_rows_note">Una pagina che mostra la barra orizzontale ha una riga in meno. Una barra a scomparsa automatica non occupa alcuna riga.</string>
     <string name="workspace_grid_columns_note">Una pagina che mostra la barra verticale ha una colonna in meno.</string>
+    <string name="save_day_wallpaper_note">Imposta lo sfondo da mostrare in modalità giorno, poi tocca qui per salvarlo. In caso contrario lo sfondo resta com\'è. <b>Potrebbe volerci un po\' – attendi il messaggio di conferma!</b></string>
+    <string name="save_night_wallpaper_note">Imposta lo sfondo da mostrare in modalità notte, poi tocca qui per salvarlo. In caso contrario lo sfondo resta com\'è. <b>Potrebbe volerci un po\' – attendi il messaggio di conferma!</b></string>
 </resources>

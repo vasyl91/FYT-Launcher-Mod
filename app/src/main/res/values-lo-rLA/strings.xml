@@ -269,10 +269,8 @@
     <string name="default_wallpapers">ໃຊ້ພາບພື້ນຫຼັງເລີ່ມຕົ້ນ</string>
     <string name="save_day_wallpaper">ບັນທຶກພາບພື້ນຫຼັງກາງເວັນ</string>
     <string name="save_day_wallpaper_dialog">ກຳລັງບັນທຶກພາບພື້ນຫຼັງກາງເວັນ</string>
-    <string name="save_day_wallpaper_summary">ຕັ້ງພາບພື້ນຫຼັງທີ່ທ່ານຕ້ອງການສະແດງໃນໂໝດກາງເວັນ ແລ້ວແຕະການຕັ້ງຄ່ານີ້ເພື່ອບັນທຶກ. ຖ້າບໍ່ດັ່ງນັ້ນ ຈະໃຊ້ພາບພື້ນຫຼັງເລີ່ມຕົ້ນ. <b>ອາດໃຊ້ເວລາຈັກໜ້ອຍ – ລໍຖ້າຂໍ້ຄວາມຢືນຢັນ!</b></string>
     <string name="save_night_wallpaper">ບັນທຶກພາບພື້ນຫຼັງກາງຄືນ</string>
     <string name="save_night_wallpaper_dialog">ກຳລັງບັນທຶກພາບພື້ນຫຼັງກາງຄືນ</string>
-    <string name="save_night_wallpaper_summary">ຕັ້ງພາບພື້ນຫຼັງທີ່ທ່ານຕ້ອງການສະແດງໃນໂໝດກາງຄືນ ແລ້ວແຕະການຕັ້ງຄ່ານີ້ເພື່ອບັນທຶກ. ຖ້າບໍ່ດັ່ງນັ້ນ ຈະໃຊ້ພາບພື້ນຫຼັງເລີ່ມຕົ້ນ. <b>ອາດໃຊ້ເວລາຈັກໜ້ອຍ – ລໍຖ້າຂໍ້ຄວາມຢືນຢັນ!</b></string>
     <string name="wallpaper_set">ຕັ້ງພາບພື້ນຫຼັງໂໝດ %1$s ແລ້ວ!</string>
     <string name="wallpaper_not_set">ມີບາງຢ່າງຜິດພາດ. ພາບພື້ນຫຼັງໂໝດ %1$s ບໍ່ໄດ້ຖືກຕັ້ງ!</string>
     <string name="wallpaper_error">ຂໍ້ຜິດພາດ, ພາບພື້ນຫຼັງໂໝດ %1$s ບໍ່ໄດ້ຖືກຕັ້ງ:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">ຖັນ: %1$d</string>
     <string name="workspace_grid_rows_note">ໜ້າທີ່ສະແດງແຖບແນວນອນມີແຖວໜ້ອຍລົງໜຶ່ງແຖວ. ແຖບທີ່ເຊື່ອງອັດຕະໂນມັດບໍ່ໃຊ້ແຖວ.</string>
     <string name="workspace_grid_columns_note">ໜ້າທີ່ສະແດງແຖບແນວຕັ້ງມີຖັນໜ້ອຍລົງໜຶ່ງຖັນ.</string>
+    <string name="save_day_wallpaper_note">ຕັ້ງພາບພື້ນຫຼັງທີ່ທ່ານຕ້ອງການສະແດງໃນໂໝດກາງເວັນ ແລ້ວແຕະການຕັ້ງຄ່ານີ້ເພື່ອບັນທຶກ. ຖ້າບໍ່ດັ່ງນັ້ນ ພາບພື້ນຫຼັງຈະຄືເກົ່າ. <b>ອາດໃຊ້ເວລາຈັກໜ້ອຍ – ລໍຖ້າຂໍ້ຄວາມຢືນຢັນ!</b></string>
+    <string name="save_night_wallpaper_note">ຕັ້ງພາບພື້ນຫຼັງທີ່ທ່ານຕ້ອງການສະແດງໃນໂໝດກາງຄືນ ແລ້ວແຕະການຕັ້ງຄ່ານີ້ເພື່ອບັນທຶກ. ຖ້າບໍ່ດັ່ງນັ້ນ ພາບພື້ນຫຼັງຈະຄືເກົ່າ. <b>ອາດໃຊ້ເວລາຈັກໜ້ອຍ – ລໍຖ້າຂໍ້ຄວາມຢືນຢັນ!</b></string>
 </resources>

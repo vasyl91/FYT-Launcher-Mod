@@ -269,10 +269,8 @@
     <string name="default_wallpapers">Gebruik die verstekagtergronde</string>
     <string name="save_day_wallpaper">Stoor die dagagtergrond</string>
     <string name="save_day_wallpaper_dialog">Stoor tans die dagagtergrond</string>
-    <string name="save_day_wallpaper_summary">Stel die agtergrond wat jy in dagmodus wil wys, en tik dan hierdie voorkeur om dit te stoor. Anders sal die verstekagtergrond gebruik word. <b>Dit kan \'n rukkie neem – wag vir die bevestigingsboodskap!</b></string>
     <string name="save_night_wallpaper">Stoor die nagagtergrond</string>
     <string name="save_night_wallpaper_dialog">Stoor tans die nagagtergrond</string>
-    <string name="save_night_wallpaper_summary">Stel die agtergrond wat jy in nagmodus wil wys, en tik dan hierdie voorkeur om dit te stoor. Anders sal die verstekagtergrond gebruik word. <b>Dit kan \'n rukkie neem – wag vir die bevestigingsboodskap!</b></string>
     <string name="wallpaper_set">Agtergrond vir %1$s-modus is gestel!</string>
     <string name="wallpaper_not_set">Iets het skeefgeloop. Agtergrond vir %1$s-modus is nie gestel nie!</string>
     <string name="wallpaper_error">Fout, agtergrond vir %1$s-modus is nie gestel nie:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">Kolomme: %1$d</string>
     <string name="workspace_grid_rows_note">’n Bladsy wat die horisontale balk wys, het een ry minder. ’n Balk wat homself versteek, neem geen ry nie.</string>
     <string name="workspace_grid_columns_note">’n Bladsy wat die vertikale balk wys, het een kolom minder.</string>
+    <string name="save_day_wallpaper_note">Stel die agtergrond wat jy in dagmodus wil wys, en tik dan hierdie voorkeur om dit te stoor. Anders bly die agtergrond soos dit is. <b>Dit kan \'n rukkie neem – wag vir die bevestigingsboodskap!</b></string>
+    <string name="save_night_wallpaper_note">Stel die agtergrond wat jy in nagmodus wil wys, en tik dan hierdie voorkeur om dit te stoor. Anders bly die agtergrond soos dit is. <b>Dit kan \'n rukkie neem – wag vir die bevestigingsboodskap!</b></string>
 </resources>

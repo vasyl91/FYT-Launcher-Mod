@@ -269,10 +269,8 @@
     <string name="default_wallpapers">Käytä oletustaustakuvia</string>
     <string name="save_day_wallpaper">Tallenna päivän taustakuva</string>
     <string name="save_day_wallpaper_dialog">Tallennetaan päivän taustakuvaa</string>
-    <string name="save_day_wallpaper_summary">Aseta taustakuva, joka näytetään päivätilassa, ja tallenna se napauttamalla tätä asetusta. Muuten käytetään oletustaustakuvaa. <b>Tämä voi kestää hetken – odota vahvistusviestiä!</b></string>
     <string name="save_night_wallpaper">Tallenna yön taustakuva</string>
     <string name="save_night_wallpaper_dialog">Tallennetaan yön taustakuvaa</string>
-    <string name="save_night_wallpaper_summary">Aseta taustakuva, joka näytetään yötilassa, ja tallenna se napauttamalla tätä asetusta. Muuten käytetään oletustaustakuvaa. <b>Tämä voi kestää hetken – odota vahvistusviestiä!</b></string>
     <string name="wallpaper_set">Tilan %1$s taustakuva on asetettu!</string>
     <string name="wallpaper_not_set">Jokin meni pieleen. Tilan %1$s taustakuvaa ei asetettu!</string>
     <string name="wallpaper_error">Virhe, tilan %1$s taustakuvaa ei asetettu:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">Sarakkeet: %1$d</string>
     <string name="workspace_grid_rows_note">Sivulla, jolla vaakapalkki näkyy, on yksi rivi vähemmän. Automaattisesti piiloutuva palkki ei vie riviä.</string>
     <string name="workspace_grid_columns_note">Sivulla, jolla pystypalkki näkyy, on yksi sarake vähemmän.</string>
+    <string name="save_day_wallpaper_note">Aseta taustakuva, joka näytetään päivätilassa, ja tallenna se napauttamalla tätä asetusta. Muuten taustakuva jää ennalleen. <b>Tämä voi kestää hetken – odota vahvistusviestiä!</b></string>
+    <string name="save_night_wallpaper_note">Aseta taustakuva, joka näytetään yötilassa, ja tallenna se napauttamalla tätä asetusta. Muuten taustakuva jää ennalleen. <b>Tämä voi kestää hetken – odota vahvistusviestiä!</b></string>
 </resources>

@@ -297,11 +297,26 @@ public class SunTask extends AsyncTask<String, Void, String> {
         String name = allowSetDayWallpaper() ? "Day" : "Night";
         File image = new File(new File(this.mContext.getFilesDir(), "wallpaper_img"), name + ".webp");
 
-        // Use the user's file only if it actually exists and the default has not been forced.
-        if (isFileValid(image)) {
-            setWallpaperFromFile(image, name, 0, INITIAL_DELAY_MS);
-        } else {
-            setDefaultWallpaper(name);
+        // The built-in picture, the one saved for this mode, or no change at all (NightWallpaperRule)
+        applyWallpaperChoice(name, image, 0, INITIAL_DELAY_MS, "no picture saved");
+    }
+
+    /**
+     * Sets what NightWallpaperRule says for the mode. With the defaults off and no usable picture for the mode
+     * the wallpaper is left as it is: the launcher does not put its built-in picture in place of the user's.
+     */
+    private void applyWallpaperChoice(String name, File image, int retryCount, long delayMs, String why) {
+        boolean hasPicture = image.exists() && image.length() > 0;
+        switch (NightWallpaperRule.decide(defaultWallpapers, hasPicture)) {
+            case DEFAULT:
+                setDefaultWallpaper(name);
+                break;
+            case FILE:
+                setWallpaperFromFile(image, name, retryCount, delayMs);
+                break;
+            default:
+                Log.i(TAG, "Wallpaper left as it is for " + name + " (" + why + ")");
+                break;
         }
     }
 
@@ -310,10 +325,14 @@ public class SunTask extends AsyncTask<String, Void, String> {
             synchronized (LOCK) {
                 if (isCancelled()) return;
 
-                // The file may have been removed, or the user may have reverted to the default — fallback.
+                // The file may have been removed, or the user may have gone back to the defaults, since
+                // this was scheduled: the rule is asked again
                 if (!isFileValid(imageFile)) {
-                    Log.d(TAG, "No custom wallpaper for " + name + ", using default");
-                    setDefaultWallpaper(name);
+                    if (NightWallpaperRule.decide(defaultWallpapers, false) == NightWallpaperRule.Source.DEFAULT) {
+                        setDefaultWallpaper(name);
+                    } else {
+                        Log.i(TAG, "Wallpaper left as it is for " + name + " (its picture is gone)");
+                    }
                     return;
                 }
 
@@ -354,8 +373,8 @@ public class SunTask extends AsyncTask<String, Void, String> {
             Log.w(TAG, "Retry " + (retryCount + 1) + " for " + name + ": " + reason);
             setWallpaperFromFile(imageFile, name, retryCount + 1, nextDelay);
         } else {
-            Log.e(TAG, "Giving up on custom " + name + " (" + reason + "), falling back to default");
-            setDefaultWallpaper(name);
+            // A saved picture that cannot be used is no reason to put the built-in one in the user's place
+            Log.e(TAG, "Giving up on the saved picture for " + name + " (" + reason + "): the wallpaper is left as it is");
         }
     }
 

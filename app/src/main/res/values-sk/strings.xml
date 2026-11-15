@@ -269,10 +269,8 @@
     <string name="default_wallpapers">Použiť predvolené tapety</string>
     <string name="save_day_wallpaper">Uložiť dennú tapetu</string>
     <string name="save_day_wallpaper_dialog">Ukladá sa denná tapeta</string>
-    <string name="save_day_wallpaper_summary">Nastavte tapetu, ktorá sa má zobraziť v dennom režime, a potom ju uložte klepnutím na túto položku. Inak sa použije predvolená tapeta. <b>Môže to chvíľu trvať – počkajte na potvrdzujúcu správu!</b></string>
     <string name="save_night_wallpaper">Uložiť nočnú tapetu</string>
     <string name="save_night_wallpaper_dialog">Ukladá sa nočná tapeta</string>
-    <string name="save_night_wallpaper_summary">Nastavte tapetu, ktorá sa má zobraziť v nočnom režime, a potom ju uložte klepnutím na túto položku. Inak sa použije predvolená tapeta. <b>Môže to chvíľu trvať – počkajte na potvrdzujúcu správu!</b></string>
     <string name="wallpaper_set">Tapeta režimu %1$s bola nastavená!</string>
     <string name="wallpaper_not_set">Niečo sa pokazilo. Tapeta režimu %1$s nebola nastavená!</string>
     <string name="wallpaper_error">Chyba, tapeta režimu %1$s nebola nastavená:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">Stĺpce: %1$d</string>
     <string name="workspace_grid_rows_note">Stránka, ktorá zobrazuje vodorovnú lištu, má o jeden riadok menej. Automaticky skrývaná lišta nezaberá žiadny riadok.</string>
     <string name="workspace_grid_columns_note">Stránka, ktorá zobrazuje zvislú lištu, má o jeden stĺpec menej.</string>
+    <string name="save_day_wallpaper_note">Nastavte tapetu, ktorá sa má zobraziť v dennom režime, a potom ju uložte klepnutím na túto položku. Inak zostane tapeta bez zmeny. <b>Môže to chvíľu trvať – počkajte na potvrdzujúcu správu!</b></string>
+    <string name="save_night_wallpaper_note">Nastavte tapetu, ktorá sa má zobraziť v nočnom režime, a potom ju uložte klepnutím na túto položku. Inak zostane tapeta bez zmeny. <b>Môže to chvíľu trvať – počkajte na potvrdzujúcu správu!</b></string>
 </resources>

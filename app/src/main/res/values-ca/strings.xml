@@ -269,10 +269,8 @@
     <string name="default_wallpapers">Utilitza els fons de pantalla predeterminats</string>
     <string name="save_day_wallpaper">Desa el fons de pantalla de dia</string>
     <string name="save_day_wallpaper_dialog">S\'està desant el fons de pantalla de dia</string>
-    <string name="save_day_wallpaper_summary">Defineix el fons de pantalla que vols mostrar en mode dia i toca aquesta preferència per desar-lo. Si no, s\'utilitzarà el fons de pantalla predeterminat. <b>Pot trigar una estona: espera el missatge de confirmació!</b></string>
     <string name="save_night_wallpaper">Desa el fons de pantalla de nit</string>
     <string name="save_night_wallpaper_dialog">S\'està desant el fons de pantalla de nit</string>
-    <string name="save_night_wallpaper_summary">Defineix el fons de pantalla que vols mostrar en mode nit i toca aquesta preferència per desar-lo. Si no, s\'utilitzarà el fons de pantalla predeterminat. <b>Pot trigar una estona: espera el missatge de confirmació!</b></string>
     <string name="wallpaper_set">S\'ha definit el fons de pantalla del mode %1$s!</string>
     <string name="wallpaper_not_set">Alguna cosa ha anat malament. No s\'ha definit el fons de pantalla del mode %1$s!</string>
     <string name="wallpaper_error">Error, no s\'ha definit el fons de pantalla del mode %1$s:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">Columnes: %1$d</string>
     <string name="workspace_grid_rows_note">Una pàgina que mostra la barra horitzontal té una fila menys. Una barra que s\'amaga automàticament no ocupa cap fila.</string>
     <string name="workspace_grid_columns_note">Una pàgina que mostra la barra vertical té una columna menys.</string>
+    <string name="save_day_wallpaper_note">Defineix el fons de pantalla que vols mostrar en mode dia i toca aquesta preferència per desar-lo. Si no, el fons de pantalla es deixa tal com està. <b>Pot trigar una estona: espera el missatge de confirmació!</b></string>
+    <string name="save_night_wallpaper_note">Defineix el fons de pantalla que vols mostrar en mode nit i toca aquesta preferència per desar-lo. Si no, el fons de pantalla es deixa tal com està. <b>Pot trigar una estona: espera el missatge de confirmació!</b></string>
 </resources>

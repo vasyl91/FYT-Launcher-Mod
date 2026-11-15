@@ -269,10 +269,8 @@
     <string name="default_wallpapers">डिफ़ॉल्ट वॉलपेपर इस्तेमाल करें</string>
     <string name="save_day_wallpaper">दिन का वॉलपेपर सहेजें</string>
     <string name="save_day_wallpaper_dialog">दिन का वॉलपेपर सहेजा जा रहा है</string>
-    <string name="save_day_wallpaper_summary">वह वॉलपेपर सेट करें जिसे आप दिन मोड में दिखाना चाहते हैं, फिर उसे सहेजने के लिए इस विकल्प पर टैप करें। अन्यथा डिफ़ॉल्ट वॉलपेपर इस्तेमाल होगा। <b>इसमें थोड़ा समय लग सकता है – पुष्टि संदेश की प्रतीक्षा करें!</b></string>
     <string name="save_night_wallpaper">रात का वॉलपेपर सहेजें</string>
     <string name="save_night_wallpaper_dialog">रात का वॉलपेपर सहेजा जा रहा है</string>
-    <string name="save_night_wallpaper_summary">वह वॉलपेपर सेट करें जिसे आप रात मोड में दिखाना चाहते हैं, फिर उसे सहेजने के लिए इस विकल्प पर टैप करें। अन्यथा डिफ़ॉल्ट वॉलपेपर इस्तेमाल होगा। <b>इसमें थोड़ा समय लग सकता है – पुष्टि संदेश की प्रतीक्षा करें!</b></string>
     <string name="wallpaper_set">\"%1$s\" मोड का वॉलपेपर सेट हो गया!</string>
     <string name="wallpaper_not_set">कुछ गड़बड़ हो गई। \"%1$s\" मोड का वॉलपेपर सेट नहीं हुआ!</string>
     <string name="wallpaper_error">त्रुटि, \"%1$s\" मोड का वॉलपेपर सेट नहीं हुआ:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">कॉलम: %1$d</string>
     <string name="workspace_grid_rows_note">जिस पेज पर क्षैतिज बार दिखता है, उसमें एक पंक्ति कम होती है। अपने-आप छिपने वाला बार कोई पंक्ति नहीं लेता।</string>
     <string name="workspace_grid_columns_note">जिस पेज पर लंबवत बार दिखता है, उसमें एक कॉलम कम होता है।</string>
+    <string name="save_day_wallpaper_note">वह वॉलपेपर सेट करें जिसे आप दिन मोड में दिखाना चाहते हैं, फिर उसे सहेजने के लिए इस विकल्प पर टैप करें। अन्यथा वॉलपेपर जैसा है वैसा ही रहेगा। <b>इसमें थोड़ा समय लग सकता है – पुष्टि संदेश की प्रतीक्षा करें!</b></string>
+    <string name="save_night_wallpaper_note">वह वॉलपेपर सेट करें जिसे आप रात मोड में दिखाना चाहते हैं, फिर उसे सहेजने के लिए इस विकल्प पर टैप करें। अन्यथा वॉलपेपर जैसा है वैसा ही रहेगा। <b>इसमें थोड़ा समय लग सकता है – पुष्टि संदेश की प्रतीक्षा करें!</b></string>
 </resources>

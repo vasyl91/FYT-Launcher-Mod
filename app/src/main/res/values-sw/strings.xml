@@ -269,10 +269,8 @@
     <string name="default_wallpapers">Tumia mandhari chaguomsingi</string>
     <string name="save_day_wallpaper">Hifadhi mandhari ya mchana</string>
     <string name="save_day_wallpaper_dialog">Inahifadhi mandhari ya mchana</string>
-    <string name="save_day_wallpaper_summary">Weka mandhari unayotaka kuonyesha katika hali ya mchana, kisha gusa mapendeleo haya ili kuihifadhi. Vinginevyo mandhari chaguomsingi itatumika. <b>Inaweza kuchukua muda kidogo – subiri ujumbe wa uthibitisho!</b></string>
     <string name="save_night_wallpaper">Hifadhi mandhari ya usiku</string>
     <string name="save_night_wallpaper_dialog">Inahifadhi mandhari ya usiku</string>
-    <string name="save_night_wallpaper_summary">Weka mandhari unayotaka kuonyesha katika hali ya usiku, kisha gusa mapendeleo haya ili kuihifadhi. Vinginevyo mandhari chaguomsingi itatumika. <b>Inaweza kuchukua muda kidogo – subiri ujumbe wa uthibitisho!</b></string>
     <string name="wallpaper_set">Mandhari ya hali ya %1$s imewekwa!</string>
     <string name="wallpaper_not_set">Hitilafu imetokea. Mandhari ya hali ya %1$s haijawekwa!</string>
     <string name="wallpaper_error">Hitilafu, mandhari ya hali ya %1$s haijawekwa:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">Safu wima: %1$d</string>
     <string name="workspace_grid_rows_note">Ukurasa unaoonyesha upau wa mlalo una safu mlalo moja pungufu. Upau unaojificha wenyewe hauchukui safu.</string>
     <string name="workspace_grid_columns_note">Ukurasa unaoonyesha upau wa wima una safu wima moja pungufu.</string>
+    <string name="save_day_wallpaper_note">Weka mandhari unayotaka kuonyesha katika hali ya mchana, kisha gusa mapendeleo haya ili kuihifadhi. Vinginevyo mandhari hubaki kama ilivyo. <b>Inaweza kuchukua muda kidogo – subiri ujumbe wa uthibitisho!</b></string>
+    <string name="save_night_wallpaper_note">Weka mandhari unayotaka kuonyesha katika hali ya usiku, kisha gusa mapendeleo haya ili kuihifadhi. Vinginevyo mandhari hubaki kama ilivyo. <b>Inaweza kuchukua muda kidogo – subiri ujumbe wa uthibitisho!</b></string>
 </resources>

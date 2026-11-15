@@ -269,10 +269,8 @@
     <string name="default_wallpapers">Použít výchozí tapety</string>
     <string name="save_day_wallpaper">Uložit denní tapetu</string>
     <string name="save_day_wallpaper_dialog">Ukládání denní tapety</string>
-    <string name="save_day_wallpaper_summary">Nastavte tapetu, která se má zobrazit v denním režimu, a poté ji uložte klepnutím na tuto položku. Jinak bude použita výchozí tapeta. <b>Může to chvíli trvat – počkejte na potvrzující zprávu!</b></string>
     <string name="save_night_wallpaper">Uložit noční tapetu</string>
     <string name="save_night_wallpaper_dialog">Ukládání noční tapety</string>
-    <string name="save_night_wallpaper_summary">Nastavte tapetu, která se má zobrazit v nočním režimu, a poté ji uložte klepnutím na tuto položku. Jinak bude použita výchozí tapeta. <b>Může to chvíli trvat – počkejte na potvrzující zprávu!</b></string>
     <string name="wallpaper_set">Tapeta režimu %1$s byla nastavena!</string>
     <string name="wallpaper_not_set">Něco se pokazilo. Tapeta režimu %1$s nebyla nastavena!</string>
     <string name="wallpaper_error">Chyba, tapeta režimu %1$s nebyla nastavena:\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">Sloupce: %1$d</string>
     <string name="workspace_grid_rows_note">Stránka, která zobrazuje vodorovnou lištu, má o jeden řádek méně. Automaticky skrývaná lišta žádný řádek nezabírá.</string>
     <string name="workspace_grid_columns_note">Stránka, která zobrazuje svislou lištu, má o jeden sloupec méně.</string>
+    <string name="save_day_wallpaper_note">Nastavte tapetu, která se má zobrazit v denním režimu, a poté ji uložte klepnutím na tuto položku. Jinak zůstane tapeta beze změny. <b>Může to chvíli trvat – počkejte na potvrzující zprávu!</b></string>
+    <string name="save_night_wallpaper_note">Nastavte tapetu, která se má zobrazit v nočním režimu, a poté ji uložte klepnutím na tuto položku. Jinak zůstane tapeta beze změny. <b>Může to chvíli trvat – počkejte na potvrzující zprávu!</b></string>
 </resources>

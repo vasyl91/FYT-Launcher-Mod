@@ -269,10 +269,8 @@
     <string name="default_wallpapers">使用預設桌布</string>
     <string name="save_day_wallpaper">儲存日間桌布</string>
     <string name="save_day_wallpaper_dialog">正在儲存日間桌布</string>
-    <string name="save_day_wallpaper_summary">設定您希望用於日間模式的桌布，然後點選此選項儲存，否則將使用預設桌布。<b>可能需要一點時間，請等待確認「Toast」提示！</b></string>
     <string name="save_night_wallpaper">儲存夜間桌布</string>
     <string name="save_night_wallpaper_dialog">正在儲存夜間桌布</string>
-    <string name="save_night_wallpaper_summary">設定您希望用於夜間模式的桌布，然後點選此選項儲存，否則將使用預設桌布。<b>可能需要一點時間，請等待確認「Toast」提示！</b></string>
     <string name="wallpaper_set">%1$s模式桌布已設定！</string>
     <string name="wallpaper_not_set">出現問題，%1$s模式桌布未能設定！</string>
     <string name="wallpaper_error">錯誤，%1$s模式桌布未能設定：\u0020</string>
@@ -548,4 +546,6 @@
     <string name="workspace_grid_columns">欄數：%1$d</string>
     <string name="workspace_grid_rows_note">顯示橫欄的頁面會少一列。自動隱藏的橫欄不佔用任何一列。</string>
     <string name="workspace_grid_columns_note">顯示縱欄的頁面會少一欄。</string>
+    <string name="save_day_wallpaper_note">設定您希望用於日間模式的桌布，然後點選此選項儲存，否則桌布維持不變。<b>可能需要一點時間，請等待確認「Toast」提示！</b></string>
+    <string name="save_night_wallpaper_note">設定您希望用於夜間模式的桌布，然後點選此選項儲存，否則桌布維持不變。<b>可能需要一點時間，請等待確認「Toast」提示！</b></string>
 </resources>
