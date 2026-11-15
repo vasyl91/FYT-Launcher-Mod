@@ -3181,6 +3181,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
         super.onDestroy();
         mHandler.removeCallbacks(mStartWidgetSortRunnable);
+        // This activity's worker thread ends with it: what was handed to it still runs, nothing new is
+        // (the only user is onStart(), which does not come after this)
+        if (bg instanceof java.util.concurrent.ExecutorService) {
+            ((java.util.concurrent.ExecutorService) bg).shutdown();
+        }
         Log.d(TAG, "---->>> onDestroy");
         // Why a destroy that is a recreation: if it still happens after uiMode was declared, the
         // next capture names the change (assetsPaths would be an overlay, which cannot be declared).
