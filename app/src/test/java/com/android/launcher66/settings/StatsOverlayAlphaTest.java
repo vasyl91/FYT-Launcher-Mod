@@ -117,4 +117,15 @@ class StatsOverlayAlphaTest {
         assertFalse(StatsOverlayAlpha.needsRaise(true, true, 0.8f));
         assertFalse(StatsOverlayAlpha.needsRaise(false, false, 0.8f));
     }
+
+    @Test
+    void aWindowCutUnderALowerLimitIsLaidOutAgainOnceTheLimitIsOne() {
+        // After a long sleep with Shizuku: added under 0.8, the raise taken up by the system only later
+        assertTrue(StatsOverlayAlpha.needsRelayout(true, false, 0.8f, 1f));
+        // Not yet 1, already laid out at 1, a trusted overlay, or no window: nothing to do
+        assertFalse(StatsOverlayAlpha.needsRelayout(true, false, 0.8f, 0.8f));
+        assertFalse(StatsOverlayAlpha.needsRelayout(true, false, 1f, 1f));
+        assertFalse(StatsOverlayAlpha.needsRelayout(true, true, 0.8f, 1f));
+        assertFalse(StatsOverlayAlpha.needsRelayout(false, false, 0.8f, 1f));
+    }
 }

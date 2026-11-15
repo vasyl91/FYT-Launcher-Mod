@@ -32,6 +32,15 @@ import java.util.concurrent.TimeUnit;
  * Shizuku or WRITE_SECURE_SETTINGS the limit is set to 1 for as long as the window is shown, and
  * put back after it. The touches pass in all cases (the flags and the alpha of the window are
  * left as they are).
+ *
+ * <p>The system cuts the alpha when the window is added or laid out, with the limit it knows then.
+ * A limit that reaches 1 later does nothing to a window that lies still; it has to be laid out again.
+ * The rule ({@link #needsRelayout}): whenever the limit is 1 and the window was last added or laid out
+ * under a lower one, it is laid out again once. It is looked at with every pass over the limit - when the
+ * window is shown, when the host connects, when the setting changes, every minute, and a few times a
+ * moment after a raise, because the system takes up the written value only a while after the write (after
+ * a long sleep, with Shizuku, more than the second a raise waits for it). Before this, a raise whose value
+ * the system took up late left the window see-through until it moved.
  */
 public final class StatsOverlayAlpha {
     private static final String TAG = "StatsOverlayAlpha";
@@ -76,6 +85,15 @@ public final class StatsOverlayAlpha {
         return windowShown && !trustedApplied && currentLimit < 1f;
     }
 
+    /**
+     * The window is shown, not a trusted overlay, was added or last laid out while the limit was below 1,
+     * and the limit is 1 now: laid out again, it takes its full alpha.
+     */
+    static boolean needsRelayout(boolean windowShown, boolean trustedApplied, float limitWhenLaidOut,
+                                 float limitNow) {
+        return windowShown && !trustedApplied && limitWhenLaidOut < 1f && limitNow >= 1f;
+    }
+
     static LimitAction limitAction(boolean windowShown, boolean raisedByUs, String currentValue) {
         boolean full = parseLimit(currentValue) >= 1f;
         if (windowShown) return full ? LimitAction.NOTHING : LimitAction.RAISE;
@@ -111,6 +129,12 @@ public final class StatsOverlayAlpha {
     private static final long CHECK_INTERVAL_MS = 60_000L;
     /** Main thread only. */
     private static ContentObserver sLimitObserver;
+    /** The limit the system knew when the window was added or last laid out by us. */
+    private static volatile float sLimitWhenLaidOut = 1f;
+    /** How many looks are still due a moment after a raise the system had not taken up yet. */
+    private static volatile int sLateLooks;
+    private static final int LATE_LOOKS = 5;
+    private static final long LATE_LOOK_MS = 3_000L;
 
     private static final class Tasks {
         static final Runnable HIDE_TASK = () -> {
@@ -129,6 +153,11 @@ public final class StatsOverlayAlpha {
                 submit();
                 MainHolder.MAIN.postDelayed(this, CHECK_INTERVAL_MS);
             }
+        };
+
+        /** Main thread: one more look a moment after a raise (see LATE_LOOKS). */
+        static final Runnable LATE_LOOK_TASK = () -> {
+            if (desiredShown) submit();
         };
 
         static final WindowHostVdClient.Listener HOST_LISTENER = available -> {
@@ -166,6 +195,10 @@ public final class StatsOverlayAlpha {
         sOnRaised = onRaised;
         MainHolder.MAIN.removeCallbacks(Tasks.HIDE_TASK);
         DEBOUNCE.onShown(SystemClock.uptimeMillis());
+        // The limit this addView was cut with (a binder call, as in applyBeforeAdd(), no I/O)
+        sLimitWhenLaidOut = Build.VERSION.SDK_INT >= 31 ? currentLimit(context) : 1f;
+        // Cut: looked at again a few times in the next seconds, also when the setting already says 1
+        sLateLooks = sLimitWhenLaidOut < 1f ? LATE_LOOKS : 0;
         desiredShown = true;
         addHostListener();
         startWatching(context.getApplicationContext());
@@ -202,7 +235,9 @@ public final class StatsOverlayAlpha {
                 @Override
                 public void onChange(boolean selfChange) {
                     Context c = sApp;
-                    if (c != null && needsRaise(desiredShown, trustedApplied, currentLimit(c))) {
+                    // Lowered by someone: raised again; reached 1: the window laid out (both in sync())
+                    if (c != null && (needsRaise(desiredShown, trustedApplied, currentLimit(c))
+                            || sLimitWhenLaidOut < 1f)) {
                         submit();
                     }
                 }
@@ -222,6 +257,8 @@ public final class StatsOverlayAlpha {
     /** Main thread. The window is gone: nothing to keep at full alpha. */
     private static void stopWatching() {
         MainHolder.MAIN.removeCallbacks(Tasks.CHECK_TASK);
+        MainHolder.MAIN.removeCallbacks(Tasks.LATE_LOOK_TASK);
+        sLateLooks = 0;
         ContentObserver observer = sLimitObserver;
         sLimitObserver = null;
         Context app = sApp;
@@ -254,6 +291,7 @@ public final class StatsOverlayAlpha {
         if (app == null) return;
         try {
             boolean shown = desiredShown;
+            relayoutIfLimitReached(app, shown);
             ContentResolver cr = app.getContentResolver();
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(app);
             boolean raised = prefs.getBoolean(Keys.STATS_OBSCURING_RAISED, false);
@@ -296,8 +334,14 @@ public final class StatsOverlayAlpha {
                 }
                 Log.i(TAG, "RAISE: route " + write + ", " + current + " -> " + after
                         + ", original " + (raised ? "kept" : current) + ", result " + result);
-                final Runnable onRaised = sOnRaised;
-                if (after >= 1f && onRaised != null && desiredShown) MainHolder.MAIN.post(onRaised);
+                if (after >= 1f) {
+                    relayoutIfLimitReached(app, desiredShown);
+                } else if (result != null && desiredShown) {
+                    // Written, not taken up yet: looked at again in a moment, the window laid out then
+                    sLateLooks = LATE_LOOKS;
+                    MainHolder.MAIN.removeCallbacks(Tasks.LATE_LOOK_TASK);
+                    MainHolder.MAIN.postDelayed(Tasks.LATE_LOOK_TASK, LATE_LOOK_MS);
+                }
             } else {   // RESTORE
                 if (write == Route.NOT_NEEDED || write == Route.UNAVAILABLE) {
                     Log.i(TAG, "RESTORE: route " + write + ", the limit stays " + current
@@ -314,6 +358,29 @@ public final class StatsOverlayAlpha {
             }
         } catch (Throwable t) {
             Log.w(TAG, "task failed", t);
+        }
+    }
+
+    /**
+     * On the executor: lays the window out again when the limit has reached 1 since it was last laid out
+     * under a lower one (needsRelayout); otherwise, while a raise waits to be taken up, the next late look.
+     */
+    private static void relayoutIfLimitReached(Context app, boolean shown) {
+        if (!shown || trustedApplied || sLimitWhenLaidOut >= 1f) {
+            return;
+        }
+        float now = currentLimit(app);
+        final Runnable onRaised = sOnRaised;
+        if (needsRelayout(shown, trustedApplied, sLimitWhenLaidOut, now) && onRaised != null) {
+            Log.i(TAG, "the limit is " + now + ", the window was laid out under " + sLimitWhenLaidOut
+                    + ": laid out again for its full alpha");
+            sLimitWhenLaidOut = now;
+            sLateLooks = 0;
+            MainHolder.MAIN.post(onRaised);
+        } else if (sLateLooks > 0) {
+            sLateLooks--;
+            MainHolder.MAIN.removeCallbacks(Tasks.LATE_LOOK_TASK);
+            MainHolder.MAIN.postDelayed(Tasks.LATE_LOOK_TASK, LATE_LOOK_MS);
         }
     }
 
