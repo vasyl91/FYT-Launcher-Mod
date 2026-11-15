@@ -486,14 +486,7 @@ class NotificationListener : NotificationListenerService() {
         contextRef.clear()
 
         meta = null
-        musicState = null
-        musicName = null
-        authorName = null
-        album = null
-        song = null
-        songCur = null
-        songFyt = null
-        artist = null
+        resetTrackState()
         albumCover = null
         fytAlbumCover = null
         lastArtBitmapRef?.clear()
@@ -511,6 +504,43 @@ class NotificationListener : NotificationListenerService() {
 
         mediaSessionManager = null
         settings = null
+    }
+
+    /**
+     * The track and the playback state go back to the values they are declared with, the ones a new
+     * instance starts from. The system can connect the same instance again after onListenerDisconnected()
+     * (onListenerConnected() then starts from cleanupResources()); a cleanup that set the titles to null
+     * left such a listener without any update, because setStatus() takes a source only while its title is
+     * not null, and that title is set nowhere but behind that check.
+     */
+    private fun resetTrackState() {
+        musicState = ""
+        musicName = ""
+        authorName = ""
+        album = ""
+        song = ""
+        songCur = ""
+        songFyt = ""
+        artist = ""
+        mState = 0
+        currentState = 0
+        fytState = false
+        fytSet = false
+        musicNamePrev = ""
+        curMinutes = 0
+        prevCurFyt = 0
+        prevMinutes = 0
+        totalMinutes = 0
+        musicPath = ""
+        source = ""
+        fytAlbum = ""
+        fytMusicPath = ""
+        pathName = ""
+        fytSource = ""
+        fytTotalMinutes = 0
+        fytCurMinutes = 0
+        activeControllerPackage = ""
+        verifyIfLive = false
     }
 
     private fun safeUnregisterReceiver() {
