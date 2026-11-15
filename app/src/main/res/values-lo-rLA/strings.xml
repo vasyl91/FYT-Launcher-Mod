@@ -342,7 +342,7 @@
     <string name="pref_no_app_selected">ບໍ່ໄດ້ເລືອກແອັບ</string>
     <string name="pip_list_dialog">ເລືອກແອັບດ້ານໜ້າ (ບໍ່ແມ່ນທຸກແອັບທີ່ຮອງຮັບ)</string>
     <string name="pip_screen_button">ໜ້າ:</string>
-    <string name="pip_position_button">ປັບ</string>
+    <string name="pip_position_button">\u0020\u0020\u0020ປັບ\u0020\u0020\u0020</string>
     <string name="double_tap">ໜ້າ: %1$s \nແຕະສອງຄັ້ງບ່ອນໃດກໍໄດ້ \nເພື່ອສະແດງ/ເຊື່ອງແຖບແນວນອນ</string>
     <string name="screen_number">ໜ້າ: %1$s</string>
     <string name="screen_first">ໜ້າ: 1</string>
