@@ -3013,7 +3013,7 @@ public class Workspace extends SmoothPagedView
         }
         if (shouldShowEdgeHandle()) {
             if (mEdgeHandle == null) {
-                mEdgeHandle = new HorizontalBarEdgeHandle(getContext(), this::onEdgeHandleTriggered,
+                mEdgeHandle = new HorizontalBarEdgeHandle(mLauncher != null ? mLauncher : getContext(), this::onEdgeHandleTriggered,
                         this::findEdgeHandleTarget);
             }
             applyEdgeHandleGeometry();

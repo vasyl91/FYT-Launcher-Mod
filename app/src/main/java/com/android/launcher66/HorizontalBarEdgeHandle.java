@@ -30,9 +30,9 @@ import java.util.List;
  * the middle of the screen slightly rounded. A swipe to the right, or a tap on the strip itself,
  * reveals the bar.
  *
- * <p>It lives in its own TYPE_APPLICATION_OVERLAY window - the window type of the bar overlay -
- * so it stays above the widgets and the PiP panes. Vertically the window is framed exactly like the
- * bar overlay (same type, flags, gravity and height), so the strip is level with the bar. The
+ * <p>It lives in its own window, a panel of the launcher's window like the bar's (BarWindows), so it stays
+ * above the widgets and the PiP panes and under every floating button. Vertically the window is framed
+ * exactly like the bar's window (same type, flags, gravity and height), so the strip is level with the bar. The
  * window is as wide as the vertical bar (computed as a share of the screen like the bar, see
  * {@link EdgeHandleGeometry}), so that a swipe to the right is easy to start: a transparent
  * margin beside the strip takes only that swipe ({@link HorizontalBarEdgeGesture} holds the rules).
@@ -117,7 +117,10 @@ final class HorizontalBarEdgeHandle {
 
     HorizontalBarEdgeHandle(Context context, Runnable onTrigger, TargetFinder finder) {
         this.context = context;
-        windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        // The launcher's own window manager: a panel is added to the launcher's window (BarWindows)
+        windowManager = context instanceof android.app.Activity
+                ? ((android.app.Activity) context).getWindowManager()
+                : (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         view = new StripView(context, onTrigger, finder, this::onPassEnded);
         // No inset handling, on purpose: the bar overlay's inset listener only pads its content and
         // never resizes its window, so a window of exactly the bar height is what lines up with it.
@@ -314,7 +317,7 @@ final class HorizontalBarEdgeHandle {
         params = new WindowManager.LayoutParams(
                 touchWidth,
                 barHeight,
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                BarWindows.TYPE,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                         | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
                         | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
@@ -337,8 +340,8 @@ final class HorizontalBarEdgeHandle {
             windowManager.addView(view, params);
             attached = true;
         } catch (RuntimeException e) {
-            // Typically no overlay permission. Retried on the next show (e.g. after the user has
-            // granted it and comes back), but the stack trace is logged only once.
+            // Typically the launcher's window is not there yet. Retried on the next show, but the stack
+            // trace is logged only once.
             if (!addFailedLogged) {
                 addFailedLogged = true;
                 Log.e(TAG, "Adding the edge handle failed", e);
