@@ -290,6 +290,11 @@ final class HostServices {
                 return file;
             }
         }
+        // As shell (Shizuku) the files are the system's and cannot be opened: the wallpaper service is asked
+        // for the picture instead, and says itself whether shell may have it (WallpaperServiceCall)
+        if (Process.myUid() == SHELL_UID) {
+            return WallpaperServiceCall.read("com.android.shell", HostFilePolicy.userOfUid(callerUid));
+        }
         return null;
     }
 
