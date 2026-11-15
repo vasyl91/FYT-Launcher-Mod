@@ -139,6 +139,7 @@ The host also does the few things the launcher does itself as `android.uid.syste
 | The app in front, without the accessibility service | `ForegroundAppTracker` | yes | yes |
 | WRITE_SETTINGS without the trip to Settings | `LauncherPermissionFlow` | yes | yes |
 | Draw over other apps (SYSTEM_ALERT_WINDOW), install unknown apps (REQUEST_INSTALL_PACKAGES) without the trip to Settings (protocol 3) | `LauncherPermissionFlow` through `allowAppOp` | yes | yes |
+| Access to all files (MANAGE_EXTERNAL_STORAGE) without the trip to Settings, asked on Android 13+ so that the system gives the launcher the picture of the wallpaper (protocol 3, no version raised: a host from before it refuses, and the launcher opens the screen of Settings) | `LauncherPermissionFlow` through `allowAppOp` | yes, with the module built from this version | yes |
 | Notification access for the launcher's listener without the trip to Settings (protocol 3) | `LauncherPermissionFlow` through `allowNotificationListener` | yes | yes (the listener is the caller's own component) |
 | Read the cover a phone plays over Bluetooth, the stock radio's logos and icon pack (protocol 3) | `SyuMediaFiles` through `readFile` | yes | yes where the files are readable by shell |
 | Read the wallpaper of the home screen (never the lock screen's), for the backdrop of the background selectors and for "Save the day / night wallpaper" where Android 13+ refuses it to an app (no protocol version raised: a host from before the call answers nothing and the launcher goes on) | `HomeWallpaperSource` through `readHomeWallpaper` | yes | not known yet: shell may not open the system's wallpaper file, so the host asks the wallpaper service for the picture instead; whether the service gives it to shell is untested (it logs `readHomeWallpaper: wallpaper service …`). Where it refuses, the launcher shows the wallpaper's colours and offers its wallpaper picker |
@@ -146,7 +147,7 @@ The host also does the few things the launcher does itself as `android.uid.syste
 `readFile` hands out a read-only descriptor of nothing but those files (`HostFilePolicy`: images in `/data/blink/`,
 `.png` logos in `/storage/emulated/0/radio_logo/`, `/odm/app/cabinet.data`; canonical path, a regular file, at most 2 MB; a descriptor that leads to the same file under another name of the shared
 storage, such as `/data/media/0/…`, is accepted, any other target is refused and the log says where it led),
-`allowAppOp` the three app ops above for the caller's own package, `allowNotificationListener` a component of the
+`allowAppOp` the four app ops above for the caller's own package, `allowNotificationListener` a component of the
 caller's own package.
 
 ## Differences from ActivityView

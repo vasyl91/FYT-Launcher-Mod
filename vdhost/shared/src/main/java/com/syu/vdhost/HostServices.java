@@ -269,9 +269,13 @@ final class HostServices {
     // Version 3: files, app ops, notification listeners
     // ---------------------------------------------------------------------------------------
 
-    /** The app ops allowAppOp() sets: the three a user app gets from its own screens in Settings. */
+    /**
+     * The app ops allowAppOp() sets: the ones a user app gets from its own screens in Settings. Access to all
+     * files is one since 2026-11-15: from Android 13 the system gives the picture of the wallpaper only to an
+     * app that has it, and the owner wants the launcher to ask for it (D-60).
+     */
     private static final List<String> ALLOWED_APP_OPS = Arrays.asList(
-            "SYSTEM_ALERT_WINDOW", "REQUEST_INSTALL_PACKAGES", "WRITE_SETTINGS");
+            "SYSTEM_ALERT_WINDOW", "REQUEST_INSTALL_PACKAGES", "WRITE_SETTINGS", "MANAGE_EXTERNAL_STORAGE");
 
     /**
      * A read-only descriptor of one of the files of HostFilePolicy, for the uids the host serves. null when the

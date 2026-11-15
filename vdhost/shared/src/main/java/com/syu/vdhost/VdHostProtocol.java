@@ -386,7 +386,8 @@ public final class VdHostProtocol {
 
         /**
          * Version 3. Allows the caller's package an app op the user would give it in Settings:
-         * op is SYSTEM_ALERT_WINDOW, REQUEST_INSTALL_PACKAGES or WRITE_SETTINGS.
+         * op is SYSTEM_ALERT_WINDOW, REQUEST_INSTALL_PACKAGES, WRITE_SETTINGS or MANAGE_EXTERNAL_STORAGE (a host
+         * from before the last one refuses it, and the launcher opens the screen of Settings instead).
          *
          * @return the host's report, starting with "OK" on success
          */
