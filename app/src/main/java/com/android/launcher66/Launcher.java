@@ -9263,6 +9263,14 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 } else {
                     sCachedNaturalItemHeightLand = -1;
                 }
+                // The stored value too: only the copies in memory were forgotten, so the next start of
+                // the process loaded the wrong height once more before it was measured again
+                try {
+                    mAppContext.getSharedPreferences(LM_PREFS, Context.MODE_PRIVATE).edit()
+                            .remove(portrait ? KEY_ITEM_HEIGHT_PORT : KEY_ITEM_HEIGHT_LAND).apply();
+                } catch (RuntimeException e) {
+                    Log.w(LM_TAG, "the stored item height could not be removed: " + e);
+                }
             }
         }
 
