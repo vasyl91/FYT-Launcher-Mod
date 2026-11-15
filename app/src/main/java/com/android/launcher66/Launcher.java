@@ -1612,9 +1612,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         // A page that lost its elements (they live on another page now) lets go of the assignment.
         for (int i = 0; i < mWorkspace.getChildCount(); i++) {
             View child = mWorkspace.getChildAt(i);
-            if (child instanceof CellLayout && !assigned.contains(child)
-                    && ((CellLayout) child).hostsCustomElements()) {
-                ((CellLayout) child).setCustomElements(null);
+            if (child instanceof CellLayout && !assigned.contains(child)) {
+                if (((CellLayout) child).hostsCustomElements()) {
+                    ((CellLayout) child).setCustomElements(null);
+                }
+                // No element to place there: the page looks for items sharing a cell now (CellOverlap);
+                // a page with elements does it once they are placed
+                ((CellLayout) child).resolveOverlappingItems(source);
             }
         }
         if (count > 0) {

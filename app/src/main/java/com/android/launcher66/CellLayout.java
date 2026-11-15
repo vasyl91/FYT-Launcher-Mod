@@ -56,6 +56,7 @@ import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -1395,6 +1396,8 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
             Log.i(TAG, "Custom elements on page " + (pageIndex + 1) + " (screen "
                     + workspace.getIdForScreen(this) + "): " + placed);
         }
+        // Every element is in place: two items never share a cell (CellOverlap)
+        resolveOverlappingItems("elements placed");
     }
 
     @Override
@@ -4821,6 +4824,85 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         }
         return "'" + title + "' id=" + info.id + " type=" + info.itemType
                 + " screen=" + info.screenId + " cell=" + info.cellX + "," + info.cellY;
+    }
+
+    /**
+     * After the items and the page's own elements are in place: an item that shares a cell with another is
+     * moved (CellOverlap says which), to the nearest free cells of this page, else to another page, else it
+     * leaves the page and keeps its row in the database. The cells taken are counted anew from what stays.
+     */
+    void resolveOverlappingItems(String reason) {
+        Workspace workspace = mLauncher != null ? mLauncher.getWorkspace() : null;
+        int pageIndex = workspace != null ? workspace.indexOfChild(this) : -1;
+        if (pageIndex < 0 || mCountX <= 0 || mCountY <= 0) {
+            return;
+        }
+        List<View> items = new ArrayList<>();
+        List<CellOverlap.Box> boxes = new ArrayList<>();
+        int count = mShortcutsAndWidgets.getChildCount();
+        for (int i = 0; i < count; i++) {
+            View child = mShortcutsAndWidgets.getChildAt(i);
+            if (!isMovableLauncherItem(child)) {
+                continue;
+            }
+            LayoutParams lp = (LayoutParams) child.getLayoutParams();
+            items.add(child);
+            boxes.add(new CellOverlap.Box(lp.cellX, lp.cellY, lp.cellHSpan, lp.cellVSpan,
+                    child instanceof LauncherAppWidgetHostView));
+        }
+        List<Integer> toMove = CellOverlap.toMove(boxes);
+        if (toMove.isEmpty()) {
+            return;
+        }
+        List<View> moving = new ArrayList<>();
+        for (int index : toMove) {
+            moving.add(items.get(index));
+        }
+        // The cells taken: everything that stays (the elements of the page too), not the items that move
+        for (int x = 0; x < mCountX; x++) {
+            for (int y = 0; y < mCountY; y++) {
+                mOccupied[x][y] = false;
+            }
+        }
+        for (int i = 0; i < count; i++) {
+            View child = mShortcutsAndWidgets.getChildAt(i);
+            if (!moving.contains(child)) {
+                markCellsAsOccupiedForView(child);
+            }
+        }
+        int relocated = 0;
+        int[] cell = new int[2];
+        boolean excludeFirstCell = isFirstBottomCellExcluded(pageIndex);
+        for (View view : moving) {
+            LayoutParams lp = (LayoutParams) view.getLayoutParams();
+            ItemInfo info = (ItemInfo) view.getTag();
+            String before = describeItem(info) + " " + lp.cellHSpan + "x" + lp.cellVSpan;
+            if (findVacantCells(buildSearchOccupied(excludeFirstCell), mCountX, mCountY, lp.cellHSpan,
+                    lp.cellVSpan, cell)) {
+                lp.cellX = lp.tmpCellX = cell[0];
+                lp.cellY = lp.tmpCellY = cell[1];
+                info.cellX = cell[0];
+                info.cellY = cell[1];
+                info.requiresDbUpdate = true;
+                markCellsAsOccupiedForView(view);
+                relocated++;
+                Log.w(TAG, "Items sharing cells on page " + (pageIndex + 1) + " (" + reason + "): " + before
+                        + " moved to " + cell[0] + "," + cell[1]);
+            } else if (moveItemToAnotherPage(workspace, view, info)) {
+                Log.w(TAG, "Items sharing cells on page " + (pageIndex + 1) + " (" + reason + "): " + before
+                        + " moved to another page");
+            } else {
+                Log.w(TAG, "Items sharing cells on page " + (pageIndex + 1) + " (" + reason + "): " + before
+                        + " has no free cells on any page: not shown, kept in the database");
+                removeView(view);
+            }
+        }
+        if (relocated > 0) {
+            mShortcutsAndWidgets.requestLayout();
+            if (workspace.canResolveScreenId(this)) {
+                workspace.updateItemLocationsInDatabase(this);
+            }
+        }
     }
 
     /**
