@@ -42,7 +42,6 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Parcelable;
 import android.os.SystemClock;
-import android.provider.Settings;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -3166,8 +3165,9 @@ public class Workspace extends SmoothPagedView
         HorizontalBarPlacement.Bar bar = mode
                 ? HorizontalBarPlacement.bar(placementPage(), true, false, verticalBarOnShownPage(), mBarSidesAgree, isPageMoving(), true)
                 : HorizontalBarPlacement.Bar.NONE;   // the mode check above includes the user layout
+        // A panel of the launcher's window needs that window, not the permission to draw over other apps
         boolean permitted = mode && mEdgeHandleHostVisible && !mPersistentFailed
-                && Settings.canDrawOverlays(getContext());
+                && BarWindows.parentReady(mLauncher);
         PersistentBarWindow.State target = PersistentBarWindow.target(mode, mEdgeHandleHostVisible, permitted,
                 bar == HorizontalBarPlacement.Bar.PERSISTENT_OVERLAY, mode && persistentBarFree());
         PersistentBarWindow.Action action = PersistentBarWindow.action(persistentState(), target, isPageMoving());
@@ -3451,7 +3451,7 @@ public class Workspace extends SmoothPagedView
                 : VerticalBarPlacement.Bar.NONE;
         logVerticalPlacement(mode, bar);
         boolean permitted = mode && mEdgeHandleHostVisible && !mVerticalWindowFailed
-                && Settings.canDrawOverlays(getContext());
+                && BarWindows.parentReady(mLauncher);
         PersistentBarWindow.State target = PersistentBarWindow.target(mode, mEdgeHandleHostVisible, permitted,
                 bar == VerticalBarPlacement.Bar.PERSISTENT_OVERLAY, mode && persistentBarFree());
         PersistentBarWindow.Action action = PersistentBarWindow.action(verticalWindowState(), target, isPageMoving());

@@ -41,7 +41,7 @@ final class PersistentBarWindow {
     /**
      * @param mode 'Horizontal bar on every page' without auto-hide, in the user layout
      * @param inFront the launcher is in front
-     * @param permitted drawing over other apps is allowed and did not fail
+     * @param permitted the window can be added (the launcher's window is there, BarWindows) and did not fail
      * @param barIsOverlay HorizontalBarPlacement says the bar is the overlay's now (the page moves, or
      *                     rests on another page than the first)
      * @param free nothing else is in the bar's place: the normal state, the workspace (not all
