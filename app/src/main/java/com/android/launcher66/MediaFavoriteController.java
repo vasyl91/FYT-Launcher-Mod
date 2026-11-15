@@ -793,7 +793,8 @@ public final class MediaFavoriteController {
                 return null;
             }
             for (MediaController controller : controllers) {
-                if (preferredPackage.equals(controller.getPackageName())) {
+                // The list can hold a null (the loop below and MediaTransportController's twin check it too)
+                if (controller != null && preferredPackage.equals(controller.getPackageName())) {
                     return controller;
                 }
             }
