@@ -3203,8 +3203,8 @@ public class Workspace extends SmoothPagedView
     private boolean mBarPicturesShown;
     /** The pictures are about to go: decided once the call that set the new state is over. */
     private boolean mBarPicturesLeaving;
-    private Bitmap mHorizontalBarPicture;
-    private Bitmap mVerticalBarPicture;
+    private PageBarGhost.Shot mHorizontalBarPicture;
+    private PageBarGhost.Shot mVerticalBarPicture;
 
     /**
      * Puts the pictures of the bars on the pages after the first while the pages are small, and takes them
@@ -3245,10 +3245,18 @@ public class Workspace extends SmoothPagedView
         if (!BarGhostRule.onPage(false, horizontalStays) && !BarGhostRule.onPage(false, verticalStays)) {
             return;
         }
-        Bitmap horizontal = horizontalStays && mOverlayPersistent ? PageBarGhost.snapshot(overlayHorizontalBar) : null;
-        Bitmap vertical = verticalStays && mVerticalWindow != null ? PageBarGhost.snapshot(mVerticalWindow.view()) : null;
+        PageBarGhost.Shot horizontal = horizontalStays && mOverlayPersistent
+                ? PageBarGhost.record(overlayHorizontalBar) : null;
+        PageBarGhost.Shot vertical = verticalStays && mVerticalWindow != null
+                ? PageBarGhost.record(mVerticalWindow.view()) : null;
+        if (vertical == null && verticalStays && workspaceView != null) {
+            // No window yet (it is built a moment after the start): the first page's own bar has the same strip
+            vertical = PageBarGhost.record(workspaceView.findViewById(R.id.rl_vertical_bar));
+        }
         if (horizontal == null && vertical == null) {
-            Log.i(TAG, "No picture of the bars for the small pages (" + reason + "): their windows are not there");
+            Log.i(TAG, "No picture of the bars for the small pages (" + reason + "): horizontal "
+                    + (horizontalStays ? (mOverlayPersistent ? "window not laid out" : "no window") : "not on them")
+                    + ", vertical " + (verticalStays ? "nothing to record" : "not on them"));
             return;
         }
         mHorizontalBarPicture = horizontal;
@@ -3296,11 +3304,11 @@ public class Workspace extends SmoothPagedView
             }
         }
         if (mHorizontalBarPicture != null) {
-            mHorizontalBarPicture.recycle();
+            mHorizontalBarPicture.release();
             mHorizontalBarPicture = null;
         }
         if (mVerticalBarPicture != null) {
-            mVerticalBarPicture.recycle();
+            mVerticalBarPicture.release();
             mVerticalBarPicture = null;
         }
         mBarPicturesShown = false;

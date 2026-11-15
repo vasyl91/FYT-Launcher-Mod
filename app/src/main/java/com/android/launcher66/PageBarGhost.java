@@ -17,18 +17,44 @@ import android.view.View;
  * the page and moves with it. It draws two pictures, each in the strip its bar has on the page (BarLayout),
  * and nothing else; it takes no touch, so the page below it behaves as without it.
  *
- * <p>The pictures are taken of the bars' windows ({@link #snapshot}) and are shared by all pages; the
- * workspace gives them and takes them back.
+ * <p>The pictures are recordings of the bars' windows ({@link #record}) and are shared by all pages; the
+ * workspace gives them and takes them back. A recording is drawn by the page itself, in its own frame: no
+ * bitmap is made of it and nothing is rendered apart (making a bitmap of a recording renders it on the
+ * graphics hardware of its own, which on the 7862 went with windows of the launcher vanishing while the
+ * pages moved). Before Android 9 a recording cannot hold what the graphics hardware keeps, so the bar is
+ * drawn into a plain bitmap there instead.
  */
 final class PageBarGhost extends View {
 
     private static final String TAG = "PageBarGhost";
 
+    /** One bar as it was drawn: a recording (Android 9 and later) or a bitmap (before). */
+    static final class Shot {
+        final Picture picture;
+        final Bitmap bitmap;
+        final int width;
+        final int height;
+
+        private Shot(Picture picture, Bitmap bitmap, int width, int height) {
+            this.picture = picture;
+            this.bitmap = bitmap;
+            this.width = width;
+            this.height = height;
+        }
+
+        /** Lets go of the bitmap, if there is one; a recording needs nothing. */
+        void release() {
+            if (bitmap != null && !bitmap.isRecycled()) {
+                bitmap.recycle();
+            }
+        }
+    }
+
     private final Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
     private final Rect horizontalAt = new Rect();
     private final Rect verticalAt = new Rect();
-    private Bitmap horizontal;
-    private Bitmap vertical;
+    private Shot horizontal;
+    private Shot vertical;
 
     PageBarGhost(Context context) {
         super(context);
@@ -45,7 +71,7 @@ final class PageBarGhost extends View {
      * @param vertical     the picture of the vertical bar, or null for a page without it
      * @param verticalAt   where it lies on the page
      */
-    void show(Bitmap horizontal, Rect horizontalAt, Bitmap vertical, Rect verticalAt) {
+    void show(Shot horizontal, Rect horizontalAt, Shot vertical, Rect verticalAt) {
         this.horizontal = horizontal;
         this.vertical = vertical;
         if (horizontalAt != null) {
@@ -58,7 +84,7 @@ final class PageBarGhost extends View {
         invalidate();
     }
 
-    /** The pictures are let go of (the workspace recycles them); the view stays on its page, hidden. */
+    /** The pictures are let go of (the workspace releases them); the view stays on its page, hidden. */
     void clear() {
         horizontal = null;
         vertical = null;
@@ -71,28 +97,39 @@ final class PageBarGhost extends View {
         draw(canvas, horizontal, horizontalAt);
     }
 
-    private void draw(Canvas canvas, Bitmap picture, Rect at) {
-        if (picture == null || picture.isRecycled() || at.isEmpty()) {
+    private void draw(Canvas canvas, Shot shot, Rect at) {
+        if (shot == null || at.isEmpty()) {
             return;
         }
-        // A picture kept by the graphics hardware cannot be drawn onto a plain canvas (a screenshot of the page)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && picture.getConfig() == Bitmap.Config.HARDWARE
-                && !canvas.isHardwareAccelerated()) {
+        if (shot.picture != null) {
+            // A recording that holds what the graphics hardware keeps cannot be drawn onto a plain canvas
+            // (a screenshot of the page): it is left out there
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && shot.picture.requiresHardwareAcceleration()
+                    && !canvas.isHardwareAccelerated()) {
+                return;
+            }
+            // The strip is in the page's own measure, as the bar was: one scale for both axes (about 1), so
+            // a bar of another height is cut, not stretched
+            float scale = at.width() / (float) shot.width;
+            int save = canvas.save();
+            canvas.clipRect(at);
+            canvas.translate(at.left, at.top);
+            canvas.scale(scale, scale);
+            canvas.drawPicture(shot.picture);
+            canvas.restoreToCount(save);
             return;
         }
-        canvas.drawBitmap(picture, null, at, paint);
+        if (shot.bitmap == null || shot.bitmap.isRecycled()) {
+            return;
+        }
+        canvas.drawBitmap(shot.bitmap, null, at, paint);
     }
 
     /**
-     * A picture of a view as it is drawn now, whatever its own transparency (a bar's window that is put
-     * away is fully transparent and still has its content). Null when the view has no size or cannot be
-     * drawn.
-     *
-     * <p>From Android 9 the view is recorded and the picture made of the recording, which also holds what
-     * the graphics hardware keeps (an album cover can be such a picture; drawing it onto a plain canvas
-     * throws). Before, onto a plain canvas, and a view that cannot be drawn that way gives no picture.
+     * The bar as it is drawn now, whatever its own transparency (a bar's window that is put away is fully
+     * transparent and still has its content). Null when the view has no size or cannot be drawn.
      */
-    static Bitmap snapshot(View view) {
+    static Shot record(View view) {
         if (view == null) {
             return null;
         }
@@ -106,11 +143,11 @@ final class PageBarGhost extends View {
                 Picture recording = new Picture();
                 view.draw(recording.beginRecording(width, height));
                 recording.endRecording();
-                return Bitmap.createBitmap(recording);
+                return new Shot(recording, null, width, height);
             }
             Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
             view.draw(new Canvas(bitmap));
-            return bitmap;
+            return new Shot(null, bitmap, width, height);
         } catch (RuntimeException | OutOfMemoryError e) {
             Log.w(TAG, "No picture of the bar: " + e);
             return null;
