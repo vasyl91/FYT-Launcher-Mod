@@ -160,6 +160,8 @@ public class LauncherApplication extends Application {
         com.syu.util.UserTouches.start();
         // And the buttons FYT's framework reports (HomeFrontGuard); calls into system_server.
         new Thread(com.syu.util.UserTouches::startButtons, "FytButtons").start();
+        // As the system: are the hidden parts of Android the launcher looks up by name still there? (HiddenApiProbe)
+        new Thread(() -> HiddenApiProbe.run(this), "HiddenApiProbe").start();
         steps.mark("touches");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         // One setting became two (wake, cold start): both start from the old one, once.
