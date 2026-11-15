@@ -34,8 +34,23 @@ final class WindowHostVdShizuku {
     private static final Handler sMain = new Handler(Looper.getMainLooper());
     private static Context sApp;
     private static boolean sInitialized;
-    private static boolean sPermissionAsked;
-    private static boolean sBound;
+    private static volatile boolean sPermissionAsked;
+    private static volatile boolean sBound;
+    /** A bind is being decided on the worker below; a second request meanwhile is not needed. */
+    private static volatile boolean sBinding;
+    /**
+     * The calls to Shizuku's server (is it there, may this app use it, bind the host) are calls into
+     * another process that wait for its answer, and that process reads files while it answers. They
+     * ran on the main thread, from Shizuku's "binder received" callback, and StrictMode reported the
+     * server's disk read there (14 ms at a process start, in a capture of 9 November 2026). They run
+     * here; what they change is read by the main thread through volatile fields.
+     */
+    private static final java.util.concurrent.Executor sWorker =
+            java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
+                Thread thread = new Thread(r, "ShizukuVdHostBind");
+                thread.setDaemon(true);
+                return thread;
+            });
     private static long sGraceStart;
     private static Shizuku.UserServiceArgs sArgs;
 
@@ -120,9 +135,22 @@ final class WindowHostVdShizuku {
         sMain.post(WindowHostVdShizuku::maybeBind);
     }
 
+    /** Decides whether to bind the Shizuku host, and binds it; the calls to Shizuku run off the main thread. */
     static void maybeBind() {
-        if (!sInitialized || sBound) return;
+        if (!sInitialized || sBound || sBinding) return;
         if (WindowHostVdClient.current() != null) return;           // a host is already there
+        sBinding = true;
+        sWorker.execute(() -> {
+            try {
+                bindOffMain();
+            } finally {
+                sBinding = false;
+            }
+        });
+    }
+
+    private static void bindOffMain() {
+        if (sBound || WindowHostVdClient.current() != null) return;  // decided meanwhile
         try {
             if (!Shizuku.pingBinder()) return;                        // Shizuku not running
             if (Shizuku.isPreV11()) {
