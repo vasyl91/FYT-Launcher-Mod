@@ -1,6 +1,6 @@
 # Architecture
 
-State of `ca27a7637` (2026-11-13, after round 13). Everything here was checked in the code [V] unless it is
+State of `c7ed19880` (2026-11-15, after round 14). Everything here was checked in the code [V] unless it is
 tagged otherwise.
 The reasons behind the design are in `DECISIONS.md`; this file says what exists and where.
 Abbreviations used in paths below:
@@ -102,7 +102,8 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
     `vdhost/README.md`.
   - `readHomeWallpaper` (2026-11-13) is a new transaction added **without** a new protocol number or module
     version (`DECISIONS.md` D-53): a host that does not know it answers nothing and the launcher goes on to
-    its next way of getting the wallpaper. Only the daemon can do it; through Shizuku it answers nothing.
+    its next way of getting the wallpaper. Where the shell cannot open the file (Shizuku), the host asks the
+    wallpaper service itself (`WallpaperServiceCall`, 2026-11-15); whether Android 16 allows it is [U].
 - **FYT firmware code** (`com.syu.*`, decompiled) runs behind the fuse `S/FytCompat`: a
   `RuntimeException`/`LinkageError` is logged and written once to `compat_pid_<time>.txt` instead of crashing.
 - **`S/CrashLoopGuard`:** three crashes within two minutes make the next start a safe one, without custom
@@ -127,9 +128,12 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
     bar that does not hide. The bars' strips are cut out of the page and the cells share the rest.
   - `S/WorkspaceGrids` builds it from the settings for the first page or for the others; the page
     (`CellLayout.useWorkspaceGrid`), the loader (`LauncherModel`) and the settings ask there.
-  - `CellLayout` keeps its children at the whole page. Only the cells start beside the bars: an offset in
-    `ShortcutAndWidgetContainer` and in the page's cell arithmetic. The elements placed by pixels are not
-    moved by it.
+  - `CellLayout` keeps its children at the whole page, from the page's corner. Only the cells start beside
+    the bars and are centred in what the bars leave (`WorkspaceGrid.firstCellX`, an offset in
+    `ShortcutAndWidgetContainer` set from the page's measure). The bars and the elements placed by pixels
+    are not moved by it (until 2026-11-15 every child was moved by half the leftover pixels).
+  - `L/IconFit` (2026-11-15): an icon is made smaller where a denser grid leaves its cell too small for it
+    with its label, never larger; one size for all pages of an orientation, the standard one at 10 × 6.
   - `L/GridOverflow` (plain Java) says where items go when the grid of their page changes; the loader runs
     it once per change, before it reads the items (`LoaderTask.arrangeItemsForGrid`). An item keeps its
     place on the screen, one without a cell gets the nearest free one, nothing is deleted, and a turn of
@@ -170,7 +174,8 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
 - **Geometry** (pure, tested): `L/BarLayout` (one page's bars: the horizontal bar at the top or bottom, the
   vertical bar left or right, the corner, the insets) and `S/BarLayouts.of()` (reads the preferences once).
   `L/BarConstraints.apply()` rearranges an inflated layout: the bar to the top, the vertical bar mirrored to
-  the right, with no extra XML.
+  the right, with no extra XML. It also gives the first page's vertical bar the width the launcher counts
+  with where the portrait layout gives a ratio of its height (D-61).
 - **Content:** `L/LauncherAppBars` holds the apps of both bars. The lists are stored with LitePal:
   `com/android/recycler/AppMultiple` for the horizontal bar, `LeftAppMultiple` for the vertical bar. `L/BarCapacity` and `L/BarRows` handle slots and
   preloading.
@@ -178,6 +183,11 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   - `L/HorizontalBarPlacement` and `L/VerticalBarPlacement` decide where each bar is drawn.
   - `L/PersistentBarWindow` is the logic of the window that stays put while the pages move (pre-built, so
     showing it costs nothing); `L/VerticalBarWindow` is the vertical bar's window.
+  - `L/PageBarSwap` (2026-11-15): while a bar's window is shown over the first page, the page's own bar is
+    hidden (after the window's first frame; shown again before the window goes), so one bar is seen.
+  - `L/BarGhostRule` and `L/PageBarGhost`: while the pages are small (overview, dragging) every page after
+    the first draws a recording of the bars' windows in their strips (`Canvas.drawPicture`, no bitmap on
+    Android 9+). `L/BarSwipeFrame` feeds a swipe on a bar's window to the pages and logs when they take it.
   - `L/PageBox` and `L/TopBarFrame` keep the windows on the page's box, below the status bar and the
     cut-out. The box is taken from a page **at rest** (`PageBox.pageRestLeft`), never from the pager's own
     edge: the pager is measured much wider than the screen and centred, so its left edge is thousands of
@@ -245,6 +255,10 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   `L/colorpicker/ColorPicker` (a text mode, and a background mode with an alpha slider; `L/ColorAlpha`).
 - **Any player:** `L/NotificationListener.kt` (media sessions) and `L/MediaTransportController`. With no
   cover the player's app icon is shown; with no session a widget button opens the last player.
+  `L/TitleTag` (2026-11-15) says whether a title or an artist is a value or a placeholder ("Unknown",
+  "<unknown>", "null", empty: whole values only). `L/PlayPauseRequest` (2026-11-15): a tap's symbol is shown
+  at once on both play/pause buttons and kept until the player answers or 2 s pass; a second tap meanwhile
+  is not taken.
 - **Sound channel:** `com.syu.ms` switches the MCU's sound channel when a media app comes up (1 radio,
   3 Bluetooth, 8 FYT music, 10 third party; on the 7870 also 7 internet radio). `NotificationListener.kt`
   restores the channel that was playing after the panes start their apps, unless the user tapped something.
@@ -286,7 +300,8 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   - Files go to `Download/Launcher66_Canbus`.
 - **Estimate** (where the car gives no value): `S/FuelModel` (v3, power-based), `S/FuelSpeedThreshold`,
   `S/RoadGrade`, `S/FuelUnit`, `S/ConsumptionUnits`.
-- **Stats window:** `S/StatsWindowSize`, `S/StatsOverlayAlpha` (full alpha through the host),
+- **Stats window:** `S/StatsWindowSize`, `S/StatsOverlayAlpha` (full alpha through the host; the window is
+  laid out again whenever the limit reaches 1 after it was laid out under less, `needsRelayout`),
   `S/StatsBarFit` (the bars move the window, never resize it).
   - `S/StatsWindowRule` (plain Java, 2026-11-13) says which window may be shown: the home screen's only
     while the launcher is in front, an app's only over that app. `CanbusService` removes a window that
@@ -305,7 +320,13 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
 - **Reading the wallpaper** (2026-11-13): `S/HomeWallpaperSource` is the one place; `S/WallpaperAccess`
   (plain Java) lists the ways worth trying on a device, in order: the system's API where it gives the real
   picture, then the privileged host, then no picture (the colours, and the user picks an image). Used by
-  the background selectors and by "Save the day / night wallpaper".
+  the background selectors and by "Save the day / night wallpaper". Since 2026-11-15 a copy of every wallpaper
+  the launcher sets itself (`S/OwnWallpaperCopy`, valid while the system's wallpaper id is unchanged) comes
+  after the system's API; "Pick wallpaper" opens the settings' picker (`S/WallpaperPickerLauncher`), and a
+  mode without a saved picture leaves the wallpaper (`S/NightWallpaperRule`).
+- **Diagnostics added 2026-11-15:** `L/HiddenApiProbe` (one compat report when a hidden member the launcher
+  looks up is missing; system flavour) and `L/PinnedPipHealth` (a log line when a pinned app keeps coming
+  to the front).
 - **Location:** `S/DeviceLocation`. The platform location comes first; Play services (`S/GmsLocation`) is
   used only as a way out (`S/LocationChoice`).
 - **Weather:** `com/syu/weather/WeatherManager` (OpenWeather), `L/LauncherWeather`, `L/WeatherNeed`. It

@@ -1,8 +1,8 @@
 # Project state
 
-**Snapshot: 2026-11-13, `testBranch` after round 13 (`4e73d1178` … `ca27a7637`, then the documentation
-commits). CI is green on every push of the round, the last code commit `ca27a7637` included (run 480).
-Nothing of round 13 has been run on a device.** This file is the authoritative entry point for a new session. Update it at the
+**Snapshot: 2026-11-15, `testBranch` after round 14 (`6fbd5605b` … `c7ed19880`, then the documentation
+commits). CI is green on every push of the round up to run 490 (`1ca81e616`); the last two code commits
+are in run 491. Nothing of round 14 has been run on a device.** This file is the authoritative entry point for a new session. Update it at the
 end of every round (see `CLAUDE.md`).
 
 Status tags: [V] verified in code, git or CI · [H] historical, from the owner, a brief or a chat report ·
@@ -29,12 +29,12 @@ What the owner wants from it, as the briefs and chat reports show [H]:
 | | |
 |---|---|
 | Last release | **v1.2.1**, 2026-10-06 [V]. `versionName` in `app/build.gradle.kts` is still 1.2.1 [V]. |
-| Unreleased work | At `ee8e4f91`: 536 commits since `v1.2.1`, and `testBranch` 141 commits ahead of `main` (last merge: PR #33, 2026-11-01) [V]. Round 13 added 26 more. |
+| Unreleased work | At `ee8e4f91`: 536 commits since `v1.2.1`, and `testBranch` 141 commits ahead of `main` (last merge: PR #33, 2026-11-01) [V]. Round 13 added 26 more, round 14 31 (29 of code). |
 | Next version | 1.2.2. README, the updater and `release-assets.yml` already describe `system_release_1.2.2.apk` [V]. **No release date is recorded** [U]. |
 | Development phase | Short feature and fix rounds on `testBranch`, driven by device logs (Opus brief → Sonnet commits → owner test). 33 briefs since 2026-10-27, all implemented [V]. |
 | Active brief | **None.** `prompts/active/` is empty [V]. |
-| Last code change | **Round 13, 2026-11-12/13: the owner's 19 tasks**, 25 code commits `4e73d1178` … `ca27a7637` and `52d75131c` (README), done in one session from an audit instead of a brief [V]. **Waiting for the owner's device test** (`KNOWN_ISSUES.md` KI-30). Reports: `reports/audit_blueprint_2026-11-12.md`, `reports/implementation_report_2026-11-13.md`. |
-| Before that | Round 12 (G1–G3), 2026-11-08: `e3136f45`, `b1fe254c`, `3dd71894` [V]. The owner confirmed it on 2026-11-12: "It works as intended." [H] |
+| Last code change | **Round 14, 2026-11-15:** the fixes from the owner's test of round 13, the open items of `KNOWN_ISSUES.md` (D-62), and six items from a second test on the 7862; 29 code commits `6fbd5605b` … `c7ed19880`, one of them a revert, done in one session from a plan agreed with the owner [V]. **Waiting for the owner's device test** (KI-34). Report: `reports/implementation_report_2026-11-15.md`. |
+| Before that | Round 13 (the owner's 19 tasks), 2026-11-12/13: `4e73d1178` … `ca27a7637` [V]. The owner tested it on 2026-11-15: 12 of 19 work, the rest went into round 14 [H]. Round 12 was confirmed on 2026-11-12 [H]. |
 | Since then | Documentation and repository layout only: `claude/` created (`a30c9a72`), reference material moved to `archive/` (`8bfc5a8d`), 15 chat reports added (`754c8258`), `android-36.jar` moved back (`ee8e4f91`), the folder unified as `claude/` (`e3ba694e`) [V]. |
 | Open GitHub issues | 0 [V] (2026-11-10). |
 
@@ -74,10 +74,11 @@ All features below are implemented [V]. Details are in `ARCHITECTURE.md`; user-f
 | Baseline Profile with on-device compilation | — | The profile in the repo is probably stale (KI-04). |
 | Standard flavor on root or Shizuku (VD host protocol 3) | both phones [H] | Overlay, notification access and install permissions granted through the host. |
 | Round 12: load restart, live widget colors, overlap rule | owner confirmed 2026-11-12 [H] | D-17. |
-| Round 13: rows and columns of the home screen, bars cut out of the grid | **no device result** | D-52. The first start after the update moves the items that lay under a bar. |
-| Round 13: a colour of one's own for backgrounds, any text colour, backgrounds turned with the bar, the stats window's background | **no device result** | D-54, D-55; two migrations of stored settings. |
-| Round 13: the wallpaper read from one source with fallbacks | **no device result** | D-53; the root way needs the module built from this version. |
-| Round 13: fixes (bar windows' side, title scrolling, the leak of the bar window, radio tap without a radio, cell view ids, start page, stats over another launcher, settings texts) | **no device result** | KI-28, KI-30. |
+| Round 13: rows and columns of the home screen, bars cut out of the grid | owner tested 2026-11-15 [H] | D-52. Icons smaller in a dense grid since round 14 (`IconFit`). |
+| Round 13: a colour of one's own for backgrounds, any text colour, backgrounds turned with the bar, the stats window's background | owner tested 2026-11-15; the colour tile and the frame redone in round 14 [H] | D-54, D-55. |
+| Round 13: the wallpaper read from one source with fallbacks | needed fixes (2026-11-15); redone in round 14, **no device result** | D-53, D-58 … D-60. |
+| Round 13: fixes (bar windows' side, title scrolling, the leak of the bar window, radio tap without a radio, cell view ids, start page, stats over another launcher, settings texts) | owner tested 2026-11-15 [H] | KI-30 closed. |
+| Round 14: one bar while the pages move, the bars in the overview, the vertical bar at the edge and as wide as counted, play/pause, "Unknown" titles, the listener after a reconnect, the stats window's alpha, a weather key of one's own, the hidden-API report | **no device result** | KI-34, KI-35, D-61, D-63. |
 
 Not implemented:
 
@@ -118,10 +119,10 @@ JUnit 5 JVM tests: 110 files, 1011 tests, no instrumented tests. CI runs on GitH
 
 ## Active tasks
 
-**The owner's device review of round 13.** It is implemented, builds and passes its tests; none of it has
-been seen on a device. `reports/implementation_report_2026-11-13.md` lists what to check for each of the 19
-tasks and the choices that were made without the owner (D-57). The next round records the result, as every
-round does.
+**The owner's device review of round 14.** It is implemented, builds and passes its tests (1083); none of
+it has been seen on a device. `reports/implementation_report_2026-11-15.md` lists what to check and the
+choices made without the owner (D-63). The bar's music buttons after an app (KI-35) have no known cause;
+the round adds the log lines that should show it. The next round records the result.
 
 ## Blocked or waiting
 
@@ -138,8 +139,9 @@ in mind before a release, from `KNOWN_ISSUES.md`:
 1. The Baseline Profile is probably stale (KI-04).
 2. Something does not work on the tester's 7870, and it is not yet known what (KI-29).
 3. Several earlier changes have no device confirmation on record (KI-25).
-4. **Round 13 is untested on devices (KI-30).** It changes the grid of every page with a bar and rewrites
-   the cells of the items there once; test it on a phone before the 7862.
+4. **Round 14 is untested on devices (KI-34).** It changes what the 7862 shows while the pages move and in
+   the overview, the centring of the cells, the play/pause button and the night mode without a saved
+   picture; the stats picture of KI-21 was reverted at the owner's request.
 
 The hardcoded OpenWeather key is **not** an open issue: the owner decided to keep it (D-26).
 
@@ -158,9 +160,9 @@ The hardcoded OpenWeather key is **not** an open issue: the owner decided to kee
 |---|---|
 | [`CLAUDE.md`](CLAUDE.md) | Rules, commands, Opus/Sonnet workflow |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | What exists and where: modules, subsystems, data, services, privileges |
-| [`DECISIONS.md`](DECISIONS.md) | Why: 57 decisions with status, who decided and the source |
+| [`DECISIONS.md`](DECISIONS.md) | Why: 63 decisions with status, who decided and the source |
 | [`ROADMAP.md`](ROADMAP.md) | History in milestones, confirmed plans, recommendations |
 | [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md) | Confirmed problems, accepted limitations, unverified reports |
 | [`prompts/README.md`](prompts/README.md) | Catalogue of all briefs → commits → status |
 | [`chat_archive/README.md`](chat_archive/README.md) | Index of the 15 conversation reports and what was taken from each |
-| [`reports/`](reports/) | The audits of 2026-11-10, the consolidation report of 2026-11-12, and round 13's audit and implementation report |
+| [`reports/`](reports/) | The audits of 2026-11-10, the consolidation report of 2026-11-12, round 13's audit and implementation report, and round 14's implementation report |

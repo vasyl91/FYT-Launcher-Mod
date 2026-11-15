@@ -1,6 +1,6 @@
 # Roadmap
 
-As of 2026-11-13.
+As of 2026-11-15.
 
 - **Completed milestones** are backed by git (commits, tags) and, where given, a chat report.
 - **Confirmed** items come from the owner, the briefs or the user-facing docs, with a source.
@@ -13,9 +13,10 @@ Move an item to "Completed" when it ships; do not delete it.
 
 The owner runs short device-driven rounds on `testBranch`: logs → Opus brief → Sonnet commits → device test.
 Each round fixes what the last test found and adds the features the owner asks for. The work since `v1.2.1`
-(536 commits at `ee8e4f91`, 26 more with round 13) is unreleased. **No brief is active.** The owner
-confirmed round 12 on 2026-11-12. Round 13 (the owner's 19 tasks, 2026-11-12/13) was done in one session
-from an audit instead of a brief and **waits for its device review** (P-14).
+(536 commits at `ee8e4f91`, 26 more with round 13, 31 with round 14) is unreleased. **No brief is active.**
+The owner tested round 13 on 2026-11-15 (KI-30). Round 14 (the fixes from that test, every open item of
+`KNOWN_ISSUES.md`, and six items from a second test on the 7862) was done in one session from a plan agreed
+with the owner and **waits for its device review** (P-16).
 
 ## Completed milestones
 
@@ -34,7 +35,8 @@ from an audit instead of a brief and **waits for its device review** (P-14).
 | 2026-10-23 → 10-26 | FYT stock sources behind the music widget (7870 `com.syu.media`, radio on both families); all strings translated into 59 locales | `ded0e6ef` … `f1773cc1`; CHAT_06; 60 translation commits |
 | 2026-10-27 → 11-08 | 33 implemented briefs (`prompts/README.md`), in themes: 7870/Shizuku fixes; pinned PiP; CAN bus library, code reader, automatic check and fuel model v3; stats window; screens planned by the model and layout fitting; crash loop and compat reports; `com.syu.media` covers and hearts; VD host protocol 3; widget bar options; bars at either side and on every page; one creator for every page; workspace load restart | catalogue; CHAT_07 … CHAT_15 |
 | 2026-11-10 → 11-12 | Knowledge base in `claude/`; reference material gathered in `archive/`; 15 conversation reports archived and consolidated | `a30c9a72`, `8bfc5a8d`, `754c8258`, `e3ba694e` and the commit after it |
-| 2026-11-12 → 11-13 | Round 13, the owner's 19 tasks: rows and columns of the home screen with the bars cut out of the grid; a colour of one's own and any text colour for the widgets, the bars and the stats window; the wallpaper from one source; fixes to the bar windows, the settings and the stats window. **Implemented, CI green, not yet tested on a device** | `4e73d1178` … `ca27a7637`; `reports/implementation_report_2026-11-13.md` |
+| 2026-11-12 → 11-13 | Round 13, the owner's 19 tasks: rows and columns of the home screen with the bars cut out of the grid; a colour of one's own and any text colour for the widgets, the bars and the stats window; the wallpaper from one source; fixes to the bar windows, the settings and the stats window. Tested by the owner on 2026-11-15: 12 of 19 work, the rest fixed in round 14 | `4e73d1178` … `ca27a7637`; `reports/implementation_report_2026-11-13.md` |
+| 2026-11-15 | Round 14: the round-13 fixes (Restart text, keyboard, colour tile, wallpaper and night mode, icon size, the bars in the overview), the open `KNOWN_ISSUES.md` items, and the 7862's second test (one bar while the pages move, the vertical bar's edge and width, play/pause, "Unknown" titles, the stats window's alpha). **Implemented, CI green, not yet tested on a device** | `6fbd5605b` … `c7ed19880`; `reports/implementation_report_2026-11-15.md` |
 
 ## Next: confirmed
 
@@ -53,8 +55,11 @@ from an audit instead of a brief and **waits for its device review** (P-14).
 | P-11 | *Said by the owner, no result on record:* a wake test after a long sleep ("Sprawdzę później jak to wygląda przy dłuższym okresie uśpienia") | CHAT_03 [H] | owner |
 | P-12 | ~~**Remove the unused Room and Compose set-up** (Room runtime and its KSP processor; the Compose BOM, runtime, tooling, plugin and `compose = true`). KSP stays for Glide~~ **Done 2026-11-12** | the owner, 2026-11-12: "Not planned, might be removed if it is unused"; KI-03, D-51 | a brief or a direct request; CI is the check |
 | P-13 | The tester's answer on what did not work on the 7870 | the owner, 2026-11-12 | the tester |
-| P-14 | **The owner's device review of round 13** (KI-30), and the owner's word on the assistant's choices (D-57) | the round's report | devices; for the wallpaper through root, the module built from this version |
-| P-15 | *If the wake does not help:* fYT Rating gets its token on the receiver's path (KI-32) | the owner's log of 2026-11-09 [H] | a log with the bridge's reason; the fYT Rating project |
+| P-14 | ~~**The owner's device review of round 13** (KI-30)~~ **Done 2026-11-15** (12 of 19 work; the rest went into round 14). The owner's word on D-57 is still open | the round's report | — |
+| P-15 | ~~*If the wake does not help:* fYT Rating gets its token on the receiver's path (KI-32)~~ **Not needed:** the owner, 2026-11-15, "works" | the owner's log of 2026-11-09 [H] | — |
+| P-16 | **The owner's device review of round 14** (KI-34), with the log lines that trace the bar's buttons (KI-35), and the owner's word on D-63 | `reports/implementation_report_2026-11-15.md` | devices: the 7862 first, the A55 in portrait |
+| P-17 | UI tests with Robolectric (KI-06), approved by the owner and left for a later round | D-62 | a network that reaches Maven Central's mirror for `nativeruntime-dist-compat` |
+| P-18 | *If the A55 shows the wallpaper service refusing the shell:* the host grants the launcher access to all files | D-60 | the A55 log `readHomeWallpaper: wallpaper service …` |
 
 ## Recommendations (not decided)
 
@@ -65,9 +70,9 @@ from an audit instead of a brief and **waits for its device review** (P-14).
 | R-3 | ~~Fill `chat_archive/` from the older conversations~~ **Done 2026-11-12** with the 15 reports supplied | — | — |
 | R-4 | Merge `testBranch` into `main` when 1.2.2 is released | `main` is more than 140 commits behind | KI-10 |
 | R-5 | Decide whether `archive/` (about 300 MB) and the README videos (176 MB) belong in Git, or in Git LFS or release assets | clone and CI checkout size. The move into `archive/` tidied the tree but not the history | KI-07 |
-| R-6 | Give `display_pip` one default everywhere | three readers use `false`, nine use `true` | KI-20 |
+| R-6 | ~~Give `display_pip` one default everywhere~~ **Done 2026-11-15** (`11b5dc244`) | — | KI-20 |
 | R-7 | Ask the owner about the remaining items that never got a device result | the stats window and the pinned-PiP keyboard were answered on 2026-11-12; the rest of the list is open | KI-25 |
-| R-8 | Look at the StrictMode reports of the 2026-11-09 log | the rule is that StrictMode stays silent | KI-31 |
+| R-8 | ~~Look at the StrictMode reports of the 2026-11-09 log~~ **Done 2026-11-15:** one fixed, three described | — | KI-31 |
 | R-9 | Show "Home screen layout" on the first settings screen while the user layout is off | the icon text sizes cannot be changed there any more | KI-33 |
 
 ## Long-term objectives

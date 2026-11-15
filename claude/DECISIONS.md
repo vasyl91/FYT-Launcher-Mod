@@ -2,7 +2,7 @@
 
 Important technical and product decisions. Last consolidated on 2026-11-12 from the code, git, the briefs
 (`prompts/archive/`), the 15 chat reports (`chat_archive/CHAT_01.MD` … `CHAT_15.MD`) and the owner's answers
-of that day. D-52 … D-57 were added on 2026-11-13 with round 13.
+of that day. D-52 … D-57 were added on 2026-11-13 with round 13, D-58 … D-63 on 2026-11-15 with round 14.
 
 ## How to read this file
 
@@ -89,6 +89,12 @@ entry that replaces it.
 | D-55 | One background choice for the fuel stats window | ACTIVE | Owner |
 | D-56 | "Home screen layout" on the second settings screen | ACTIVE | Owner |
 | D-57 | Choices the assistant made in round 13 (table) | UNDER_REVIEW | Assistant |
+| D-58 | "Pick wallpaper" opens the wallpaper picker of the settings | ACTIVE | Owner |
+| D-59 | Night mode without a saved picture leaves the wallpaper | ACTIVE | Owner |
+| D-60 | Android 16: the host reads the wallpaper before any all-files access | ACTIVE | Owner |
+| D-61 | The vertical bar is as wide as the launcher counts it | ACTIVE | Owner |
+| D-62 | The scope of round 14 in `KNOWN_ISSUES.md` | ACTIVE | Owner |
+| D-63 | Choices the assistant made in round 14 (table) | UNDER_REVIEW | Assistant |
 
 ---
 
@@ -447,6 +453,8 @@ entry that replaces it.
   high-priority security issue and recommended rotating it. That recommendation is withdrawn
   (`KNOWN_ISSUES.md` KI-01, `ROADMAP.md` R-1).
 - **Source:** CHAT_01, CHAT_02 [H]; the constant is in the code [V].
+- **Since 2026-11-15 [V]:** a user may enter a key of their own (KI-01, opened again by the owner); the
+  built-in key stays as decided (`8b76509c4`).
 
 ## Diagnostics and robustness
 
@@ -632,6 +640,7 @@ entry that replaces it.
 | `3a0217ea` "on the 7862 the stats' surface moves with the launcher's frame": direct surface moves through hidden Android 10 API | `b38f1286`, by the owner, 2026-10-28 | the owner, 2026-11-12: "It didn't work as it should. Reverted it to acceptable state." It was the third attempt to stop the stats window lagging behind the pages on the 7862, pushed untested (CHAT_10). The state after the revert is acceptable (KI-21) |
 | `1586b84b` (external PR #5) "Harden Maps PiP window lifecycle" | `c94703fd` (2026-07-22) | "a defect in the application view resume lifecycle causes a new instance to be created instead of restoring the existing one" |
 | OpenWeather key moved to `BuildConfig` (never committed) | reverted in the working tree | owner decision (D-26) |
+| `5392230c2` a picture of the stats window moves with its page on Android ≤ 10 (KI-21, fourth attempt) | `fe72e5a6f`, 2026-11-15, at the owner's request | on the 7862 the stats window and every FAB vanished while the pages moved and came back only on page 0. The picture was made with `Bitmap.createBitmap(Picture)`; do not use that for the launcher's windows again |
 
 ### D-49 Rejected proposals
 - **Status:** REJECTED. Do not implement these without asking the owner again.
@@ -735,4 +744,63 @@ The round had no brief: the owner's request and the audit written for it are in
 | Shizuku answers nothing to `readHomeWallpaper` | shell cannot open the wallpaper file; not tested |
 | The fYT Rating app was not changed; the launcher wakes the bridge once and logs its reason | its source is not in this repository |
 | StrictMode reports seen in the owner's log of 2026-11-09 were not fixed | outside the 19 tasks (`KNOWN_ISSUES.md` KI-31) |
+
+## Added on 2026-11-15 (round 14: the owner's test of round 13 and of the 7862)
+
+The round had no brief; its result is in `reports/implementation_report_2026-11-15.md`.
+
+### D-58 "Pick wallpaper" opens the wallpaper picker of the settings
+- **Status:** ACTIVE. **By:** owner, 2026-11-15 ("To samo co wiersz w Miscellaneous").
+- **Decision:** the button in the background selector and the offer to pick a picture when the wallpaper
+  cannot be read open what the "Wallpaper picker" row opens, following "Wallpaper picker source". The
+  launcher's own gallery choice in those dialogs is gone.
+- **Where:** `WallpaperPickerLauncher`, `deaaffe08`.
+
+### D-59 Night mode without a saved picture leaves the wallpaper
+- **Status:** ACTIVE. **By:** owner, 2026-11-15 ("Zostaw bieżącą tapetę").
+- **Decision:** with "Use the default wallpapers" off and no saved (or no readable) picture for the day or
+  the night, the night mode sets no wallpaper at all, on every device. With the switch on the built-in
+  wallpaper is set as before.
+- **Consequence [V]:** on the 7862 too the night mode no longer falls back to the built-in wallpaper. Two
+  summary strings were replaced by new keys (D-10).
+- **Where:** `NightWallpaperRule`, `44ed8f4cb`.
+
+### D-60 Android 16: the host reads the wallpaper before any all-files access
+- **Status:** ACTIVE. **By:** owner, 2026-11-15.
+- **Decision:** where the launcher cannot read the wallpaper, the host asks the wallpaper service itself
+  (same transaction, same module version, D-37). Granting the launcher access to all files is a later step,
+  only if the A55 shows that the service refuses the shell. A wallpaper the launcher set itself is kept as a
+  copy, valid while the system's wallpaper id is unchanged.
+- **Where:** `WallpaperServiceCall`, `OwnWallpaperCopy`, `dfe91dc85`, `ed61469d0`.
+
+### D-61 The vertical bar is as wide as the launcher counts it
+- **Status:** ACTIVE. **By:** owner, 2026-11-15 (chosen over keeping the narrower bar).
+- **Decision:** in portrait the first page's vertical bar takes `Launcher.calculatedVerticalBarWidth`
+  instead of the layout's ratio of its own height (about 155 px instead of 139 px on an A55), so that the
+  grid, the creator and the screen agree and an element lies at the margin the user set. Landscape is
+  unchanged (both give the same width). The cells alone are centred in what the bars leave; the bars and
+  the creator's elements keep the page's corner.
+- **Where:** `BarConstraints.widthReplacesRatio`, `WorkspaceGrid.firstCellX`; `aade70cd1`, `4e983e0f5`.
+
+### D-62 The scope of round 14 in `KNOWN_ISSUES.md`
+- **Status:** ACTIVE. **By:** owner, 2026-11-15.
+- **Decision:** every open item of `KNOWN_ISSUES.md` is part of the round, Part B (accepted limitations)
+  opened again; KI-33 (the layout settings without the user layout) and KI-17 (lint in CI) are not. A new
+  test dependency (Robolectric) was approved for KI-06; when the session's network refused one of its files
+  the owner chose to leave KI-06 for a later round.
+- **Consequence:** what each KI got is written in its entry.
+
+### D-63 Choices the assistant made in round 14
+- **Status:** UNDER_REVIEW. **By:** assistant. None is an owner decision.
+
+| Choice | Why |
+|---|---|
+| With the default grid (10 × 6) an icon keeps its standard size whatever its cell (`IconFit`) | nothing changes where the grid was not touched |
+| KI-15: a log line only, no notice and no stop after three failures | no log from a unit where pinned PiP fails to test the rule against; a false alarm on the 7862 must not happen |
+| KI-31 and KI-26: only the places that are the launcher's own and safe to change were changed | the others are framework code, the 7862's panes or need the 7870's data |
+| While a bar's window is shown, the first page's own bar is hidden; it is hidden only after the window has drawn and shown before the window goes (`PageBarSwap`) | one bar, standing still, and no frame without a bar |
+| The overview pictures of the bars are recordings drawn by the page (`Canvas.drawPicture`), not bitmaps | `Bitmap.createBitmap(Picture)` went with vanishing windows on the 7862 (D-24) |
+| A tap on play/pause is not taken while the one before waits for the player's answer, up to 2 s (`PlayPauseRequest`) | one tap, one change; the owner saw a tap toggle twice |
+| "Unknown" is compared as a whole value, as `validTag` of Display-Media-Titles (`TitleTag`); "null" only in lower case | copied as the owner asked |
+| The stats window is laid out again whenever the limit reaches 1 after it was laid out under less, with five late looks after a raise (`StatsOverlayAlpha.needsRelayout`) | the system takes a written limit up late after a long sleep |
 

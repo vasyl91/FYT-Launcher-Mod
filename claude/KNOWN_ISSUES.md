@@ -1,6 +1,6 @@
 # Known issues
 
-As of 2026-11-13 (`ca27a7637`, after round 13), with the owner's answers of 2026-11-12. Sources: the code, git, CI, the
+As of 2026-11-15 (`c7ed19880`, after round 14), with the owner's answers of 2026-11-12 and 2026-11-15. Sources: the code, git, CI, the
 briefs and the chat reports (`chat_archive/`).
 
 The file has three parts, because they call for different handling:
@@ -21,15 +21,15 @@ Add new issues at the end of their part with the next number. Numbers are never 
 |---|---|---|---|---|
 | KI-03 | Room and Compose declared but unused | Tech debt | Low | fixed 2026-11-12 |
 | KI-04 | Baseline Profile probably stale | Performance | Medium | open |
-| KI-06 | No instrumented or UI tests | Missing tests | Medium | open |
+| KI-06 | No instrumented or UI tests | Missing tests | Medium | open (Robolectric left for a later round, 2026-11-15) |
 | KI-07 | Repository footprint | Maintenance | Low | open |
 | KI-09 | `README.MD` lagged behind the bar features | Docs | Low | fixed 2026-11-10 |
 | KI-10 | Unreleased work: version still 1.2.1 | Release | Medium | open |
 | KI-11 | Heavy cold start after a reboot | Performance | Medium | partial |
 | KI-17 | Lint is weak in this project | Quality | Low | open |
 | KI-19 | The build needs `android_jar/android-36.jar` at that path | Build | High | fixed 2026-11-12 |
-| KI-20 | `display_pip` is read with two different defaults | Bug risk | Low | open |
-| KI-23 | Translations are machine-written and unreviewed | Quality | Low | open |
+| KI-20 | `display_pip` is read with two different defaults | Bug risk | Low | fixed 2026-11-15 |
+| KI-23 | Translations are machine-written and unreviewed | Quality | Low | partial: a machine check since 2026-11-15 |
 | KI-24 | Round 12 (G1–G3) had no device result | Verification | Medium | fixed 2026-11-12: confirmed by the owner |
 | KI-33 | The icon text sizes and the grid can be set only while the user layout is on | Usability | Low | open |
 
@@ -58,6 +58,9 @@ Add new issues at the end of their part with the next number. Numbers are never 
   and CI does not run it.
 - **Impact:** UI regressions surface only on a device, one round later. Almost every chat report ends with
   "not tested on a device" (Part C).
+- **2026-11-15 [V/H]:** the owner approved Robolectric as a test dependency (round 14). It could not be set
+  up in the session: Maven Central redirects one of its files (`nativeruntime-dist-compat`) to a mirror the
+  session's network refuses. The owner chose to leave it for a later round. 123 test files, 1083 tests now.
 
 ### KI-07 Repository footprint
 - **Evidence [V]:** `.git` is about 560 MB. The working tree holds `archive/` (about 300 MB of decompiled
@@ -105,12 +108,17 @@ page, the handle on either edge, the Bars category). Updated in `a30c9a72`. Keep
 - **Impact:** until the user has changed the switch once, the creator and the settings code can take the PiPs
   for off while the home screen takes them for on. A visible effect has not been reported [U].
 - **Source:** CHAT_12 noticed it; re-checked in the code on 2026-11-12.
+- **Fixed 2026-11-15 [V]:** the three reads take `true`, like the others and the XML (`11b5dc244`).
 
 ### KI-23 Translations are machine-written and unreviewed
 - **Evidence [V]:** all 59 locale files were filled by one session on 2026-10-26 (60 commits), and every new
   string since is translated by the implementing session (D-10).
 - **Impact:** quality in the less common languages is unknown (CHAT_12 names `rm`, `lo-rLA`, `km-rKH`, `am`,
   `zu`, `sw`).
+- **Since 2026-11-15 [V]:** `StringResourcesTest` checks all 58 translations against the English file:
+  well-formed, no key twice, no key the English file lacks, the same format arguments, nothing empty where
+  English is not. Its first run found two ADJUST labels without their padding (`km-rKH`, `lo-rLA`;
+  `0bd6971f6`). The quality of the language is not something it can tell.
 - **Next:** native-speaker review where it matters; no plan is recorded.
 
 ### KI-24 Round 12 (G1–G3) had no device result (confirmed 2026-11-12)
@@ -149,6 +157,8 @@ category on the first screen while the user layout is off.
 - **What is done:** the key and exact coordinates never reach the logs (`771f9387`, test `8cc9e48f`).
 - **History:** the 2026-11-10 audit listed this as High and recommended rotating the key. That was written
   without knowing the decision and is withdrawn.
+- **Since 2026-11-15 [V]:** the user can enter an OpenWeather key of their own (Settings, optional); it is
+  used instead of the built-in one (`8b76509c4`, `WeatherKey`). The built-in key stays (D-26).
 
 ### KI-02 Public platform signing key committed
 `app/keystore.jks` and `keystore.properties` hold the public `android` defaults (`7d1d9ee8`). The `system`
@@ -167,7 +177,10 @@ launcher on such firmware; that is inherent to the platform key.
   the hidden `InputManager.monitorGestureInput()` (`EdgeSwipeMonitor`, `UserTouches`), `TaskStackListener`
   (`hiddenapi-stubs`), and the decompiled FYT IPC.
 - **Impact:** a new Android version or ROM can break a feature silently.
-- **Mitigation:** the `FytCompat` fuse, the compat reports, and the host protocol versioning.
+- **Mitigation:** the `FytCompat` fuse, the compat reports, and the host protocol versioning. Since
+  2026-11-15 `HiddenApiProbe` looks at every start (system flavour, off the main thread) for the hidden
+  members the launcher looks up and writes one compat report when one is missing (`590c153ec`); the table
+  is short and grows with the lookups.
 
 ### KI-13 Shizuku host limits
 - Apps with `FLAG_SECURE` (streaming, banking) show black in a pane.
@@ -185,11 +198,16 @@ Source: `README.MD`, `vdhost/README.md`.
 - A heart pressed in the widget shows in `com.syu.media`'s own screen only after it reloads its library.
 - FM favorites are read-only for other apps (the widget's heart is greyed out).
 - The Bluetooth heart stays grey.
+- Looked at again on 2026-11-15 [V]: the decompiled `com.syu.media` has no call another app can make to
+  reload its library, so the first point stays.
 
 ### KI-15 Pinned PiP limits
 - None on the 7870, where every PiP is a window.
 - Google Maps switches to its minimal UI in FYT's pinned PiP unless the LSPosed module is used (D-23).
 - If PiP is left on where pinned PiP does not work, Maps pops up on the home page.
+- Since 2026-11-15 the log says when an app started as pinned comes to the front instead three times in a
+  row (`PinnedPipHealth`, `11ea5c5ee`). Nothing is stopped and no notice is shown: there is no log yet from
+  a unit where pinned PiP fails to check the rule against.
 
 ### KI-16 A standard ("phone") 1.2.1 cannot update itself
 Its updater downloads the system build, which it cannot install. It needs one update by hand. Documented in
@@ -199,6 +217,11 @@ Its updater downloads the system build, which it cannot install. It needs one up
 `W Parcel: Expecting binder but got null!` and `E SurfaceSyncer: Failed to find sync for id=0` (Android 13),
 have no effect. Won't fix (D-15). The wallpaper `SecurityException` on Android 16 that stood here is
 handled since 2026-11-13: the wallpaper is read from one source with fallbacks (D-53).
+
+Looked at again on 2026-11-15, when the owner opened Part B: KI-02, KI-13, KI-16, KI-18 and KI-27 cannot be
+changed in this code (the platform key is what the system flavour needs; `FLAG_SECURE` and Shizuku's start
+belong to Shizuku and the system; the released 1.2.1 cannot be changed; the warnings come from the
+framework; the guard cannot see what produces no Android input). KI-08 stays a policy (D-36).
 
 ### KI-27 Limits of the home-screen guard
 Stated to the owner when the guard was finished (CHAT_04) [H]:
@@ -217,6 +240,11 @@ Stated to the owner when the guard was finished (CHAT_04) [H]:
 - **Outcome [H]:** the owner, 2026-11-12: "It didn't work as it should. Reverted it to acceptable state."
   The revert is `b38f1286`. The behaviour since then is acceptable to the owner.
 - **So:** do not retry direct surface moves for it without being asked (D-24).
+- **Fourth attempt, 2026-11-15 [V/H]:** the owner opened it again for round 14. `5392230c2` drew a picture of
+  the window in its page while the pages moved (`Bitmap.createBitmap(Picture)`) and made the window
+  invisible. On the 7862 the window and every FAB then vanished while the pages moved; the owner asked for it
+  to be undone, and `fe72e5a6f` reverted it. The accepted state holds again. A picture made with
+  `Bitmap.createBitmap(Picture)` is not to be used for windows of the launcher again.
 
 ## Part C: unverified
 
@@ -230,9 +258,11 @@ Nothing here is confirmed. Each item needs a check in the code or on a device be
 | KI-26 | Code observations from reviews | a re-check in today's code |
 | KI-28 | Root causes that were never found | a log of the next occurrence |
 | KI-29 | "Changes do not work on the 7870" | the tester's reply |
-| KI-30 | Round 13 (the 19 tasks) has no device result | the owner's test of each item |
-| KI-31 | StrictMode reports in the owner's log of 2026-11-09 | a look at each place in the code |
-| KI-32 | fYT Rating answers without a rating until its screen was opened | a log with the bridge's reason |
+| KI-30 | Round 13 (the 19 tasks) has no device result | closed 2026-11-15: the owner's result is recorded |
+| KI-31 | StrictMode reports in the owner's log of 2026-11-09 | one place fixed, three described (2026-11-15) |
+| KI-32 | fYT Rating answers without a rating until its screen was opened | closed 2026-11-15: the owner, "works" |
+| KI-34 | Round 14 has no device result | the owner's test of each item |
+| KI-35 | The bar's music buttons stop responding after an app | a log with the new tap lines |
 
 ### KI-05 Android 8–10 through the VD host never run on a device
 The path for a non-system launcher on 8.0, 8.1/9 and 10 (module daemon or Shizuku) was written from the
@@ -277,6 +307,11 @@ CHAT_15).
 Noted while reading the code, never fixed, and not re-checked since. The code has changed a lot; some may no
 longer apply.
 
+Re-checked on 2026-11-15: three are fixed (`edfa41596` the executor, `367cbc607` the null check,
+`bce7ad204` the stored height), the `CellLayout` one no longer applies (`onDetachedFromWindow` removes its
+placement runnable today) [V]; the two of the 7862's panes and `refreshBtInfo` are left as described, not
+changed blind.
+
 - From the 2026-10-05 review (CHAT_01):
   - the per-`Launcher` `bg` executor is never shut down;
   - the first loop in `pickTargetController` lacks a null check;
@@ -297,8 +332,8 @@ longer apply.
   **Cause found 2026-11-13** [V]: the window's place was counted from the pager's own left edge, and the
   pager is measured far wider than the screen and centred (on the 1080 px phone its edge is at −4520, which
   the owner's log shows as `box -4520,89,-3440,2205`). Fixed in `1d5a87aa9` (`PageBox.pageRestLeft`); the
-  device result is open (KI-30). The owner also reported the bar on the right with the setting "left"; the
-  cause found does not explain that case [U].
+  owner confirmed it on 2026-11-15 [H]. The owner also reported the bar on the right with the setting
+  "left"; the cause found does not explain that case [U].
 - A workspace load after leaving the settings bound nothing for 30 s (`e3136f45`; logs `Loader <id> …`).
   Mitigated with a guard and logging [V]; the cause is unknown [U].
 
@@ -311,7 +346,11 @@ Questions the 7870's logs were meant to answer since 2026-10-26, from the sessio
 - does `com.syu.media` give up its channel (8 → 0) when it pauses for a pane app?
 - Bluetooth times in milliseconds against `Launcher.refreshBtInfo`, which expects seconds (KI-26).
 
-### KI-30 Round 13 (the 19 tasks) has no device result
+### KI-30 Round 13 (the 19 tasks) had no device result (closed 2026-11-15)
+**The owner's result, 2026-11-15 [H]:** tasks 1, 3, 5, 7, 8, 9, 12, 13, 14, 15, 16 and 19 work; 6 was seen
+in a debug build only; 2, 4, 10/16, 11, 17 and 18 needed fixes, which round 14 made (KI-34). The text below
+is kept as it was.
+
 Commits `4e73d1178` … `ca27a7637` (2026-11-12/13) were built and unit-tested (1011 tests, CI green) and
 never run on a device [V]. What each needs is listed in `reports/implementation_report_2026-11-13.md`. The
 ones most worth a look first:
@@ -330,9 +369,31 @@ disk reads on the main thread from `VdHostProtocol$Proxy.startActivity` (three, 
 `WindowHostVdShizuku.maybeBind`, `LauncherAppWidgetHostView.onLayout`, and the toast at
 `FytRating.handlePreferenceClick`. The project rule is that StrictMode stays silent (D-07).
 
+**2026-11-15 [V]:** `WindowHostVdShizuku.maybeBind` is off the main thread (`0905bff8f`). The other three
+are described, not changed: `VdHostProtocol$Proxy.startActivity` is the start of a pane, which would need
+the way panes start rebuilt; the reads under `LauncherAppWidgetHostView.onLayout` and the toast happen
+inside the framework (the stack runs through Samsung's code).
+
 ### KI-32 fYT Rating answers without a rating until its screen was opened
 In the same log the bridge answers the ping (signed in, launcher allowed) and five rating requests within a
 second each, all without a rating; after its screen was opened once, ratings come [H]. Why is inside the
 fYT Rating app, whose source is not here [U]. Since `7242003c8` the launcher logs the bridge's reason and
 starts its wake activity once for this case; whether that is enough is not known. If not, the fix belongs in
-fYT Rating (getting its token on the receiver's path).
+fYT Rating (getting its token on the receiver's path). **Closed 2026-11-15:** the owner, "works" [H].
+
+### KI-34 Round 14 has no device result
+Commits `6fbd5605b` … `c7ed19880` (2026-11-15) build and pass the unit tests (1083), CI green up to run 490
+[V]; none has run on a device. `reports/implementation_report_2026-11-15.md` lists what each needs. The ones
+that change what the 7862 shows: the bars while the pages move and in the overview (`476013cf4`,
+`1ca81e616`), the cells' centring (`4e983e0f5`), the play/pause symbol (`605c2818d`), the night mode
+without a saved picture (`44ed8f4cb`), and the revert of the stats picture (`fe72e5a6f`).
+
+### KI-35 The bar's music buttons stop responding after an app
+The owner, 2026-11-15 [H]: after opening any app and coming back, the buttons of the music widget on the
+horizontal bar stop responding; the home screen's widget works. The owner's log (17:28:29) has no trace of
+the taps: nothing logged the bar's buttons or the gestures the pages take from the bar's window [V]. The
+buttons of both bars are bound when each is built, and the widget's views are given back to the page's bar
+after every park [V], so the binding is not the cause. `45c6cc18b` closes two ways a touch could be lost (a
+touchability change asked for before the window's first frame was dropped; a swipe fed from a bar's window
+stayed in progress across a pause) and logs every tap and every gesture the pages take from the bar. The
+cause is unknown [U]; the next log with `play/pause tap on the …` or `BarSwipeFrame:` lines shows it.
