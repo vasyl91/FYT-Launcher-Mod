@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">Azon az oldalon, amely a függőleges sávot mutatja, eggyel kevesebb oszlop van.</string>
     <string name="save_day_wallpaper_note">Állítsa be a nappali módban megjelenítendő háttérképet, majd koppintson erre a beállításra a mentéshez. Ellenkező esetben a háttérkép változatlan marad. <b>Eltarthat egy ideig – várja meg a megerősítő üzenetet!</b></string>
     <string name="save_night_wallpaper_note">Állítsa be az éjszakai módban megjelenítendő háttérképet, majd koppintson erre a beállításra a mentéshez. Ellenkező esetben a háttérkép változatlan marad. <b>Eltarthat egy ideig – várja meg a megerősítő üzenetet!</b></string>
+    <string name="openweather_key_title">Saját OpenWeather API-kulcs (nem kötelező)</string>
+    <string name="openweather_key_summary">Üres: a beépített kulcs használatos. Saját ingyenes kulccsal az openweathermap.org oldalról az időjárás nem függ a közös kulcstól.</string>
+    <string name="openweather_key_invalid">Ez nem OpenWeather-kulcs (32 betű és számjegy).</string>
 </resources>

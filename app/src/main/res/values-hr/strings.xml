@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">Stranica koja prikazuje okomitu traku ima jedan stupac manje.</string>
     <string name="save_day_wallpaper_note">Postavite pozadinu koju želite prikazivati u dnevnom načinu, a zatim dodirnite ovu postavku da biste je spremili. Inače pozadina ostaje kakva jest. <b>Može potrajati – pričekajte poruku potvrde!</b></string>
     <string name="save_night_wallpaper_note">Postavite pozadinu koju želite prikazivati u noćnom načinu, a zatim dodirnite ovu postavku da biste je spremili. Inače pozadina ostaje kakva jest. <b>Može potrajati – pričekajte poruku potvrde!</b></string>
+    <string name="openweather_key_title">Vlastiti OpenWeather API ključ (neobavezno)</string>
+    <string name="openweather_key_summary">Prazno: koristi se ugrađeni ključ. S vlastitim besplatnim ključem s openweathermap.org vrijeme ne ovisi o dijeljenom.</string>
+    <string name="openweather_key_invalid">To nije OpenWeather ključ (32 slova i znamenke).</string>
 </resources>

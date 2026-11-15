@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">Een pagina die de verticale balk toont, heeft één kolom minder.</string>
     <string name="save_day_wallpaper_note">Stel de achtergrond in die je in de dagmodus wilt tonen en tik dan op deze voorkeur om hem op te slaan. Anders blijft de achtergrond zoals hij is. <b>Dit kan even duren – wacht op de bevestigingsmelding!</b></string>
     <string name="save_night_wallpaper_note">Stel de achtergrond in die je in de nachtmodus wilt tonen en tik dan op deze voorkeur om hem op te slaan. Anders blijft de achtergrond zoals hij is. <b>Dit kan even duren – wacht op de bevestigingsmelding!</b></string>
+    <string name="openweather_key_title">Eigen OpenWeather API-sleutel (optioneel)</string>
+    <string name="openweather_key_summary">Leeg: de ingebouwde sleutel wordt gebruikt. Met je eigen gratis sleutel van openweathermap.org hangt het weer niet af van de gedeelde.</string>
+    <string name="openweather_key_invalid">Dat is geen OpenWeather-sleutel (32 letters en cijfers).</string>
 </resources>

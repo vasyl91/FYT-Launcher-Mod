@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">’n Bladsy wat die vertikale balk wys, het een kolom minder.</string>
     <string name="save_day_wallpaper_note">Stel die agtergrond wat jy in dagmodus wil wys, en tik dan hierdie voorkeur om dit te stoor. Anders bly die agtergrond soos dit is. <b>Dit kan \'n rukkie neem – wag vir die bevestigingsboodskap!</b></string>
     <string name="save_night_wallpaper_note">Stel die agtergrond wat jy in nagmodus wil wys, en tik dan hierdie voorkeur om dit te stoor. Anders bly die agtergrond soos dit is. <b>Dit kan \'n rukkie neem – wag vir die bevestigingsboodskap!</b></string>
+    <string name="openweather_key_title">Eie OpenWeather API-sleutel (opsioneel)</string>
+    <string name="openweather_key_summary">Leeg: die ingeboude sleutel word gebruik. Met jou eie gratis sleutel van openweathermap.org hang die weer nie van die gedeelde een af nie.</string>
+    <string name="openweather_key_invalid">Dit is nie ’n OpenWeather-sleutel nie (32 letters en syfers).</string>
 </resources>

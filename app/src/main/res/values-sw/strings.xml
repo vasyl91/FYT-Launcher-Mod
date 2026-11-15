@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">Ukurasa unaoonyesha upau wa wima una safu wima moja pungufu.</string>
     <string name="save_day_wallpaper_note">Weka mandhari unayotaka kuonyesha katika hali ya mchana, kisha gusa mapendeleo haya ili kuihifadhi. Vinginevyo mandhari hubaki kama ilivyo. <b>Inaweza kuchukua muda kidogo – subiri ujumbe wa uthibitisho!</b></string>
     <string name="save_night_wallpaper_note">Weka mandhari unayotaka kuonyesha katika hali ya usiku, kisha gusa mapendeleo haya ili kuihifadhi. Vinginevyo mandhari hubaki kama ilivyo. <b>Inaweza kuchukua muda kidogo – subiri ujumbe wa uthibitisho!</b></string>
+    <string name="openweather_key_title">Ufunguo wako wa OpenWeather API (si lazima)</string>
+    <string name="openweather_key_summary">Tupu: ufunguo uliojengewa ndani hutumika. Kwa ufunguo wako wa bure kutoka openweathermap.org, hali ya hewa haitegemei ule unaoshirikiwa.</string>
+    <string name="openweather_key_invalid">Huo si ufunguo wa OpenWeather (herufi na tarakimu 32).</string>
 </resources>

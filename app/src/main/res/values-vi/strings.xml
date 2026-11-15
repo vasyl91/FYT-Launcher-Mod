@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">Trang hiển thị thanh dọc có ít hơn một cột.</string>
     <string name="save_day_wallpaper_note">Đặt hình nền bạn muốn hiển thị ở chế độ ban ngày, rồi nhấn tùy chọn này để lưu. Nếu không, hình nền được giữ nguyên. <b>Có thể mất một lúc – hãy đợi thông báo xác nhận!</b></string>
     <string name="save_night_wallpaper_note">Đặt hình nền bạn muốn hiển thị ở chế độ ban đêm, rồi nhấn tùy chọn này để lưu. Nếu không, hình nền được giữ nguyên. <b>Có thể mất một lúc – hãy đợi thông báo xác nhận!</b></string>
+    <string name="openweather_key_title">Khóa OpenWeather API riêng (tùy chọn)</string>
+    <string name="openweather_key_summary">Để trống: dùng khóa có sẵn. Với khóa miễn phí của riêng bạn từ openweathermap.org, thời tiết không phụ thuộc vào khóa dùng chung.</string>
+    <string name="openweather_key_invalid">Đó không phải là khóa OpenWeather (32 chữ cái và chữ số).</string>
 </resources>

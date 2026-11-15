@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">Halaman yang menampilkan bilah vertikal memiliki satu kolom lebih sedikit.</string>
     <string name="save_day_wallpaper_note">Atur wallpaper yang ingin Anda tampilkan di mode siang, lalu ketuk preferensi ini untuk menyimpannya. Jika tidak, wallpaper dibiarkan apa adanya. <b>Mungkin perlu waktu sebentar – tunggu pesan konfirmasi!</b></string>
     <string name="save_night_wallpaper_note">Atur wallpaper yang ingin Anda tampilkan di mode malam, lalu ketuk preferensi ini untuk menyimpannya. Jika tidak, wallpaper dibiarkan apa adanya. <b>Mungkin perlu waktu sebentar – tunggu pesan konfirmasi!</b></string>
+    <string name="openweather_key_title">Kunci API OpenWeather sendiri (opsional)</string>
+    <string name="openweather_key_summary">Kosong: kunci bawaan dipakai. Dengan kunci gratis Anda sendiri dari openweathermap.org, cuaca tidak bergantung pada kunci bersama.</string>
+    <string name="openweather_key_invalid">Itu bukan kunci OpenWeather (32 huruf dan angka).</string>
 </resources>

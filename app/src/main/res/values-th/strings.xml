@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">หน้าที่แสดงแถบแนวตั้งจะมีคอลัมน์น้อยลงหนึ่งคอลัมน์</string>
     <string name="save_day_wallpaper_note">ตั้งวอลเปเปอร์ที่ต้องการแสดงในโหมดกลางวัน แล้วแตะรายการนี้เพื่อบันทึก มิฉะนั้นวอลเปเปอร์จะคงเดิม <b>อาจใช้เวลาสักครู่ – รอข้อความยืนยัน!</b></string>
     <string name="save_night_wallpaper_note">ตั้งวอลเปเปอร์ที่ต้องการแสดงในโหมดกลางคืน แล้วแตะรายการนี้เพื่อบันทึก มิฉะนั้นวอลเปเปอร์จะคงเดิม <b>อาจใช้เวลาสักครู่ – รอข้อความยืนยัน!</b></string>
+    <string name="openweather_key_title">คีย์ OpenWeather API ของตนเอง (ไม่บังคับ)</string>
+    <string name="openweather_key_summary">เว้นว่าง: ใช้คีย์ที่มีมาในตัว หากใช้คีย์ฟรีของคุณเองจาก openweathermap.org สภาพอากาศจะไม่ขึ้นกับคีย์ที่ใช้ร่วมกัน</string>
+    <string name="openweather_key_invalid">นี่ไม่ใช่คีย์ OpenWeather (ตัวอักษรและตัวเลข 32 ตัว)</string>
 </resources>

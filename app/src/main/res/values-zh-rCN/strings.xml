@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">显示纵栏的页面会少一列。</string>
     <string name="save_day_wallpaper_note">设置您希望用于日间模式的壁纸，然后点击此选项保存，否则壁纸保持不变。<b>可能需要一点时间，请等待确认“Toast”提示！</b></string>
     <string name="save_night_wallpaper_note">设置您希望用于夜间模式的壁纸，然后点击此选项保存，否则壁纸保持不变。<b>可能需要一点时间，请等待确认“Toast”提示！</b></string>
+    <string name="openweather_key_title">自己的 OpenWeather API 密钥（可选）</string>
+    <string name="openweather_key_summary">留空：使用内置密钥。使用您在 openweathermap.org 免费申请的密钥后，天气不再依赖共用密钥。</string>
+    <string name="openweather_key_invalid">这不是 OpenWeather 密钥（32 位字母和数字）。</string>
 </resources>

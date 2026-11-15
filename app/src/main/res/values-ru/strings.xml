@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">На странице с вертикальной панелью на один столбец меньше.</string>
     <string name="save_day_wallpaper_note">Установите обои, которые будут отображаться в дневном режиме, затем нажмите здесь, чтобы сохранить их. Иначе обои останутся без изменений. <b>Это может занять некоторое время — дождитесь сообщения о подтверждении!</b></string>
     <string name="save_night_wallpaper_note">Установите обои, которые будут отображаться в ночном режиме, затем нажмите здесь, чтобы сохранить их. Иначе обои останутся без изменений. <b>Это может занять некоторое время — дождитесь сообщения о подтверждении!</b></string>
+    <string name="openweather_key_title">Свой ключ OpenWeather API (необязательно)</string>
+    <string name="openweather_key_summary">Пусто: используется встроенный ключ. Со своим бесплатным ключом с openweathermap.org погода не зависит от общего.</string>
+    <string name="openweather_key_invalid">Это не ключ OpenWeather (32 буквы и цифры).</string>
 </resources>

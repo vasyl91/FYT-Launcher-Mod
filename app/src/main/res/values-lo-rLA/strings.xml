@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">ໜ້າທີ່ສະແດງແຖບແນວຕັ້ງມີຖັນໜ້ອຍລົງໜຶ່ງຖັນ.</string>
     <string name="save_day_wallpaper_note">ຕັ້ງພາບພື້ນຫຼັງທີ່ທ່ານຕ້ອງການສະແດງໃນໂໝດກາງເວັນ ແລ້ວແຕະການຕັ້ງຄ່ານີ້ເພື່ອບັນທຶກ. ຖ້າບໍ່ດັ່ງນັ້ນ ພາບພື້ນຫຼັງຈະຄືເກົ່າ. <b>ອາດໃຊ້ເວລາຈັກໜ້ອຍ – ລໍຖ້າຂໍ້ຄວາມຢືນຢັນ!</b></string>
     <string name="save_night_wallpaper_note">ຕັ້ງພາບພື້ນຫຼັງທີ່ທ່ານຕ້ອງການສະແດງໃນໂໝດກາງຄືນ ແລ້ວແຕະການຕັ້ງຄ່ານີ້ເພື່ອບັນທຶກ. ຖ້າບໍ່ດັ່ງນັ້ນ ພາບພື້ນຫຼັງຈະຄືເກົ່າ. <b>ອາດໃຊ້ເວລາຈັກໜ້ອຍ – ລໍຖ້າຂໍ້ຄວາມຢືນຢັນ!</b></string>
+    <string name="openweather_key_title">ຄີ OpenWeather API ຂອງຕົນເອງ (ບໍ່ບັງຄັບ)</string>
+    <string name="openweather_key_summary">ຫວ່າງ: ໃຊ້ຄີທີ່ມີມາພ້ອມ. ດ້ວຍຄີຟຣີຂອງທ່ານເອງຈາກ openweathermap.org ສະພາບອາກາດຈະບໍ່ຂຶ້ນກັບຄີທີ່ໃຊ້ຮ່ວມກັນ.</string>
+    <string name="openweather_key_invalid">ນີ້ບໍ່ແມ່ນຄີ OpenWeather (ຕົວອັກສອນ ແລະ ຕົວເລກ 32 ຕົວ).</string>
 </resources>

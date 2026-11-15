@@ -49,6 +49,8 @@ public final class Keys {
     public static final String ACCESSIBILITY_SETTINGS = "accessibility_settings";
     public static final String WALLPAPER_PICKER = "wallpaper_picker"; 
     public static final String WALLPAPER_PICKER_SOURCE = "wallpaper_picker_source"; 
+    /** An OpenWeather key of the user's own; absent or not a key = the built-in one (WeatherKey). */
+    public static final String OPENWEATHER_API_KEY = "openweather_api_key";
     public static final String ALL_APPS_TEXT_SIZE = "all_apps_textSize"; 
     public static final String WORKSPACE_TEXT_SIZE = "workspace_textSize";
     /** Before it was split into LAUNCHER_HOME_WAKE and LAUNCHER_HOME_COLD_START; only migrated. */

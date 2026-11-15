@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">ቋሚ አሞሌውን የሚያሳይ ገጽ አንድ አምድ ያንሰዋል።</string>
     <string name="save_day_wallpaper_note">በቀን ሁነታ ላይ ማሳየት የሚፈልጉትን ልጣፍ ያቀናብሩ፣ ከዚያ ለማስቀመጥ ይህን ምርጫ መታ ያድርጉ። ካልሆነ ልጣፉ እንዳለ ይቀራል። <b>ትንሽ ጊዜ ሊወስድ ይችላል – የማረጋገጫ መልእክቱን ይጠብቁ!</b></string>
     <string name="save_night_wallpaper_note">በሌሊት ሁነታ ላይ ማሳየት የሚፈልጉትን ልጣፍ ያቀናብሩ፣ ከዚያ ለማስቀመጥ ይህን ምርጫ መታ ያድርጉ። ካልሆነ ልጣፉ እንዳለ ይቀራል። <b>ትንሽ ጊዜ ሊወስድ ይችላል – የማረጋገጫ መልእክቱን ይጠብቁ!</b></string>
+    <string name="openweather_key_title">የራስ OpenWeather API ቁልፍ (አማራጭ)</string>
+    <string name="openweather_key_summary">ባዶ፦ አብሮ የተሰራው ቁልፍ ጥቅም ላይ ይውላል። ከ openweathermap.org በነጻ ባገኙት የራስዎ ቁልፍ የአየር ሁኔታው በተጋራው ቁልፍ ላይ አይመረኮዝም።</string>
+    <string name="openweather_key_invalid">ይህ የ OpenWeather ቁልፍ አይደለም (32 ፊደላትና አሃዞች)።</string>
 </resources>

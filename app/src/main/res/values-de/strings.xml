@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">Eine Seite, die die vertikale Leiste zeigt, hat eine Spalte weniger.</string>
     <string name="save_day_wallpaper_note">Legen Sie den Hintergrund fest, der im Tagmodus angezeigt werden soll, und tippen Sie dann hier, um ihn zu speichern. Andernfalls bleibt der Hintergrund, wie er ist. <b>Das kann einen Moment dauern – warten Sie auf die Bestätigungsmeldung!</b></string>
     <string name="save_night_wallpaper_note">Legen Sie den Hintergrund fest, der im Nachtmodus angezeigt werden soll, und tippen Sie dann hier, um ihn zu speichern. Andernfalls bleibt der Hintergrund, wie er ist. <b>Das kann einen Moment dauern – warten Sie auf die Bestätigungsmeldung!</b></string>
+    <string name="openweather_key_title">Eigener OpenWeather-API-Schlüssel (optional)</string>
+    <string name="openweather_key_summary">Leer: Der eingebaute Schlüssel wird verwendet. Mit einem eigenen kostenlosen Schlüssel von openweathermap.org hängt das Wetter nicht vom gemeinsamen ab.</string>
+    <string name="openweather_key_invalid">Das ist kein OpenWeather-Schlüssel (32 Buchstaben und Ziffern).</string>
 </resources>

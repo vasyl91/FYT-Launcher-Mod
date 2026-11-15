@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">Puslapyje, kuriame rodoma vertikali juosta, yra vienu stulpeliu mažiau.</string>
     <string name="save_day_wallpaper_note">Nustatykite ekrano foną, kuris bus rodomas dienos režimu, tada palieskite šį nustatymą, kad jį išsaugotumėte. Kitaip ekrano fonas paliekamas toks, koks yra. <b>Tai gali šiek tiek užtrukti – palaukite patvirtinimo pranešimo!</b></string>
     <string name="save_night_wallpaper_note">Nustatykite ekrano foną, kuris bus rodomas nakties režimu, tada palieskite šį nustatymą, kad jį išsaugotumėte. Kitaip ekrano fonas paliekamas toks, koks yra. <b>Tai gali šiek tiek užtrukti – palaukite patvirtinimo pranešimo!</b></string>
+    <string name="openweather_key_title">Nuosavas OpenWeather API raktas (neprivaloma)</string>
+    <string name="openweather_key_summary">Tuščia: naudojamas integruotas raktas. Su savo nemokamu raktu iš openweathermap.org orai nepriklauso nuo bendro rakto.</string>
+    <string name="openweather_key_invalid">Tai ne OpenWeather raktas (32 raidės ir skaitmenys).</string>
 </resources>

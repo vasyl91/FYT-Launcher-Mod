@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">Stran, ki prikazuje navpično vrstico, ima en stolpec manj.</string>
     <string name="save_day_wallpaper_note">Nastavite ozadje, ki naj se prikazuje v dnevnem načinu, nato se dotaknite te nastavitve, da ga shranite. Sicer ozadje ostane, kakršno je. <b>To lahko traja nekaj časa – počakajte na potrditveno sporočilo!</b></string>
     <string name="save_night_wallpaper_note">Nastavite ozadje, ki naj se prikazuje v nočnem načinu, nato se dotaknite te nastavitve, da ga shranite. Sicer ozadje ostane, kakršno je. <b>To lahko traja nekaj časa – počakajte na potrditveno sporočilo!</b></string>
+    <string name="openweather_key_title">Lasten ključ OpenWeather API (izbirno)</string>
+    <string name="openweather_key_summary">Prazno: uporabi se vgrajeni ključ. Z lastnim brezplačnim ključem z openweathermap.org vreme ni odvisno od skupnega.</string>
+    <string name="openweather_key_invalid">To ni ključ OpenWeather (32 črk in števk).</string>
 </resources>

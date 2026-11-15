@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">O pagină care afișează bara verticală are o coloană mai puțin.</string>
     <string name="save_day_wallpaper_note">Setați imaginea de fundal pe care doriți să o afișați în modul zi, apoi atingeți această preferință pentru a o salva. Altfel imaginea de fundal rămâne așa cum este. <b>Poate dura puțin – așteptați mesajul de confirmare!</b></string>
     <string name="save_night_wallpaper_note">Setați imaginea de fundal pe care doriți să o afișați în modul noapte, apoi atingeți această preferință pentru a o salva. Altfel imaginea de fundal rămâne așa cum este. <b>Poate dura puțin – așteptați mesajul de confirmare!</b></string>
+    <string name="openweather_key_title">Cheie proprie OpenWeather API (opțional)</string>
+    <string name="openweather_key_summary">Gol: se folosește cheia încorporată. Cu propria cheie gratuită de la openweathermap.org, vremea nu depinde de cea partajată.</string>
+    <string name="openweather_key_invalid">Aceasta nu este o cheie OpenWeather (32 de litere și cifre).</string>
 </resources>

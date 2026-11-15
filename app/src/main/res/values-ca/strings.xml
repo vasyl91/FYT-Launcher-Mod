@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">Una pàgina que mostra la barra vertical té una columna menys.</string>
     <string name="save_day_wallpaper_note">Defineix el fons de pantalla que vols mostrar en mode dia i toca aquesta preferència per desar-lo. Si no, el fons de pantalla es deixa tal com està. <b>Pot trigar una estona: espera el missatge de confirmació!</b></string>
     <string name="save_night_wallpaper_note">Defineix el fons de pantalla que vols mostrar en mode nit i toca aquesta preferència per desar-lo. Si no, el fons de pantalla es deixa tal com està. <b>Pot trigar una estona: espera el missatge de confirmació!</b></string>
+    <string name="openweather_key_title">Clau pròpia de l\'API d\'OpenWeather (opcional)</string>
+    <string name="openweather_key_summary">Buit: s\'utilitza la clau integrada. Amb una clau gratuïta pròpia d\'openweathermap.org el temps no depèn de la compartida.</string>
+    <string name="openweather_key_invalid">Això no és una clau d\'OpenWeather (32 lletres i xifres).</string>
 </resources>

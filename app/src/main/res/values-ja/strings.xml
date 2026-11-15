@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">縦バーを表示するページは列が1つ少なくなります。</string>
     <string name="save_day_wallpaper_note">昼モードで表示する壁紙を設定し、この項目をタップして保存してください。保存しない場合、壁紙は変更されません。<b>少し時間がかかる場合があります。確認のメッセージが表示されるまでお待ちください。</b></string>
     <string name="save_night_wallpaper_note">夜モードで表示する壁紙を設定し、この項目をタップして保存してください。保存しない場合、壁紙は変更されません。<b>少し時間がかかる場合があります。確認のメッセージが表示されるまでお待ちください。</b></string>
+    <string name="openweather_key_title">自分の OpenWeather API キー（任意）</string>
+    <string name="openweather_key_summary">空欄の場合は内蔵キーを使います。openweathermap.org で取得した自分の無料キーを使えば、天気は共有キーに左右されません。</string>
+    <string name="openweather_key_invalid">OpenWeather のキーではありません（英数字32文字）。</string>
 </resources>

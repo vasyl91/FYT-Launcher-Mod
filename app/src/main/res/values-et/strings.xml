@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">Lehel, mis näitab vertikaalset riba, on üks veerg vähem.</string>
     <string name="save_day_wallpaper_note">Määrake taustapilt, mida soovite päevarežiimis kuvada, ja puudutage selle salvestamiseks seda eelistust. Vastasel juhul jääb taustapilt muutmata. <b>See võib veidi aega võtta – oodake kinnitusteadet!</b></string>
     <string name="save_night_wallpaper_note">Määrake taustapilt, mida soovite öörežiimis kuvada, ja puudutage selle salvestamiseks seda eelistust. Vastasel juhul jääb taustapilt muutmata. <b>See võib veidi aega võtta – oodake kinnitusteadet!</b></string>
+    <string name="openweather_key_title">Oma OpenWeather API võti (valikuline)</string>
+    <string name="openweather_key_summary">Tühi: kasutatakse sisseehitatud võtit. Oma tasuta võtmega saidilt openweathermap.org ei sõltu ilm jagatud võtmest.</string>
+    <string name="openweather_key_invalid">See ei ole OpenWeatheri võti (32 tähte ja numbrit).</string>
 </resources>

@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">Uma página que mostra a barra vertical tem uma coluna a menos.</string>
     <string name="save_day_wallpaper_note">Defina o plano de fundo que será exibido no modo dia e toque aqui para salvá-lo. Caso contrário, o plano de fundo fica como está. <b>Pode demorar um pouco – aguarde a mensagem de confirmação!</b></string>
     <string name="save_night_wallpaper_note">Defina o plano de fundo que será exibido no modo noite e toque aqui para salvá-lo. Caso contrário, o plano de fundo fica como está. <b>Pode demorar um pouco – aguarde a mensagem de confirmação!</b></string>
+    <string name="openweather_key_title">Chave própria da API OpenWeather (opcional)</string>
+    <string name="openweather_key_summary">Vazio: a chave integrada é usada. Com sua própria chave gratuita do openweathermap.org, o clima não depende da chave compartilhada.</string>
+    <string name="openweather_key_invalid">Isso não é uma chave do OpenWeather (32 letras e dígitos).</string>
 </resources>

@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">Lapā, kurā redzama vertikālā josla, ir par vienu kolonnu mazāk.</string>
     <string name="save_day_wallpaper_note">Iestatiet fona tapeti, ko vēlaties rādīt dienas režīmā, un pēc tam pieskarieties šim iestatījumam, lai to saglabātu. Pretējā gadījumā fona tapete paliek nemainīta. <b>Tas var aizņemt kādu laiku — gaidiet apstiprinājuma ziņojumu!</b></string>
     <string name="save_night_wallpaper_note">Iestatiet fona tapeti, ko vēlaties rādīt nakts režīmā, un pēc tam pieskarieties šim iestatījumam, lai to saglabātu. Pretējā gadījumā fona tapete paliek nemainīta. <b>Tas var aizņemt kādu laiku — gaidiet apstiprinājuma ziņojumu!</b></string>
+    <string name="openweather_key_title">Sava OpenWeather API atslēga (neobligāti)</string>
+    <string name="openweather_key_summary">Tukšs: tiek izmantota iebūvētā atslēga. Ar savu bezmaksas atslēgu no openweathermap.org laikapstākļi nav atkarīgi no kopīgās.</string>
+    <string name="openweather_key_invalid">Tā nav OpenWeather atslēga (32 burti un cipari).</string>
 </resources>

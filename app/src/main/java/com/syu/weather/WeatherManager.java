@@ -48,7 +48,19 @@ import okhttp3.Response;
 public class WeatherManager {
     private static final String TAG = "WeatherManager";
     public static final String OPEN_WEATHER_APPID = "4a87b2f097e39a2cb9c75916073e75a7";
-    public static final String OPEN_WEATHER_CURRENT_URL = "https://api.openweathermap.org/data/2.5/weather?appid=" + OPEN_WEATHER_APPID + "&units=metric";
+    private static final String OPEN_WEATHER_CURRENT = "https://api.openweathermap.org/data/2.5/weather?appid=";
+
+    /** The address of the current weather, with the user's own key if one is set, else the built-in one (WeatherKey). */
+    private static String currentWeatherUrl() {
+        String own = PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp)
+                .getString(com.android.launcher66.settings.Keys.OPENWEATHER_API_KEY, "");
+        return currentWeatherUrl(WeatherKey.use(own, OPEN_WEATHER_APPID));
+    }
+
+    /** The address of the current weather for a key; the place and the rest are added by the request. */
+    static String currentWeatherUrl(String key) {
+        return OPEN_WEATHER_CURRENT + key + "&units=metric";
+    }
 
     /**
      * When the weather is fetched again: once the car is this far from where the last one was
@@ -589,7 +601,7 @@ public class WeatherManager {
             (new AsyncTask<String, Void, WeatherDescription>() {
                 public WeatherDescription doInBackground(String[] params) {
                     if (params != null && params.length > 0) {
-                        String url = OPEN_WEATHER_CURRENT_URL + "&lat=" + lat + "&lon=" + lon;
+                        String url = currentWeatherUrl() + "&lat=" + lat + "&lon=" + lon;
                         Log.d("hzq", "getWeatherNew url = " + redactUrl(url));
                         String entry = WeatherManager.sendGet(url);
                         // Only the size: the answer holds the coordinates and the place.

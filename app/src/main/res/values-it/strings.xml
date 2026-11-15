@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">Una pagina che mostra la barra verticale ha una colonna in meno.</string>
     <string name="save_day_wallpaper_note">Imposta lo sfondo da mostrare in modalità giorno, poi tocca qui per salvarlo. In caso contrario lo sfondo resta com\'è. <b>Potrebbe volerci un po\' – attendi il messaggio di conferma!</b></string>
     <string name="save_night_wallpaper_note">Imposta lo sfondo da mostrare in modalità notte, poi tocca qui per salvarlo. In caso contrario lo sfondo resta com\'è. <b>Potrebbe volerci un po\' – attendi il messaggio di conferma!</b></string>
+    <string name="openweather_key_title">Chiave API OpenWeather personale (facoltativa)</string>
+    <string name="openweather_key_summary">Vuoto: viene usata la chiave integrata. Con una chiave gratuita personale di openweathermap.org il meteo non dipende da quella condivisa.</string>
+    <string name="openweather_key_invalid">Non è una chiave OpenWeather (32 lettere e cifre).</string>
 </resources>

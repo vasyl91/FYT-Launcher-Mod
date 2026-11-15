@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">Dikey çubuğu gösteren sayfada bir sütun eksik olur.</string>
     <string name="save_day_wallpaper_note">Gündüz modunda görüntülenecek duvar kâğıdını ayarlayın, sonra kaydetmek için bu tercihe dokunun. Aksi halde duvar kâğıdı olduğu gibi kalır. <b>Biraz zaman alabilir – onay mesajını bekleyin!</b></string>
     <string name="save_night_wallpaper_note">Gece modunda görüntülenecek duvar kâğıdını ayarlayın, sonra kaydetmek için bu tercihe dokunun. Aksi halde duvar kâğıdı olduğu gibi kalır. <b>Biraz zaman alabilir – onay mesajını bekleyin!</b></string>
+    <string name="openweather_key_title">Kendi OpenWeather API anahtarınız (isteğe bağlı)</string>
+    <string name="openweather_key_summary">Boş: yerleşik anahtar kullanılır. openweathermap.org\'dan alacağınız kendi ücretsiz anahtarınızla hava durumu ortak anahtara bağlı kalmaz.</string>
+    <string name="openweather_key_invalid">Bu bir OpenWeather anahtarı değil (32 harf ve rakam).</string>
 </resources>

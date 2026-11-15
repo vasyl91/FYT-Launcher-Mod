@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">En side som viser den loddrette linjen, har én kolonne mindre.</string>
     <string name="save_day_wallpaper_note">Angi bakgrunnen som skal vises i dagmodus, og trykk deretter på denne innstillingen for å lagre den. Ellers forblir bakgrunnen som den er. <b>Det kan ta litt tid – vent på bekreftelsesmeldingen!</b></string>
     <string name="save_night_wallpaper_note">Angi bakgrunnen som skal vises i nattmodus, og trykk deretter på denne innstillingen for å lagre den. Ellers forblir bakgrunnen som den er. <b>Det kan ta litt tid – vent på bekreftelsesmeldingen!</b></string>
+    <string name="openweather_key_title">Egen OpenWeather API-nøkkel (valgfritt)</string>
+    <string name="openweather_key_summary">Tom: den innebygde nøkkelen brukes. Med din egen gratis nøkkel fra openweathermap.org er været ikke avhengig av den delte.</string>
+    <string name="openweather_key_invalid">Dette er ikke en OpenWeather-nøkkel (32 bokstaver og sifre).</string>
 </resources>

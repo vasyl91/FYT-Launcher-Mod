@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">En side, der viser den lodrette bjælke, har én kolonne færre.</string>
     <string name="save_day_wallpaper_note">Indstil den baggrund, der skal vises i dagtilstand, og tryk derefter på denne indstilling for at gemme den. Ellers forbliver baggrunden, som den er. <b>Det kan tage et øjeblik – vent på bekræftelsesbeskeden!</b></string>
     <string name="save_night_wallpaper_note">Indstil den baggrund, der skal vises i nattilstand, og tryk derefter på denne indstilling for at gemme den. Ellers forbliver baggrunden, som den er. <b>Det kan tage et øjeblik – vent på bekræftelsesbeskeden!</b></string>
+    <string name="openweather_key_title">Egen OpenWeather API-nøgle (valgfri)</string>
+    <string name="openweather_key_summary">Tom: den indbyggede nøgle bruges. Med din egen gratis nøgle fra openweathermap.org afhænger vejret ikke af den delte.</string>
+    <string name="openweather_key_invalid">Det er ikke en OpenWeather-nøgle (32 bogstaver og cifre).</string>
 </resources>

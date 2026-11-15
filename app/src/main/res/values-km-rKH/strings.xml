@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">ទំព័រដែលបង្ហាញរបារបញ្ឈរមានជួរឈរតិចជាងមួយ។</string>
     <string name="save_day_wallpaper_note">កំណត់ផ្ទាំងរូបភាពដែលអ្នកចង់បង្ហាញក្នុងមុខងារថ្ងៃ បន្ទាប់មកប៉ះការកំណត់នេះដើម្បីរក្សាទុក។ បើមិនដូច្នេះទេ ផ្ទាំងរូបភាពនៅដដែល។ <b>វាអាចចំណាយពេលបន្តិច – សូមរង់ចាំសារបញ្ជាក់!</b></string>
     <string name="save_night_wallpaper_note">កំណត់ផ្ទាំងរូបភាពដែលអ្នកចង់បង្ហាញក្នុងមុខងារយប់ បន្ទាប់មកប៉ះការកំណត់នេះដើម្បីរក្សាទុក។ បើមិនដូច្នេះទេ ផ្ទាំងរូបភាពនៅដដែល។ <b>វាអាចចំណាយពេលបន្តិច – សូមរង់ចាំសារបញ្ជាក់!</b></string>
+    <string name="openweather_key_title">សោ OpenWeather API ផ្ទាល់ខ្លួន (ជម្រើស)</string>
+    <string name="openweather_key_summary">ទទេ៖ ប្រើសោដែលភ្ជាប់មកស្រាប់។ ជាមួយសោឥតគិតថ្លៃផ្ទាល់ខ្លួនពី openweathermap.org អាកាសធាតុមិនអាស្រ័យលើសោរួមទេ។</string>
+    <string name="openweather_key_invalid">នេះមិនមែនជាសោ OpenWeather ទេ (អក្សរ និងលេខ 32 តួ)។</string>
 </resources>

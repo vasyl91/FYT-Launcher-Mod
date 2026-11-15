@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">Ina pagina che mussa la trav verticala ha ina colonna damain.</string>
     <string name="save_day_wallpaper_note">Fixescha il maletg dal fund che ti vul mussar en il modus da di e tutga lura questa opziun per al memorisar. Uschiglio resta il maletg dal fund sco ch\'el è. <b>Quai po durar in mument – spetga la missiva da conferma!</b></string>
     <string name="save_night_wallpaper_note">Fixescha il maletg dal fund che ti vul mussar en il modus da notg e tutga lura questa opziun per al memorisar. Uschiglio resta il maletg dal fund sco ch\'el è. <b>Quai po durar in mument – spetga la missiva da conferma!</b></string>
+    <string name="openweather_key_title">Atgna clav da l\'API OpenWeather (facultativ)</string>
+    <string name="openweather_key_summary">Vid: la clav integrada vegn duvrada. Cun in\'atgna clav gratuita dad openweathermap.org na dependa l\'aura betg da la clav cuminaivla.</string>
+    <string name="openweather_key_invalid">Quai n\'è betg ina clav dad OpenWeather (32 bustabs e cifras).</string>
 </resources>

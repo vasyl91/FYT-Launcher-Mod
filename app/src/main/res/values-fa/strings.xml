@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">صفحه‌ای که نوار عمودی را نشان می‌دهد یک ستون کمتر دارد.</string>
     <string name="save_day_wallpaper_note">تصویر زمینه‌ای را که می‌خواهید در حالت روز نمایش داده شود تنظیم کنید و سپس این گزینه را لمس کنید تا ذخیره شود. در غیر این صورت تصویر زمینه همان‌طور که هست می‌ماند. <b>ممکن است کمی طول بکشد – منتظر پیام تأیید بمانید!</b></string>
     <string name="save_night_wallpaper_note">تصویر زمینه‌ای را که می‌خواهید در حالت شب نمایش داده شود تنظیم کنید و سپس این گزینه را لمس کنید تا ذخیره شود. در غیر این صورت تصویر زمینه همان‌طور که هست می‌ماند. <b>ممکن است کمی طول بکشد – منتظر پیام تأیید بمانید!</b></string>
+    <string name="openweather_key_title">کلید OpenWeather API شخصی (اختیاری)</string>
+    <string name="openweather_key_summary">خالی: از کلید داخلی استفاده می‌شود. با کلید رایگان خودتان از openweathermap.org، آب‌وهوا به کلید مشترک وابسته نیست.</string>
+    <string name="openweather_key_invalid">این کلید OpenWeather نیست (۳۲ حرف و رقم).</string>
 </resources>

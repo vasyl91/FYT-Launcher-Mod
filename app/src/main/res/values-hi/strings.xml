@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">जिस पेज पर लंबवत बार दिखता है, उसमें एक कॉलम कम होता है।</string>
     <string name="save_day_wallpaper_note">वह वॉलपेपर सेट करें जिसे आप दिन मोड में दिखाना चाहते हैं, फिर उसे सहेजने के लिए इस विकल्प पर टैप करें। अन्यथा वॉलपेपर जैसा है वैसा ही रहेगा। <b>इसमें थोड़ा समय लग सकता है – पुष्टि संदेश की प्रतीक्षा करें!</b></string>
     <string name="save_night_wallpaper_note">वह वॉलपेपर सेट करें जिसे आप रात मोड में दिखाना चाहते हैं, फिर उसे सहेजने के लिए इस विकल्प पर टैप करें। अन्यथा वॉलपेपर जैसा है वैसा ही रहेगा। <b>इसमें थोड़ा समय लग सकता है – पुष्टि संदेश की प्रतीक्षा करें!</b></string>
+    <string name="openweather_key_title">अपनी OpenWeather API कुंजी (वैकल्पिक)</string>
+    <string name="openweather_key_summary">खाली: बिल्ट-इन कुंजी इस्तेमाल होती है। openweathermap.org की अपनी मुफ़्त कुंजी से मौसम साझा कुंजी पर निर्भर नहीं रहता।</string>
+    <string name="openweather_key_invalid">यह OpenWeather कुंजी नहीं है (32 अक्षर और अंक)।</string>
 </resources>

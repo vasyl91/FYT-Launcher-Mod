@@ -32,8 +32,8 @@ class WeatherManagerRedactTest {
 
     @Test
     void theRealRequestUrlNeverShowsTheKey() {
-        // The constant itself, so that a change of the URL format cannot uncover the key
-        String url = WeatherManager.OPEN_WEATHER_CURRENT_URL + "&lat=52.123&lon=16.987";
+        // The address as the request builds it, so that a change of its format cannot uncover the key
+        String url = WeatherManager.currentWeatherUrl(WeatherManager.OPEN_WEATHER_APPID) + "&lat=52.123&lon=16.987";
         assertTrue(url.contains(WeatherManager.OPEN_WEATHER_APPID));
         assertFalse(WeatherManager.redactUrl(url).contains(WeatherManager.OPEN_WEATHER_APPID));
         assertFalse(WeatherManager.redactUrl("Network error: " + url + " - " + url)

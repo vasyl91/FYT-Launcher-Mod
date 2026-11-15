@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">Stránka, která zobrazuje svislou lištu, má o jeden sloupec méně.</string>
     <string name="save_day_wallpaper_note">Nastavte tapetu, která se má zobrazit v denním režimu, a poté ji uložte klepnutím na tuto položku. Jinak zůstane tapeta beze změny. <b>Může to chvíli trvat – počkejte na potvrzující zprávu!</b></string>
     <string name="save_night_wallpaper_note">Nastavte tapetu, která se má zobrazit v nočním režimu, a poté ji uložte klepnutím na tuto položku. Jinak zůstane tapeta beze změny. <b>Může to chvíli trvat – počkejte na potvrzující zprávu!</b></string>
+    <string name="openweather_key_title">Vlastní klíč OpenWeather API (volitelné)</string>
+    <string name="openweather_key_summary">Prázdné: použije se vestavěný klíč. S vlastním bezplatným klíčem z openweathermap.org počasí nezávisí na sdíleném.</string>
+    <string name="openweather_key_invalid">To není klíč OpenWeather (32 písmen a číslic).</string>
 </resources>

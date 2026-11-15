@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">Halaman yang memaparkan bar menegak mempunyai satu lajur kurang.</string>
     <string name="save_day_wallpaper_note">Tetapkan kertas dinding yang anda mahu paparkan dalam mod siang, kemudian ketik keutamaan ini untuk menyimpannya. Jika tidak, kertas dinding dibiarkan seperti sedia ada. <b>Ia mungkin mengambil sedikit masa – tunggu mesej pengesahan!</b></string>
     <string name="save_night_wallpaper_note">Tetapkan kertas dinding yang anda mahu paparkan dalam mod malam, kemudian ketik keutamaan ini untuk menyimpannya. Jika tidak, kertas dinding dibiarkan seperti sedia ada. <b>Ia mungkin mengambil sedikit masa – tunggu mesej pengesahan!</b></string>
+    <string name="openweather_key_title">Kunci API OpenWeather sendiri (pilihan)</string>
+    <string name="openweather_key_summary">Kosong: kunci terbina dalam digunakan. Dengan kunci percuma anda sendiri daripada openweathermap.org, cuaca tidak bergantung pada kunci kongsi.</string>
+    <string name="openweather_key_invalid">Itu bukan kunci OpenWeather (32 huruf dan digit).</string>
 </resources>

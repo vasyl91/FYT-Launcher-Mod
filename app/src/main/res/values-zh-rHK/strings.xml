@@ -95,4 +95,7 @@
     <string name="workspace_grid_columns_note">顯示縱欄的頁面會少一欄。</string>
     <string name="save_day_wallpaper_note">設定您希望用於日間模式的桌布，然後點選此選項儲存，否則桌布維持不變。<b>可能需要一點時間，請等待確認「Toast」提示！</b></string>
     <string name="save_night_wallpaper_note">設定您希望用於夜間模式的桌布，然後點選此選項儲存，否則桌布維持不變。<b>可能需要一點時間，請等待確認「Toast」提示！</b></string>
+    <string name="openweather_key_title">自己的 OpenWeather API 金鑰（選用）</string>
+    <string name="openweather_key_summary">留空：使用內建金鑰。使用您在 openweathermap.org 免費申請的金鑰後，天氣不再依賴共用金鑰。</string>
+    <string name="openweather_key_invalid">這不是 OpenWeather 金鑰（32 個字母和數字）。</string>
 </resources>

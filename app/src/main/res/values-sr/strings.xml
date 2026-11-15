@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">Страница која приказује вертикалну траку има једну колону мање.</string>
     <string name="save_day_wallpaper_note">Подесите позадину коју желите да приказујете у дневном режиму, а затим додирните ово подешавање да је сачувате. У супротном позадина остаје каква јесте. <b>Може потрајати – сачекајте поруку потврде!</b></string>
     <string name="save_night_wallpaper_note">Подесите позадину коју желите да приказујете у ноћном режиму, а затим додирните ово подешавање да је сачувате. У супротном позадина остаје каква јесте. <b>Може потрајати – сачекајте поруку потврде!</b></string>
+    <string name="openweather_key_title">Сопствени OpenWeather API кључ (опционално)</string>
+    <string name="openweather_key_summary">Празно: користи се уграђени кључ. Са сопственим бесплатним кључем са openweathermap.org време не зависи од дељеног.</string>
+    <string name="openweather_key_invalid">То није OpenWeather кључ (32 слова и цифре).</string>
 </resources>

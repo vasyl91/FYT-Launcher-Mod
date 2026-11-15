@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">Strona, na której widać pasek pionowy, ma o jedną kolumnę mniej.</string>
     <string name="save_day_wallpaper_note">Ustaw tapetę, którą chcesz aby launcher wyświetlał dla trybu dziennego i następnie naciśnij tutaj, aby ją zapisać. W innym wypadku tapeta pozostaje bez zmian. <b>To może chwilę potrwać, zaczekaj na okno informujące o zakończeniu operacji!</b></string>
     <string name="save_night_wallpaper_note">Ustaw tapetę, którą chcesz aby launcher wyświetlał dla trybu nocnego i następnie naciśnij tutaj, aby ją zapisać. W innym wypadku tapeta pozostaje bez zmian. <b>To może chwilę potrwać, zaczekaj na okno informujące o zakończeniu operacji!</b></string>
+    <string name="openweather_key_title">Własny klucz OpenWeather API (opcjonalnie)</string>
+    <string name="openweather_key_summary">Puste: używany jest klucz wbudowany. Z własnym darmowym kluczem z openweathermap.org pogoda nie zależy od klucza wspólnego.</string>
+    <string name="openweather_key_invalid">To nie jest klucz OpenWeather (32 litery i cyfry).</string>
 </resources>

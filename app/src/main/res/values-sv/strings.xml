@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">En sida som visar det lodräta fältet har en kolumn mindre.</string>
     <string name="save_day_wallpaper_note">Ställ in bakgrunden som ska visas i dagläge och tryck sedan på den här inställningen för att spara den. Annars lämnas bakgrunden som den är. <b>Det kan ta en stund – vänta på bekräftelsemeddelandet!</b></string>
     <string name="save_night_wallpaper_note">Ställ in bakgrunden som ska visas i nattläge och tryck sedan på den här inställningen för att spara den. Annars lämnas bakgrunden som den är. <b>Det kan ta en stund – vänta på bekräftelsemeddelandet!</b></string>
+    <string name="openweather_key_title">Egen OpenWeather API-nyckel (valfritt)</string>
+    <string name="openweather_key_summary">Tomt: den inbyggda nyckeln används. Med din egen gratisnyckel från openweathermap.org är vädret inte beroende av den delade.</string>
+    <string name="openweather_key_invalid">Det där är ingen OpenWeather-nyckel (32 bokstäver och siffror).</string>
 </resources>

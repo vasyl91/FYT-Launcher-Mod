@@ -146,6 +146,10 @@
             android:summaryOff="@string/wallpaper_picker_launcher"
             app:layout="@layout/preference_no_switch" />
         <Preference
+            android:key="openweather_api_key"
+            android:title="@string/openweather_key_title"
+            android:summary="@string/openweather_key_summary" />
+        <Preference
             android:layout="@layout/preference_separator"
             android:selectable="false" />
         <SwitchPreferenceCompat

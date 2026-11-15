@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">الصفحة التي تعرض الشريط العمودي ينقص منها عمود واحد.</string>
     <string name="save_day_wallpaper_note">اضبط الخلفية التي تريد عرضها في وضع النهار، ثم المس هذا الخيار لحفظها. وإلا فستبقى الخلفية كما هي. <b>قد يستغرق الأمر بعض الوقت – انتظر رسالة التأكيد!</b></string>
     <string name="save_night_wallpaper_note">اضبط الخلفية التي تريد عرضها في وضع الليل، ثم المس هذا الخيار لحفظها. وإلا فستبقى الخلفية كما هي. <b>قد يستغرق الأمر بعض الوقت – انتظر رسالة التأكيد!</b></string>
+    <string name="openweather_key_title">مفتاح OpenWeather API خاص (اختياري)</string>
+    <string name="openweather_key_summary">فارغ: يُستخدم المفتاح المدمج. بمفتاحك المجاني من openweathermap.org لا يعتمد الطقس على المفتاح المشترك.</string>
+    <string name="openweather_key_invalid">هذا ليس مفتاح OpenWeather (32 حرفًا ورقمًا).</string>
 </resources>

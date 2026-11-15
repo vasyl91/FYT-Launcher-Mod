@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">Sivulla, jolla pystypalkki näkyy, on yksi sarake vähemmän.</string>
     <string name="save_day_wallpaper_note">Aseta taustakuva, joka näytetään päivätilassa, ja tallenna se napauttamalla tätä asetusta. Muuten taustakuva jää ennalleen. <b>Tämä voi kestää hetken – odota vahvistusviestiä!</b></string>
     <string name="save_night_wallpaper_note">Aseta taustakuva, joka näytetään yötilassa, ja tallenna se napauttamalla tätä asetusta. Muuten taustakuva jää ennalleen. <b>Tämä voi kestää hetken – odota vahvistusviestiä!</b></string>
+    <string name="openweather_key_title">Oma OpenWeather API -avain (valinnainen)</string>
+    <string name="openweather_key_summary">Tyhjä: käytetään sisäänrakennettua avainta. Omalla ilmaisella avaimella osoitteesta openweathermap.org sää ei riipu jaetusta avaimesta.</string>
+    <string name="openweather_key_invalid">Tämä ei ole OpenWeather-avain (32 kirjainta ja numeroa).</string>
 </resources>

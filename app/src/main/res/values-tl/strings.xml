@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">Ang page na nagpapakita ng patayong bar ay may isang column na mas kaunti.</string>
     <string name="save_day_wallpaper_note">Itakda ang wallpaper na gusto mong ipakita sa day mode, pagkatapos ay i-tap ang kagustuhang ito para i-save ito. Kung hindi, mananatili ang wallpaper kung ano ito. <b>Maaaring tumagal ito nang kaunti – hintayin ang mensahe ng kumpirmasyon!</b></string>
     <string name="save_night_wallpaper_note">Itakda ang wallpaper na gusto mong ipakita sa night mode, pagkatapos ay i-tap ang kagustuhang ito para i-save ito. Kung hindi, mananatili ang wallpaper kung ano ito. <b>Maaaring tumagal ito nang kaunti – hintayin ang mensahe ng kumpirmasyon!</b></string>
+    <string name="openweather_key_title">Sariling OpenWeather API key (opsyonal)</string>
+    <string name="openweather_key_summary">Walang laman: ang built-in na key ang gagamitin. Sa sarili mong libreng key mula sa openweathermap.org, hindi nakadepende ang lagay ng panahon sa pinagsasaluhang key.</string>
+    <string name="openweather_key_invalid">Hindi iyan OpenWeather key (32 titik at numero).</string>
 </resources>

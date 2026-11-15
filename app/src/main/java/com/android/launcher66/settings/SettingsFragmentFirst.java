@@ -109,6 +109,8 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     private boolean nightModeBool;
     private boolean defaultWallpapersBool;
     private boolean wallpaperSet = false;
+    /** The row for an OpenWeather key of the user's own (WeatherKeyRow). */
+    private WeatherKeyRow weatherKeyRow;
     private boolean brightnessBool;
     /** Something that affects the brightness was changed on this screen; applied in onStop(). */
     private boolean brightnessDirty = false;
@@ -308,6 +310,8 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         Preference accessibilityPreference = findPreference(Keys.ACCESSIBILITY_SETTINGS);
         Preference wallpaperPicker = findPreference(Keys.WALLPAPER_PICKER);
         CustomNoSwitchPreference wallpaperPickerSource = findPreference(Keys.WALLPAPER_PICKER_SOURCE);
+        weatherKeyRow = new WeatherKeyRow(this, sharedPrefs);
+        weatherKeyRow.bind();
         Preference launcherHomeWake = findPreference(Keys.LAUNCHER_HOME_WAKE);
         Preference launcherHomeColdStart = findPreference(Keys.LAUNCHER_HOME_COLD_START);
         Preference coldStartLastAppDelay = findPreference(Keys.COLD_START_LAST_APP_DELAY);
@@ -1711,6 +1715,9 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             loadingDialog.dismiss();
             loadingDialog = null;
         } 
+        if (weatherKeyRow != null) {
+            weatherKeyRow.dismiss();
+        }
         if (alertLogcatServiceTimeoutDialog != null && alertLogcatServiceTimeoutDialog.isShowing()) {
             alertLogcatServiceTimeoutDialog.dismiss();
             alertLogcatServiceTimeoutDialog = null;

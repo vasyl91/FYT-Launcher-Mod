@@ -548,4 +548,7 @@
     <string name="workspace_grid_columns_note">Ikhasi elibonisa ibha eqondile linekholomu elilodwa elingaphansi.</string>
     <string name="save_day_wallpaper_note">Setha isithombe sangemuva ofuna ukusibonisa kumodi yosuku, bese uthepha le nketho ukuze usigcine. Ngaphandle kwalokho isithombe sangemuva sihlala sinjalo. <b>Kungathatha isikhathi esithile – linda umlayezo wokuqinisekisa!</b></string>
     <string name="save_night_wallpaper_note">Setha isithombe sangemuva ofuna ukusibonisa kumodi yobusuku, bese uthepha le nketho ukuze usigcine. Ngaphandle kwalokho isithombe sangemuva sihlala sinjalo. <b>Kungathatha isikhathi esithile – linda umlayezo wokuqinisekisa!</b></string>
+    <string name="openweather_key_title">Ukhiye wakho we-OpenWeather API (uyazikhethela)</string>
+    <string name="openweather_key_summary">Akunalutho: kusetshenziswa ukhiye owakhelwe ngaphakathi. Ngokhiye wakho wamahhala ovela ku-openweathermap.org, isimo sezulu asincikile kulowo owabiwayo.</string>
+    <string name="openweather_key_invalid">Lokho akuwona ukhiye we-OpenWeather (izinhlamvu nezinombolo ezingu-32).</string>
 </resources>
