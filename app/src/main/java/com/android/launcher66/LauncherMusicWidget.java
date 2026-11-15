@@ -117,7 +117,6 @@ final class LauncherMusicWidget {
 
     TextView tvTotalTime;
 
-    boolean temporarilyDisablePlayPauseButton = false;
 
     /**
      * Longest wait for AudioManager.isMusicActive() on the main thread. The answer normally takes a
@@ -619,22 +618,13 @@ final class LauncherMusicWidget {
         }
     }
 
-    /**
-     * After a press the button shows the opposite symbol at once, and the source takes a moment to
-     * report the new state; a redraw in between used to put the old symbol back. Until the state
-     * changes or the time is over, the symbol of the press stays.
-     */
-    private long mPlayPauseOverrideUntilMs;
-    private boolean mPlayPauseOverrideShowsPlaying;
-    private boolean mPlayPauseOverrideFrom;
-    private static final long PLAY_PAUSE_OVERRIDE_MS = 2000;
+    /** The tap that waits for the player's answer, and the symbol the button shows meanwhile (PlayPauseRequest). */
+    private final PlayPauseRequest mPlayPauseRequest = new PlayPauseRequest();
 
-    private void holdPlayPauseSymbol(boolean stateAtPress) {
-        mPlayPauseOverrideFrom = stateAtPress;
-        mPlayPauseOverrideShowsPlaying = !stateAtPress;
-        mPlayPauseOverrideUntilMs = SystemClock.elapsedRealtime() + PLAY_PAUSE_OVERRIDE_MS;
-        // The state may never change (the command was lost): the live state is drawn again then
-        mLauncher.mHandler.postDelayed(this::redrawLastRefresh, PLAY_PAUSE_OVERRIDE_MS + 50);
+    /** The state the player reports, as a tap and the symbol of a tap read it. */
+    private boolean playingForPlayPause() {
+        return "fyt".equals(mediaSource) && LauncherApplication.isFytDevice()
+                ? stockPlayingForIcon() : isMediaPlayingNow();
     }
 
     private int mIconLogState = -1;
@@ -642,15 +632,16 @@ final class LauncherMusicWidget {
 
     public void setPlayPauseIcon() {
         boolean playing = isMediaPlayingNow();
-        if (mPlayPauseOverrideUntilMs != 0) {
-            if (SystemClock.elapsedRealtime() >= mPlayPauseOverrideUntilMs || playing != mPlayPauseOverrideFrom) {
-                mPlayPauseOverrideUntilMs = 0; // the source has answered, or did not in time
-            } else {
-                playing = mPlayPauseOverrideShowsPlaying;
-            }
-        }
+        // The state the tap is measured by: the stock player's own for the stock player (as at the tap)
+        boolean player = "fyt".equals(mediaSource) && LauncherApplication.isFytDevice() ? stockPlayingForIcon() : playing;
+        playing = mPlayPauseRequest.waiting(SystemClock.elapsedRealtime(), player) ? !player : playing;
         logIcon(playing);
-        if (this.mPlayPauseButton != null && !temporarilyDisablePlayPauseButton) {
+        drawPlayPauseSymbol(playing);
+    }
+
+    /** Both play/pause buttons, the home screen's widget's and the bar's, show the same symbol. */
+    private void drawPlayPauseSymbol(boolean playing) {
+        if (this.mPlayPauseButton != null) {
             if (playing) {
                 this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
                 setWidgetButtonsTint(mPlayPauseButton);
@@ -659,7 +650,7 @@ final class LauncherMusicWidget {
                 setWidgetButtonsTint(mPlayPauseButton);
             }
         }
-        if (this.mPlayPauseButtonTwo != null && !temporarilyDisablePlayPauseButton) {
+        if (this.mPlayPauseButtonTwo != null) {
             if (playing) {
                 this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
                 setBarButtonsTint(mPlayPauseButtonTwo);
@@ -1542,97 +1533,63 @@ final class LauncherMusicWidget {
         if (openLastPlayerIfNoSession()) {
             return;
         }
-        if (!temporarilyDisablePlayPauseButton) {
-            if ("fyt".equals(mediaSource) && !LauncherApplication.isFytDevice()) {
-                // The source a restart starts with; no stock player to ask on another device:
-                // the session the system would send the key to.
-                MediaTransportController.handleAction(mLauncher,
-                        MediaTransportController.ACTION_PLAY_PAUSE, getPreferredMediaControllerPackage());
-            } else if ("fyt".equals(mediaSource)) {
-                holdPlayPauseSymbol(stockPlayingForIcon());
-                if (this.mPlayPauseButton != null) {
-                    if (stockPlayingForIcon()) {
-                        this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                        setWidgetButtonsTint(mPlayPauseButton);
-                    } else {
-                        this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                        setWidgetButtonsTint(mPlayPauseButton);
-                    }
-                }
-                if (this.mPlayPauseButtonTwo != null && barView) {
-                    if (stockPlayingForIcon()) {
-                        this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                        setBarButtonsTint(mPlayPauseButtonTwo);
-                    } else {
-                        this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                        setBarButtonsTint(mPlayPauseButtonTwo);
-                    }
-                } 
-                // com.syu.music, or com.syu.media on the 7870 (which takes no intents)
-                MediaTransportController.dispatchToStockPlayer(mLauncher,
-                        MediaTransportController.ACTION_PLAY_PAUSE);
-            } else if ("mediaController".equals(mediaSource)) {
-                boolean activeControllerAppRunning = false;
-                MediaSessionManager msm = (MediaSessionManager) mLauncher.getSystemService(Context.MEDIA_SESSION_SERVICE);
-                ComponentName component = new ComponentName(mLauncher, NotificationListener.class);
-                List<MediaController> controllers = msm.getActiveSessions(component);
+        long now = SystemClock.elapsedRealtime();
+        boolean playingAtTap = playingForPlayPause();
+        if (!mPlayPauseRequest.tap(now, playingAtTap)) {
+            // The tap before still waits for the player: a second one would toggle it back (PlayPauseRequest)
+            Log.d(TAG_ICON, "play/pause tap on the " + (barView ? "bar" : "home screen")
+                    + " not taken: the one before waits for the player");
+            return;
+        }
+        Log.d(TAG_ICON, "play/pause tap on the " + (barView ? "bar" : "home screen") + ": "
+                + (playingAtTap ? "pause" : "play") + " (src " + mediaSource + ")");
+        // The tap's symbol at once, on both buttons; the redraws keep it until the player answers
+        drawPlayPauseSymbol(!playingAtTap);
+        // The state may never change (the command was lost): the live state is drawn again then
+        mLauncher.mHandler.postDelayed(this::redrawLastRefresh, PlayPauseRequest.HOLD_MS + 50);
+        if ("fyt".equals(mediaSource) && !LauncherApplication.isFytDevice()) {
+            // The source a restart starts with; no stock player to ask on another device:
+            // the session the system would send the key to.
+            MediaTransportController.handleAction(mLauncher,
+                    MediaTransportController.ACTION_PLAY_PAUSE, getPreferredMediaControllerPackage());
+        } else if ("fyt".equals(mediaSource)) {
+            // com.syu.music, or com.syu.media on the 7870 (which takes no intents)
+            MediaTransportController.dispatchToStockPlayer(mLauncher,
+                    MediaTransportController.ACTION_PLAY_PAUSE);
+        } else if ("mediaController".equals(mediaSource)) {
+            boolean activeControllerAppRunning = false;
+            List<MediaController> controllers = activeSessions();
+            if (controllers != null) {
                 for (MediaController controller : controllers) {
                     if (controller.getPackageName().equals(activeController)) {
                         activeControllerAppRunning = true;
-
                         PlaybackState state = controller.getPlaybackState();
                         int playbackState = (state != null) ? state.getState() : PlaybackState.STATE_NONE;
-
-                        // Buffering is playing too: a play sent to it again would be lost.
+                        // Buffering is playing too: a play sent to it again would be lost. At once, not
+                        // after a delay: the symbol already shows the tap.
                         if (MediaWidgetState.isPlaybackActive(playbackState)) {
-                            mLauncher.handler.postDelayed(() -> {
-                                if (this.mPlayPauseButton != null) {
-                                    this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                                    setWidgetButtonsTint(mPlayPauseButton);
-                                }
-                                if (this.mPlayPauseButtonTwo != null && barView) {
-                                    this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
-                                    setBarButtonsTint(mPlayPauseButtonTwo);
-                                }
-                                controller.getTransportControls().pause();
-                            }, 350);
-
+                            controller.getTransportControls().pause();
                         } else {
-                            if (this.mPlayPauseButton != null) {
-                                this.mPlayPauseButton.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                                setWidgetButtonsTint(mPlayPauseButton);
-                            }
-                            if (this.mPlayPauseButtonTwo != null && barView) {
-                                this.mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_playpause_icon));
-                                setBarButtonsTint(mPlayPauseButtonTwo);
-                            }   
-
                             controller.getTransportControls().play();
                         }
                         break;
                     }
                 }
-                if (!activeControllerAppRunning || mLauncher.mRadioWidget.isRadioPlaying()) {
-                    // Uninstalled meanwhile: nothing to open (it used to crash here)
-                    Intent launchIntent = launchIntentIfInstalled(activeController);
-                    if (launchIntent != null) {
-                        WindowUtil.removePip();
-                        refreshLeftCycleForIntent(launchIntent);
-                        mLauncher.startActivitySafely(null, launchIntent, "music");
-                    }
+            }
+            if (!activeControllerAppRunning || mLauncher.mRadioWidget.isRadioPlaying()) {
+                // Uninstalled meanwhile: nothing to open (it used to crash here)
+                Intent launchIntent = launchIntentIfInstalled(activeController);
+                if (launchIntent != null) {
+                    WindowUtil.removePip();
+                    refreshLeftCycleForIntent(launchIntent);
+                    mLauncher.startActivitySafely(null, launchIntent, "music");
                 }
             }
         }
 
-        temporarilyDisablePlayPauseButton = true;
-
-        // The icon above is a guess made before the player has answered, and every update in the
-        // next 500 ms is dropped: once the button is free again the real state is shown, and
-        // once more a little later for a player slow to start (after a long sleep, say).
-        mLauncher.mHandler.postDelayed(() -> {
-            temporarilyDisablePlayPauseButton = false;
-            setPlayPauseIcon();
-        }, 500);
+        // The real state once more, for a player slow to answer (after a long sleep, say); while the tap
+        // waits these keep its symbol
+        mLauncher.mHandler.postDelayed(this::setPlayPauseIcon, 500);
         mLauncher.mHandler.postDelayed(this::setPlayPauseIcon, PLAY_PAUSE_RECHECK_MS);
     }
 
