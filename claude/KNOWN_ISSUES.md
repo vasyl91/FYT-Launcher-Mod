@@ -434,7 +434,14 @@ none has run on a device. What they change and what to look at:
   widget's minimum was larger than its own size, the search answered 0,0 0x0 and the reorder was committed,
   which put the widget in the corner under a pane;
 - icons dropped from the list of apps survive a reload (`ItemValidity`: found as the list finds them, icons of
-  apps that renamed their first activity mended); each icon still hidden is logged with its reason;
+  apps that renamed their first activity mended); each icon still hidden is logged with its reason. **The
+  owner, 2026-11-16 09:11 [H]: icons still disappeared** - the log gave "the app is disabled" for
+  Authenticator, Alior, Anki, Booksy and Bolt, which the list of apps shows: `ItemValidity` looked at
+  `applicationInfo.enabled` before asking whether the activity starts. `4929e3da8` lets only what the system
+  starts decide and logs the system's facts for each icon still hidden; why the A55 reports these apps as
+  disabled is [U];
+- the widget preview crashed the launcher at every start while Allegro's widget was on a page (its layout
+  parameters were not FrameLayout's); fixed in `f860da64d`;
 - a widget whose content fails shows its preview and opens its app on a tap; APPWIDGET_UPDATE is sent where
   the launcher may (system, root host). On the A55 with Shizuku through ADB only the preview helps: Allegro's
   widget comes back when Allegro updates it, or after the launcher is no longer reinstalled.

@@ -196,3 +196,12 @@ the options; only the system and root may send APPWIDGET_UPDATE.
 device** (KI-38). Unknown [U]: why Assistant is hidden in some loads and not in others; the next log gives the
 reason with each hidden icon.
 
+### After round 16 (2026-11-16, the owner's logs of 09:02 and 09:11)
+
+| Commit | Subject | Why |
+|---|---|---|
+| `f860da64d` | Widgets: the preview of a widget that cannot be shown is laid out as the host expects | the preview had ViewGroup layout parameters; `AppWidgetHostView.prepareView()` casts them to FrameLayout's, and in `handleViewError()` nothing catches that: the launcher crashed at every start |
+| `4929e3da8` | Model: an icon is shown whenever the list of apps would start its app | `ef10031ab` still let `applicationInfo.enabled` (false on the A55 for Authenticator, Alior, Anki, Booksy, Bolt) hide icons the list of apps shows |
+
+Both are my mistakes in round 16. Not tested on a device.
+
