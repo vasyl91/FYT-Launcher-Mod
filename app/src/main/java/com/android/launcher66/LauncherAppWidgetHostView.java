@@ -84,18 +84,45 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView implements Touc
      * "Problem loading widget" text the widget shows its preview - the picture its app gives for the list of
      * widgets, else the app's icon - and a tap opens the app. Whatever the app sends next replaces it, as any
      * update does. This is the one way every widget that fails goes, whatever its app.
+     *
+     * <p>The rules for this view: its layout parameters are FrameLayout's, because AppWidgetHostView.prepareView()
+     * casts them (other ones made it throw in handleViewError(), which nothing catches, and the launcher crashed
+     * at every start while the widget was on a page, 2026-11-16 09:02); and it never throws - whatever goes wrong
+     * in building it gives the plain error view. The system may ask for it several times in one frame: the
+     * picture is read once per widget view and the log line is written once.
      */
     @Override
     protected View getErrorView() {
         requestProviderUpdate();
+        try {
+            View preview = buildPreview();
+            if (preview != null) {
+                return preview;
+            }
+        } catch (RuntimeException e) {
+            Log.w(UPDATE_TAG, "widget " + getAppWidgetId() + ": no preview, the plain error view: " + e);
+        }
+        return mInflater.inflate(R.layout.appwidget_error, this, false);
+    }
+
+    /** The picture of the preview, once read; read once per widget view. */
+    private android.graphics.drawable.Drawable mPreviewPicture;
+    private CharSequence mPreviewLabel;
+    private boolean mPreviewRequested;
+    /** The preview view made last, which the picture goes into once it is read. */
+    private android.widget.ImageView mPreviewView;
+
+    /** The preview view (see getErrorView()); null where the widget has no provider to show. */
+    private View buildPreview() {
         final AppWidgetProviderInfo info = getAppWidgetInfo();
         if (info == null || info.provider == null) {
-            return mInflater.inflate(R.layout.appwidget_error, this, false);
+            return null;
         }
         final android.widget.ImageView preview = new android.widget.ImageView(getContext());
         preview.setScaleType(android.widget.ImageView.ScaleType.FIT_CENTER);
-        preview.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT));
+        preview.setLayoutParams(new android.widget.FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT,
+                android.view.Gravity.CENTER));
         final String pkg = info.provider.getPackageName();
         preview.setOnClickListener(v -> {
             android.content.Intent launch = getContext().getPackageManager().getLaunchIntentForPackage(pkg);
@@ -103,6 +130,18 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView implements Touc
                 mLauncher.startActivitySafely(v, launch, "widget preview");
             }
         });
+        if (mPreviewPicture != null || mPreviewLabel != null) {
+            preview.setImageDrawable(mPreviewPicture);
+            preview.setContentDescription(mPreviewLabel);
+            return preview;
+        }
+        mPreviewView = preview;
+        if (mPreviewRequested) {
+            return preview;   // being read: it goes into this view when it is there
+        }
+        mPreviewRequested = true;
+        Log.i(UPDATE_TAG, "widget " + getAppWidgetId() + " (" + info.provider.flattenToShortString()
+                + ") cannot be shown: its preview is, and a tap opens the app");
         final Context context = getContext();
         final int density = getResources().getDisplayMetrics().densityDpi;
         // The app's resources are read off the main thread (StrictMode)
@@ -120,13 +159,16 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView implements Touc
             }
             final android.graphics.drawable.Drawable shown = picture;
             final CharSequence name = label;
-            preview.post(() -> {
-                preview.setImageDrawable(shown);
-                preview.setContentDescription(name);
+            post(() -> {
+                mPreviewPicture = shown;
+                mPreviewLabel = name;
+                android.widget.ImageView target = mPreviewView;
+                if (target != null) {
+                    target.setImageDrawable(shown);
+                    target.setContentDescription(name);
+                }
             });
         });
-        Log.i(UPDATE_TAG, "widget " + getAppWidgetId() + " (" + info.provider.flattenToShortString()
-                + ") cannot be shown: its preview is, and a tap opens the app");
         return preview;
     }
 
