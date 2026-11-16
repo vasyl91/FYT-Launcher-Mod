@@ -7135,6 +7135,9 @@ public class Workspace extends SmoothPagedView
                     foundCell = false;
                     mTargetCell[0] = mTargetCell[1] = -1;
                 }
+                // The page of this result, not of the last drag-over's: the cell is the target page's, and an
+                // item put on the page it came from with a cell of another grid lay outside it (PageFit)
+                screenId = foundCell ? getIdForScreen(dropTargetLayout) : mDragInfo.screenId;
 
                 // if the widget resizes on drop
                 if (foundCell && (cell instanceof AppWidgetHostView) &&

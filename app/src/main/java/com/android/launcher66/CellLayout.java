@@ -807,6 +807,14 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
             // mean that it spans the extent of the CellLayout
             if (lp.cellHSpan < 0) lp.cellHSpan = mCountX;
             if (lp.cellVSpan < 0) lp.cellVSpan = mCountY;
+            if (!mIsHotseat && lp.isLockedToGrid
+                    && !PageFit.inGrid(lp.cellX, lp.cellY, lp.cellHSpan, lp.cellVSpan, mCountX, mCountY)) {
+                // Only the top left cell was ever checked here: the rest of the item lay outside the page
+                // (PageFit); the page's check brings it back once the page is complete
+                Log.w(TAG, "Added partly outside the grid " + mCountX + "x" + mCountY + ": "
+                        + (child.getTag() instanceof ItemInfo ? describeItem((ItemInfo) child.getTag()) : "a view")
+                        + " at " + lp.cellX + "," + lp.cellY + " " + lp.cellHSpan + "x" + lp.cellVSpan);
+            }
 
             child.setId(childId);
 

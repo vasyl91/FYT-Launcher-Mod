@@ -5706,7 +5706,17 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         int[] touchXY = mPendingAddInfo.dropPos;
         int[] finalSpan = new int[2];
         boolean foundCellSpan = false;
-        if (mPendingAddInfo.cellX >= 0 && mPendingAddInfo.cellY >= 0) {
+        if (mPendingAddInfo.cellX >= 0 && mPendingAddInfo.cellY >= 0
+                && !PageFit.inGrid(mPendingAddInfo.cellX, mPendingAddInfo.cellY, mPendingAddInfo.spanX,
+                        mPendingAddInfo.spanY, layout.getCountX(), layout.getCountY())) {
+            // Kept since the drop (or a rotation): in this grid the widget would reach past the page (PageFit)
+            Log.w(TAG, "completeAddAppWidget: " + mPendingAddInfo.spanX + "x" + mPendingAddInfo.spanY + " at "
+                    + mPendingAddInfo.cellX + "," + mPendingAddInfo.cellY + " does not lie in the grid "
+                    + layout.getCountX() + "x" + layout.getCountY() + ", a place is searched for");
+        }
+        if (mPendingAddInfo.cellX >= 0 && mPendingAddInfo.cellY >= 0
+                && PageFit.inGrid(mPendingAddInfo.cellX, mPendingAddInfo.cellY, mPendingAddInfo.spanX,
+                        mPendingAddInfo.spanY, layout.getCountX(), layout.getCountY())) {
             cellXY[0] = mPendingAddInfo.cellX;
             cellXY[1] = mPendingAddInfo.cellY;
             spanXY[0] = mPendingAddInfo.spanX;
@@ -5719,11 +5729,17 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     spanXY[1], cellXY, finalSpan);
             spanXY[0] = finalSpan[0];
             spanXY[1] = finalSpan[1];
-            foundCellSpan = (result != null);
+            // No place comes back as -1,-1, not as null (CellLayout.findNearestArea)
+            foundCellSpan = result != null && DropSpan.usable(result[0], result[1], finalSpan[0], finalSpan[1]);
+        } else if (layout.findCellForSpan(cellXY, spanXY[0], spanXY[1])) {
+            foundCellSpan = true;
         } else {
+            // The place was found for the smallest size: that is the size the widget gets. It was saved with the
+            // full one, which could reach past the grid from that place (PageFit)
             foundCellSpan = layout.findCellForSpan(cellXY, minSpanXY[0], minSpanXY[1]);
+            spanXY[0] = minSpanXY[0];
+            spanXY[1] = minSpanXY[1];
         }
-
         if (!foundCellSpan) {
             deleteAppWidgetIdAsync(appWidgetId);
             showOutOfSpaceMessage(isHotseatLayout(layout));

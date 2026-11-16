@@ -1,6 +1,8 @@
 package com.android.launcher66;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -10,6 +12,18 @@ class PageFitTest {
     // first row 18 px (Launcher.workspaceTopPadding)
     private static final int CELL = 211;
     private static final int BOTTOM = 10 * CELL;
+
+    @Test
+    void anItemIsInTheGridOnlyWithAllItsCells() {
+        // a page of 6 by 10 cells
+        assertTrue(PageFit.inGrid(0, 0, 1, 1, 6, 10));
+        assertTrue(PageFit.inGrid(2, 6, 4, 4, 6, 10));
+        // the top left cell inside, the rest not: what CellLayout.addViewToCellLayout() let through
+        assertFalse(PageFit.inGrid(2, 7, 4, 4, 6, 10));
+        assertFalse(PageFit.inGrid(3, 0, 4, 1, 6, 10));
+        assertFalse(PageFit.inGrid(-1, 0, 1, 1, 6, 10));
+        assertFalse(PageFit.inGrid(0, 0, 0, 1, 6, 10));
+    }
 
     @Test
     void anItemThatEndsAboveTheBottomKeepsItsHeight() {

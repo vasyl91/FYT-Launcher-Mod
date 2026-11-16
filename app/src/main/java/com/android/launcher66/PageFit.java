@@ -14,6 +14,12 @@ final class PageFit {
     private PageFit() {
     }
 
+    /** Whether an item of this span at this cell lies wholly in a grid of {@code countX} by {@code countY} cells. */
+    static boolean inGrid(int cellX, int cellY, int spanX, int spanY, int countX, int countY) {
+        return cellX >= 0 && cellY >= 0 && spanX >= 1 && spanY >= 1
+                && cellX + spanX <= countX && cellY + spanY <= countY;
+    }
+
     /**
      * The height of an item in cells, so that the padding of the first rows (the item is drawn that much lower)
      * never takes it past the grid's bottom. Only what the padding added is taken off: an item whose own cells
