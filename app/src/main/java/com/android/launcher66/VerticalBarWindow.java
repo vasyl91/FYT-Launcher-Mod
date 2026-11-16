@@ -1,13 +1,16 @@
 package com.android.launcher66;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -63,6 +66,16 @@ final class VerticalBarWindow {
     private View barView;
     private ImageView cornerBackground;
     private boolean onRight;
+    /**
+     * The part of the window's height the bar leaves to the first page's horizontal bar (VerticalBarCorner):
+     * transparent, its touches handed to the launcher's window. At the top or at the bottom of the window.
+     */
+    private int cornerInset;
+    private boolean cornerInsetTop;
+    private int cornerInsetTarget;
+    private ValueAnimator cornerAnimator;
+    /** How long the bar takes to grow into the corner or to give it back. */
+    private static final long CORNER_MS = 180;
 
     VerticalBarWindow(Launcher launcher, Runnable onButton) {
         this.launcher = launcher;
@@ -109,8 +122,9 @@ final class VerticalBarWindow {
         }
         LauncherAppBars bars = launcher.mAppBars;
         VerticalAppListAdapter adapter = bars.mVerticalAppListAdapter;
-        root = new LinearLayout(context);
+        root = new CornerPassLayout(context);
         root.setOrientation(LinearLayout.VERTICAL);
+        applyCornerInset();
 
         FrameLayout bar = new FrameLayout(context);
         barView = bar;
@@ -222,6 +236,97 @@ final class VerticalBarWindow {
      * @param frame      {x, y, width, height} on the screen
      * @param withCorner the page has the button now: the corner is part of the window
      */
+    /**
+     * The bar leaves {@code inset} px of the window's height to the first page's horizontal bar, or none
+     * (VerticalBarCorner). The window keeps its frame; only the bar inside it grows or shrinks.
+     *
+     * @param top     the corner is at the top of the window (the horizontal bar is at the top)
+     * @param animate in a short animation (while the pages move), else at once
+     * @return whether the inset is to change
+     */
+    boolean setCornerInset(int inset, boolean top, boolean animate) {
+        int target = Math.max(0, inset);
+        if (target == cornerInsetTarget && top == cornerInsetTop) {
+            return false;
+        }
+        cornerInsetTarget = target;
+        cornerInsetTop = top;
+        if (cornerAnimator != null) {
+            cornerAnimator.cancel();
+            cornerAnimator = null;
+        }
+        if (!animate || root == null || !root.isAttachedToWindow() || !shown) {
+            cornerInset = target;
+            applyCornerInset();
+            return true;
+        }
+        ValueAnimator animator = ValueAnimator.ofInt(cornerInset, target);
+        animator.setDuration(CORNER_MS);
+        animator.setInterpolator(new DecelerateInterpolator());
+        animator.addUpdateListener(a -> {
+            cornerInset = (int) a.getAnimatedValue();
+            applyCornerInset();
+        });
+        cornerAnimator = animator;
+        animator.start();
+        return true;
+    }
+
+    private void applyCornerInset() {
+        if (root != null) {
+            root.setPadding(0, cornerInsetTop ? cornerInset : 0, 0, cornerInsetTop ? 0 : cornerInset);
+        }
+    }
+
+    /** The window's left and right edge on the screen, as last put; null before it is built. */
+    int[] horizontalEdges() {
+        return expected == null ? null : new int[] {expected[0], expected[0] + expected[2]};
+    }
+
+    /**
+     * The window's root: a touch that starts in the corner the bar leaves free is the first page's horizontal
+     * bar's, which lies under it, and goes to the launcher's window with its coordinates moved, as the edge handle
+     * hands touches on (HorizontalBarEdgeHandle).
+     */
+    private final class CornerPassLayout extends LinearLayout {
+        private boolean passing;
+
+        CornerPassLayout(Context context) {
+            super(context);
+        }
+
+        @Override
+        public boolean dispatchTouchEvent(MotionEvent event) {
+            int action = event.getActionMasked();
+            if (action == MotionEvent.ACTION_DOWN) {
+                passing = cornerInset > 0 && (cornerInsetTop ? event.getY() < cornerInset
+                        : event.getY() >= getHeight() - cornerInset);
+            }
+            if (!passing) {
+                return super.dispatchTouchEvent(event);
+            }
+            if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+                passing = false;
+            }
+            View target = launcher.getWindow() == null ? null : launcher.getWindow().getDecorView();
+            if (target == null || !target.isAttachedToWindow()) {
+                return true;
+            }
+            int[] windowAt = new int[2];
+            int[] targetAt = new int[2];
+            getLocationOnScreen(windowAt);
+            target.getLocationOnScreen(targetAt);
+            MotionEvent copy = MotionEvent.obtain(event);
+            copy.offsetLocation(windowAt[0] - targetAt[0], windowAt[1] - targetAt[1]);
+            try {
+                target.dispatchTouchEvent(copy);
+            } finally {
+                copy.recycle();
+            }
+            return true;
+        }
+    }
+
     void setFrame(int[] frame, boolean withCorner, boolean right, int displayWidth) {
         if (root == null || params == null) {
             return;
@@ -360,6 +465,12 @@ final class VerticalBarWindow {
             return;
         }
         root.animate().cancel();
+        if (cornerAnimator != null) {
+            cornerAnimator.cancel();
+            cornerAnimator = null;
+        }
+        cornerInset = 0;
+        cornerInsetTarget = 0;
         try {
             if (recycler != null) {
                 recycler.setAdapter(null);

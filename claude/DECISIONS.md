@@ -860,8 +860,10 @@ The round had no brief; its result is in `reports/implementation_report_2026-11-
   seen doubled at the start of each swipe. The windows were also removed at every pause and built 250 and
   400 ms after the return, a time in which a swipe moved the first page's bar with its page.
 - **What remains:** the swap where the window steps aside, at rest and in one place (at most one frame of
-  a darker translucent background); with the vertical bar on every page and the horizontal one on the first
-  page only, the vertical window grows by the corner after the pages come to rest on another page.
+  a darker translucent background). With the vertical bar on every page and the horizontal one on the first
+  page only, the vertical bar grows into the corner as soon as the first page's horizontal bar has moved off
+  its strip, and gives it back as soon as that bar moves onto it, in a short animation (`VerticalBarCorner`,
+  the owner's request of 2026-11-16 13:30); until then it changed only at the end of the swipe.
 - **Where:** `HorizontalBarPlacement`, `VerticalBarPlacement`, `PersistentBarWindow`, `PageBarSwap`,
   `BarWindows`, `Workspace.hideEveryPageBarsOfNewPage()`, `dffdd806b`, `074c09350`, `33edcda65`.
 

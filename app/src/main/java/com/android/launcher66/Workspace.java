@@ -3620,8 +3620,10 @@ public class Workspace extends SmoothPagedView
         Rect box = barBoxOnScreen();
         int page = placementPage();
         boolean autoHide = mPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false);
-        boolean horizontalOnPage = HorizontalBarPlacement.reserve(page, mEveryPage, autoHide, true)
-                != HorizontalBarPlacement.Reserve.NONE;
+        // With the horizontal bar on the first page only the window has the whole height on every page, and the
+        // bar inside it leaves the corner to that bar where it lies across it (VerticalBarCorner)
+        boolean horizontalOnPage = !verticalCornerApplies()
+                && HorizontalBarPlacement.reserve(page, mEveryPage, autoHide, true) != HorizontalBarPlacement.Reserve.NONE;
         // At rest: the button does not flicker while the pages move
         withCorner[0] = HorizontalBarPlacement.bar(page, mEveryPage, autoHide, true, mBarSidesAgree, false, true)
                 == HorizontalBarPlacement.Bar.BUTTON;
@@ -3661,6 +3663,64 @@ public class Workspace extends SmoothPagedView
         mVerticalWindow.rebindAdapter();
         logVerticalFrame(frame, false);
         mVerticalWindow.setFrame(frame, corner[0], BarLayouts.sides(mPrefs, true).right, Launcher.screenWidth);
+        updateVerticalCorner(false, "placed");
+    }
+
+    /** The vertical bar on every page with the horizontal bar on the first page only (VerticalBarCorner). */
+    private boolean verticalCornerApplies() {
+        return mPrefs != null && VerticalBarCorner.applies(mVerticalBar, mVerticalEveryPage, mEveryPage,
+                mPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false), mPrefs.getBoolean(Keys.USER_LAYOUT, false));
+    }
+
+    /** Whether the corner was last given to the horizontal bar, for the log line at each change. */
+    private Boolean mVerticalCornerCoveredLogged;
+
+    /**
+     * Gives the corner to the first page's horizontal bar while it lies across the vertical bar's strip, and to the
+     * vertical bar as soon as it does not (VerticalBarCorner). Called in every frame of a move and when the window
+     * is placed.
+     *
+     * @param animate in a short animation (the pages are moving), else at once
+     */
+    private void updateVerticalCorner(boolean animate, String reason) {
+        if (mVerticalWindow == null || !mVerticalWindow.exists()) {
+            return;
+        }
+        if (!verticalCornerApplies()) {
+            mVerticalWindow.setCornerInset(0, true, false);
+            mVerticalCornerCoveredLogged = null;
+            return;
+        }
+        int[] edges = mVerticalWindow.horizontalEdges();
+        int page = getPageIndexForScreenId(CUSTOM_CONTENT_SCREEN_ID1);
+        if (edges == null || page < 0 || page >= getChildCount()) {
+            return;
+        }
+        Rect box = mBarBox.isEmpty() ? barBoxOnScreen() : mBarBox;
+        int shift = VerticalBarCorner.shift(getScrollForPage(page), getScrollX());
+        boolean covered = VerticalBarCorner.covered(box.left + shift, box.right + shift, edges[0], edges[1]);
+        int inset = covered ? verticalCornerHeight(box) : 0;
+        boolean top = mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
+        if (mVerticalWindow.setCornerInset(inset, top, animate)
+                && (mVerticalCornerCoveredLogged == null || mVerticalCornerCoveredLogged != covered)) {
+            mVerticalCornerCoveredLogged = covered;
+            Log.i(TAG, "Vertical bar: the corner is " + (covered ? "the first page's horizontal bar's"
+                    : "the vertical bar's") + " (" + reason + "), " + inset + " px");
+        }
+    }
+
+    /** The corner's height: the vertical bar's window on the other pages against the first page (BarLayout). */
+    private int verticalCornerHeight(Rect box) {
+        int barHeight = getHorizontalBarHeight(Launcher.screenWidth, Launcher.screenHeight);
+        boolean portrait = orientation == Configuration.ORIENTATION_PORTRAIT;
+        float width = Launcher.calculatedVerticalBarWidth > 0
+                ? Launcher.calculatedVerticalBarWidth
+                : PipEdgeTrim.computeVerticalBarWidth(portrait, Launcher.screenWidth, Launcher.screenHeight, barHeight);
+        int[] others = BarLayouts.of(mPrefs, box.width(), box.height(), barHeight, Math.round(width), true, false)
+                .verticalWindow(false);
+        int[] first = BarLayouts.of(mPrefs, box.width(), box.height(), barHeight, Math.round(width), true, true)
+                .verticalWindow(false);
+        return VerticalBarCorner.inset(others[3] - others[1], first[3] - first[1]);
     }
 
     private void buildVerticalWindow(String reason, boolean standby) {
@@ -3688,6 +3748,7 @@ public class Workspace extends SmoothPagedView
             }
             return;
         }
+        updateVerticalCorner(false, "built");
         Log.d(TAG, (standby ? "Persistent vertical bar: window built, in standby (" : "Persistent vertical bar: shown (")
                 + reason + ")" + (standby ? "" : " on page " + getCurrentPage()));
     }
@@ -5576,6 +5637,10 @@ public class Workspace extends SmoothPagedView
 
         // Update PiP positions based on scroll
         WindowUtil.updatePipPositionsForScroll(mUnboundedScrollX);
+        if (mState == State.NORMAL && mVerticalWindow != null) {
+            // The vertical bar takes the corner or gives it back as the first page's horizontal bar moves
+            updateVerticalCorner(true, "pages moving");
+        }
 
         boolean shouldOverScroll = ((mOverScrollX < 0 && (!hasCustomContent() || isLayoutRtl())) ||
                 (mOverScrollX > mMaxScrollX && (!hasCustomContent() || !isLayoutRtl())));

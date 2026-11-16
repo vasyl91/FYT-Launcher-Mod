@@ -243,3 +243,18 @@ panes under the vertical bar); an app opened from the bar and the return (the ba
 buttons answer); the overview, a drag, a folder, all apps; without "every page" the bar moves with the first
 page as before. The log has "Bars on every page: …" when the page is built and no "hidden under its window"
 in a move.
+
+### Round 19b (2026-11-16): the owner's test on the A55 (logs of 13:25 and 13:30)
+
+The owner: the other changes of round 19 work so far on the phone (the FYT is tested later); after the overview
+the vertical bar stood a little higher until the next swipe; and, asked for: with the horizontal bar on the
+first page only, the vertical bar should change its height smoothly as soon as that bar moves off or onto it,
+not at the end of the swipe.
+
+| Commit | Subject | Why |
+|---|---|---|
+| `d939d294a` | Bars: the bars' windows come back after the overview has ended, where the page lies at rest | the state is normal at the start of the way back from the overview; the window was shown then and placed on the bar measured on the small page (top 157 instead of 229) |
+| (next) | Bars: the vertical bar grows into the corner as soon as the first page's horizontal bar has left it | the window took the other page's frame only when the pages came to rest |
+
+**Deviation:** a change of state without an animation has no end callback here, so `setState(NORMAL)` posts one
+more update after it; the check of full size has a tolerance of a thousandth. **Not tested on a device.**

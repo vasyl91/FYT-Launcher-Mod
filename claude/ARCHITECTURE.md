@@ -188,7 +188,10 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
 - **Bar on every page:**
   - `L/HorizontalBarPlacement` and `L/VerticalBarPlacement` decide where each bar is drawn. A bar on every
     page is its window on every page, the first one too, moving or at rest (2026-11-16): the pages move
-    under it and nothing is swapped while they move (`PersistentBarWindow.action`).
+    under it and nothing is swapped while they move (`PersistentBarWindow.action`). With the vertical bar on
+    every page and the horizontal one on the first page only, `L/VerticalBarCorner` keeps the vertical window
+    at the whole height and the bar inside it leaves the corner to the first page's horizontal bar while that
+    lies across its strip (an animated inset, touches there handed to the launcher's window).
   - `L/PersistentBarWindow` is the logic of the window that stays put while the pages move (pre-built, so
     showing it costs nothing); `L/VerticalBarWindow` is the vertical bar's window. Both windows stay while an
     app is in front (2026-11-16): the system hides and shows them with the launcher's window, as it does the
