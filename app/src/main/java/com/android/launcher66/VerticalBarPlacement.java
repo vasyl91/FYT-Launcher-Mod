@@ -5,10 +5,10 @@ package com.android.launcher66;
  * place, free of views so that they can be tested; the mirror of {@link HorizontalBarPlacement}.
  *
  * <p>With the option off the bar belongs to the first page, as it always did: it is part of that page
- * and leaves with it. With the option on every page has it. The first page at rest keeps its own bar
- * and every other page has the same bar in a window of its own, which does not move while the pages
- * do. The first page's bar leaves with its page, so the window is up from the first moment of a move
- * (on any page), in the same place, and covers it without a jump.
+ * and leaves with it. With the option on every page has it, the first one too, in a window of its own,
+ * at rest and while the pages move: the window stands still and the pages move under it. The first
+ * page's own bar is hidden then and seen only where the window steps aside (the overview, a drag, a
+ * folder, all apps). Nothing is swapped while the pages move (see HorizontalBarPlacement).
  */
 public final class VerticalBarPlacement {
 
@@ -20,7 +20,8 @@ public final class VerticalBarPlacement {
 
     /**
      * @param page the page that is shown (or being left), 0 for the first
-     * @param pageMoving whether the pages are moving, between two pages or back to the same one
+     * @param pageMoving whether the pages are moving, between two pages or back to the same one; with the
+     *                   option on it changes nothing
      * @param userLayout whether the user layout is on: the window of the other pages exists only
      *                   there, so without it 'every page' means nothing
      */
@@ -29,7 +30,7 @@ public final class VerticalBarPlacement {
         if (!everyPage) {
             return page == 0 ? Bar.EMBEDDED : Bar.NONE;
         }
-        return page == 0 && !pageMoving ? Bar.EMBEDDED : Bar.PERSISTENT_OVERLAY;
+        return Bar.PERSISTENT_OVERLAY;
     }
 
     /**

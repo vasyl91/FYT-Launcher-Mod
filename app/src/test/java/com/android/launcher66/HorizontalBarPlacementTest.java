@@ -46,15 +46,25 @@ class HorizontalBarPlacementTest {
     }
 
     @Test
-    void everyPageWithoutAutoHideKeepsTheFirstPagesOwnBarAtRest() {
-        assertEquals(EMBEDDED, bar(0, true, false, false, false));
-        assertEquals(EMBEDDED, bar(0, true, false, true, false));
+    void everyPageWithoutAutoHideHasTheOverlayOnTheFirstPageAtRestToo() {
+        assertEquals(PERSISTENT_OVERLAY, bar(0, true, false, false, false));
+        assertEquals(PERSISTENT_OVERLAY, bar(0, true, false, true, false));
     }
 
     @Test
-    void everyPageWithoutAutoHideShowsTheOverlayAtOnceWhenThePagesMove() {
+    void everyPageWithoutAutoHideHasTheOverlayOnTheFirstPageWhileThePagesMove() {
         assertEquals(PERSISTENT_OVERLAY, bar(0, true, false, false, true));
         assertEquals(PERSISTENT_OVERLAY, bar(0, true, false, true, true));
+    }
+
+    @Test
+    void everyPageWithoutAutoHideNeverChangesTheBarWhenThePagesStartOrStopMoving() {
+        for (int page = 0; page < 5; page++) {
+            for (boolean left : new boolean[] {false, true}) {
+                assertEquals(bar(page, true, false, left, false), bar(page, true, false, left, true),
+                        "page " + page);
+            }
+        }
     }
 
     @Test

@@ -717,6 +717,10 @@ final class LauncherAppBars {
         // Initialize adapter FIRST, before any layout might occur
         if (mVerticalAppListAdapter == null) {
             mVerticalAppListAdapter = new VerticalAppListAdapter(mLauncher, Collections.emptyList());
+            // The vertical bar's window may be there already, built with the page before the list
+            if (mLauncher.mWorkspace != null) {
+                mLauncher.mWorkspace.onVerticalBarListReady();
+            }
         }
 
         if (mLeftRecyclerView.getLayoutManager() instanceof Launcher.EvenVerticalLayoutManager) {
@@ -876,6 +880,8 @@ final class LauncherAppBars {
             if (mLeftRecyclerView != null) {
                 mLeftRecyclerView.setAdapter(mVerticalAppListAdapter);
             }
+            // The vertical bar's window may be there already, built with the page before the list
+            mLauncher.mWorkspace.onVerticalBarListReady();
         }
 
         Map<String, AppInfo> appInfoLookup = buildAppInfoLookup();

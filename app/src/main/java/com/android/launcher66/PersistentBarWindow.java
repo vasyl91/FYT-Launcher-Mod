@@ -2,10 +2,11 @@ package com.android.launcher66;
 
 /**
  * The window of the bar on every page (without auto-hide), free of android.* so that its rules can
- * be tested. The window is built in advance, so that the bar which is to appear at the first moment
- * of a page move is already built and drawn: showing it is a change of alpha and of touchability,
- * no inflation and no addView in the middle of a gesture. Building it there took 144 ms on a fast
- * phone, and the pane under the finger stood still for that long and then jumped.
+ * be tested. The window is the bar on every page, the first one too, and it is built with the page,
+ * so that it is already shown when a move begins: nothing is built, shown or swapped in a gesture.
+ * Building it there took 144 ms on a fast phone, and the pane under the finger stood still for that
+ * long and then jumped; swapping it with the first page's own bar there showed both bars on the FYT
+ * 7862 for a frame of 60 to 280 ms.
  *
  * <p>The rule: the window exists for as long as the launcher's window does in that mode, not only
  * while the launcher is in front. It is a sub-window of the launcher's window (BarWindows), which the
@@ -30,10 +31,10 @@ final class PersistentBarWindow {
 
     /** What to do to get from the current state to the target. */
     enum Action {
-        /** NONE to STANDBY, a moment later (the window is not needed this instant). */
-        BUILD_LATER,
-        /** NONE to SHOWN: the bar is needed now (the only case of building in a gesture). */
-        BUILD_NOW,
+        /** NONE to STANDBY, at rest. */
+        BUILD_STANDBY,
+        /** NONE to SHOWN, at rest. */
+        BUILD_SHOWN,
         /** STANDBY to SHOWN. */
         ACTIVATE,
         /** SHOWN to STANDBY. */
@@ -64,8 +65,14 @@ final class PersistentBarWindow {
     }
 
     /**
-     * @param pageMoving the pages are moving: a window that is not needed yet is not built now, the
-     *                   settling of the pages asks again
+     * The rule: while the pages move no window is built and none is shown; the settling of the pages
+     * asks again. The bar on every page is its window on every page, the first one too
+     * (HorizontalBarPlacement), so at rest it is already shown when a move begins and nothing changes
+     * then. A window is built at once at rest: there is no delay after which a swipe could find the
+     * first page's own bar instead of the window. Putting the window away (PARK, REMOVE) is not held back:
+     * what takes its place (a drag, a folder) needs it gone.
+     *
+     * @param pageMoving the pages are moving
      */
     static Action action(State current, State target, boolean pageMoving) {
         switch (target) {
@@ -74,16 +81,19 @@ final class PersistentBarWindow {
             case STANDBY:
                 switch (current) {
                     case NONE:
-                        return pageMoving ? Action.NOTHING : Action.BUILD_LATER;
+                        return pageMoving ? Action.NOTHING : Action.BUILD_STANDBY;
                     case SHOWN:
                         return Action.PARK;
                     default:
                         return Action.NOTHING;
                 }
             default:
+                if (pageMoving) {
+                    return Action.NOTHING;
+                }
                 switch (current) {
                     case NONE:
-                        return Action.BUILD_NOW;
+                        return Action.BUILD_SHOWN;
                     case STANDBY:
                         return Action.ACTIVATE;
                     default:

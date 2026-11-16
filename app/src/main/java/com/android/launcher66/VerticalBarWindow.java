@@ -21,15 +21,15 @@ import com.android.recycler.VerticalAppListAdapter;
 
 
 /**
- * The vertical bar of the pages that have no bar of their own ('Vertical bar on every page'): the same
- * bar, in a window above the pages. It lists the apps through the adapter of the first page's bar, so a
- * tap and a long press do what they do there, and it does not move while the pages do (the first page's
- * own bar leaves with its page, and the window is up from the first moment of the move, in the same
- * place, so that it covers that bar without a jump).
+ * The vertical bar on every page ('Vertical bar on every page'), the first one too: the same bar as the
+ * first page's, in a window above the pages. It lists the apps through the adapter of the first page's bar,
+ * so a tap and a long press do what they do there, and it does not move while the pages do; the first
+ * page's own bar is hidden meanwhile (PageBarSwap).
  *
- * <p>The window exists for as long as the mode is on, in standby (invisible, takes no touch) while the
- * first page rests, so that showing it is a change of alpha and of touchability: no inflation and no
- * addView in the middle of a gesture. {@link PersistentBarWindow} decides when; this class builds,
+ * <p>The window exists for as long as the mode is on and the launcher's window is there, in standby
+ * (invisible, takes no touch) while something else takes the bar's place (the overview, a drag, a folder),
+ * so that showing it again is a change of alpha and of touchability: no inflation and no addView.
+ * {@link PersistentBarWindow} decides when; this class builds,
  * places and shows. When the page has the collapsed bar's button (auto-hide, the vertical bar and the
  * handle on the same side) the window takes the corner of the horizontal bar as well and draws the button
  * there.

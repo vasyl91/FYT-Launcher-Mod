@@ -20,15 +20,16 @@ class VerticalBarPlacementTest {
     }
 
     @Test
-    void everyPageKeepsTheFirstPagesOwnBarAtRest() {
-        assertEquals(EMBEDDED, VerticalBarPlacement.bar(0, true, false, true));
+    void everyPageHasTheWindowOnTheFirstPageAtRestToo() {
+        assertEquals(PERSISTENT_OVERLAY, VerticalBarPlacement.bar(0, true, false, true));
     }
 
     @Test
-    void everyPageShowsTheWindowOnTheOtherPagesAndAtOnceWhenAnyPageMoves() {
-        assertEquals(PERSISTENT_OVERLAY, VerticalBarPlacement.bar(0, true, true, true));
-        assertEquals(PERSISTENT_OVERLAY, VerticalBarPlacement.bar(1, true, false, true));
-        assertEquals(PERSISTENT_OVERLAY, VerticalBarPlacement.bar(2, true, true, true));
+    void everyPageHasTheWindowOnEveryPageMovingOrAtRest() {
+        for (int page = 0; page < 5; page++) {
+            assertEquals(PERSISTENT_OVERLAY, VerticalBarPlacement.bar(page, true, false, true));
+            assertEquals(PERSISTENT_OVERLAY, VerticalBarPlacement.bar(page, true, true, true));
+        }
     }
 
     @Test

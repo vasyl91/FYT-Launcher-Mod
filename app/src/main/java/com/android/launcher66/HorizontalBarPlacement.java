@@ -14,9 +14,12 @@ package com.android.launcher66;
  * </ul>
  * With the option on, every page has what the first one has:
  * <ul>
- *   <li>without auto-hide the first page at rest keeps its own bar, every other page (and any
- *       page while the pages move) has the persistent overlay: the same bar in a window of its own,
- *       which stays until the pages are at rest on the first page again;</li>
+ *   <li>without auto-hide every page, the first one too, has the persistent overlay, at rest and
+ *       while the pages move: the same bar in a window of its own, which stands still while the
+ *       pages move under it. The first page's own bar is hidden then; it is seen only where the
+ *       window steps aside (the overview, a drag, a folder, all apps). Nothing is swapped while the
+ *       pages move: a swap of two windows takes at least one frame, and on the FYT 7862 such a
+ *       frame lasted 60 to 280 ms with one of the two bars already moved, so both were seen;</li>
  *   <li>with auto-hide every page has the edge handle (the first one the button, with the left
  *       bar), and the bar that the handle reveals is the overlay with its timer, as today.</li>
  * </ul>
@@ -34,7 +37,8 @@ public final class HorizontalBarPlacement {
 
     /**
      * @param page the page that is shown (or being left), 0 for the first
-     * @param pageMoving whether the pages are moving, between two pages or back to the same one
+     * @param pageMoving whether the pages are moving, between two pages or back to the same one; it
+     *                   matters only to the auto-hide bar's handle and button
      * @param verticalBar whether the vertical bar is on this page (VerticalBarPlacement.onPage): the first one,
      *                    and with 'Vertical bar on every page' the others
      * @param buttonSide the vertical bar and the edge handle are on the same side: the collapsed bar has
@@ -55,11 +59,8 @@ public final class HorizontalBarPlacement {
             }
             return verticalBar && buttonSide ? Bar.BUTTON : Bar.HANDLE;
         }
-        if (page == 0 && !pageMoving) {
-            return Bar.EMBEDDED;
-        }
-        // Only with 'every page': the first page's own bar leaves with the page, so the overlay
-        // is up from the first moment of the move and stays on the other pages.
+        // With 'every page' the overlay on every page, moving or at rest; without it the first
+        // page's own bar, which leaves with its page
         return everyPage ? Bar.PERSISTENT_OVERLAY : Bar.EMBEDDED;
     }
 

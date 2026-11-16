@@ -367,13 +367,6 @@ public class Workspace extends SmoothPagedView
     private static final long BAR_HIDE_DURATION_MS = 180;
     private static final long COLLAPSED_BAR_FADE_OUT_MS = 120;
     private static final long EDGE_HANDLE_FADE_MS = 150;
-    /** The persistent bar fades out in this time when the first page's own bar of another width takes over. */
-    private static final long PERSISTENT_CROSSFADE_MS = 150;
-    /**
-     * The window in standby is built this long after the launcher comes to the front: not in the
-     * resume itself, which has enough to do, and well before anybody moves a page.
-     */
-    private static final long PERSISTENT_STANDBY_DELAY_MS = 250;
     // The edge handle returns only in the second half of the slide-out. It is an overlay window:
     // when the bar goes away because an app is being launched (Launcher.cleanWidgetBar()), onPause()
     // hides it again before it can show above the incoming app.
@@ -447,6 +440,11 @@ public class Workspace extends SmoothPagedView
     private boolean mVerticalEveryPage = false;
     /** Adding the persistent overlay failed (no permission): not tried again until the page is rebuilt. */
     private boolean mPersistentFailed = false;
+    /**
+     * The first page built last has been laid out: the bars' windows, which take their places from it, may be
+     * built. Set in that page's first frame (createUserPage()).
+     */
+    private boolean mFirstPageLaidOut = false;
     /** Auto-hide without the vertical bar, or with 'every page': the edge handle replaces the collapsed button. */
     private boolean mEdgeHandleMode = false;
     /** The launcher is resumed; set by Launcher.onPause() and onResume(). */
@@ -1043,6 +1041,11 @@ public class Workspace extends SmoothPagedView
         }
 
         new CanbusAsyncTask(LauncherApplication.sApp).execute();
+
+        // The bars on every page are their windows on this page too (PersistentBarWindow): the page's own bars of
+        // that kind are hidden from its first frame, and the windows are built as it is drawn the first time,
+        // when the places they take from it are measured. Nothing of these bars is seen twice, and none moves.
+        hideEveryPageBarsOfNewPage(userLayout);
 
         // Re-sizes the handle for the new layout, or releases it if the layout does not use it.
         // createUserPage() runs within one frame, so the handle kept from the old layout does not
@@ -2086,8 +2089,8 @@ public class Workspace extends SmoothPagedView
                     overlayHorizontalBar.setTranslationY(0f);
                     primeStandbyWindowAfterLayout(addedBar);
                 } else if (mOverlayPersistent) {
-                    // Over the page's own bar, in the same place: it is there at once, no slide,
-                    // so that it covers the bar that leaves with the page without a jump. No timer.
+                    // Where the page's own bar is, which is hidden: it is there at once, no slide.
+                    // No timer.
                     overlayHorizontalBar.setAlpha(1f);
                     overlayHorizontalBar.setTranslationY(0f);
                 } else {
@@ -3149,33 +3152,75 @@ public class Workspace extends SmoothPagedView
         return mEveryPage && !autoHideHorizontalBar && workspaceView != null;
     }
 
+    /**
+     * The first page has just been built: its own bars that are on every page are hidden at once, before its
+     * first frame, and the bars' windows are built in that frame (see createUserPage()).
+     */
+    private void hideEveryPageBarsOfNewPage(boolean userLayout) {
+        mFirstPageLaidOut = false;
+        final View page = workspaceView;
+        if (page == null) {
+            return;
+        }
+        boolean horizontal = userLayout && mEveryPage && !autoHideHorizontalBar;
+        boolean vertical = userLayout && mVerticalBar && mVerticalEveryPage;
+        // Nothing of the page built before is held any more (its views are gone)
+        mHorizontalSwap.windowLeaving();
+        mVerticalSwap.windowLeaving();
+        if (horizontal) {
+            mHorizontalSwap.hideNow(pageBarViews(true));
+        }
+        if (vertical) {
+            mVerticalSwap.hideNow(pageBarViews(false));
+        }
+        final long builtAt = SystemClock.uptimeMillis();
+        final boolean any = horizontal || vertical;
+        if (any) {
+            Log.i(TAG, "Bars on every page: the first page's own " + (horizontal && vertical ? "bars are"
+                    : horizontal ? "horizontal bar is" : "vertical bar is") + " hidden, their windows are the bars");
+        }
+        if (!inNextFrame(page, true, () -> {
+            if (page != workspaceView) {
+                return;   // built again meanwhile: that page has its own step
+            }
+            mFirstPageLaidOut = true;
+            if (any) {
+                Log.i(TAG, "Bars on every page: the first page is laid out " + (SystemClock.uptimeMillis() - builtAt)
+                        + " ms after it was built, the windows are built in its first frame");
+            }
+            updatePersistentBar("first page laid out");
+        })) {
+            mFirstPageLaidOut = true;
+        }
+    }
+
+    /** The list of the vertical bar has been made (LauncherAppBars): the vertical bar's window shows it too. */
+    public void onVerticalBarListReady() {
+        if (mVerticalWindow != null && mVerticalWindow.exists()) {
+            mVerticalWindow.rebindAdapter();
+        }
+    }
+
     /** Called when something that puts the persistent bar away or brings it back has changed. */
     public void updatePersistentBar() {
         updatePersistentBar("changed");
     }
 
     /**
-     * The bar of the other pages is the bar's overlay window, built like the auto-hide bar but with
-     * no timer and not put away by a touch outside it or a swipe on it. HorizontalBarPlacement says
-     * when it is there: while the pages move (the first page's own bar leaves with its page, and
-     * the overlay is up from the first moment of the move, in the same place, so it covers that bar
-     * without a jump), and on every page but the first at rest. It is put away, and comes back
+     * The bar on every page is the bar's overlay window, built like the auto-hide bar but with no
+     * timer and not put away by a touch outside it or a swipe on it. HorizontalBarPlacement says
+     * when it is there: on every page, the first one too, at rest and while the pages move, which
+     * move under it; the first page's own bar is hidden meanwhile. Nothing is built, shown or
+     * swapped while the pages move (PersistentBarWindow). It is put away, and comes back
      * after, where it would lie over what the launcher shows by itself: in all apps and in the
      * overview, while something is dragged, while a folder or the list of apps (opened from the bar)
      * is open. An app in front changes nothing: the window is a sub-window of the launcher's and goes
      * and comes with it (PersistentBarWindow).
      */
     private void updatePersistentBar(String reason) {
-        updatePersistentBar(reason, false);
-    }
-
-    /**
-     * @param standbyDue called by the delay that waited before building the window in standby
-     */
-    private void updatePersistentBar(String reason, boolean standbyDue) {
         // Before a window is put away: its picture for the pages that are small now (BarGhostRule)
         updateBarPictures(reason);
-        updateVerticalBarWindow(reason, false);
+        updateVerticalBarWindow(reason);
         boolean mode = mEveryPage && !autoHideHorizontalBar && workspaceView != null && mLauncher != null
                 && mPrefs != null && mPrefs.getBoolean(Keys.USER_LAYOUT, false);
         HorizontalBarPlacement.Bar bar = mode
@@ -3183,40 +3228,43 @@ public class Workspace extends SmoothPagedView
                 : HorizontalBarPlacement.Bar.NONE;   // the mode check above includes the user layout
         // A sub-window of the launcher's window needs that window, not the permission to draw over other
         // apps; it stays while an app is in front (PersistentBarWindow)
-        boolean permitted = mode && !mPersistentFailed && BarWindows.parentReady(mLauncher);
+        // Not before the first page has been laid out: the window takes its place from it (barBoxOnScreen())
+        boolean permitted = mode && mFirstPageLaidOut && !mPersistentFailed && BarWindows.parentReady(mLauncher);
         PersistentBarWindow.State target = PersistentBarWindow.target(mode, permitted,
                 bar == HorizontalBarPlacement.Bar.PERSISTENT_OVERLAY, mode && persistentBarFree());
         PersistentBarWindow.Action action = PersistentBarWindow.action(persistentState(), target, isPageMoving());
         switch (action) {
             case REMOVE:
-                mainHandler.removeCallbacks(mBuildStandbyRunnable);
                 hidePersistentOverlay(0, reason);
                 break;
-            case BUILD_LATER:
-                if (standbyDue) {
-                    showPersistentOverlay(reason, true);
-                } else {
-                    mainHandler.removeCallbacks(mBuildStandbyRunnable);
-                    mainHandler.postDelayed(mBuildStandbyRunnable, PERSISTENT_STANDBY_DELAY_MS);
-                }
+            case BUILD_STANDBY:
+                showPersistentOverlay(reason, true);
+                // Invisible: the first page's own bar is the bar meanwhile (the overview, a drag, a folder)
+                mHorizontalSwap.windowLeaving();
                 break;
-            case BUILD_NOW:
-                if (isPageMoving()) {
-                    Log.d(TAG, "Persistent horizontal bar: no standby window yet, built now");
-                }
+            case BUILD_SHOWN:
                 showPersistentOverlay(reason, false);
+                if (persistentState() == PersistentBarWindow.State.SHOWN) {
+                    hidePageBarUnderWindow(true, overlayHorizontalBar);
+                }
                 break;
             case ACTIVATE:
                 activatePersistentOverlay(reason);
                 break;
             case PARK:
-                // The first page's bar is under it again. With the vertical bar that bar is another width
-                // than the overlay, so the overlay fades out (it must not show two bars for long).
-                parkPersistentOverlay(bar == HorizontalBarPlacement.Bar.EMBEDDED && mVerticalBar
-                        ? PERSISTENT_CROSSFADE_MS : 0, reason);
+                // The first page's bar is under it again, in the same rectangle: no fade
+                parkPersistentOverlay(reason);
                 break;
             default:
                 break;
+        }
+        // The first page's own bar is hidden from the moment the page is built (createUserPage()); with no
+        // window to be the bar - the option off, or the window could not be added - it is the bar again.
+        if (persistentState() == PersistentBarWindow.State.NONE && mHorizontalSwap.pageBarHidden()
+                && (!mode || mPersistentFailed)) {
+            mHorizontalSwap.windowLeaving();
+            Log.i(TAG, "Horizontal bar of the first page shown again: " + (mode ? "its window could not be added"
+                    : "no bar on every page"));
         }
     }
 
@@ -3274,7 +3322,7 @@ public class Workspace extends SmoothPagedView
         PageBarGhost.Shot vertical = verticalStays && mVerticalWindow != null
                 ? PageBarGhost.record(mVerticalWindow.view()) : null;
         if (vertical == null && verticalStays && workspaceView != null) {
-            // No window yet (it is built a moment after the start): the first page's own bar has the same strip
+            // No window yet (the first page not laid out yet): the first page's own bar has the same strip
             vertical = PageBarGhost.record(workspaceView.findViewById(R.id.rl_vertical_bar));
         }
         if (horizontal == null && vertical == null) {
@@ -3467,8 +3515,6 @@ public class Workspace extends SmoothPagedView
     private boolean mVerticalWindowFailed;
     /** The placement last logged, so that the log line comes once per change. */
     private String mVerticalPlacementLogged;
-    private final Runnable mBuildVerticalStandbyRunnable = () -> updateVerticalBarWindow("standby delay", true);
-    private static final long VERTICAL_STANDBY_DELAY_MS = 400L;
 
     /** Whether the vertical bar is on the page that is shown (VerticalBarPlacement.onPage). */
     private boolean verticalBarOnShownPage() {
@@ -3487,32 +3533,32 @@ public class Workspace extends SmoothPagedView
      * The same decisions as for the horizontal bar's window (PersistentBarWindow, the same triggers and the
      * same rules for when something else is in its place), for the window of the vertical bar.
      */
-    private void updateVerticalBarWindow(String reason, boolean standbyDue) {
+    private void updateVerticalBarWindow(String reason) {
         boolean userLayout = mPrefs != null && mPrefs.getBoolean(Keys.USER_LAYOUT, false);
         boolean mode = mVerticalBar && mVerticalEveryPage && userLayout && workspaceView != null && mLauncher != null;
         VerticalBarPlacement.Bar bar = mode
                 ? VerticalBarPlacement.bar(placementPage(), true, isPageMoving(), true)
                 : VerticalBarPlacement.Bar.NONE;
         logVerticalPlacement(mode, bar);
-        boolean permitted = mode && !mVerticalWindowFailed && BarWindows.parentReady(mLauncher);
+        // Not before the first page has been laid out: the window lies on its measured bar (VerticalWindowFrame)
+        boolean permitted = mode && mFirstPageLaidOut && !mVerticalWindowFailed && BarWindows.parentReady(mLauncher);
         PersistentBarWindow.State target = PersistentBarWindow.target(mode, permitted,
                 bar == VerticalBarPlacement.Bar.PERSISTENT_OVERLAY, mode && persistentBarFree());
         PersistentBarWindow.Action action = PersistentBarWindow.action(verticalWindowState(), target, isPageMoving());
         switch (action) {
             case REMOVE:
-                mainHandler.removeCallbacks(mBuildVerticalStandbyRunnable);
                 removeVerticalWindow(reason);
                 break;
-            case BUILD_LATER:
-                if (standbyDue) {
-                    buildVerticalWindow(reason, true);
-                } else {
-                    mainHandler.removeCallbacks(mBuildVerticalStandbyRunnable);
-                    mainHandler.postDelayed(mBuildVerticalStandbyRunnable, VERTICAL_STANDBY_DELAY_MS);
-                }
+            case BUILD_STANDBY:
+                buildVerticalWindow(reason, true);
+                // Invisible: the first page's own bar is the bar meanwhile (the overview, a drag, a folder)
+                mVerticalSwap.windowLeaving();
                 break;
-            case BUILD_NOW:
+            case BUILD_SHOWN:
                 buildVerticalWindow(reason, false);
+                if (verticalWindowState() == PersistentBarWindow.State.SHOWN) {
+                    hidePageBarUnderWindow(false, mVerticalWindow.view());
+                }
                 break;
             case ACTIVATE:
                 mVerticalFrameLogged = null;   // logged at each activation
@@ -3542,6 +3588,14 @@ public class Workspace extends SmoothPagedView
                     placeVerticalWindow();   // the page's shape may have changed (a horizontal bar, the button)
                 }
                 break;
+        }
+        // The first page's own bar is hidden from the moment the page is built (createUserPage()); with no
+        // window to be the bar - the option off, or the window could not be added - it is the bar again.
+        if (verticalWindowState() == PersistentBarWindow.State.NONE && mVerticalSwap.pageBarHidden()
+                && (!mode || mVerticalWindowFailed)) {
+            mVerticalSwap.windowLeaving();
+            Log.i(TAG, "Vertical bar of the first page shown again: " + (mode ? "its window could not be added"
+                    : "no bar on every page"));
         }
     }
 
@@ -3608,9 +3662,11 @@ public class Workspace extends SmoothPagedView
     }
 
     private void buildVerticalWindow(String reason, boolean standby) {
-        if (mLauncher == null || mLauncher.mAppBars.mVerticalAppListAdapter == null) {
-            return;   // the list is not built yet: the next update asks again
+        if (mLauncher == null) {
+            return;
         }
+        // The list of the bar may not be there yet: the window takes it when it is (onVerticalBarListReady()),
+        // as the first page's bar does
         boolean[] corner = new boolean[1];
         int[] frame = verticalWindowFrame(corner);
         boolean autoHide = mPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false);
@@ -3635,7 +3691,6 @@ public class Workspace extends SmoothPagedView
     }
 
     private void removeVerticalWindow(String reason) {
-        mainHandler.removeCallbacks(mBuildVerticalStandbyRunnable);
         mVerticalSwap.windowLeaving();   // the first page's own bar is seen again
         if (mVerticalWindow != null && mVerticalWindow.exists()) {
             mVerticalWindow.remove();
@@ -3650,8 +3705,6 @@ public class Workspace extends SmoothPagedView
             mLauncher.onClickShowBarButton();
         }
     }
-
-    private final Runnable mBuildStandbyRunnable = () -> updatePersistentBar("standby delay", true);
 
     /** What the window is now. A bar that is fading out to standby counts as standby. */
     private PersistentBarWindow.State persistentState() {
@@ -3682,9 +3735,8 @@ public class Workspace extends SmoothPagedView
     }
 
     /**
-     * Builds the window. In standby it is invisible, takes no touch and leaves the widgets to the
-     * page's own bar; otherwise the bar is needed this moment (the only case of building in a
-     * gesture).
+     * Builds the window, at rest (PersistentBarWindow). In standby it is invisible, takes no touch and
+     * leaves the widgets to the page's own bar; otherwise it is the bar.
      */
     private void showPersistentOverlay(String reason, boolean standby) {
         synchronized (overlayLock) {
@@ -3698,7 +3750,7 @@ public class Workspace extends SmoothPagedView
             isOverlayAnimating = true;
             mBuildStandby = standby;
             mPersistentGen++;
-            // The inline bar stays as it is: it leaves with its page, or lies under the overlay.
+            // The inline bar stays as it is: hidden under the window, or the bar while it is in standby.
             try {
                 showOverlayHorizontalBar();
             } finally {
@@ -3714,8 +3766,8 @@ public class Workspace extends SmoothPagedView
     }
 
     /**
-     * STANDBY to SHOWN, in the gesture that needs it: the widgets are bound to the window, alpha 1,
-     * touchable. No inflation, no addView, no weather fetch, no enableRecycler.
+     * STANDBY to SHOWN, at rest: the widgets are bound to the window, alpha 1, touchable. No inflation,
+     * no addView, no weather fetch, no enableRecycler.
      */
     private void activatePersistentOverlay(String reason) {
         synchronized (overlayLock) {
@@ -3744,11 +3796,11 @@ public class Workspace extends SmoothPagedView
     }
 
     /**
-     * SHOWN to STANDBY. Touches pass through at once; the bar fades for {@code fadeMs} (the first
-     * page's own bar is another width with the vertical bar), then the widgets go back to the page's own
-     * bar. The window and its adapter stay. A move that begins meanwhile activates it again.
+     * SHOWN to STANDBY. Touches pass through at once; the first page's own bar is seen again, and the window
+     * goes after the page has drawn it (PageBarSwap); then the widgets go back to the page's own bar. The
+     * window and its adapter stay.
      */
-    private void parkPersistentOverlay(long fadeMs, String reason) {
+    private void parkPersistentOverlay(String reason) {
         synchronized (overlayLock) {
             final View bar = overlayHorizontalBar;
             if (bar == null || !mOverlayPersistent || mPersistentParking) {
@@ -3774,15 +3826,10 @@ public class Workspace extends SmoothPagedView
                 // The widgets of the bar are the page's own bar's again (the same as after a wake)
                 refreshWidgetBarAfterWake("persistent bar parked");
             };
-            if (fadeMs <= 0 || !bar.isAttachedToWindow() || !mEdgeHandleHostVisible) {
-                // The launcher not in front: nothing is seen until it comes back, so at once (PageBarSwap)
-                if (!bar.isAttachedToWindow() || !mEdgeHandleHostVisible
-                        || !inNextFrame(workspaceView, false, end)) {
-                    bar.setAlpha(0f);
-                    mainHandler.post(end);
-                }
-            } else {
-                bar.animate().alpha(0f).setDuration(fadeMs).withEndAction(end).start();
+            // The launcher not in front: nothing is seen until it comes back, so at once (PageBarSwap)
+            if (!bar.isAttachedToWindow() || !mEdgeHandleHostVisible || !inNextFrame(workspaceView, false, end)) {
+                bar.setAlpha(0f);
+                mainHandler.post(end);
             }
         }
     }
@@ -3979,7 +4026,6 @@ public class Workspace extends SmoothPagedView
     private void cleanupAllResources() {
         // Cancel any pending operations
         cancelPendingAutoHide();
-        mainHandler.removeCallbacks(mBuildStandbyRunnable);
         removeVerticalWindow("page rebuilt");
         
         // Clean up overlay

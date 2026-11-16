@@ -7,11 +7,12 @@ import java.util.Map;
  * Which of the two pictures of a bar is seen while a bar's window lies over the first page: the window, or
  * the first page's own bar under it.
  *
- * <p>With a bar on every page, the first page has the bar in itself and the other pages have the bar's
- * window (PersistentBarWindow, VerticalBarWindow). While the pages move, the window is up over the first
- * page too, so that the bar stays where it is. Before this rule the first page's own bar stayed visible
- * under the window and moved away with its page; through the transparent parts of the bar and between its
- * icons both were seen, one sliding over the other.
+ * <p>With a bar on every page, the bar is its window (PersistentBarWindow, VerticalBarWindow) on every page,
+ * the first one too, so that it stays where it is while the pages move. The first page's own bar is hidden
+ * from the moment the page is built ({@link #hideNow}, before the page's first frame) and seen only while the
+ * window steps aside (the overview, a drag, a folder, all apps) or when no window could be added. Until
+ * 2026-11-16 the window took over from the page's bar at the start of every move, and on the FYT 7862 a frame
+ * of that swap lasted 60 to 280 ms with the page's bar already moved: both were seen.
  *
  * <p>The rule: while the window is shown, the first page's own bar is hidden; only the window is seen, and
  * it does not move. The page's bar is hidden in the frame the window draws itself shown - in that frame, not
@@ -70,7 +71,8 @@ final class PageBarSwap<V> {
 
     /**
      * The window is shown and the page's bar is hidden at once, without waiting for the window's frame: where
-     * no frame of the launcher is seen before the window's.
+     * no frame of the launcher is seen before the window's (the launcher not in front), and for a page just
+     * built, whose first frame must not show the bar its window will be.
      *
      * @return the token, as {@link #windowShown()} gives it
      */
