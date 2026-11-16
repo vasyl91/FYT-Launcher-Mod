@@ -16,6 +16,11 @@ package com.android.launcher66;
  * lies thousands of pixels to the left of the screen: -4520 px on a 1080 px wide phone. Taking that edge for
  * the page's put the window of the vertical bar off the screen, and the system then pushed it to the nearest
  * edge, the wrong one for a bar on the right. Pure Java, so that it has a test.
+ *
+ * <p>The page is measured only when it is at rest ({@link #atRest}); otherwise the last box measured at rest
+ * is kept. The normal state alone is not rest: it is set at the start of the way back from the overview, while
+ * the pages are still small and growing, and a vertical bar measured then put its window 13 px too high on the
+ * A55 (log of 2026-11-16 13:25) until the next swipe measured it again.
  */
 final class PageBox {
 
@@ -34,6 +39,18 @@ final class PageBox {
 
     private PageBox() {
     }
+
+    /**
+     * Whether the page lies where it lies when it is shown: the normal state, no change of state under way
+     * (the way to or from the overview, a drag) and the pages at full size. Full size within a thousandth: an
+     * animation may end a hair from 1, and a page never counted at rest would keep the bars' windows away.
+     */
+    static boolean atRest(boolean normalState, boolean switchingState, float scaleX, float scaleY) {
+        return normalState && !switchingState && Math.abs(scaleX - 1f) < FULL_SIZE_TOLERANCE
+                && Math.abs(scaleY - 1f) < FULL_SIZE_TOLERANCE;
+    }
+
+    private static final float FULL_SIZE_TOLERANCE = 0.001f;
 
     /**
      * The left edge a page has on the screen when the pager rests on it.

@@ -54,8 +54,9 @@ final class PersistentBarWindow {
      * @param permitted the window can be added (the launcher's window is there, BarWindows) and did not fail
      * @param barIsOverlay HorizontalBarPlacement says the bar is the overlay's now (the page moves, or
      *                     rests on another page than the first)
-     * @param free nothing else is in the bar's place: the normal state, the workspace (not all
-     *             apps or the overview), nothing dragged, no folder or list of apps open
+     * @param free nothing else is in the bar's place: the normal state at rest (no change of state
+     *             under way, the pages at full size: PageBox.atRest), the workspace (not all apps or
+     *             the overview), nothing dragged, no folder or list of apps open
      */
     static State target(boolean mode, boolean permitted, boolean barIsOverlay, boolean free) {
         if (!mode || !permitted) {

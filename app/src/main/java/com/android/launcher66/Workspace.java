@@ -1654,7 +1654,9 @@ public class Workspace extends SmoothPagedView
         View root = workspaceView;
         View page = customScreen[0];
         boolean measurable = isAttachedToWindow() && root != null && page != null && root.isAttachedToWindow()
-                && page.isAttachedToWindow() && root.getWidth() > 0 && root.getHeight() > 0 && mState == State.NORMAL;
+                && page.isAttachedToWindow() && root.getWidth() > 0 && root.getHeight() > 0
+                && PageBox.atRest(mState == State.NORMAL, mIsSwitchingState, getScaleX() * page.getScaleX(),
+                        getScaleY() * page.getScaleY());
         if (measurable) {
             root.getLocationOnScreen(mBarRootAt);
             page.getLocationOnScreen(mBarBoxPageAt);
@@ -3717,8 +3719,10 @@ public class Workspace extends SmoothPagedView
 
     /** Whether nothing else the launcher shows is in the persistent bar's place now. */
     private boolean persistentBarFree() {
-        if (mState != State.NORMAL || mIsDragOccuring || mLauncher.mState != Launcher.State.WORKSPACE
-                || getOpenFolder() != null) {
+        // Only at rest (PageBox.atRest): on the way back from the overview the state is normal at its start,
+        // while the pages are still small; the window comes back at its end (onTransitionEnd()), at full size
+        if (!PageBox.atRest(mState == State.NORMAL, mIsSwitchingState, getScaleX(), getScaleY()) || mIsDragOccuring
+                || mLauncher.mState != Launcher.State.WORKSPACE || getOpenFolder() != null) {
             return false;
         }
         if (mDragController != null && mDragController.isDragging()) {
@@ -6142,6 +6146,11 @@ public class Workspace extends SmoothPagedView
         updateInteractionForState();
         updateAccessibilityFlags();
         updateEdgeHandle("workspace state " + state);
+        if (state == State.NORMAL) {
+            // A change without an animation sets the pages' size after this; the bars' windows wait for full size
+            // (persistentBarFree()), and an animated change brings them back at its end (onTransitionEnd())
+            post(() -> updatePersistentBar("workspace state NORMAL, after the change"));
+        }
     }
 
     private void updateAccessibilityFlags() {
@@ -6449,6 +6458,9 @@ public class Workspace extends SmoothPagedView
         if (!BarGhostRule.shown(stillSmall, false)) {
             clearBarPictures("transition end");
         }
+        // The bars' windows waited for the end (persistentBarFree()); the page is measured at rest again first
+        barBoxOnScreen();
+        updatePersistentBar("transition end");
         updateChildrenLayersEnabled(false);
         // The code in getChangeStateAnimation to determine initialAlpha and finalAlpha will ensure
         // ensure that only the current page is visible during (and subsequently, after) the

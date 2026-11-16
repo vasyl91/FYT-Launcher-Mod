@@ -1,10 +1,27 @@
 package com.android.launcher66;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
 class PageBoxTest {
+
+    @Test
+    void thePageIsAtRestOnlyInTheNormalStateAtFullSizeAndWithNoChangeUnderWay() {
+        assertTrue(PageBox.atRest(true, false, 1f, 1f));
+        // the way back from the overview: the state is normal already, the pages are still small
+        assertFalse(PageBox.atRest(true, true, 0.8f, 0.8f));
+        assertFalse(PageBox.atRest(true, true, 1f, 1f));
+        assertFalse(PageBox.atRest(true, false, 0.99f, 1f));
+        assertFalse(PageBox.atRest(true, false, 1f, 0.99f));
+        // an animation that ends a hair from 1
+        assertTrue(PageBox.atRest(true, false, 0.99995f, 1.00004f));
+        // the overview, a drag
+        assertFalse(PageBox.atRest(false, false, 1f, 1f));
+        assertFalse(PageBox.atRest(false, true, 0.7f, 0.7f));
+    }
 
     @Test
     void theHeadUnitInLandscapeStartsBelowTheStatusBarWithNoSideInset() {
