@@ -1,6 +1,6 @@
 # Known issues
 
-As of 2026-11-16 (`932d61d1c`, after round 15), with the owner's answers of 2026-11-12 and 2026-11-15. Sources: the code, git, CI, the
+As of 2026-11-16 (`a654c0d60`, after round 16), with the owner's answers of 2026-11-12 and 2026-11-15. Sources: the code, git, CI, the
 briefs and the chat reports (`chat_archive/`).
 
 The file has three parts, because they call for different handling:
@@ -265,6 +265,7 @@ Nothing here is confirmed. Each item needs a check in the code or on a device be
 | KI-35 | The bar's music buttons stop responding after an app | works on the phone; the FYT unit with `com.syu.music` untested |
 | KI-36 | Round 15 has no device result | the owner's test of each item |
 | KI-37 | A widget lay over icons after a change of the grid | a log with the new `Items sharing cells` line |
+| KI-38 | Round 16 has no device result | the owner's test of each item |
 
 ### KI-05 Android 8–10 through the VD host never run on a device
 The path for a non-system launcher on 8.0, 8.1/9 and 10 (module daemon or Shizuku) was written from the
@@ -425,3 +426,16 @@ home screens without an overlap [V], and the loader refuses overlapping rows. Th
 known [U]; the owner's logs name neither the widget's cells nor the icons'. Since `e0564df9a` every page
 moves an item that shares a cell with another (`CellOverlap`: icons stay, the widget moves) and logs
 `Items sharing cells on page …` with both, which should show the cause the next time.
+
+### KI-38 Round 16 has no device result
+Commits `e6349acf0` … `a654c0d60` (2026-11-16) build and pass the unit tests, CI green for the first [V];
+none has run on a device. What they change and what to look at:
+- a widget dropped where it does not fit stays where it was (`DropSpan`): after a change of the grid a
+  widget's minimum was larger than its own size, the search answered 0,0 0x0 and the reorder was committed,
+  which put the widget in the corner under a pane;
+- icons dropped from the list of apps survive a reload (`ItemValidity`: found as the list finds them, icons of
+  apps that renamed their first activity mended); each icon still hidden is logged with its reason;
+- a widget whose content fails shows its preview and opens its app on a tap; APPWIDGET_UPDATE is sent where
+  the launcher may (system, root host). On the A55 with Shizuku through ADB only the preview helps: Allegro's
+  widget comes back when Allegro updates it, or after the launcher is no longer reinstalled.
+

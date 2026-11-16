@@ -1,6 +1,6 @@
 # Architecture
 
-State of `932d61d1c` (2026-11-16, after round 15). Everything here was checked in the code [V] unless it is
+State of `a654c0d60` (2026-11-16, after round 16). Everything here was checked in the code [V] unless it is
 tagged otherwise.
 The reasons behind the design are in `DECISIONS.md`; this file says what exists and where.
 Abbreviations used in paths below:
@@ -135,7 +135,9 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   - The creator's elements take their cells (`CellLayout.handleConflictingViews` moves what lies there), except
     the statistics window's placeholder, which only says where the window lies (`CustomElement.takesCells`,
     D-65). After a load each page moves an item that shares a cell with another (`L/CellOverlap`: icons stay,
-    widgets move; KI-37).
+    widgets move; KI-37). A drop asks at most for the size an item has and takes no area of size 0
+    (`L/DropSpan`). The loader shows an icon whose activity can be started as the list of apps finds it, and
+    mends one whose app renamed its first activity (`L/ItemValidity`).
   - `L/IconFit` (2026-11-15): an icon is made smaller where a denser grid leaves its cell too small for it
     with its label, never larger; one size for all pages of an orientation, the standard one at 10 × 6.
   - `L/GridOverflow` (plain Java) says where items go when the grid of their page changes; the loader runs
@@ -252,6 +254,10 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   owner confirmed it on 2026-11-12).
 - **Extras:** floating app-switch buttons in `S/FabOverlayService`; the status-bar swipe area in
   `S/StatusBarSwipeDetector` (system only).
+
+- **App widgets:** `L/LauncherAppWidgetHostView` applies the content off the main thread; a widget whose
+  content fails shows its preview and opens its app on a tap, and `L/WidgetRecovery` says how its app is asked
+  to send it again (options change always; APPWIDGET_UPDATE as the system or through a root host, D-66).
 
 ## 8. Media widgets
 

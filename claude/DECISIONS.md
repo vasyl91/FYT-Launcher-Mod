@@ -3,7 +3,7 @@
 Important technical and product decisions. Last consolidated on 2026-11-12 from the code, git, the briefs
 (`prompts/archive/`), the 15 chat reports (`chat_archive/CHAT_01.MD` … `CHAT_15.MD`) and the owner's answers
 of that day. D-52 … D-57 were added on 2026-11-13 with round 13, D-58 … D-63 on 2026-11-15 with round 14,
-D-64 and D-65 on 2026-11-16 with round 15.
+D-64 and D-65 on 2026-11-16 with round 15, D-66 with round 16.
 
 ## How to read this file
 
@@ -98,6 +98,7 @@ entry that replaces it.
 | D-63 | Choices the assistant made in round 14 (table) | UNDER_REVIEW | Assistant |
 | D-64 | The bars' windows are panels of the launcher's window, under every floating button | ACTIVE | Owner (requirement) / Assistant |
 | D-65 | Icons and widgets may lie under the statistics window | ACTIVE | Owner |
+| D-66 | A widget that cannot be shown shows its preview, and its app is told to update it | ACTIVE | Owner |
 
 ---
 
@@ -831,4 +832,15 @@ The round had no brief; its result is in `reports/implementation_report_2026-11-
 - **Decision:** the statistics are a window over the page that lets every touch through; its placeholder
   takes no cells (`CustomElement.takesCells`). The panes and the creator's widgets take theirs as before.
 - **Where:** `45673d58a`.
+
+### D-66 A widget that cannot be shown shows its preview, and its app is told to update it
+- **Status:** ACTIVE. **By:** owner, 2026-11-16 (chosen: "force the update + preview").
+- **Decision:** a widget whose content fails in the launcher shows the preview its app gives (else the app's
+  icon) and opens the app on a tap, for every app. Where the launcher may send the protected APPWIDGET_UPDATE
+  (as the system, or through a host with root: `sendWidgetUpdate`, no new protocol or module version), it is
+  sent, twice at most; the change of the widget's options stays for every launcher.
+- **Context [V/H]:** Allegro shows an image from its own FileProvider; the launcher may read it only after
+  Allegro grants it at an update, and every new install of the launcher drops the grant. Shell (Shizuku
+  without root) may not send the broadcast.
+- **Where:** `WidgetRecovery`, `LauncherAppWidgetHostView`, `02bdd7f0a`, `75e2377a4`, `a654c0d60`.
 

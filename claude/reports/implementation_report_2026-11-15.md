@@ -175,3 +175,24 @@ unit with `com.syu.music` (works on the phone), the media fixes (never seen), th
 **Deviations:** none from the plan; the edge handle was given the launcher activity explicitly (its window
 manager adds the panel). **Not tested on a device.** What to look at: `KNOWN_ISSUES.md` KI-36.
 
+## Round 16 (2026-11-16): widgets without their image, icons that disappear, a drop of "0x0"
+
+| Commit | Subject | Owner's report |
+|---|---|---|
+| `e6349acf0` | Workspace: a widget that cannot be dropped stays where it was | "no room at 0,0 (span 0x0)": the widget went to the corner under a pane |
+| `ef10031ab` | Model: an icon is shown when its app can start it, and mended where the app renamed its activity | icons gone after a change of the grid ("Invalid package kept") |
+| `02bdd7f0a` | Widgets: a widget that cannot be shown shows its preview | Allegro's widget: "Error inflating RemoteViews", FileProvider |
+| `75e2377a4` | VD host: a widget may be told to update itself | the same |
+| `a654c0d60` | Widgets: a widget that failed to show is told to update, where the launcher may | the same (D-66) |
+
+**What was found [V]:** the widget's minimum, counted anew from a denser grid, was larger than its size, the
+search gave up with 0,0 0x0 instead of -1,-1, and the reorder was committed with the dragged widget at 0,0
+before the drop refused the size. The loader judged icons by `getActivityInfo()` alone while the list of apps
+finds them with `queryIntentActivities()`, and never logged why; the grid change only triggered a reload.
+Allegro's image needs a grant the launcher loses at each new install, and Allegro ignores the request through
+the options; only the system and root may send APPWIDGET_UPDATE.
+
+**Deviations:** the check and the mending of icons are one commit (one verdict), not two. **Not tested on a
+device** (KI-38). Unknown [U]: why Assistant is hidden in some loads and not in others; the next log gives the
+reason with each hidden icon.
+
