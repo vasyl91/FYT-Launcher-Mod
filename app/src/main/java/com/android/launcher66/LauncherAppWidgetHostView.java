@@ -144,10 +144,11 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView implements Touc
      * permission it gave the launcher is dropped whenever the launcher is installed again, and
      * comes back only with the app's next update (a restart of the phone was the cure).
      *
-     * APPWIDGET_UPDATE is the system's to send (Permission Denial for the launcher); what the
-     * host may do is change the widget's options, as it does on every resize: the app gets
-     * APPWIDGET_OPTIONS_CHANGED, on which most widgets (all of Jetpack Glance's) draw again.
-     * A key of the launcher's own changes, so the options always differ.
+     * The host may always change the widget's options, as it does on every resize: the app gets
+     * APPWIDGET_OPTIONS_CHANGED, on which most widgets (all of Jetpack Glance's) draw again. A key of
+     * the launcher's own changes, so the options always differ. Some apps (Allegro) ignore it; to
+     * them the system's APPWIDGET_UPDATE goes too, where the launcher may send it - as the system, or
+     * through a host with root (WidgetRecovery).
      */
     private void requestProviderUpdate() {
         final AppWidgetProviderInfo info = getAppWidgetInfo();
@@ -156,8 +157,11 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView implements Touc
                 || mUpdateRequests >= MAX_UPDATE_REQUESTS) {
             return;
         }
+        final WidgetRecovery.Way way = WidgetRecovery.way(mUpdateRequests,
+                LauncherApplication.hasSystemPrivileges(), com.syu.util.WindowHostVdClient.canSendBootCompleted());
         mUpdateRequests++;
         postDelayed(() -> {
+            sendWidgetUpdate(way, info, appWidgetId);
             try {
                 AppWidgetManager manager = AppWidgetManager.getInstance(getContext());
                 Bundle options = manager.getAppWidgetOptions(appWidgetId);
@@ -169,6 +173,33 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView implements Touc
                 Log.w(UPDATE_TAG, "widget " + appWidgetId + ": redraw not requested: " + e);
             }
         }, UPDATE_REQUEST_DELAY_MS);
+    }
+
+    /** The system's update broadcast for this widget, by the way WidgetRecovery gave. */
+    private void sendWidgetUpdate(WidgetRecovery.Way way, AppWidgetProviderInfo info, int appWidgetId) {
+        final String provider = info.provider.flattenToShortString();
+        if (way == WidgetRecovery.Way.SELF) {
+            try {
+                getContext().sendBroadcast(new android.content.Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
+                        .setComponent(info.provider)
+                        .putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, new int[] {appWidgetId}));
+                Log.i(UPDATE_TAG, "widget " + appWidgetId + " (" + provider + "): APPWIDGET_UPDATE sent");
+            } catch (RuntimeException e) {
+                Log.w(UPDATE_TAG, "widget " + appWidgetId + ": APPWIDGET_UPDATE not sent: " + e);
+            }
+        } else if (way == WidgetRecovery.Way.HOST) {
+            final String flat = info.provider.flattenToString();
+            // A blocking call into the host: off the main thread
+            APPLY_EXECUTOR.execute(() -> {
+                try {
+                    String report = com.syu.util.WindowHostVdClient.sendWidgetUpdate(flat, appWidgetId);
+                    Log.i(UPDATE_TAG, "widget " + appWidgetId + " (" + provider + "): APPWIDGET_UPDATE through the host: "
+                            + report);
+                } catch (Exception e) {
+                    Log.w(UPDATE_TAG, "widget " + appWidgetId + ": APPWIDGET_UPDATE through the host failed: " + e);
+                }
+            });
+        }
     }
 
     @Override
