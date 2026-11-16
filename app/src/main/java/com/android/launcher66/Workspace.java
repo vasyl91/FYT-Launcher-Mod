@@ -3140,6 +3140,15 @@ public class Workspace extends SmoothPagedView
     // 'Horizontal bar on every page', without auto-hide: the persistent overlay
     // ---------------------------------------------------------------------------------------------
 
+    /**
+     * Whether the bar's views stay bound while an app is in front: the horizontal bar on every page (without
+     * auto-hide) keeps its window and the first page's bar through a pause (PersistentBarWindow), so
+     * Launcher.onPause() must not let go of them.
+     */
+    public boolean keepsBarViewsThroughPause() {
+        return mEveryPage && !autoHideHorizontalBar && workspaceView != null;
+    }
+
     /** Called when something that puts the persistent bar away or brings it back has changed. */
     public void updatePersistentBar() {
         updatePersistentBar("changed");
@@ -3151,9 +3160,10 @@ public class Workspace extends SmoothPagedView
      * when it is there: while the pages move (the first page's own bar leaves with its page, and
      * the overlay is up from the first moment of the move, in the same place, so it covers that bar
      * without a jump), and on every page but the first at rest. It is put away, and comes back
-     * after, where it would lie over what the launcher shows by itself: when the launcher is not
-     * in front, in all apps and in the overview, while something is dragged, while a folder or the
-     * list of apps (opened from the bar) is open.
+     * after, where it would lie over what the launcher shows by itself: in all apps and in the
+     * overview, while something is dragged, while a folder or the list of apps (opened from the bar)
+     * is open. An app in front changes nothing: the window is a sub-window of the launcher's and goes
+     * and comes with it (PersistentBarWindow).
      */
     private void updatePersistentBar(String reason) {
         updatePersistentBar(reason, false);
@@ -3171,10 +3181,10 @@ public class Workspace extends SmoothPagedView
         HorizontalBarPlacement.Bar bar = mode
                 ? HorizontalBarPlacement.bar(placementPage(), true, false, verticalBarOnShownPage(), mBarSidesAgree, isPageMoving(), true)
                 : HorizontalBarPlacement.Bar.NONE;   // the mode check above includes the user layout
-        // A panel of the launcher's window needs that window, not the permission to draw over other apps
-        boolean permitted = mode && mEdgeHandleHostVisible && !mPersistentFailed
-                && BarWindows.parentReady(mLauncher);
-        PersistentBarWindow.State target = PersistentBarWindow.target(mode, mEdgeHandleHostVisible, permitted,
+        // A sub-window of the launcher's window needs that window, not the permission to draw over other
+        // apps; it stays while an app is in front (PersistentBarWindow)
+        boolean permitted = mode && !mPersistentFailed && BarWindows.parentReady(mLauncher);
+        PersistentBarWindow.State target = PersistentBarWindow.target(mode, permitted,
                 bar == HorizontalBarPlacement.Bar.PERSISTENT_OVERLAY, mode && persistentBarFree());
         PersistentBarWindow.Action action = PersistentBarWindow.action(persistentState(), target, isPageMoving());
         switch (action) {
@@ -3356,6 +3366,13 @@ public class Workspace extends SmoothPagedView
      */
     private void hidePageBarUnderWindow(boolean horizontal, View window) {
         final PageBarSwap<View> swap = horizontal ? mHorizontalSwap : mVerticalSwap;
+        if (!mEdgeHandleHostVisible) {
+            // The launcher is not in front: both come back on screen together, so at once (PageBarSwap)
+            swap.hideNow(pageBarViews(horizontal));
+            Log.d(TAG, (horizontal ? "Horizontal" : "Vertical") + " bar of the first page hidden under its window"
+                    + " while the launcher is not in front");
+            return;
+        }
         final int token = swap.windowShown();
         final long shownAt = SystemClock.uptimeMillis();
         // In the window's own frame, waiting for it to be in a window if it is not yet (PageBarSwap)
@@ -3477,9 +3494,8 @@ public class Workspace extends SmoothPagedView
                 ? VerticalBarPlacement.bar(placementPage(), true, isPageMoving(), true)
                 : VerticalBarPlacement.Bar.NONE;
         logVerticalPlacement(mode, bar);
-        boolean permitted = mode && mEdgeHandleHostVisible && !mVerticalWindowFailed
-                && BarWindows.parentReady(mLauncher);
-        PersistentBarWindow.State target = PersistentBarWindow.target(mode, mEdgeHandleHostVisible, permitted,
+        boolean permitted = mode && !mVerticalWindowFailed && BarWindows.parentReady(mLauncher);
+        PersistentBarWindow.State target = PersistentBarWindow.target(mode, permitted,
                 bar == VerticalBarPlacement.Bar.PERSISTENT_OVERLAY, mode && persistentBarFree());
         PersistentBarWindow.Action action = PersistentBarWindow.action(verticalWindowState(), target, isPageMoving());
         switch (action) {
@@ -3510,7 +3526,8 @@ public class Workspace extends SmoothPagedView
                 final int swap = mVerticalSwap.windowLeaving();
                 final VerticalBarWindow window = mVerticalWindow;
                 window.park();
-                if (!inNextFrame(workspaceView, false, () -> {
+                // The launcher not in front: nothing is seen until it comes back, so at once (PageBarSwap)
+                if (!mEdgeHandleHostVisible || !inNextFrame(workspaceView, false, () -> {
                     if (mVerticalSwap.current(swap)) {
                         window.finishPark();
                     }
@@ -3757,8 +3774,10 @@ public class Workspace extends SmoothPagedView
                 // The widgets of the bar are the page's own bar's again (the same as after a wake)
                 refreshWidgetBarAfterWake("persistent bar parked");
             };
-            if (fadeMs <= 0 || !bar.isAttachedToWindow()) {
-                if (!bar.isAttachedToWindow() || !inNextFrame(workspaceView, false, end)) {
+            if (fadeMs <= 0 || !bar.isAttachedToWindow() || !mEdgeHandleHostVisible) {
+                // The launcher not in front: nothing is seen until it comes back, so at once (PageBarSwap)
+                if (!bar.isAttachedToWindow() || !mEdgeHandleHostVisible
+                        || !inNextFrame(workspaceView, false, end)) {
                     bar.setAlpha(0f);
                     mainHandler.post(end);
                 }

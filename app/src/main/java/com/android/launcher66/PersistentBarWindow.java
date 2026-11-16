@@ -2,11 +2,19 @@ package com.android.launcher66;
 
 /**
  * The window of the bar on every page (without auto-hide), free of android.* so that its rules can
- * be tested. The window exists for as long as the launcher is in front in that mode, so that the
- * bar which is to appear at the first moment of a page move is already built and drawn: showing
- * it is a change of alpha and of touchability, no inflation and no addView in the middle of a
- * gesture. Building it there took 144 ms on a fast phone, and the pane under the finger stood
- * still for that long and then jumped.
+ * be tested. The window is built in advance, so that the bar which is to appear at the first moment
+ * of a page move is already built and drawn: showing it is a change of alpha and of touchability,
+ * no inflation and no addView in the middle of a gesture. Building it there took 144 ms on a fast
+ * phone, and the pane under the finger stood still for that long and then jumped.
+ *
+ * <p>The rule: the window exists for as long as the launcher's window does in that mode, not only
+ * while the launcher is in front. It is a sub-window of the launcher's window (BarWindows), which the
+ * system hides and shows together with that window, as it does the panes of the PiPs; an app coming to
+ * the front changes nothing in it, and what is decided while the launcher is away (all apps closed, the
+ * overview left) is done while nothing of the launcher is seen. Until 2026-11-16 the window was removed
+ * when an app came to the front and built again 250 ms after the return; until then the first page
+ * showed its own bar and the other pages none, and a swipe in that time moved the first page's bar
+ * with its page.
  */
 final class PersistentBarWindow {
 
@@ -39,16 +47,17 @@ final class PersistentBarWindow {
     }
 
     /**
+     * Whether the launcher is in front is not asked: see the class's rule.
+     *
      * @param mode 'Horizontal bar on every page' without auto-hide, in the user layout
-     * @param inFront the launcher is in front
      * @param permitted the window can be added (the launcher's window is there, BarWindows) and did not fail
      * @param barIsOverlay HorizontalBarPlacement says the bar is the overlay's now (the page moves, or
      *                     rests on another page than the first)
      * @param free nothing else is in the bar's place: the normal state, the workspace (not all
      *             apps or the overview), nothing dragged, no folder or list of apps open
      */
-    static State target(boolean mode, boolean inFront, boolean permitted, boolean barIsOverlay, boolean free) {
-        if (!mode || !inFront || !permitted) {
+    static State target(boolean mode, boolean permitted, boolean barIsOverlay, boolean free) {
+        if (!mode || !permitted) {
             return State.NONE;
         }
         return barIsOverlay && free ? State.SHOWN : State.STANDBY;

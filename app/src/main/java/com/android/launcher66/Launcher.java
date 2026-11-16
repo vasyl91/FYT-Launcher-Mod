@@ -3075,7 +3075,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     + (front != null ? front : "unknown"));
         }
         allowPip = false;
-        cleanWidgetBar();
+        // The bar on every page keeps its window through a pause (PersistentBarWindow): nothing of the bar is
+        // removed, so its views are not let go either - the buttons of the window would not answer after the
+        // return, as nothing builds it again then.
+        if (mWorkspace == null || !mWorkspace.keepsBarViewsThroughPause()) {
+            cleanWidgetBar();
+        }
         if (mWorkspace != null) {
             // Something else takes the screen - usually an app opened from the bottom or the side
             // bar: the auto-hide bar goes away now instead of waiting for its timeout. (Already

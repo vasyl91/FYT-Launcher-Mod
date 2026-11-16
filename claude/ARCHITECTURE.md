@@ -188,14 +188,17 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
 - **Bar on every page:**
   - `L/HorizontalBarPlacement` and `L/VerticalBarPlacement` decide where each bar is drawn.
   - `L/PersistentBarWindow` is the logic of the window that stays put while the pages move (pre-built, so
-    showing it costs nothing); `L/VerticalBarWindow` is the vertical bar's window.
+    showing it costs nothing); `L/VerticalBarWindow` is the vertical bar's window. Both windows stay while an
+    app is in front (2026-11-16): the system hides and shows them with the launcher's window, as it does the
+    panes, so nothing is built or swapped on a return.
   - `L/BarWindows` (2026-11-16): the bars' windows, the auto-hide bar's and the edge handle's are sub-windows
     of the launcher's window (through the activity's window manager): under every floating button and
     overlay, no permission to draw over other apps needed (D-64). The windows of the bars on every page are
     sub-panels (`TYPE_APPLICATION_SUB_PANEL`), over the panes of the PiPs (panels) whatever the order they
     were added in; the auto-hide bar and the edge handle are panels (`TYPE_APPLICATION_PANEL`).
   - `L/PageBarSwap` (2026-11-15): while a bar's window is shown over the first page, the page's own bar is
-    hidden (after the window's first frame; shown again before the window goes), so one bar is seen.
+    hidden (in the window's first frame; shown again before the window goes; at once both ways while the
+    launcher is not in front), so one bar is seen.
   - `L/BarGhostRule` and `L/PageBarGhost`: while the pages are small (overview, dragging) every page after
     the first draws a recording of the bars' windows in their strips (`Canvas.drawPicture`, no bitmap on
     Android 9+). `L/BarSwipeFrame` feeds a swipe on a bar's window to the pages and logs when they take it.

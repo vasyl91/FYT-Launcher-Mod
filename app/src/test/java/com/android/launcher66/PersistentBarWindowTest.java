@@ -15,39 +15,48 @@ import org.junit.jupiter.api.Test;
 
 class PersistentBarWindowTest {
 
-    private static PersistentBarWindow.State target(boolean mode, boolean front, boolean permitted,
-                                                    boolean overlay, boolean free) {
-        return PersistentBarWindow.target(mode, front, permitted, overlay, free);
+    private static PersistentBarWindow.State target(boolean mode, boolean permitted, boolean overlay,
+                                                    boolean free) {
+        return PersistentBarWindow.target(mode, permitted, overlay, free);
     }
 
     @Test
-    void thereIsNoWindowWithoutTheModeTheLauncherInFrontOrThePermission() {
-        assertEquals(NONE, target(false, true, true, true, true));
-        assertEquals(NONE, target(true, false, true, true, true));
-        assertEquals(NONE, target(true, true, false, true, true));
-        assertEquals(NONE, target(false, false, false, false, false));
+    void thereIsNoWindowWithoutTheModeOrThePermission() {
+        assertEquals(NONE, target(false, true, true, true));
+        assertEquals(NONE, target(true, false, true, true));
+        assertEquals(NONE, target(false, false, false, false));
         // whatever the bar and the free state say
         for (boolean overlay : new boolean[] {false, true}) {
             for (boolean free : new boolean[] {false, true}) {
-                assertEquals(NONE, target(false, true, true, overlay, free));
-                assertEquals(NONE, target(true, false, true, overlay, free));
-                assertEquals(NONE, target(true, true, false, overlay, free));
+                assertEquals(NONE, target(false, true, overlay, free));
+                assertEquals(NONE, target(true, false, overlay, free));
             }
         }
     }
 
     @Test
     void theBarIsShownWhenItIsTheOverlaysAndNothingElseIsInItsPlace() {
-        assertEquals(SHOWN, target(true, true, true, true, true));
+        assertEquals(SHOWN, target(true, true, true, true));
     }
 
     @Test
     void everyOtherCaseWaitsInStandby() {
         // the first page at rest (the page's own bar), and with something in the bar's place:
         // all apps, the overview, a drag, a folder, the list of apps
-        assertEquals(STANDBY, target(true, true, true, false, true));
-        assertEquals(STANDBY, target(true, true, true, true, false));
-        assertEquals(STANDBY, target(true, true, true, false, false));
+        assertEquals(STANDBY, target(true, true, false, true));
+        assertEquals(STANDBY, target(true, true, true, false));
+        assertEquals(STANDBY, target(true, true, false, false));
+    }
+
+    @Test
+    void anAppInFrontDoesNotTakeTheWindowAway() {
+        // nothing in the rule asks whether the launcher is in front: the window goes and comes with the
+        // launcher's window, and a decision taken meanwhile is the same as in front
+        for (boolean overlay : new boolean[] {false, true}) {
+            for (boolean free : new boolean[] {false, true}) {
+                assertEquals(overlay && free ? SHOWN : STANDBY, target(true, true, overlay, free));
+            }
+        }
     }
 
     @Test
@@ -85,8 +94,8 @@ class PersistentBarWindowTest {
     @Test
     void theBarNeededAtTheFirstMomentOfAMoveIsActivatedNotBuilt() {
         // the first page at rest: standby; the move begins: the target is shown
-        PersistentBarWindow.State resting = target(true, true, true, false, true);
-        PersistentBarWindow.State moving = target(true, true, true, true, true);
+        PersistentBarWindow.State resting = target(true, true, false, true);
+        PersistentBarWindow.State moving = target(true, true, true, true);
         assertEquals(ACTIVATE, PersistentBarWindow.action(resting, moving, true));
     }
 

@@ -18,8 +18,11 @@ import java.util.Map;
  * after the queue of the main thread, which on a busy unit kept both bars for most of a second - so there is
  * no frame without a bar and at most one with both, still in one place; when the window goes, the page's bar is shown first and the window is put away
  * only after the page has drawn its bar again ({@link #windowLeaving()} gives the token that the deferred
- * step checks). A window shown again before a deferred step runs makes that step void. Pure Java (the views
- * are reached through {@link Alpha}), so that it has a test.
+ * step checks). A window shown again before a deferred step runs makes that step void. While the launcher is
+ * not in front nothing of it is seen, and the window (a sub-window of the launcher's) comes back on screen
+ * together with it: there the swap is done at once, both ways ({@link #hideNow}), or the first frames after
+ * the return would show both bars. Pure Java (the views are reached through {@link Alpha}), so that it has a
+ * test.
  *
  * @param <V> the views of the page's bar
  */
@@ -63,6 +66,18 @@ final class PageBarSwap<V> {
             }
         }
         return true;
+    }
+
+    /**
+     * The window is shown and the page's bar is hidden at once, without waiting for the window's frame: where
+     * no frame of the launcher is seen before the window's.
+     *
+     * @return the token, as {@link #windowShown()} gives it
+     */
+    int hideNow(Iterable<V> pageBar) {
+        int token = windowShown();
+        windowDrawn(token, pageBar);
+        return token;
     }
 
     /**

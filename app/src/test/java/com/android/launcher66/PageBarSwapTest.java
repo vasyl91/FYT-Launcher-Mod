@@ -46,6 +46,27 @@ class PageBarSwapTest {
     }
 
     @Test
+    void whereNothingOfTheLauncherIsSeenThePagesBarIsHiddenAtOnce() {
+        int token = swap.hideNow(page);
+        assertEquals(0f, bar.alpha);
+        assertEquals(0f, button.alpha);
+        assertTrue(swap.current(token));
+        // a step of an earlier window that comes after it changes nothing
+        swap.windowLeaving();
+        assertEquals(1f, bar.alpha);
+        assertEquals(0.4f, button.alpha);
+    }
+
+    @Test
+    void hidingAtOnceVoidsTheStepOfAWindowShownBefore() {
+        int earlier = swap.windowShown();
+        swap.hideNow(page);
+        assertFalse(swap.current(earlier));
+        assertFalse(swap.windowDrawn(earlier, page));
+        assertEquals(0f, bar.alpha);
+    }
+
+    @Test
     void whenTheWindowGoesThePagesBarComesBackWithItsOwnAlpha() {
         swap.windowDrawn(swap.windowShown(), page);
         int token = swap.windowLeaving();
