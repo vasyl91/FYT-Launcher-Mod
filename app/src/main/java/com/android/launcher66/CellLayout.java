@@ -1817,6 +1817,14 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
 
         if (minSpanX <= 0 || minSpanY <= 0 || spanX <= 0 || spanY <= 0 ||
                 spanX < minSpanX || spanY < minSpanY) {
+            // No area for such sizes: -1, -1 as for a full page, not the 0,0 the array starts with (DropSpan)
+            bestXY[0] = -1;
+            bestXY[1] = -1;
+            if (resultSpan != null) {
+                resultSpan[0] = -1;
+                resultSpan[1] = -1;
+            }
+            markCellsAsOccupiedForView(ignoreView, occupied);
             return bestXY;
         }
 
@@ -2904,6 +2912,11 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
     }
 
     private void commitTempPlacement() {
+        commitTempPlacement(null);
+    }
+
+    /** @param skip a child whose cell is not committed (the view being dropped), or null */
+    private void commitTempPlacement(View skip) {
         for (int i = 0; i < mCountX; i++) {
             for (int j = 0; j < mCountY; j++) {
                 mOccupied[i][j] = mTmpOccupied[i][j];
@@ -2912,6 +2925,9 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         int childCount = mShortcutsAndWidgets.getChildCount();
         for (int i = 0; i < childCount; i++) {
             View child = mShortcutsAndWidgets.getChildAt(i);
+            if (child == skip) {
+                continue;
+            }
             LayoutParams lp = (LayoutParams) child.getLayoutParams();
             Object tag = child.getTag();
             if (!(tag instanceof ItemInfo)) {
@@ -2956,7 +2972,7 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         int[] resultSpan = new int[2];
         findNearestVacantArea(pixelX, pixelY, minSpanX, minSpanY, spanX, spanY, null, result,
                 resultSpan);
-        if (result[0] >= 0 && result[1] >= 0) {
+        if (DropSpan.usable(result[0], result[1], resultSpan[0], resultSpan[1])) {
             copyCurrentStateToSolution(solution, false);
             solution.dragViewX = result[0];
             solution.dragViewY = result[1];
@@ -3133,6 +3149,11 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         ItemConfiguration noShuffleSolution = findConfigurationNoShuffle(pixelX, pixelY, minSpanX,
                 minSpanY, spanX, spanY, dragView, new ItemConfiguration());
 
+        // A solution with no size for the item is none (DropSpan)
+        if (swapSolution.isSolution && !DropSpan.usable(swapSolution.dragViewX, swapSolution.dragViewY,
+                swapSolution.dragViewSpanX, swapSolution.dragViewSpanY)) {
+            swapSolution.isSolution = false;
+        }
         ItemConfiguration finalSolution = null;
         if (swapSolution.isSolution && swapSolution.area() >= noShuffleSolution.area()) {
             finalSolution = swapSolution;
@@ -3163,7 +3184,9 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
 
                 if (!DESTRUCTIVE_REORDER &&
                         (mode == MODE_ON_DROP || mode == MODE_ON_DROP_EXTERNAL)) {
-                    commitTempPlacement();
+                    // Not the dragged view: its place is the drop's to set, and its temporary cell was
+                    // never set by this solution (DropSpan)
+                    commitTempPlacement(dragView);
                     completeAndClearReorderHintAnimations();
                     setItemPlacementDirty(false);
                 } else {

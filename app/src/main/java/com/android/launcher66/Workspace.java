@@ -6670,8 +6670,9 @@ public class Workspace extends SmoothPagedView
                 int minSpanX = spanX;
                 int minSpanY = spanY;
                 if (d.dragInfo instanceof PendingAddWidgetInfo) {
-                    minSpanX = ((PendingAddWidgetInfo) d.dragInfo).minSpanX;
-                    minSpanY = ((PendingAddWidgetInfo) d.dragInfo).minSpanY;
+                    // Never larger than the size it is dropped at (DropSpan)
+                    minSpanX = DropSpan.min(((PendingAddWidgetInfo) d.dragInfo).minSpanX, spanX);
+                    minSpanY = DropSpan.min(((PendingAddWidgetInfo) d.dragInfo).minSpanY, spanY);
                 }
 
                 mTargetCell = findNearestArea((int) mDragViewVisualCenter[0],
@@ -6948,12 +6949,9 @@ public class Workspace extends SmoothPagedView
                 // Aside from the special case where we're dropping a shortcut onto a shortcut,
                 // we need to find the nearest cell location that is vacant
                 ItemInfo item = (ItemInfo) d.dragInfo;
-                int minSpanX = item.spanX;
-                int minSpanY = item.spanY;
-                if (item.minSpanX > 0 && item.minSpanY > 0) {
-                    minSpanX = item.minSpanX;
-                    minSpanY = item.minSpanY;
-                }
+                // The item's minimum, never larger than the size it has (DropSpan)
+                int minSpanX = DropSpan.min(item.minSpanX, item.spanX);
+                int minSpanY = DropSpan.min(item.minSpanY, item.spanY);
 
                 int[] resultSpan = new int[2];
                 mTargetCell = dropTargetLayout.createArea((int) mDragViewVisualCenter[0],
@@ -6963,7 +6961,7 @@ public class Workspace extends SmoothPagedView
                 boolean foundCell = mTargetCell[0] >= 0 && mTargetCell[1] >= 0;
                 // A place with no room at all (over the PiP panes, say) can come back as a
                 // cell with a 0 span: taken as the widget's new size it crashed the drop.
-                if (foundCell && (resultSpan[0] < 1 || resultSpan[1] < 1)) {
+                if (foundCell && !DropSpan.usable(mTargetCell[0], mTargetCell[1], resultSpan[0], resultSpan[1])) {
                     Log.w(TAG, "onDrop(): no room at " + mTargetCell[0] + "," + mTargetCell[1]
                             + " (span " + resultSpan[0] + "x" + resultSpan[1] + "), back to where it was");
                     foundCell = false;
@@ -7039,12 +7037,23 @@ public class Workspace extends SmoothPagedView
                     LauncherModel.modifyItemInDatabase(mLauncher, info, container, screenId, lp.cellX,
                             lp.cellY, item.spanX, item.spanY);
                 } else {
-                    // If we can't find a drop location, we return the item to its original position
+                    // If we can't find a drop location, we return the item to its original position:
+                    // the one it was dragged from (mDragInfo), whatever the search wrote meanwhile, and the
+                    // page it is dropped on gives up the reorder it showed (DropSpan)
+                    dropTargetLayout.revertTempState();
                     CellLayout.LayoutParams lp = (CellLayout.LayoutParams) cell.getLayoutParams();
+                    if (mDragInfo.cellX >= 0 && mDragInfo.cellY >= 0) {
+                        lp.cellX = lp.tmpCellX = mDragInfo.cellX;
+                        lp.cellY = lp.tmpCellY = mDragInfo.cellY;
+                    }
+                    lp.useTmpCoords = false;
                     mTargetCell[0] = lp.cellX;
                     mTargetCell[1] = lp.cellY;
                     CellLayout layout = cellLayoutOf(cell);
-                    if (layout != null) layout.markCellsAsOccupiedForView(cell);
+                    if (layout != null) {
+                        layout.markCellsAsOccupiedForView(cell);
+                        layout.requestLayout();
+                    }
                 }
             }
 
@@ -7534,12 +7543,9 @@ public class Workspace extends SmoothPagedView
 
             ItemInfo info = (ItemInfo) d.dragInfo;
 
-            int minSpanX = item.spanX;
-            int minSpanY = item.spanY;
-            if (item.minSpanX > 0 && item.minSpanY > 0) {
-                minSpanX = item.minSpanX;
-                minSpanY = item.minSpanY;
-            }
+            // The item's minimum, never larger than the size it has (DropSpan)
+            int minSpanX = DropSpan.min(item.minSpanX, item.spanX);
+            int minSpanY = DropSpan.min(item.minSpanY, item.spanY);
 
             mTargetCell = findNearestArea((int) mDragViewVisualCenter[0],
                     (int) mDragViewVisualCenter[1], minSpanX, minSpanY,
@@ -7802,12 +7808,9 @@ public class Workspace extends SmoothPagedView
             final ItemInfo item = (ItemInfo) d.dragInfo;
             boolean updateWidgetSize = false;
             if (findNearestVacantCell) {
-                int minSpanX = item.spanX;
-                int minSpanY = item.spanY;
-                if (item.minSpanX > 0 && item.minSpanY > 0) {
-                    minSpanX = item.minSpanX;
-                    minSpanY = item.minSpanY;
-                }
+                // The item's minimum, never larger than the size it has (DropSpan)
+                int minSpanX = DropSpan.min(item.minSpanX, item.spanX);
+                int minSpanY = DropSpan.min(item.minSpanY, item.spanY);
                 int[] resultSpan = new int[2];
                 mTargetCell = cellLayout.createArea((int) mDragViewVisualCenter[0],
                         (int) mDragViewVisualCenter[1], minSpanX, minSpanY, info.spanX, info.spanY,
