@@ -396,7 +396,12 @@ without a saved picture (`44ed8f4cb`), and the revert of the stats picture (`fe7
 the statistics window, a change of the columns put the Shizuku widget over three icons, the floating
 buttons lay under the bars on the pages after the first, and the wallpaper was still not read with
 Shizuku (all four in round 15, KI-36). Still to watch: the bar's buttons on the FYT unit (KI-35), the
-media fixes (never seen by the owner), the statistics' alpha (too short a test).
+media fixes (never seen by the owner), the statistics' alpha (too short a test). **The owner, 2026-11-16 17:26
+[H]:** after a start the statistics window still lacked its full alpha with Shizuku. The log shows the window
+added under 0.8 before the host was there and laid out once, 30 ms after the raise through `cmd`; the window
+manager keeps its own copy of the limit and takes the setting up later [A]. `StatsOverlayAlpha` now lays the
+window out again at 0.3, 1, 3 and 10 s after the raise and with every look of the minute while the window cut in
+that showing is shown (round 21, log `laid out again (n/4) …`). Not tested on a device.
 
 ### KI-35 The bar's music buttons stop responding after an app
 The owner, 2026-11-15 [H]: after opening any app and coming back, the buttons of the music widget on the

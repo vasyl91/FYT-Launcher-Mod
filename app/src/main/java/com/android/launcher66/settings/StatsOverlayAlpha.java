@@ -41,6 +41,14 @@ import java.util.concurrent.TimeUnit;
  * moment after a raise, because the system takes up the written value only a while after the write (after
  * a long sleep, with Shizuku, more than the second a raise waits for it). Before this, a raise whose value
  * the system took up late left the window see-through until it moved.
+ *
+ * <p>The setting read here is not the copy the window manager cuts the alpha with: it keeps its own, taken
+ * up by its own observer of the setting a while after the write, and an app cannot read that copy nor the
+ * alpha the window got. So a window cut under a lower limit is laid out again when the setting says 1, and
+ * then a few more times ({@link #RELAYOUT_AFTER_MS}), and with every look of the minute for as long as it is
+ * shown ({@link #keepsRelayingOut}). A layout with the same parameters changes nothing that is seen. Before
+ * this the one layout came 30 ms after the write through Shizuku and the window stayed at 0.8 (the owner,
+ * A55, log of 2026-11-16 17:26).
  */
 public final class StatsOverlayAlpha {
     private static final String TAG = "StatsOverlayAlpha";
@@ -94,6 +102,19 @@ public final class StatsOverlayAlpha {
         return windowShown && !trustedApplied && limitWhenLaidOut < 1f && limitNow >= 1f;
     }
 
+    /**
+     * The window was cut in this showing (added or laid out under a limit below 1), it is shown, it is not a
+     * trusted overlay, and the setting says 1: it is laid out again at the look of the minute, in case the
+     * window manager took the value up later than the series after the raise.
+     */
+    static boolean keepsRelayingOut(boolean windowShown, boolean trustedApplied, boolean cutThisShowing,
+                                    float limitNow) {
+        return windowShown && !trustedApplied && cutThisShowing && limitNow >= 1f;
+    }
+
+    /** When the window is laid out again after the setting is seen at 1, besides at once (ms after that). */
+    static final long[] RELAYOUT_AFTER_MS = {300L, 1_000L, 3_000L, 10_000L};
+
     static LimitAction limitAction(boolean windowShown, boolean raisedByUs, String currentValue) {
         boolean full = parseLimit(currentValue) >= 1f;
         if (windowShown) return full ? LimitAction.NOTHING : LimitAction.RAISE;
@@ -133,6 +154,10 @@ public final class StatsOverlayAlpha {
     private static volatile float sLimitWhenLaidOut = 1f;
     /** How many looks are still due a moment after a raise the system had not taken up yet. */
     private static volatile int sLateLooks;
+    /** The window was added or laid out under a limit below 1 in this showing (keepsRelayingOut). */
+    private static volatile boolean sCutThisShowing;
+    /** Counts the series of layouts after a raise; a series of an earlier showing stops. */
+    private static volatile int sSeries;
     private static final int LATE_LOOKS = 5;
     private static final long LATE_LOOK_MS = 3_000L;
 
@@ -150,7 +175,7 @@ public final class StatsOverlayAlpha {
             @Override
             public void run() {
                 if (!desiredShown) return;
-                submit();
+                submit(true);
                 MainHolder.MAIN.postDelayed(this, CHECK_INTERVAL_MS);
             }
         };
@@ -199,6 +224,8 @@ public final class StatsOverlayAlpha {
         sLimitWhenLaidOut = Build.VERSION.SDK_INT >= 31 ? currentLimit(context) : 1f;
         // Cut: looked at again a few times in the next seconds, also when the setting already says 1
         sLateLooks = sLimitWhenLaidOut < 1f ? LATE_LOOKS : 0;
+        sCutThisShowing = sLimitWhenLaidOut < 1f;
+        sSeries++;   // a series of the showing before stops
         desiredShown = true;
         addHostListener();
         startWatching(context.getApplicationContext());
@@ -259,6 +286,8 @@ public final class StatsOverlayAlpha {
         MainHolder.MAIN.removeCallbacks(Tasks.CHECK_TASK);
         MainHolder.MAIN.removeCallbacks(Tasks.LATE_LOOK_TASK);
         sLateLooks = 0;
+        sCutThisShowing = false;
+        sSeries++;
         ContentObserver observer = sLimitObserver;
         sLimitObserver = null;
         Context app = sApp;
@@ -278,20 +307,32 @@ public final class StatsOverlayAlpha {
     }
 
     private static void submit() {
+        submit(false);
+    }
+
+    /** @param minute the look of the minute: a window cut in this showing is laid out again (keepsRelayingOut) */
+    private static void submit(boolean minute) {
         try {
-            ExecutorHolder.EXECUTOR.execute(StatsOverlayAlpha::sync);
+            ExecutorHolder.EXECUTOR.execute(() -> sync(minute));
         } catch (Throwable t) {
             Log.w(TAG, "task rejected: " + t);
         }
     }
 
     /** On the executor: brings the limit to what desiredShown says. */
-    private static void sync() {
+    private static void sync(boolean minute) {
         final Context app = sApp;
         if (app == null) return;
         try {
             boolean shown = desiredShown;
             relayoutIfLimitReached(app, shown);
+            if (minute && keepsRelayingOut(shown, trustedApplied, sCutThisShowing, currentLimit(app))) {
+                final Runnable onRaised = sOnRaised;
+                if (onRaised != null) {
+                    Log.i(TAG, "the window was cut in this showing: laid out again at the look of the minute");
+                    MainHolder.MAIN.post(onRaised);
+                }
+            }
             ContentResolver cr = app.getContentResolver();
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(app);
             boolean raised = prefs.getBoolean(Keys.STATS_OBSCURING_RAISED, false);
@@ -377,10 +418,33 @@ public final class StatsOverlayAlpha {
             sLimitWhenLaidOut = now;
             sLateLooks = 0;
             MainHolder.MAIN.post(onRaised);
+            relayoutSeries();
         } else if (sLateLooks > 0) {
             sLateLooks--;
             MainHolder.MAIN.removeCallbacks(Tasks.LATE_LOOK_TASK);
             MainHolder.MAIN.postDelayed(Tasks.LATE_LOOK_TASK, LATE_LOOK_MS);
+        }
+    }
+
+    /**
+     * The layouts after the one at once (RELAYOUT_AFTER_MS): the window manager takes the value up later than the
+     * setting says it, and no app can see when. A series of an earlier showing, or of a window gone, stops.
+     */
+    private static void relayoutSeries() {
+        final int series = ++sSeries;
+        final int count = RELAYOUT_AFTER_MS.length;
+        for (int i = 0; i < count; i++) {
+            final int index = i + 1;
+            final long delay = RELAYOUT_AFTER_MS[i];
+            MainHolder.MAIN.postDelayed(() -> {
+                Runnable onRaised = sOnRaised;
+                if (series != sSeries || !desiredShown || trustedApplied || onRaised == null) {
+                    return;
+                }
+                Log.i(TAG, "laid out again (" + index + "/" + count + ") " + delay
+                        + " ms after the limit reached 1, for the window manager's own copy of it");
+                onRaised.run();
+            }, delay);
         }
     }
 

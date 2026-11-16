@@ -283,3 +283,26 @@ of commit 5 moves it (one way for all). The bound widget saved as 0×0 (`bindApp
 too. The plan's step 6 (a system bar at the side in landscape) was not done: it changes the width, the scroll and
 the panes' places of every page, and whether the A55 has such a bar is not known; KI-39 keeps it open. The
 statistics window is not moved (its own window keeps clear of the bars). **Not tested on a device.**
+
+## Round 21 (2026-11-16): the statistics window's full alpha with Shizuku after a start (log of 17:26, A55)
+
+The owner: round 20 seems to work; the statistics window is again not at full alpha with Shizuku.
+
+**The log [V]:** the window was added at 09.556 while the host was not connected yet (`RAISE: route
+UNAVAILABLE`), so the system cut its alpha to 0.8. At 10.810 the host raised the limit to 1 (`result OK (cmd)`),
+the setting read 1, and the window was laid out again once at 10.840 (`relayoutAsync=true … ch=false`). Nothing
+followed: the rule (`needsRelayout`) was satisfied for good.
+
+**Cause [A]:** the setting is not the window manager's copy of it; that copy is taken up by the system's own
+observer a while after the write, and an app can read neither it nor the window's real alpha. A layout 30 ms
+after the write most likely came before it.
+
+| Commit | Subject |
+|---|---|
+| (this round) | Fuel stats: the window is laid out again a few times after the limit reaches 1 |
+
+The window cut in a showing is laid out again at once, then 0.3, 1, 3 and 10 s after the setting is seen at 1,
+and with every look of the minute while it is shown (`StatsOverlayAlpha.RELAYOUT_AFTER_MS`, `keepsRelayingOut`).
+A layout with the same parameters changes nothing that is seen. The 7862 (a trusted overlay) is not affected.
+If the window is still see-through after the series, the next step is to add the window again. Not tested on a
+device.

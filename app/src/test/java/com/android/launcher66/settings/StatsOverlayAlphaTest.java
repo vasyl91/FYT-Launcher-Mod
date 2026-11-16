@@ -22,6 +22,28 @@ import org.junit.jupiter.api.Test;
 class StatsOverlayAlphaTest {
 
     @Test
+    void aWindowCutInThisShowingIsLaidOutAgainWithEveryLookOfTheMinute() {
+        // the A55 after a start: added under 0.8 before the host was there, the setting is 1 now
+        assertTrue(StatsOverlayAlpha.keepsRelayingOut(true, false, true, 1f));
+        // not cut, hidden, a trusted overlay, or the setting not at 1 yet: nothing to lay out
+        assertFalse(StatsOverlayAlpha.keepsRelayingOut(true, false, false, 1f));
+        assertFalse(StatsOverlayAlpha.keepsRelayingOut(false, false, true, 1f));
+        assertFalse(StatsOverlayAlpha.keepsRelayingOut(true, true, true, 1f));
+        assertFalse(StatsOverlayAlpha.keepsRelayingOut(true, false, true, 0.8f));
+    }
+
+    @Test
+    void theSeriesAfterARaiseReachesWellPastTheThirtyMillisecondsOfTheOneLayoutBefore() {
+        long[] delays = StatsOverlayAlpha.RELAYOUT_AFTER_MS;
+        assertTrue(delays.length >= 3);
+        for (int i = 1; i < delays.length; i++) {
+            assertTrue(delays[i] > delays[i - 1], "growing");
+        }
+        assertTrue(delays[0] >= 100L);
+        assertTrue(delays[delays.length - 1] >= 10_000L);
+    }
+
+    @Test
     void routes() {
         assertEquals(TRUSTED, route(34, true, false, false, false, false, 0.8f));
         assertEquals(TRUSTED, route(34, false, true, false, false, false, 0.8f));
