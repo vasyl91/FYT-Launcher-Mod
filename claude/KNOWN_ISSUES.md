@@ -442,6 +442,10 @@ none has run on a device. What they change and what to look at:
   disabled is [U];
 - the widget preview crashed the launcher at every start while Allegro's widget was on a page (its layout
   parameters were not FrameLayout's); fixed in `f860da64d`;
+- the owner, 2026-11-16 [H]: icons work after `4929e3da8`. On the 7862 both bars were doubled for a moment at
+  the start of each swipe: the page's bar was hidden through a post after the window's draw, ~900 ms late on
+  a busy main thread, and not at all under a window built at that moment; `88bacd560` hides it in the
+  window's own frame (log `… hidden under its window after N ms`);
 - a widget whose content fails shows its preview and opens its app on a tap; APPWIDGET_UPDATE is sent where
   the launcher may (system, root host). On the A55 with Shizuku through ADB only the preview helps: Allegro's
   widget comes back when Allegro updates it, or after the launcher is no longer reinstalled.

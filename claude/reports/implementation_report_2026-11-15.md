@@ -204,4 +204,7 @@ reason with each hidden icon.
 | `4929e3da8` | Model: an icon is shown whenever the list of apps would start its app | `ef10031ab` still let `applicationInfo.enabled` (false on the A55 for Authenticator, Alior, Anki, Booksy, Bolt) hide icons the list of apps shows |
 
 Both are my mistakes in round 16. Not tested on a device.
+| `88bacd560` | Bars: the page's own bar is hidden in the frame its window is drawn shown | on the 7862 the page's bar was hidden ~900 ms after its window showed (a post behind the busy main thread), and not at all under a window built at that moment: two bars at the start of each swipe |
+
+The owner confirmed on 2026-11-16 that the icons stay (`4929e3da8`).
 
