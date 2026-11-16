@@ -2202,6 +2202,7 @@ public class LauncherModel extends BroadcastReceiver {
                     //        LauncherSettings.Favorites.DISPLAY_MODE);
 
                     ShortcutInfo info;
+                    final ComponentName[] launchActivity = new ComponentName[1];
                     String intentDescription;
                     LauncherAppWidgetInfo appWidgetInfo;
                     int container;
@@ -2237,14 +2238,29 @@ public class LauncherModel extends BroadcastReceiver {
                                 try {
                                     intent = Intent.parseUri(trimmedIntent, 0);
                                     ComponentName cn = intent.getComponent();
-                                    if (cn != null && !isValidPackageComponent(manager, cn)) {
+                                    ItemValidity.Result validity = cn == null ? null : componentVerdict(manager, cn,
+                                            itemType == LauncherSettings.Favorites.ITEM_TYPE_APPLICATION,
+                                            launchActivity);
+                                    if (validity != null && validity.verdict == ItemValidity.Verdict.MEND) {
+                                        // The app renamed its first activity: the icon starts the current one
+                                        intent.setComponent(launchActivity[0]);
+                                        ContentValues mended = new ContentValues();
+                                        mended.put(LauncherSettings.Favorites.INTENT, intent.toUri(0));
+                                        contentResolver.update(LauncherSettings.Favorites.getContentUri(id, false),
+                                                mended, null, null);
+                                        Log.i(TAG, "Icon " + id + ": " + cn.flattenToShortString() + " - "
+                                                + validity.reason + ": " + launchActivity[0].flattenToShortString());
+                                        cn = launchActivity[0];
+                                    }
+                                    if (validity != null && validity.verdict == ItemValidity.Verdict.HIDE) {
                                         // Kept in the database, just not shown. "Not valid" also
                                         // means "not available right now": a package that is
                                         // disabled for a moment, being updated, or on storage that
                                         // is not mounted yet at boot. Deleting the row lost the
                                         // icon for good; a real uninstall deletes it through
                                         // PackageUpdatedTask (OP_REMOVE).
-                                        Launcher.addDumpLog(TAG, "Invalid package kept (not shown): " + cn, true);
+                                        Launcher.addDumpLog(TAG, "Invalid package kept (not shown): " + cn
+                                                + " (" + validity.reason + ")", true);
                                         if (c.getInt(containerIndex)
                                                 == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
                                             sBgRetainedScreens.add(c.getLong(screenIndex));
@@ -3234,8 +3250,11 @@ public class LauncherModel extends BroadcastReceiver {
                     // still installed and enabled (between two steps of an update, say) stays.
                     final PackageManager pm = context.getPackageManager();
                     for (AppInfo a : removedApps) {
-                        if (isValidPackageComponent(pm, a.componentName)) {
-                            Log.d(TAG, "PackageUpdatedTask, component still valid, icon kept: "
+                        ItemValidity.Verdict verdict = a.componentName == null ? ItemValidity.Verdict.HIDE
+                                : componentVerdict(pm, a.componentName, true, null).verdict;
+                        if (verdict != ItemValidity.Verdict.HIDE) {
+                            // Still there, or renamed by the app's update: the next load mends it (ItemValidity)
+                            Log.d(TAG, "PackageUpdatedTask, component still valid or renamed, icon kept: "
                                     + a.componentName);
                             continue;
                         }
@@ -3295,22 +3314,48 @@ public class LauncherModel extends BroadcastReceiver {
     }
 
     private boolean isValidPackageComponent(PackageManager pm, ComponentName cn) {
-        if (cn == null) {
-            return false;
-        }
+        return cn != null && componentVerdict(pm, cn, false, null).verdict == ItemValidity.Verdict.SHOW;
+    }
 
+    /**
+     * Whether an icon's component is shown, mended or hidden, and why (ItemValidity).
+     *
+     * @param mendable the icon is an app's icon (a shortcut into an app is not mended)
+     * @param launchOut receives the app's first activity where the verdict is MEND; may be null
+     */
+    private static ItemValidity.Result componentVerdict(PackageManager pm, ComponentName cn, boolean mendable,
+                                                        ComponentName[] launchOut) {
+        boolean packageFound = false;
+        boolean enabled = false;
         try {
-            // Skip if the application is disabled
             PackageInfo pi = pm.getPackageInfo(cn.getPackageName(), 0);
-            if (!pi.applicationInfo.enabled) {
-                return false;
-            }
-
-            // Check the activity
-            return (pm.getActivityInfo(cn, 0) != null);
+            packageFound = true;
+            enabled = pi.applicationInfo != null && pi.applicationInfo.enabled;
         } catch (NameNotFoundException e) {
-            return false;
+            // not installed for this user
         }
+        boolean activityFound = packageFound && enabled && activityCanStart(pm, cn);
+        ComponentName launch = null;
+        if (packageFound && enabled && !activityFound) {
+            Intent intent = pm.getLaunchIntentForPackage(cn.getPackageName());
+            launch = intent != null ? intent.getComponent() : null;
+        }
+        if (launchOut != null && launchOut.length > 0) {
+            launchOut[0] = launch;
+        }
+        return ItemValidity.of(packageFound, enabled, activityFound, launch != null, mendable);
+    }
+
+    /** The activity can be started: its own entry, or as the list of apps finds it (an alias too). */
+    private static boolean activityCanStart(PackageManager pm, ComponentName cn) {
+        try {
+            if (pm.getActivityInfo(cn, 0) != null) {
+                return true;
+            }
+        } catch (NameNotFoundException e) {
+            // not as an activity of its own: an alias, say
+        }
+        return pm.resolveActivity(new Intent(Intent.ACTION_MAIN).setComponent(cn), 0) != null;
     }
 
     /**
