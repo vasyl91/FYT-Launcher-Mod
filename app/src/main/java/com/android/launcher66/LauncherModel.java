@@ -2260,7 +2260,7 @@ public class LauncherModel extends BroadcastReceiver {
                                         // icon for good; a real uninstall deletes it through
                                         // PackageUpdatedTask (OP_REMOVE).
                                         Launcher.addDumpLog(TAG, "Invalid package kept (not shown): " + cn
-                                                + " (" + validity.reason + ")", true);
+                                                + " (" + validity.reason + "; " + hiddenFacts(manager, cn) + ")", true);
                                         if (c.getInt(containerIndex)
                                                 == LauncherSettings.Favorites.CONTAINER_DESKTOP) {
                                             sBgRetainedScreens.add(c.getLong(screenIndex));
@@ -3334,9 +3334,10 @@ public class LauncherModel extends BroadcastReceiver {
         } catch (NameNotFoundException e) {
             // not installed for this user
         }
-        boolean activityFound = packageFound && enabled && activityCanStart(pm, cn);
+        // Whatever the "enabled" flag says: what the system starts decides (ItemValidity)
+        boolean activityFound = activityCanStart(pm, cn);
         ComponentName launch = null;
-        if (packageFound && enabled && !activityFound) {
+        if (packageFound && !activityFound) {
             Intent intent = pm.getLaunchIntentForPackage(cn.getPackageName());
             launch = intent != null ? intent.getComponent() : null;
         }
@@ -3346,16 +3347,54 @@ public class LauncherModel extends BroadcastReceiver {
         return ItemValidity.of(packageFound, enabled, activityFound, launch != null, mendable);
     }
 
-    /** The activity can be started: its own entry, or as the list of apps finds it (an alias too). */
+    /**
+     * The activity can be started: it is in the list of apps (the same query the list is built with), the system
+     * resolves it (an alias too), or it has an entry of its own.
+     */
     private static boolean activityCanStart(PackageManager pm, ComponentName cn) {
-        try {
-            if (pm.getActivityInfo(cn, 0) != null) {
+        for (android.content.pm.ResolveInfo info : AllAppsList.findActivitiesForPackage(pm, cn.getPackageName())) {
+            if (info.activityInfo != null && cn.getClassName().equals(info.activityInfo.name)) {
                 return true;
             }
-        } catch (NameNotFoundException e) {
-            // not as an activity of its own: an alias, say
         }
-        return pm.resolveActivity(new Intent(Intent.ACTION_MAIN).setComponent(cn), 0) != null;
+        if (pm.resolveActivity(new Intent(Intent.ACTION_MAIN).setComponent(cn), 0) != null) {
+            return true;
+        }
+        try {
+            return pm.getActivityInfo(cn, 0) != null;
+        } catch (NameNotFoundException e) {
+            return false;
+        }
+    }
+
+    /**
+     * What the system reports for an icon the loader hides, for the log: so that the next log shows why, if an
+     * icon the user sees in the list of apps still disappears.
+     */
+    private static String hiddenFacts(PackageManager pm, ComponentName cn) {
+        StringBuilder facts = new StringBuilder();
+        String pkg = cn.getPackageName();
+        try {
+            facts.append("enabled setting ").append(pm.getApplicationEnabledSetting(pkg));
+        } catch (RuntimeException e) {
+            facts.append("enabled setting unknown");
+        }
+        try {
+            android.content.pm.ApplicationInfo ai = pm.getApplicationInfo(pkg, 0);
+            facts.append(", enabled ").append(ai.enabled)
+                    .append(", suspended ").append((ai.flags & android.content.pm.ApplicationInfo.FLAG_SUSPENDED) != 0)
+                    .append(", stopped ").append((ai.flags & android.content.pm.ApplicationInfo.FLAG_STOPPED) != 0)
+                    .append(", installed ").append((ai.flags & android.content.pm.ApplicationInfo.FLAG_INSTALLED) != 0);
+            if (android.os.Build.VERSION.SDK_INT >= 35) {
+                facts.append(", archived ").append(ai.isArchived);
+            }
+        } catch (NameNotFoundException e) {
+            facts.append(", no application info");
+        }
+        facts.append(", resolves ")
+                .append(pm.resolveActivity(new Intent(Intent.ACTION_MAIN).setComponent(cn), 0) != null)
+                .append(", activities in the list ").append(AllAppsList.findActivitiesForPackage(pm, pkg).size());
+        return facts.toString();
     }
 
     /**

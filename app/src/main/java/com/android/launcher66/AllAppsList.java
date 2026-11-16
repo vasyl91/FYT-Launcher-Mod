@@ -239,7 +239,14 @@ public class AllAppsList {
     }
 
     static List<ResolveInfo> findActivitiesForPackage(Context context, String packageName) {
-        PackageManager packageManager = context.getPackageManager();
+        return findActivitiesForPackage(context.getPackageManager(), packageName);
+    }
+
+    /**
+     * The package's activities in the list of apps: the query the list is built with, for one package. What it
+     * returns the system starts; the loader shows an icon by the same answer (ItemValidity).
+     */
+    static List<ResolveInfo> findActivitiesForPackage(PackageManager packageManager, String packageName) {
         Intent mainIntent = new Intent("android.intent.action.MAIN", (Uri) null);
         mainIntent.addCategory("android.intent.category.LAUNCHER");
         mainIntent.setPackage(packageName);

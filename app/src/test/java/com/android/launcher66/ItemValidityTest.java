@@ -26,7 +26,14 @@ class ItemValidityTest {
         ItemValidity.Result missing = ItemValidity.of(false, false, false, false, true);
         assertEquals(ItemValidity.Verdict.HIDE, missing.verdict);
         assertEquals("the app is not installed", missing.reason);
-        assertEquals("the app is disabled", ItemValidity.of(true, false, true, true, true).reason);
+        assertEquals("the app is disabled and none of its activities can be started",
+                ItemValidity.of(true, false, false, false, true).reason);
         assertEquals(ItemValidity.Verdict.HIDE, ItemValidity.of(true, true, false, false, true).verdict);
+    }
+
+    @Test
+    void anAppReportedDisabledWhoseActivityTheSystemStartsIsShown() {
+        // The A55, 2026-11-16 09:11: Authenticator, Alior, Anki reported "enabled == false", yet in the list of apps
+        assertEquals(ItemValidity.Verdict.SHOW, ItemValidity.of(true, false, true, true, true).verdict);
     }
 }
