@@ -264,3 +264,22 @@ shorter by that bar. Its picture was recorded from the window as it was on the f
 left free; `VerticalBarWindow.recordAtFullHeight()` lays the bar out at the whole height for the recording and
 back in the same step (commit "Bars: the picture of the vertical bar for the other pages has the whole
 height"). Not tested on a device.
+
+## Round 20 (2026-11-16): no item of a page outside its visible part (the owner's screenshot of 16:15, A55)
+
+The owner: after a reorganisation of a page an item sometimes lies partly under the navigation bar; a music
+widget in the screenshot. No log, so the way it took is not known [U].
+
+| Commit | Subject | Way closed |
+|---|---|---|
+| `91db3326a` | Grid: an item keeps no stale temporary cell | an item laid out in a temporary cell from another page or grid (`addInScreen()` wrote only the cell) |
+| `efe1e4fe9` | Grid: the padding of the first rows never pushes an item out of the grid | an item from row 0–2 to the last row reached 4–18 px past the grid |
+| `dabe84886` | Grid: every item added, dropped or bound lies wholly in its page's grid | the drop's page from the last drag-over; an added widget saved with its full size where only its smallest fit; "no place" taken for a place |
+| `69b495780` | Creator: an element lies wholly in the page's box | elements drawn at saved pixels past the page; the box taken for the screen without the status bar (2251 instead of 2116 px) before it was measured |
+| `36cf3e7c3` | Workspace: an item outside its page is brought back after every change | any way not found: every page is checked after each drag and resize, with a log line |
+
+**Deviations:** commit 3 only logs an item that `addViewToCellLayout()` adds partly outside the grid; the check
+of commit 5 moves it (one way for all). The bound widget saved as 0×0 (`bindAppWidget`) is left to that check
+too. The plan's step 6 (a system bar at the side in landscape) was not done: it changes the width, the scroll and
+the panes' places of every page, and whether the A55 has such a bar is not known; KI-39 keeps it open. The
+statistics window is not moved (its own window keeps clear of the bars). **Not tested on a device.**

@@ -266,6 +266,7 @@ Nothing here is confirmed. Each item needs a check in the code or on a device be
 | KI-36 | Round 15 has no device result | the owner's test of each item |
 | KI-37 | A widget lay over icons after a change of the grid | a log with the new `Items sharing cells` line |
 | KI-38 | Round 16 has no device result | the owner's test of each item |
+| KI-39 | An item of a page lay partly under the navigation bar (round 20) | the owner's test; a log with `Item out of place` or `lay outside the page` |
 
 ### KI-05 Android 8–10 through the VD host never run on a device
 The path for a non-system launcher on 8.0, 8.1/9 and 10 (module daemon or Shizuku) was written from the
@@ -426,6 +427,20 @@ home screens without an overlap [V], and the loader refuses overlapping rows. Th
 known [U]; the owner's logs name neither the widget's cells nor the icons'. Since `e0564df9a` every page
 moves an item that shares a cell with another (`CellOverlap`: icons stay, the widget moves) and logs
 `Items sharing cells on page …` with both, which should show the cause the next time.
+
+### KI-39 An item of a page lay partly under the navigation bar
+The owner, 2026-11-16 16:15 [H], A55: after a reorganisation of a page a music widget lay half under the navigation
+bar (screenshot, no log). The page itself stops above the system bars (`PagedView` takes their insets off) and its
+cells fit it [V], so the item had a cell reaching past the grid or was an element of the creator with pixels past
+the page. Which of the ways below it took is not known [U]. Round 20 closes the ways found in the code
+(`91db3326a`: stale temporary cells; `efe1e4fe9`: the padding of the first rows; `dabe84886`: the drop's page,
+the size of an added widget; `69b495780`: the creator's elements kept in the page, the box remembered per
+orientation instead of the screen without the status bar) and adds the check of every page after every drag and
+resize (`36cf3e7c3`, `PageFit`). Each correction logs one line: `Item out of place on page …`, `Custom element …
+lay outside the page …` or `Added partly outside the grid …`; the line after a next case names its way.
+Not done: a system bar at the side of the screen (landscape on a phone with buttons) is not taken off the pages'
+width (`PagedView` takes only the top and the bottom insets) [U whether the A55 has one there].
+Not tested on a device.
 
 ### KI-38 Round 16 has no device result
 Commits `e6349acf0` … `a654c0d60` (2026-11-16) build and pass the unit tests, CI green for the first [V];

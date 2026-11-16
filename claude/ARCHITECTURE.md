@@ -134,8 +134,11 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
     are not moved by it (until 2026-11-15 every child was moved by half the leftover pixels).
   - The creator's elements take their cells (`CellLayout.handleConflictingViews` moves what lies there), except
     the statistics window's placeholder, which only says where the window lies (`CustomElement.takesCells`,
-    D-65). After a load each page moves an item that shares a cell with another (`L/CellOverlap`: icons stay,
-    widgets move; KI-37). A drop asks at most for the size an item has and takes no area of size 0
+    D-65). After a load, every drag and every resize each page moves an item that does not lie wholly in its
+    grid or that shares a cell with another (`L/PageFit`, `L/CellOverlap`: icons stay, widgets move; KI-37,
+    KI-39). The creator's elements are shown wholly in the page (`PageFit.intoBox`); the box measured last is
+    kept per orientation for the time before the launcher has measured one (`S/HorizontalBarDimensions`).
+    Outside a reorder an item's temporary cell is its cell (`CellLayout.LayoutParams.setCell`). A drop asks at most for the size an item has and takes no area of size 0
     (`L/DropSpan`). The loader shows an icon whose activity can be started as the list of apps finds it, and
     mends one whose app renamed its first activity (`L/ItemValidity`).
   - `L/IconFit` (2026-11-15): an icon is made smaller where a denser grid leaves its cell too small for it
