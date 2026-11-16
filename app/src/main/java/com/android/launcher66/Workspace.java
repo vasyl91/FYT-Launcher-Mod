@@ -1976,8 +1976,9 @@ public class Workspace extends SmoothPagedView
             overlayWindowParams = new WindowManager.LayoutParams(
                     WindowManager.LayoutParams.MATCH_PARENT,
                     horizontalBarHeight,
-                    // A panel of the launcher's window, under every floating button (BarWindows)
-                    BarWindows.TYPE,
+                    // A sub-window of the launcher's window, under every floating button; the bar on
+                    // every page over the panes too (BarWindows)
+                    mOverlayPersistent ? BarWindows.EVERY_PAGE_TYPE : BarWindows.TYPE,
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                             | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
                             | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
@@ -2068,7 +2069,12 @@ public class Workspace extends SmoothPagedView
 
             // Add to window manager
             try {
-                overlayWindowManager.addView(overlayHorizontalBar, overlayWindowParams);
+                if (mOverlayPersistent) {
+                    BarWindows.addEveryPageBar(overlayWindowManager, overlayHorizontalBar, overlayWindowParams,
+                            "Persistent horizontal bar window");
+                } else {
+                    overlayWindowManager.addView(overlayHorizontalBar, overlayWindowParams);
+                }
                 isOverlayShowing = true;
                 final View addedBar = overlayHorizontalBar;
                 addedBar.post(addedBar::requestApplyInsets);

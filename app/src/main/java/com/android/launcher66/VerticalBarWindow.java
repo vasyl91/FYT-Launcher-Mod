@@ -147,9 +147,9 @@ final class VerticalBarWindow {
             arrow.setRotation(right ? 180f : 0f);
         }
 
-        // A panel of the launcher's window, under every floating button (BarWindows)
+        // A sub-panel of the launcher's window: over the panes, under every floating button (BarWindows)
         params = new WindowManager.LayoutParams(frame[2], frame[3],
-                BarWindows.TYPE,
+                BarWindows.EVERY_PAGE_TYPE,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                         | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
                         | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
@@ -173,7 +173,7 @@ final class VerticalBarWindow {
         root.setAlpha(standby ? 0f : 1f);
         shown = !standby;
         try {
-            windowManager.addView(root, params);
+            BarWindows.addEveryPageBar(windowManager, root, params, "Vertical bar window");
         } catch (RuntimeException e) {
             Log.w(TAG, "The vertical bar window could not be added", e);
             root = null;
