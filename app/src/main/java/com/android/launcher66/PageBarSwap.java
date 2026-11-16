@@ -14,8 +14,9 @@ import java.util.Map;
  * icons both were seen, one sliding over the other.
  *
  * <p>The rule: while the window is shown, the first page's own bar is hidden; only the window is seen, and
- * it does not move. The page's bar is hidden only once the window has drawn itself shown, so there is no
- * frame without a bar; when the window goes, the page's bar is shown first and the window is put away
+ * it does not move. The page's bar is hidden in the frame the window draws itself shown - in that frame, not
+ * after the queue of the main thread, which on a busy unit kept both bars for most of a second - so there is
+ * no frame without a bar and at most one with both, still in one place; when the window goes, the page's bar is shown first and the window is put away
  * only after the page has drawn its bar again ({@link #windowLeaving()} gives the token that the deferred
  * step checks). A window shown again before a deferred step runs makes that step void. Pure Java (the views
  * are reached through {@link Alpha}), so that it has a test.

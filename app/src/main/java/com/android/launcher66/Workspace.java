@@ -3351,9 +3351,12 @@ public class Workspace extends SmoothPagedView
     private void hidePageBarUnderWindow(boolean horizontal, View window) {
         final PageBarSwap<View> swap = horizontal ? mHorizontalSwap : mVerticalSwap;
         final int token = swap.windowShown();
-        afterNextDraw(window, () -> {
+        final long shownAt = SystemClock.uptimeMillis();
+        // In the window's own frame, waiting for it to be in a window if it is not yet (PageBarSwap)
+        inNextFrame(window, true, () -> {
             if (swap.windowDrawn(token, pageBarViews(horizontal))) {
-                Log.d(TAG, (horizontal ? "Horizontal" : "Vertical") + " bar of the first page hidden under its window");
+                Log.d(TAG, (horizontal ? "Horizontal" : "Vertical") + " bar of the first page hidden under its window"
+                        + " after " + (SystemClock.uptimeMillis() - shownAt) + " ms");
             }
         });
     }
@@ -3383,34 +3386,52 @@ public class Workspace extends SmoothPagedView
     }
 
     /**
-     * Runs {@code then} once {@code view}'s window has drawn its next frame (on the main thread, after that
-     * frame). False, and nothing is run, when the view is not in a window.
+     * Runs {@code then} in the next frame of {@code view}'s window, as that frame is about to be drawn
+     * (OnPreDrawListener): in the same pass of the choreographer as the frame, not after the queue of the main
+     * thread. A step posted after the draw waited behind everything else on the main thread, which on the 7862
+     * (the panes moved with the pages, 180-280 ms a frame) was some 900 ms of two bars at the start of a move.
+     *
+     * @param waitForAttach a view that is not in a window yet: wait for it to be attached and run in its first
+     *                      frame (a bar's window built at the start of a move); otherwise nothing is run
+     * @return false when nothing will be run
      */
-    private static boolean afterNextDraw(View view, Runnable then) {
-        if (view == null || !view.isAttachedToWindow()) {
+    private static boolean inNextFrame(View view, boolean waitForAttach, Runnable then) {
+        if (view == null) {
             return false;
+        }
+        if (!view.isAttachedToWindow()) {
+            if (!waitForAttach) {
+                return false;
+            }
+            view.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+                @Override
+                public void onViewAttachedToWindow(View v) {
+                    v.removeOnAttachStateChangeListener(this);
+                    inNextFrame(v, false, then);
+                }
+
+                @Override
+                public void onViewDetachedFromWindow(View v) {
+                    v.removeOnAttachStateChangeListener(this);
+                }
+            });
+            return true;
         }
         final ViewTreeObserver observer = view.getViewTreeObserver();
         if (!observer.isAlive()) {
             return false;
         }
-        final boolean[] posted = new boolean[1];
-        final ViewTreeObserver.OnDrawListener[] listener = new ViewTreeObserver.OnDrawListener[1];
-        listener[0] = () -> {
-            if (posted[0]) {
-                return;
-            }
-            posted[0] = true;
-            // A listener cannot be removed while the frame is being drawn
-            view.post(() -> {
+        observer.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
                 ViewTreeObserver now = view.getViewTreeObserver();
                 if (now.isAlive()) {
-                    now.removeOnDrawListener(listener[0]);
+                    now.removeOnPreDrawListener(this);
                 }
                 then.run();
-            });
-        };
-        observer.addOnDrawListener(listener[0]);
+                return true;
+            }
+        });
         view.invalidate();
         return true;
     }
@@ -3483,7 +3504,7 @@ public class Workspace extends SmoothPagedView
                 final int swap = mVerticalSwap.windowLeaving();
                 final VerticalBarWindow window = mVerticalWindow;
                 window.park();
-                if (!afterNextDraw(workspaceView, () -> {
+                if (!inNextFrame(workspaceView, false, () -> {
                     if (mVerticalSwap.current(swap)) {
                         window.finishPark();
                     }
@@ -3731,7 +3752,7 @@ public class Workspace extends SmoothPagedView
                 refreshWidgetBarAfterWake("persistent bar parked");
             };
             if (fadeMs <= 0 || !bar.isAttachedToWindow()) {
-                if (!bar.isAttachedToWindow() || !afterNextDraw(workspaceView, end)) {
+                if (!bar.isAttachedToWindow() || !inNextFrame(workspaceView, false, end)) {
                     bar.setAlpha(0f);
                     mainHandler.post(end);
                 }
