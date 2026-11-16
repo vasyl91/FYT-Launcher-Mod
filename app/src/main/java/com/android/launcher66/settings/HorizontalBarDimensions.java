@@ -236,24 +236,76 @@ public final class HorizontalBarDimensions {
      */
     public static void publishBarRootSize(int width, int height) {
         if (width > 0 && height > 0) {
+            boolean changed = width != sBarRootWidth || height != sBarRootHeight;
             sBarRootWidth = width;
             sBarRootHeight = height;
+            if (changed) {
+                rememberBox(width, height);
+            }
         }
     }
 
     /**
-     * Height of that box: measured once the launcher has laid the bar out, otherwise the screen
-     * height minus the status bar - the base the bar height is computed from.
+     * The rule: until the launcher has measured the box in this process, its size is the one measured last in
+     * this orientation, kept in the preferences; only the very first time is it taken from the screen. The screen
+     * without the status bar is not the box: the navigation bar is not in it either (2251 instead of 2116 px on
+     * the A55), and an element the creator or the layout of the elements placed by that height lay partly under
+     * the navigation bar (the owner, 2026-11-16).
+     */
+    private static void rememberBox(int width, int height) {
+        Context app = com.android.launcher66.LauncherApplication.sApp;
+        if (app == null) {
+            return;
+        }
+        String key = width > height ? Keys.BAR_ROOT_BOX_LANDSCAPE : Keys.BAR_ROOT_BOX_PORTRAIT;
+        androidx.preference.PreferenceManager.getDefaultSharedPreferences(app).edit()
+                .putString(key, width + "x" + height).apply();
+    }
+
+    /** {width, height} measured last in the current orientation, or null (see rememberBox()). */
+    @Nullable
+    private static int[] rememberedBox() {
+        Context app = com.android.launcher66.LauncherApplication.sApp;
+        if (app == null) {
+            return null;
+        }
+        boolean landscape = app.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+        String value = androidx.preference.PreferenceManager.getDefaultSharedPreferences(app)
+                .getString(landscape ? Keys.BAR_ROOT_BOX_LANDSCAPE : Keys.BAR_ROOT_BOX_PORTRAIT, null);
+        if (value == null) {
+            return null;
+        }
+        int x = value.indexOf('x');
+        try {
+            int w = Integer.parseInt(value.substring(0, x));
+            int h = Integer.parseInt(value.substring(x + 1));
+            return w > 0 && h > 0 ? new int[] {w, h} : null;
+        } catch (RuntimeException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Height of that box: measured once the launcher has laid the bar out, else the one measured last in this
+     * orientation (rememberBox()), otherwise the screen height minus the status bar.
      */
     public static int getBarRootHeight(int screenHeight, int statusBarHeight) {
         int measured = sBarRootHeight;
-        return measured > 0 ? measured : Math.max(0, screenHeight - statusBarHeight);
+        if (measured > 0) {
+            return measured;
+        }
+        int[] remembered = rememberedBox();
+        return remembered != null ? remembered[1] : Math.max(0, screenHeight - statusBarHeight);
     }
 
-    /** Width of that box: measured when available, otherwise the screen width. */
+    /** Width of that box: measured when available, else the one measured last, otherwise the screen width. */
     public static int getBarRootWidth(int screenWidth) {
         int measured = sBarRootWidth;
-        return measured > 0 ? measured : screenWidth;
+        if (measured > 0) {
+            return measured;
+        }
+        int[] remembered = rememberedBox();
+        return remembered != null ? remembered[0] : screenWidth;
     }
 
     /**

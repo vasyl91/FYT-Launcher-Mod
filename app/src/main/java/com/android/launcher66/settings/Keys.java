@@ -228,6 +228,9 @@ public final class Keys {
     /** The vertical bar is on every page of the home screen, not only on the first (VerticalBarPlacement). */
     public static final String VERTICAL_BAR_EVERY_PAGE = "vertical_bar_every_page";
     public static final String HORIZONTAL_BAR_EVERY_PAGE = "bottom_bar_every_page";
+    /** The box of the first page last measured, "WIDTHxHEIGHT", per orientation (HorizontalBarDimensions). */
+    public static final String BAR_ROOT_BOX_PORTRAIT = "bar_root_box_portrait";
+    public static final String BAR_ROOT_BOX_LANDSCAPE = "bar_root_box_landscape";
     public static final String AUTO_HIDE_HORIZONTAL_BAR = "auto_hide_bottom_bar";
     public static final String AUTO_HIDE_TIMEOUT = "auto_hide_timeout";
     public static final String RESIZABLE_HORIZONTAL_BAR = "resizable_bottom_bar";

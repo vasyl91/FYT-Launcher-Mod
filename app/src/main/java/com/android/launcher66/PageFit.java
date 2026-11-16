@@ -14,6 +14,19 @@ final class PageFit {
     private PageFit() {
     }
 
+    /**
+     * An element of the creator {x, y, width, height} moved into the page's box: by as much as it lies outside,
+     * keeping its size; only an element larger than the box is made as large as the box. The saved rectangle is
+     * left as the user made it; this is where it is shown.
+     */
+    static int[] intoBox(int x, int y, int width, int height, int boxWidth, int boxHeight) {
+        int w = Math.max(1, Math.min(width, boxWidth));
+        int h = Math.max(1, Math.min(height, boxHeight));
+        int left = Math.max(0, Math.min(x, boxWidth - w));
+        int top = Math.max(0, Math.min(y, boxHeight - h));
+        return new int[] {left, top, w, h};
+    }
+
     /** Whether an item of this span at this cell lies wholly in a grid of {@code countX} by {@code countY} cells. */
     static boolean inGrid(int cellX, int cellY, int spanX, int spanY, int countX, int countY) {
         return cellX >= 0 && cellY >= 0 && spanX >= 1 && spanY >= 1

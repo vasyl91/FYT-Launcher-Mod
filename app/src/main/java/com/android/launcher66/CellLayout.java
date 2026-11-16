@@ -4213,6 +4213,15 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                     return;
             }
 
+            // Shown wholly in the page (PageFit); the saved rectangle stays as the user made it
+            int[] fit = fitElementToPage(prefix, topLeftX, topLeftY, width, height);
+            topLeftX = fit[0];
+            topLeftY = fit[1];
+            width = fit[2];
+            height = fit[3];
+            topRightX = topLeftX + width;
+            bottomLeftY = topLeftY + height;
+
             int[] startCell = new int[2];
             int[] endCell = new int[2];
             pointToCellExact(topLeftX, topLeftY, startCell);
@@ -4379,6 +4388,15 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             int pipWidth = topRightX - topLeftX;
             int pipHeight = bottomLeftY - topLeftY;
 
+            // Shown wholly in the page (PageFit); the pane follows the placeholder
+            int[] fit = fitElementToPage(pipKey, topLeftX, topLeftY, pipWidth, pipHeight);
+            topLeftX = fit[0];
+            topLeftY = fit[1];
+            pipWidth = fit[2];
+            pipHeight = fit[3];
+            topRightX = topLeftX + pipWidth;
+            bottomLeftY = topLeftY + pipHeight;
+
             // Calculate cells
             int[] startCell = new int[2];
             int[] endCell = new int[2];
@@ -4501,7 +4519,9 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             int height = bottomLeftY - topLeftY;
             if (width <= 0 || height <= 0) return null;
 
-            return new int[]{ topLeftX, topLeftY + mLauncher.getStatusBarHeight(), width, height };
+            // The same place in the page as addPipPlaceholder() gives it (PageFit), without its log line
+            int[] fit = fitElementToPage(null, topLeftX, topLeftY, width, height);
+            return new int[]{ fit[0], fit[1] + mLauncher.getStatusBarHeight(), fit[2], fit[3] };
         } catch (Throwable t) {
             Log.w(TAG, "computePipPlaceholderPosition failed for " + pipType, t);
             return null;
@@ -4860,6 +4880,30 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             }
         }
         return false;
+    }
+
+    /**
+     * An element of the creator moved into this page (PageFit.intoBox()): the page is the box the creator's
+     * rectangles are in. Before the page has a size, the box the launcher measured last (HorizontalBarDimensions).
+     *
+     * @param what the element, for the log line; null for none
+     */
+    private int[] fitElementToPage(String what, int x, int y, int width, int height) {
+        int boxWidth = getWidth() > 0 ? getWidth()
+                : com.android.launcher66.settings.HorizontalBarDimensions.getBarRootWidth(Launcher.screenWidth);
+        int boxHeight = getHeight() > 0 ? getHeight()
+                : com.android.launcher66.settings.HorizontalBarDimensions.getBarRootHeight(Launcher.screenHeight,
+                        mLauncher != null ? mLauncher.getStatusBarHeight() : 0);
+        if (boxWidth <= 0 || boxHeight <= 0) {
+            return new int[] {x, y, width, height};
+        }
+        int[] fit = PageFit.intoBox(x, y, width, height, boxWidth, boxHeight);
+        if (what != null && (fit[0] != x || fit[1] != y || fit[2] != width || fit[3] != height)) {
+            Log.w(TAG, "Custom element " + what + " at " + x + "," + y + " " + width + "x" + height
+                    + " lay outside the page " + boxWidth + "x" + boxHeight + ", shown at " + fit[0] + "," + fit[1]
+                    + " " + fit[2] + "x" + fit[3]);
+        }
+        return fit;
     }
 
     private static String describeItem(ItemInfo info) {

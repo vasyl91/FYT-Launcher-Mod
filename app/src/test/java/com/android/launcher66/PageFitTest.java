@@ -1,5 +1,6 @@
 package com.android.launcher66;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -12,6 +13,25 @@ class PageFitTest {
     // first row 18 px (Launcher.workspaceTopPadding)
     private static final int CELL = 211;
     private static final int BOTTOM = 10 * CELL;
+
+    @Test
+    void anElementInsideTheBoxStaysWhereItIs() {
+        // the A55's page box 1080x2116; the music element of the log of 13:30
+        assertArrayEquals(new int[] {485, 1458, 448, 483}, PageFit.intoBox(485, 1458, 448, 483, 1080, 2116));
+    }
+
+    @Test
+    void anElementBelowTheBoxIsMovedUpKeepingItsSize() {
+        // saved while the box was taken for the screen without the status bar (2251 px): 135 px too low
+        assertArrayEquals(new int[] {145, 1716, 930, 400}, PageFit.intoBox(145, 1851, 930, 400, 1080, 2116));
+        // past the right edge, above the top
+        assertArrayEquals(new int[] {580, 0, 500, 300}, PageFit.intoBox(700, -20, 500, 300, 1080, 2116));
+    }
+
+    @Test
+    void onlyAnElementLargerThanTheBoxIsMadeSmaller() {
+        assertArrayEquals(new int[] {0, 0, 1080, 2116}, PageFit.intoBox(-10, 5, 1200, 2300, 1080, 2116));
+    }
 
     @Test
     void anItemIsInTheGridOnlyWithAllItsCells() {
