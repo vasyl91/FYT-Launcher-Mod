@@ -278,6 +278,42 @@ final class VerticalBarWindow {
         }
     }
 
+    /**
+     * The picture of the bar for the pages after the first while they are small (PageBarGhost): at the whole
+     * height of the window, as the bar is on those pages. On the first page the bar leaves the corner to that
+     * page's horizontal bar (VerticalBarCorner); recorded as it is, the picture was shorter by the corner on the
+     * pages that have no horizontal bar (the owner, A55, 2026-11-16). The bar is laid out at the whole height,
+     * recorded and laid out again with its inset in one step on the main thread: no frame is drawn in between,
+     * so nothing changes on the screen.
+     */
+    PageBarGhost.Shot recordAtFullHeight() {
+        if (root == null) {
+            return null;
+        }
+        if (cornerInset <= 0) {
+            return PageBarGhost.record(root);
+        }
+        int width = root.getWidth();
+        int height = root.getHeight();
+        if (width <= 0 || height <= 0) {
+            return null;
+        }
+        root.setPadding(0, 0, 0, 0);
+        layoutNow(width, height);
+        try {
+            return PageBarGhost.record(root);
+        } finally {
+            applyCornerInset();
+            layoutNow(width, height);
+        }
+    }
+
+    private void layoutNow(int width, int height) {
+        root.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY));
+        root.layout(root.getLeft(), root.getTop(), root.getLeft() + width, root.getTop() + height);
+    }
+
     /** The window's left and right edge on the screen, as last put; null before it is built. */
     int[] horizontalEdges() {
         return expected == null ? null : new int[] {expected[0], expected[0] + expected[2]};

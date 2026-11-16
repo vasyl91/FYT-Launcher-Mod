@@ -3322,7 +3322,7 @@ public class Workspace extends SmoothPagedView
         PageBarGhost.Shot horizontal = horizontalStays && mOverlayPersistent
                 ? PageBarGhost.record(overlayHorizontalBar) : null;
         PageBarGhost.Shot vertical = verticalStays && mVerticalWindow != null
-                ? PageBarGhost.record(mVerticalWindow.view()) : null;
+                ? mVerticalWindow.recordAtFullHeight() : null;   // the pages after the first: whole height
         if (vertical == null && verticalStays && workspaceView != null) {
             // No window yet (the first page not laid out yet): the first page's own bar has the same strip
             vertical = PageBarGhost.record(workspaceView.findViewById(R.id.rl_vertical_bar));

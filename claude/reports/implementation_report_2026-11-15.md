@@ -258,3 +258,9 @@ not at the end of the swipe.
 
 **Deviation:** a change of state without an animation has no end callback here, so `setState(NORMAL)` posts one
 more update after it; the check of full size has a tolerance of a thousandth. **Not tested on a device.**
+
+The owner then: both work; in the overview the vertical bar of the pages without the horizontal bar was
+shorter by that bar. Its picture was recorded from the window as it was on the first page, with the corner
+left free; `VerticalBarWindow.recordAtFullHeight()` lays the bar out at the whole height for the recording and
+back in the same step (commit "Bars: the picture of the vertical bar for the other pages has the whole
+height"). Not tested on a device.

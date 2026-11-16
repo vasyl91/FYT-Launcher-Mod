@@ -451,7 +451,10 @@ none has run on a device. What they change and what to look at:
   D-67) removes the swap: the bar on every page is its window on every page, the first one too, built with
   the page, kept while an app is in front, over the PiP panes; nothing changes while the pages move. Not yet
   on a device: swipes at once after a start and after a return from an app, the bar's buttons after a
-  return, the overview, a drag, a folder, all apps, and the panes passing under the vertical bar;
+  return, the overview, a drag, a folder, all apps, and the panes passing under the vertical bar. On the
+  A55 (2026-11-16 [H]) it works so far; the bar after the overview (`d939d294a`), the vertical bar growing
+  into the corner while the pages move (`5199b1798`) and its picture in the overview at the whole height are
+  fixed after the owner's reports;
 - a widget whose content fails shows its preview and opens its app on a tap; APPWIDGET_UPDATE is sent where
   the launcher may (system, root host). On the A55 with Shizuku through ADB only the preview helps: Allegro's
   widget comes back when Allegro updates it, or after the launcher is no longer reinstalled.
