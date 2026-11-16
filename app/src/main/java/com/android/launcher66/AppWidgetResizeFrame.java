@@ -322,6 +322,8 @@ public class AppWidgetResizeFrame extends FrameLayout {
     public void commitResize() {
         resizeWidgetIfNeeded(true);
         requestLayout();
+        // The widget and what it pushed aside lie wholly in the page (PageFit)
+        mCellLayout.resolveOverlappingItems("widget resized");
     }
 
     public void onTouchUp() {

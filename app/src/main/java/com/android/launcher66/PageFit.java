@@ -27,6 +27,34 @@ final class PageFit {
         return new int[] {left, top, w, h};
     }
 
+    /**
+     * The items of a page that have to move: those that do not lie wholly in the grid, and of the others those
+     * that share a cell with one kept before them (CellOverlap). An item outside the grid is not counted as in
+     * the way of one inside it.
+     *
+     * @return the positions in {@code items} of those that have to move, in that order
+     */
+    static java.util.List<Integer> toMove(java.util.List<CellOverlap.Box> items, int countX, int countY) {
+        java.util.List<Integer> outside = new java.util.ArrayList<>();
+        java.util.List<Integer> insideAt = new java.util.ArrayList<>();
+        java.util.List<CellOverlap.Box> inside = new java.util.ArrayList<>();
+        for (int i = 0; i < items.size(); i++) {
+            CellOverlap.Box box = items.get(i);
+            if (inGrid(box.cellX, box.cellY, box.spanX, box.spanY, countX, countY)) {
+                insideAt.add(i);
+                inside.add(box);
+            } else {
+                outside.add(i);
+            }
+        }
+        java.util.List<Integer> move = new java.util.ArrayList<>(outside);
+        for (int k : CellOverlap.toMove(inside)) {
+            move.add(insideAt.get(k));
+        }
+        java.util.Collections.sort(move);
+        return move;
+    }
+
     /** Whether an item of this span at this cell lies wholly in a grid of {@code countX} by {@code countY} cells. */
     static boolean inGrid(int cellX, int cellY, int spanX, int spanY, int countX, int countY) {
         return cellX >= 0 && cellY >= 0 && spanX >= 1 && spanY >= 1

@@ -633,6 +633,9 @@ public class Workspace extends SmoothPagedView
     public void onDragEnd() {
         mIsDragOccuring = false;
         updatePersistentBar("drag end");
+        // Once the drop is done: every item of every page lies wholly in its grid and in cells of its own
+        // (PageFit, CellOverlap); one that does not is moved, and the log says which and from where
+        post(() -> checkItemsOfPages("drag end"));
         updateChildrenLayersEnabled(false);
         mLauncher.unlockScreenOrientation(false);
 
@@ -3144,6 +3147,16 @@ public class Workspace extends SmoothPagedView
     // ---------------------------------------------------------------------------------------------
     // 'Horizontal bar on every page', without auto-hide: the persistent overlay
     // ---------------------------------------------------------------------------------------------
+
+    /** The check of every page of the home screen (CellLayout.resolveOverlappingItems()). */
+    void checkItemsOfPages(String reason) {
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            if (child instanceof CellLayout) {
+                ((CellLayout) child).resolveOverlappingItems(reason);
+            }
+        }
+    }
 
     /**
      * Whether the bar's views stay bound while an app is in front: the horizontal bar on every page (without

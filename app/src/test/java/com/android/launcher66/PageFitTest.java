@@ -34,6 +34,24 @@ class PageFitTest {
     }
 
     @Test
+    void anItemOutsideTheGridMovesAndIsInNobodysWay() {
+        java.util.List<CellOverlap.Box> page = java.util.Arrays.asList(
+                new CellOverlap.Box(0, 0, 1, 1, false),
+                new CellOverlap.Box(2, 8, 4, 3, true),     // a widget reaching two rows past a grid of 10
+                new CellOverlap.Box(2, 9, 1, 1, false),    // an icon in a cell the widget covers: stays
+                new CellOverlap.Box(0, 0, 2, 2, true));    // a widget on the first icon: moves
+        assertEquals(java.util.Arrays.asList(1, 3), PageFit.toMove(page, 6, 10));
+    }
+
+    @Test
+    void aPageWhoseItemsAllFitMovesNothing() {
+        java.util.List<CellOverlap.Box> page = java.util.Arrays.asList(
+                new CellOverlap.Box(0, 0, 1, 1, false),
+                new CellOverlap.Box(2, 6, 4, 4, true));
+        assertTrue(PageFit.toMove(page, 6, 10).isEmpty());
+    }
+
+    @Test
     void anItemIsInTheGridOnlyWithAllItsCells() {
         // a page of 6 by 10 cells
         assertTrue(PageFit.inGrid(0, 0, 1, 1, 6, 10));

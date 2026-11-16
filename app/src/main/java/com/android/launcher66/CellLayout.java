@@ -4918,9 +4918,11 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
     }
 
     /**
-     * After the items and the page's own elements are in place: an item that shares a cell with another is
-     * moved (CellOverlap says which), to the nearest free cells of this page, else to another page, else it
-     * leaves the page and keeps its row in the database. The cells taken are counted anew from what stays.
+     * After the items and the page's own elements are in place, and after every drop and resize: an item that
+     * does not lie wholly in the page's grid (PageFit), or that shares a cell with another (CellOverlap), is
+     * moved, to the nearest free cells of this page, else to another page, else it leaves the page and keeps its
+     * row in the database. The cells taken are counted anew from what stays. The log names the item, where it
+     * was and why, so that the way it got there can be found.
      */
     void resolveOverlappingItems(String reason) {
         Workspace workspace = mLauncher != null ? mLauncher.getWorkspace() : null;
@@ -4941,7 +4943,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             boxes.add(new CellOverlap.Box(lp.cellX, lp.cellY, lp.cellHSpan, lp.cellVSpan,
                     child instanceof LauncherAppWidgetHostView));
         }
-        List<Integer> toMove = CellOverlap.toMove(boxes);
+        List<Integer> toMove = PageFit.toMove(boxes, mCountX, mCountY);
         if (toMove.isEmpty()) {
             return;
         }
@@ -4967,7 +4969,9 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         for (View view : moving) {
             LayoutParams lp = (LayoutParams) view.getLayoutParams();
             ItemInfo info = (ItemInfo) view.getTag();
-            String before = describeItem(info) + " " + lp.cellHSpan + "x" + lp.cellVSpan;
+            String before = describeItem(info) + " " + lp.cellHSpan + "x" + lp.cellVSpan
+                    + (PageFit.inGrid(lp.cellX, lp.cellY, lp.cellHSpan, lp.cellVSpan, mCountX, mCountY)
+                            ? "" : " outside the grid " + mCountX + "x" + mCountY);
             if (findVacantCells(buildSearchOccupied(excludeFirstCell), mCountX, mCountY, lp.cellHSpan,
                     lp.cellVSpan, cell)) {
                 lp.cellX = lp.tmpCellX = cell[0];
@@ -4977,13 +4981,13 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                 info.requiresDbUpdate = true;
                 markCellsAsOccupiedForView(view);
                 relocated++;
-                Log.w(TAG, "Items sharing cells on page " + (pageIndex + 1) + " (" + reason + "): " + before
+                Log.w(TAG, "Item out of place on page " + (pageIndex + 1) + " (" + reason + "): " + before
                         + " moved to " + cell[0] + "," + cell[1]);
             } else if (moveItemToAnotherPage(workspace, view, info)) {
-                Log.w(TAG, "Items sharing cells on page " + (pageIndex + 1) + " (" + reason + "): " + before
+                Log.w(TAG, "Item out of place on page " + (pageIndex + 1) + " (" + reason + "): " + before
                         + " moved to another page");
             } else {
-                Log.w(TAG, "Items sharing cells on page " + (pageIndex + 1) + " (" + reason + "): " + before
+                Log.w(TAG, "Item out of place on page " + (pageIndex + 1) + " (" + reason + "): " + before
                         + " has no free cells on any page: not shown, kept in the database");
                 removeView(view);
             }
