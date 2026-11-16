@@ -4720,10 +4720,9 @@ public class Workspace extends SmoothPagedView
             lp = new CellLayout.LayoutParams(x, y, spanX, spanY);
         } else {
             lp = (CellLayout.LayoutParams) genericLp;
-            lp.cellX = x;
-            lp.cellY = y;
-            lp.cellHSpan = spanX;
-            lp.cellVSpan = spanY;
+            // The view's own params (a widget bound again, an item moved from another page): its temporary
+            // cell is set too, or the one from before would still be the one laid out (LayoutParams.setCell)
+            lp.setCell(x, y, spanX, spanY);
         }
 
         if (spanX < 0 && spanY < 0) {

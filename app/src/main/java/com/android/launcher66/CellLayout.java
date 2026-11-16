@@ -1489,8 +1489,9 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
             }
             lp.isLockedToGrid = true;
             if (permanent) {
-                lp.cellX = info.cellX = cellX;
-                lp.cellY = info.cellY = cellY;
+                // For good: the temporary cell too (LayoutParams.setCell)
+                lp.cellX = lp.tmpCellX = info.cellX = cellX;
+                lp.cellY = lp.tmpCellY = info.cellY = cellY;
             } else {
                 lp.tmpCellX = cellX;
                 lp.tmpCellY = cellY;
@@ -3199,7 +3200,8 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
             result[0] = result[1] = resultSpan[0] = resultSpan[1] = -1;
         }
 
-        if ((mode == MODE_ON_DROP || !foundSolution) && !DESTRUCTIVE_REORDER) {
+        // A drop from outside is committed as one from the page is: the temporary cells are not used any more
+        if ((mode == MODE_ON_DROP || mode == MODE_ON_DROP_EXTERNAL || !foundSolution) && !DESTRUCTIVE_REORDER) {
             setUseTempCoords(false);
         }
 
@@ -3788,6 +3790,21 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         public boolean useTmpCoords;
 
         /**
+         * Puts the item in a cell for good. The rule: outside a reorder under way the temporary cell is the cell,
+         * so whatever cell is written outside a reorder is written to both ({@code useTmpCoords} may still be on
+         * from the last reorder of the page, and the item is then laid out in its temporary cell). Writing the
+         * cell alone left the old temporary cell in force: an item moved to another page, or a widget bound
+         * again after a change of the grid, was drawn in a cell of the page or grid before, partly outside the
+         * page (the owner, A55, 2026-11-16).
+         */
+        public void setCell(int x, int y, int spanX, int spanY) {
+            cellX = tmpCellX = x;
+            cellY = tmpCellY = y;
+            cellHSpan = spanX;
+            cellVSpan = spanY;
+        }
+
+        /**
          * Number of cells spanned horizontally by the item.
          */
         @ViewDebug.ExportedProperty
@@ -3839,18 +3856,13 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
 
         public LayoutParams(LayoutParams source) {
             super(source);
-            this.cellX = source.cellX;
-            this.cellY = source.cellY;
-            this.cellHSpan = source.cellHSpan;
-            this.cellVSpan = source.cellVSpan;
+            setCell(source.cellX, source.cellY, source.cellHSpan, source.cellVSpan);
         }
 
         public LayoutParams(int cellX, int cellY, int cellHSpan, int cellVSpan) {
             super(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-            this.cellX = cellX;
-            this.cellY = cellY;
-            this.cellHSpan = cellHSpan;
-            this.cellVSpan = cellVSpan;
+            // The temporary cell too: one left at 0,0 was the cell laid out while a reorder of the page was on
+            setCell(cellX, cellY, cellHSpan, cellVSpan);
         }
 
         public void setup(int cellWidth, int cellHeight, boolean invertHorizontally, int colCount) {
@@ -5016,8 +5028,8 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             // cell, which the excludeLastRow check then rejected.
             boolean[][] searchOccupied = buildSearchOccupied(excludeFirstCell);
             if (findVacantCells(searchOccupied, mCountX, mCountY, lp.cellHSpan, lp.cellVSpan, newLocation)) {
-                lp.cellX = newLocation[0];
-                lp.cellY = newLocation[1];
+                // For good: the temporary cell too (LayoutParams.setCell)
+                lp.setCell(newLocation[0], newLocation[1], lp.cellHSpan, lp.cellVSpan);
                 info.cellX = newLocation[0];
                 info.cellY = newLocation[1];
                 info.requiresDbUpdate = true;
