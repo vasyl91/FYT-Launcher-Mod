@@ -148,8 +148,21 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
         } else {
             lp.rowPadding = mRowPadding;
             lp.setup(this.mCellWidth, this.mCellHeight, this.mWidthGap, this.mHeightGap, invertLayoutHorizontally(), this.mCountX);
+            keepInGrid(lp);
         }
         offsetToGrid(lp);
+    }
+
+    /**
+     * After setup() from cells, before the offset: the padding of the first rows draws an item lower, and one that
+     * reaches the last row would reach past the grid by it (PageFit.heightInGrid()).
+     */
+    private void keepInGrid(CellLayout.LayoutParams lp) {
+        if (!lp.isLockedToGrid || mCountY <= 0) {
+            return;
+        }
+        int gridBottom = mCountY * mCellHeight + (mCountY - 1) * mHeightGap;
+        lp.height = PageFit.heightInGrid(lp.y, lp.height, lp.rowPaddingApplied, gridBottom);
     }
 
     /** After every setup() from cells: setup() counts from the container's corner, the cells start beside the bars. */
@@ -215,6 +228,7 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
                 DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
                 lp.rowPadding = mRowPadding;
                 lp.setup(mCellWidth, mCellHeight, this.mWidthGap, this.mHeightGap, invertLayoutHorizontally(), this.mCountX);
+                keepInGrid(lp);
                 offsetToGrid(lp);
                 // The icon in the size its page has for it, before the child is measured (IconFit)
                 if (!mIsHotseatLayout) {

@@ -3762,6 +3762,9 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
          */
         boolean rowPadding = true;
 
+        /** The padding of its row the last setup() from cells gave the item (PageFit.heightInGrid()). */
+        int rowPaddingApplied;
+
         /**
          * Horizontal location of the item in the grid.
          */
@@ -3922,7 +3925,8 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                 y = (int) (myCellY * (cellHeight + heightGap) + topMargin);
 
                 // padding for the first row and for consecutive rows so it doesn't look wierd
-                y += rowPadding(myCellY);
+                rowPaddingApplied = rowPadding(myCellY);
+                y += rowPaddingApplied;
             }
         }
 
