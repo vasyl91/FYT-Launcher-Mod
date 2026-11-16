@@ -211,6 +211,13 @@ final class HostServices {
      * the intent, then ints for the result code, the app op and, last, the user.
      */
     private static String broadcastBootCompleted(String pkg) throws ReflectiveOperationException {
+        return broadcast(new Intent(Intent.ACTION_BOOT_COMPLETED)
+                .setPackage(pkg)
+                .addFlags(BOOT_BROADCAST_FLAGS));
+    }
+
+    /** One broadcast through the activity manager with no caller, as am sends it (see above). */
+    private static String broadcast(Intent intent) throws ReflectiveOperationException {
         Object am = Hidden.getService("activity", "android.app.IActivityManager");
         Method broadcast = null;
         for (String name : new String[]{ "broadcastIntentWithFeature", "broadcastIntent" }) {
@@ -226,9 +233,6 @@ final class HostServices {
         }
         if (broadcast == null) throw new NoSuchMethodException("IActivityManager.broadcastIntent");
 
-        Intent intent = new Intent(Intent.ACTION_BOOT_COMPLETED)
-                .setPackage(pkg)
-                .addFlags(BOOT_BROADCAST_FLAGS);
         Class<?>[] types = broadcast.getParameterTypes();
         int ints = 0;
         for (Class<?> type : types) if (type == int.class) ints++;
@@ -248,6 +252,43 @@ final class HostServices {
         Object result = broadcast.invoke(am, args);
         return Integer.valueOf(BROADCAST_SUCCESS).equals(result)
                 ? "OK (binder)" : "FAILED (binder, result " + result + ")";
+    }
+
+    /**
+     * Tells one widget's app to draw it again: APPWIDGET_UPDATE with the widget's id, to the app's widget
+     * receiver, as the system sends it at the widget's update time. The launcher asks for it when a widget's
+     * content could not be shown (an image the app had not let the launcher read since its new install), so
+     * that the app sends it again, with the grant. A protected broadcast: system and root may send it, shell
+     * may not. Not part of a protocol version: a host from before it answers nothing.
+     */
+    String sendWidgetUpdate(String provider, int appWidgetId) {
+        android.content.ComponentName component = provider == null ? null
+                : android.content.ComponentName.unflattenFromString(provider);
+        if (component == null || !PACKAGE_NAME.matcher(component.getPackageName()).matches() || appWidgetId <= 0) {
+            throw new IllegalArgumentException("bad widget: " + provider + " " + appWidgetId);
+        }
+        int me = Process.myUid();
+        if (me != 0 && me != Process.SYSTEM_UID) {
+            return "UNSUPPORTED (only system or root may send APPWIDGET_UPDATE)";
+        }
+        String result;
+        try {
+            result = broadcast(new Intent("android.appwidget.action.APPWIDGET_UPDATE")
+                    .setComponent(component)
+                    .putExtra("appWidgetIds", new int[] {appWidgetId})
+                    .addFlags(BOOT_BROADCAST_FLAGS));
+        } catch (Throwable t) {
+            Throwable cause = t instanceof InvocationTargetException && t.getCause() != null
+                    ? t.getCause() : t;
+            Log.w(TAG, "APPWIDGET_UPDATE through the activity manager failed, trying am: " + cause);
+            result = VdHostCore.runCommand(null, "/system/bin/am", "broadcast",
+                    "-a", "android.appwidget.action.APPWIDGET_UPDATE", "-n", component.flattenToShortString(),
+                    "--eia", "appWidgetIds", String.valueOf(appWidgetId),
+                    "-f", String.valueOf(BOOT_BROADCAST_FLAGS));
+        }
+        Log.i(TAG, "APPWIDGET_UPDATE to " + component.flattenToShortString() + " for widget " + appWidgetId
+                + ": " + result);
+        return result;
     }
 
     // ---------------------------------------------------------------------------------------

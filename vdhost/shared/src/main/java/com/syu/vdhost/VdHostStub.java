@@ -177,6 +177,20 @@ public class VdHostStub extends Binder {
                     reply.writeTypedObject(file, android.os.Parcelable.PARCELABLE_WRITE_RETURN_VALUE);
                     return true;
                 }
+                case VdHostProtocol.TX_SEND_WIDGET_UPDATE: {
+                    String provider = data.readString();
+                    int appWidgetId = data.readInt();
+                    String res;
+                    long ident = Binder.clearCallingIdentity();
+                    try {
+                        res = mServices.sendWidgetUpdate(provider, appWidgetId);
+                    } finally {
+                        Binder.restoreCallingIdentity(ident);
+                    }
+                    reply.writeNoException();
+                    reply.writeString(res);
+                    return true;
+                }
                 case VdHostProtocol.TX_READ_HOME_WALLPAPER: {
                     ParcelFileDescriptor file;
                     long ident = Binder.clearCallingIdentity();

@@ -66,6 +66,8 @@ public final class VdHostProtocol {
      * goes on to the next way of getting one. So an older host module keeps working unchanged.
      */
     static final int TX_READ_HOME_WALLPAPER = IBinder.FIRST_CALL_TRANSACTION + 20;
+    /** APPWIDGET_UPDATE to one widget's app (sendWidgetUpdate). Added like TX_READ_HOME_WALLPAPER, no version. */
+    static final int TX_SEND_WIDGET_UPDATE = IBinder.FIRST_CALL_TRANSACTION + 21;
 
     /** The handle exec() returns: waitFor() (blocking, the exit code), destroy(). */
     static final int EXEC_WAIT_FOR = IBinder.FIRST_CALL_TRANSACTION;
@@ -378,6 +380,32 @@ public final class VdHostProtocol {
                 }
                 reply.readException();
                 return reply.readTypedObject(ParcelFileDescriptor.CREATOR);
+            } finally {
+                reply.recycle();
+                data.recycle();
+            }
+        }
+
+        /**
+         * Tells a widget's app to draw it again (APPWIDGET_UPDATE for that widget). Only system and root may.
+         *
+         * @param provider    the widget's provider, as ComponentName.flattenToString() gives it
+         * @param appWidgetId the widget's id
+         * @return the host's report ("OK …", "UNSUPPORTED …"); null from a host that does not know the call
+         */
+        public String sendWidgetUpdate(String provider, int appWidgetId) throws RemoteException {
+            Parcel data = Parcel.obtain();
+            Parcel reply = Parcel.obtain();
+            try {
+                data.writeInterfaceToken(DESCRIPTOR);
+                data.writeString(provider);
+                data.writeInt(appWidgetId);
+                mRemote.transact(TX_SEND_WIDGET_UPDATE, data, reply, 0);
+                if (reply.dataAvail() <= 0) {
+                    return null;   // a host from before this call
+                }
+                reply.readException();
+                return reply.readString();
             } finally {
                 reply.recycle();
                 data.recycle();

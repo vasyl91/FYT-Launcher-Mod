@@ -136,6 +136,7 @@ The host also does the few things the launcher does itself as `android.uid.syste
 | Compile with the Baseline Profile, full reset | `BaselineProfileCompiler` | yes | compile yes, reset Android 14+ only |
 | Read the whole log (logcat, logd buffer sizes) | `LogcatWorker` through `HostProcess` | yes | yes (setprop may be refused) |
 | BOOT_COMPLETED to an autostarted app | `ColdStart` | yes | no: a protected broadcast |
+| APPWIDGET_UPDATE to a widget whose content could not be shown, so that its app sends it again (no protocol version raised: a host from before the call answers nothing) | `LauncherAppWidgetHostView` through `sendWidgetUpdate` | yes, with the module built from this version | only with root: a protected broadcast |
 | The app in front, without the accessibility service | `ForegroundAppTracker` | yes | yes |
 | WRITE_SETTINGS without the trip to Settings | `LauncherPermissionFlow` | yes | yes |
 | Draw over other apps (SYSTEM_ALERT_WINDOW), install unknown apps (REQUEST_INSTALL_PACKAGES) without the trip to Settings (protocol 3) | `LauncherPermissionFlow` through `allowAppOp` | yes | yes |

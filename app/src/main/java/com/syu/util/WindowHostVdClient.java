@@ -284,6 +284,15 @@ public final class WindowHostVdClient {
         }
     }
 
+    /**
+     * See VdHostProtocol.Proxy.sendWidgetUpdate(). Blocking: never on the main thread. Only where the host may send
+     * protected broadcasts (canSendBootCompleted()). @return the report, null without a host that knows the call
+     */
+    public static String sendWidgetUpdate(String provider, int appWidgetId) throws RemoteException {
+        VdHostProtocol.Proxy host = privilegedHost();
+        return host != null ? host.sendWidgetUpdate(provider, appWidgetId) : null;
+    }
+
     /** See VdHostProtocol.Proxy.sendBootCompleted(). Blocking. @return the report, null without a host */
     public static String sendBootCompleted(String pkg) throws RemoteException {
         VdHostProtocol.Proxy host = privilegedHost();
