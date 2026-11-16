@@ -3,7 +3,7 @@
 Important technical and product decisions. Last consolidated on 2026-11-12 from the code, git, the briefs
 (`prompts/archive/`), the 15 chat reports (`chat_archive/CHAT_01.MD` … `CHAT_15.MD`) and the owner's answers
 of that day. D-52 … D-57 were added on 2026-11-13 with round 13, D-58 … D-63 on 2026-11-15 with round 14,
-D-64 and D-65 on 2026-11-16 with round 15, D-66 with round 16.
+D-64 and D-65 on 2026-11-16 with round 15, D-66 with round 16, D-67 with round 19.
 
 ## How to read this file
 
@@ -99,6 +99,7 @@ entry that replaces it.
 | D-64 | The bars' windows are panels of the launcher's window, under every floating button | ACTIVE | Owner (requirement) / Assistant |
 | D-65 | Icons and widgets may lie under the statistics window | ACTIVE | Owner |
 | D-66 | A widget that cannot be shown shows its preview, and its app is told to update it | ACTIVE | Owner |
+| D-67 | A bar on every page stands still: one window, no swap while the pages move | ACTIVE | Owner (requirement) / Assistant |
 
 ---
 
@@ -843,4 +844,24 @@ The round had no brief; its result is in `reports/implementation_report_2026-11-
   Allegro grants it at an update, and every new install of the launcher drops the grant. Shell (Shizuku
   without root) may not send the broadcast.
 - **Where:** `WidgetRecovery`, `LauncherAppWidgetHostView`, `02bdd7f0a`, `75e2377a4`, `a654c0d60`.
+
+### D-67 A bar on every page stands still: one window, no swap while the pages move
+- **Status:** ACTIVE. **By:** the owner's requirement, 2026-11-16 ("fix it at the root"; "no jump and no
+  flicker is acceptable"); the way is the assistant's, in the plan the owner approved.
+- **Decision:** a bar on every page (the horizontal one without auto-hide, the vertical one) is its window
+  on every page, the first one too, moving or at rest; the pages move under it. The first page's own bar
+  of that kind is hidden from the moment the page is built and seen only where the window steps aside (the
+  overview, a drag, a folder, all apps, the list of apps), at rest, or when no window could be added. The
+  windows are built in the first page's first frame, stay while an app is in front (the system hides and
+  shows them with the launcher's window), and are sub-panels, over the PiP panes. Nothing is built, shown
+  or swapped while the pages move.
+- **Context [V]:** Android 10 cannot swap two windows in one frame; on the 7862 a frame of a swap during a
+  move lasted 60 to 280 ms with one of the two bars already moved (log 2026-11-16 10:12), so the bars were
+  seen doubled at the start of each swipe. The windows were also removed at every pause and built 250 and
+  400 ms after the return, a time in which a swipe moved the first page's bar with its page.
+- **What remains:** the swap where the window steps aside, at rest and in one place (at most one frame of
+  a darker translucent background); with the vertical bar on every page and the horizontal one on the first
+  page only, the vertical window grows by the corner after the pages come to rest on another page.
+- **Where:** `HorizontalBarPlacement`, `VerticalBarPlacement`, `PersistentBarWindow`, `PageBarSwap`,
+  `BarWindows`, `Workspace.hideEveryPageBarsOfNewPage()`, `dffdd806b`, `074c09350`, `33edcda65`.
 

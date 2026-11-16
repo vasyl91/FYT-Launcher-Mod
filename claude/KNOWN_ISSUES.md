@@ -445,7 +445,13 @@ none has run on a device. What they change and what to look at:
 - the owner, 2026-11-16 [H]: icons work after `4929e3da8`. On the 7862 both bars were doubled for a moment at
   the start of each swipe: the page's bar was hidden through a post after the window's draw, ~900 ms late on
   a busy main thread, and not at all under a window built at that moment; `88bacd560` hides it in the
-  window's own frame (log `… hidden under its window after N ms`);
+  window's own frame (log `… hidden under its window after N ms`). **The owner, 2026-11-16 10:12 [H]:
+  nothing changed** - the log shows 118/127 ms and 64/57 ms: any swap of the two windows during a move costs
+  a frame, and the 7862's frames in a move are that long. Round 19 (`dffdd806b`, `074c09350`, `33edcda65`,
+  D-67) removes the swap: the bar on every page is its window on every page, the first one too, built with
+  the page, kept while an app is in front, over the PiP panes; nothing changes while the pages move. Not yet
+  on a device: swipes at once after a start and after a return from an app, the bar's buttons after a
+  return, the overview, a drag, a folder, all apps, and the panes passing under the vertical bar;
 - a widget whose content fails shows its preview and opens its app on a tap; APPWIDGET_UPDATE is sent where
   the launcher may (system, root host). On the A55 with Shizuku through ADB only the preview helps: Allegro's
   widget comes back when Allegro updates it, or after the launcher is no longer reinstalled.

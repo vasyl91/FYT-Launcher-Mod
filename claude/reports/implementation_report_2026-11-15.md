@@ -208,3 +208,38 @@ Both are my mistakes in round 16. Not tested on a device.
 
 The owner confirmed on 2026-11-16 that the icons stay (`4929e3da8`).
 
+
+## Round 19 (2026-11-16): a bar on every page that stands still (the owner's log of 10:12 on the 7862)
+
+The owner: `88bacd560` changed nothing; "no jump and no flicker is acceptable". The log shows the first page's
+bar hidden 118/127 ms after the windows were shown in the first move and 64/57 ms in the second [V].
+
+| Commit | Subject | Why |
+|---|---|---|
+| `dffdd806b` | Bars: the windows of the bars on every page lie over the PiP panes | bars and panes were both panels; the one added later lay higher, so after a cold start a pane moving with its page passed over the vertical bar |
+| `074c09350` | Bars: the bars' windows stay with the launcher's window when an app comes to the front | the windows were removed at every pause and built 250/400 ms after the return; a swipe in that time moved the first page's bar with its page |
+| `33edcda65` | Bars: a bar on every page is its window on the first page too, and nothing swaps while the pages move | Android 10 cannot swap two windows in one frame; a frame of the swap during a move lasted 60–280 ms on the 7862 |
+
+**What changed:** the bar on every page is its window on every page, the first one too; the first page's own
+bar of that kind is hidden from the moment the page is built and seen only where the window steps aside
+(overview, drag, folder, all apps), at rest. The windows are built in the page's first frame, kept while an
+app is in front, never built or shown while the pages move (D-67).
+
+**Deviations from the plan:** the windows are built in the first page's first frame (an `OnPreDrawListener`,
+after its layout) and not at the end of `createUserPage()` with a correction afterwards: there the box and
+the vertical bar are measured, so the windows cannot start in a wrong place and jump. That frame is in the
+launcher's window, so the extra call in `Launcher.onAttachedToWindow()` was not needed. The swap at once
+while the launcher is not in front uses one new method, `PageBarSwap.hideNow()`, for both that case and the
+new page. `PERSISTENT_CROSSFADE_MS` was removed: in this mode both bars have one rectangle.
+
+**What remains:** the swap where the window steps aside, at rest and in one place (at most one frame of a
+darker translucent background); the vertical window of the mixed setting (vertical on every page, horizontal
+on the first only) grows by the corner after the pages come to rest elsewhere; at a page build the windows
+are drawn in the frame after the page's first [A].
+
+**Not tested on a device.** To look at on the 7862 and the A55: swipes from the first page and between the
+others at once after a start, after a return from an app and after a change of settings (no doubled bar, the
+panes under the vertical bar); an app opened from the bar and the return (the bar does not go away, its
+buttons answer); the overview, a drag, a folder, all apps; without "every page" the bar moves with the first
+page as before. The log has "Bars on every page: …" when the page is built and no "hidden under its window"
+in a move.
