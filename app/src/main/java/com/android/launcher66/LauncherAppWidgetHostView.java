@@ -78,10 +78,56 @@ public class LauncherAppWidgetHostView extends AppWidgetHostView implements Touc
         this.listener = listener;
     }
 
+    /**
+     * The content could not be shown (the app's RemoteViews failed in this process: most often an image the
+     * app shares through its own content provider and has not let the launcher read). In place of the
+     * "Problem loading widget" text the widget shows its preview - the picture its app gives for the list of
+     * widgets, else the app's icon - and a tap opens the app. Whatever the app sends next replaces it, as any
+     * update does. This is the one way every widget that fails goes, whatever its app.
+     */
     @Override
     protected View getErrorView() {
         requestProviderUpdate();
-        return mInflater.inflate(R.layout.appwidget_error, this, false);
+        final AppWidgetProviderInfo info = getAppWidgetInfo();
+        if (info == null || info.provider == null) {
+            return mInflater.inflate(R.layout.appwidget_error, this, false);
+        }
+        final android.widget.ImageView preview = new android.widget.ImageView(getContext());
+        preview.setScaleType(android.widget.ImageView.ScaleType.FIT_CENTER);
+        preview.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+        final String pkg = info.provider.getPackageName();
+        preview.setOnClickListener(v -> {
+            android.content.Intent launch = getContext().getPackageManager().getLaunchIntentForPackage(pkg);
+            if (launch != null && mLauncher != null) {
+                mLauncher.startActivitySafely(v, launch, "widget preview");
+            }
+        });
+        final Context context = getContext();
+        final int density = getResources().getDisplayMetrics().densityDpi;
+        // The app's resources are read off the main thread (StrictMode)
+        APPLY_EXECUTOR.execute(() -> {
+            android.graphics.drawable.Drawable picture = null;
+            CharSequence label = null;
+            try {
+                label = info.loadLabel(context.getPackageManager());
+                picture = info.loadPreviewImage(context, density);
+                if (picture == null) {
+                    picture = info.loadIcon(context, density);
+                }
+            } catch (RuntimeException e) {
+                Log.w(UPDATE_TAG, "widget " + info.provider.flattenToShortString() + ": no preview: " + e);
+            }
+            final android.graphics.drawable.Drawable shown = picture;
+            final CharSequence name = label;
+            preview.post(() -> {
+                preview.setImageDrawable(shown);
+                preview.setContentDescription(name);
+            });
+        });
+        Log.i(UPDATE_TAG, "widget " + getAppWidgetId() + " (" + info.provider.flattenToShortString()
+                + ") cannot be shown: its preview is, and a tap opens the app");
+        return preview;
     }
 
     /** At most this many update requests per widget view, a moment apart. */
