@@ -215,6 +215,8 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // Back from a window this screen was left for: where it was (SettingsScrollMemory)
+        SettingsScroll.restore(this, 1);
 
         if (!LauncherApplication.isFytDevice()) {
             // Only the system bar insets: the proportions come from SettingsActivity's
@@ -595,6 +597,8 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     @Override
     public void onResume() {
         super.onResume();
+        // A list that was kept has its position; what was kept for it is not needed (SettingsScrollMemory)
+        SettingsScrollMemory.takeFor(1);
         retryPendingWallpaperSave();
         if (oauthForYoutubeRevanced != null && youtubeRevancedKids != null) {
             FytRating.syncPreference(requireContext(), oauthForYoutubeRevanced, youtubeRevancedKids);
@@ -637,6 +641,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
 
     @Override
     public void onPause() {
+        SettingsScroll.keep(this, 1);
         SpotifyRating.setStateListener(null);
         FytRating.setStateListener(null);
         if (getContext() != null) {
@@ -750,6 +755,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 }
                 break;
             case Keys.CREATOR_FIRST:
+                SettingsScrollMemory.betweenScreens();
                 requireActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragmentSecond()).commit();
                 break;
             case Keys.OAUTH_FOR_YOUTUBE_REVANCED:

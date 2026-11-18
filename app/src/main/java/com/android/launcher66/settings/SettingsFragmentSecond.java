@@ -234,8 +234,23 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        // A list that was kept has its position; what was kept for it is not needed (SettingsScrollMemory)
+        SettingsScrollMemory.takeFor(2);
+    }
+
+    @Override
+    public void onPause() {
+        SettingsScroll.keep(this, 2);
+        super.onPause();
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // Back from a window this screen was left for: where it was (SettingsScrollMemory)
+        SettingsScroll.restore(this, 2);
 
         if (!LauncherApplication.isFytDevice()) {
             // Only the system bar insets: the proportions come from SettingsActivity's
@@ -269,6 +284,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             @Override
             public void handleOnBackPressed() {
                 helpers.setBackFromCreator(true);
+                SettingsScrollMemory.betweenScreens();
                 requireActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragmentFirst()).commit();
             }
         };

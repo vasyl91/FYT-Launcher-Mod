@@ -201,6 +201,8 @@ public class SettingsActivity extends AppCompatActivity {
         }
         helpers.setSettingsOpenedBoolean(true);
         if (savedInstanceState == null) {
+            // Opened afresh: from the top (SettingsScrollMemory)
+            SettingsScrollMemory.forget();
             getSupportFragmentManager()
                 .beginTransaction()
                 .replace(android.R.id.content, new SettingsFragmentFirst())
@@ -440,6 +442,8 @@ public class SettingsActivity extends AppCompatActivity {
             if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)) {
                 String reason = intent.getStringExtra(Keys.SYSTEM_DIALOG_REASON_KEY);
                 if (Keys.SYSTEM_DIALOG_REASON_HOME_KEY.equals(reason)) {
+                    // Left for the home screen: the next opening starts from the top (SettingsScrollMemory)
+                    SettingsScrollMemory.leftForHome();
                     AppListStatsDialogFragment.dismissListDialog(getSupportFragmentManager());
                     AppListPipDialogFragment.dismissListDialog(getSupportFragmentManager());
                     stopWatch();
