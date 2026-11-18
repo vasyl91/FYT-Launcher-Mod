@@ -1,11 +1,14 @@
 package com.android.launcher66.views;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import android.app.Application;
 import android.content.Context;
 import android.view.ContextThemeWrapper;
 
+import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
 
@@ -44,5 +47,21 @@ public class PreferenceScreensTest {
         assertNotNull(screen.findPreference("home_layout_category"));
         assertNotNull(screen.findPreference("workspace_grid_rows"));
         assertNotNull(screen.findPreference("start_page"));
+    }
+
+    @Test
+    public void theTransparentStatusBarIsInTheHomeScreenLayoutAboveTheStartPage() {
+        // The owner, 2026-11-18: moved from "Layout" on the first screen
+        assertNull(inflate(R.xml.launcher_preferences).findPreference("transparent_statusbar"));
+        PreferenceCategory home = inflate(R.xml.creator_preferences).findPreference("home_layout_category");
+        assertNotNull(home);
+        int statusBar = -1;
+        int startPage = -1;
+        for (int i = 0; i < home.getPreferenceCount(); i++) {
+            String key = home.getPreference(i).getKey();
+            if ("transparent_statusbar".equals(key)) statusBar = i;
+            if ("start_page".equals(key)) startPage = i;
+        }
+        assertEquals("directly above the start page", startPage - 1, statusBar);
     }
 }

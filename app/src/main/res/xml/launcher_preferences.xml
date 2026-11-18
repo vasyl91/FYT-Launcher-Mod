@@ -9,11 +9,6 @@
         app:key="layout_category"
         app:title="@string/layout_category">
 
-        <SwitchPreferenceCompat
-            app:singleLineTitle="false"
-            android:key="transparent_statusbar"
-            android:defaultValue="false"
-            android:title="@string/transparent_statusbar" />
         <com.android.launcher66.settings.CustomNoSwitchPreference
             android:key="user_layout"
             android:defaultValue="false"

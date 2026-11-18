@@ -32,6 +32,12 @@
             android:key="workspace_grid_columns_note"
             android:summary="@string/workspace_grid_columns_note"
             android:selectable="false" />
+        <!-- The launcher reads it on its return from the settings (Launcher.processPendingUpdateOnResume()) -->
+        <SwitchPreferenceCompat
+            app:singleLineTitle="false"
+            android:key="transparent_statusbar"
+            android:defaultValue="false"
+            android:title="@string/transparent_statusbar" />
         <Preference
             android:key="start_page"
             android:title="@string/start_page"

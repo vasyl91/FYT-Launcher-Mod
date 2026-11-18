@@ -102,8 +102,6 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     private int padding;
     private boolean initLayout;
     private boolean userLayoutBool;
-    private boolean initStatusbar;
-    private boolean userStatusbarBool;
     private boolean initFyt;
     private boolean userFytBool;
     private boolean nightModeBool;
@@ -250,7 +248,6 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             @Override
             public void handleOnBackPressed() {
                 userLayoutBool = sharedPrefs.getBoolean(Keys.USER_LAYOUT, false);
-                userStatusbarBool = sharedPrefs.getBoolean(Keys.STATUSBAR, false);
                 userFytBool = sharedPrefs.getBoolean(Keys.FYT_DATA, false);
                 if (initLayout != userLayoutBool) {
                     helpers.setLayoutTypeChanged(true);
@@ -280,12 +277,10 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this.requireContext());
         editor = sharedPrefs.edit();
         mPropertyChangeClass.addObserver(Keys.DOWNLOAD_PERCENTAGE, this);
-        initStatusbar = sharedPrefs.getBoolean(Keys.STATUSBAR, false);
         initLayout = sharedPrefs.getBoolean(Keys.USER_INIT_LAYOUT, false);
         initFyt = sharedPrefs.getBoolean(Keys.FYT_DATA, false);
         addPreferencesFromResource(R.xml.launcher_preferences);
         padding = SettingsActivity.dialogPadding;
-        Preference transparentStatusbar = findPreference(Keys.STATUSBAR);
         CustomNoSwitchPreference userLayout = findPreference(Keys.USER_LAYOUT);
         settingsSecondFragment = findPreference(Keys.CREATOR_FIRST);
 
@@ -372,9 +367,6 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 String summaryText = getString(R.string.layout_summary_disabled);
                 settingsSecondFragment.setSummary(Html.fromHtml(summaryText, Html.FROM_HTML_MODE_LEGACY));
             }
-        }
-        if (transparentStatusbar != null) {
-            transparentStatusbar.setOnPreferenceClickListener(this);
         }
         if (favoriteCache != null) {
             favoriteCache.setOnPreferenceClickListener(this);
@@ -1746,7 +1738,6 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
 
     private boolean restartLauncher() {
         return (initLayout != userLayoutBool) 
-        || initStatusbar != userStatusbarBool 
         || initFyt != userFytBool 
         || helpers.isBackFromCreator() 
         || wallpaperSet 
