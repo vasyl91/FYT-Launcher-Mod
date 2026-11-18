@@ -21,7 +21,7 @@ Add new issues at the end of their part with the next number. Numbers are never 
 |---|---|---|---|---|
 | KI-03 | Room and Compose declared but unused | Tech debt | Low | fixed 2026-11-12 |
 | KI-04 | Baseline Profile probably stale | Performance | Medium | open |
-| KI-06 | No instrumented or UI tests | Missing tests | Medium | open (Robolectric left for a later round, 2026-11-15) |
+| KI-06 | No instrumented or UI tests | Missing tests | Medium | partial: Robolectric since 2026-11-18 (D-68) |
 | KI-07 | Repository footprint | Maintenance | Low | open |
 | KI-09 | `README.MD` lagged behind the bar features | Docs | Low | fixed 2026-11-10 |
 | KI-10 | Unreleased work: version still 1.2.1 | Release | Medium | open |

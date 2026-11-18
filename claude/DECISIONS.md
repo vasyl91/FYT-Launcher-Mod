@@ -3,7 +3,7 @@
 Important technical and product decisions. Last consolidated on 2026-11-12 from the code, git, the briefs
 (`prompts/archive/`), the 15 chat reports (`chat_archive/CHAT_01.MD` … `CHAT_15.MD`) and the owner's answers
 of that day. D-52 … D-57 were added on 2026-11-13 with round 13, D-58 … D-63 on 2026-11-15 with round 14,
-D-64 and D-65 on 2026-11-16 with round 15, D-66 with round 16, D-67 with round 19.
+D-64 and D-65 on 2026-11-16 with round 15, D-66 with round 16, D-67 with round 19, D-68 with round 22.
 
 ## How to read this file
 
@@ -100,6 +100,7 @@ entry that replaces it.
 | D-65 | Icons and widgets may lie under the statistics window | ACTIVE | Owner |
 | D-66 | A widget that cannot be shown shows its preview, and its app is told to update it | ACTIVE | Owner |
 | D-67 | A bar on every page stands still: one window, no swap while the pages move | ACTIVE | Owner (requirement) / Assistant |
+| D-68 | Robolectric for the tests of views | ACTIVE | Owner |
 
 ---
 
@@ -866,4 +867,14 @@ The round had no brief; its result is in `reports/implementation_report_2026-11-
   the owner's request of 2026-11-16 13:30); until then it changed only at the end of the swipe.
 - **Where:** `HorizontalBarPlacement`, `VerticalBarPlacement`, `PersistentBarWindow`, `PageBarSwap`,
   `BarWindows`, `Workspace.hideEveryPageBarsOfNewPage()`, `dffdd806b`, `074c09350`, `33edcda65`.
+
+### D-68 Robolectric for the tests of views
+- **Status:** ACTIVE. **By:** owner, 2026-11-18 ("enable Robolectric in the repository and use it in the tests
+  of the changes"; approved as a dependency on 2026-11-15, D-62).
+- **Decision:** `testImplementation` Robolectric 4.18 with JUnit 4 and the vintage engine beside JUnit 5;
+  `unitTests.isIncludeAndroidResources = true`; tests run on SDK 34 (`app/src/test/resources/robolectric.properties`).
+  Tests of views live in `app/src/test/java/com/android/launcher66/views/`. New changes to views and settings
+  get a Robolectric test where one can show them.
+- **Context:** Maven Central sends Robolectric's large files to `gcp.mirrors.maven.org`; the owner added that host
+  to the cloud environment on 2026-11-18. CI has a full network.
 

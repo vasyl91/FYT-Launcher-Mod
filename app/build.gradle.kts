@@ -133,6 +133,8 @@ android {
         // JVM unit tests: framework calls in static initializers (Handler, Looper) return defaults
         // instead of throwing "not mocked".
         unitTests.isReturnDefaultValues = true
+        // The tests of views (Robolectric) read the app's resources and manifest
+        unitTests.isIncludeAndroidResources = true
     }
 
     lint {
@@ -268,4 +270,8 @@ dependencies {
     testImplementation(libs.junit.jupiter.api)
     testRuntimeOnly(libs.junit.jupiter.engine)
     testRuntimeOnly(libs.junit.platform.launcher)
+    // Tests of views on the JVM: Robolectric, which runs on JUnit 4, through the vintage engine
+    testImplementation(libs.robolectric)
+    testImplementation(libs.junit4)
+    testRuntimeOnly(libs.junit.vintage.engine)
 }

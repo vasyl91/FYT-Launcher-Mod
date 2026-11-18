@@ -1,0 +1,48 @@
+package com.android.launcher66.views;
+
+import static org.junit.Assert.assertNotNull;
+
+import android.app.Application;
+import android.content.Context;
+import android.view.ContextThemeWrapper;
+
+import androidx.preference.PreferenceManager;
+import androidx.preference.PreferenceScreen;
+
+import com.android.launcher66.R;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
+
+/**
+ * The two screens of the settings are built from their XML files, with every custom preference class in them.
+ * A row that names a class or a string that is not there, or a class whose constructor throws, fails here
+ * and not on a device.
+ */
+@RunWith(RobolectricTestRunner.class)
+@Config(application = Application.class)
+public class PreferenceScreensTest {
+
+    private static PreferenceScreen inflate(int xml) {
+        Context context = new ContextThemeWrapper(RuntimeEnvironment.getApplication(), R.style.SettingsTheme);
+        return new PreferenceManager(context).inflateFromResource(context, xml, null);
+    }
+
+    @Test
+    public void theFirstScreenIsBuilt() {
+        PreferenceScreen screen = inflate(R.xml.launcher_preferences);
+        assertNotNull(screen.findPreference("wallpaper_picker"));
+        assertNotNull(screen.findPreference("openweather_api_key"));
+    }
+
+    @Test
+    public void theSecondScreenIsBuilt() {
+        PreferenceScreen screen = inflate(R.xml.creator_preferences);
+        assertNotNull(screen.findPreference("home_layout_category"));
+        assertNotNull(screen.findPreference("workspace_grid_rows"));
+        assertNotNull(screen.findPreference("start_page"));
+    }
+}
