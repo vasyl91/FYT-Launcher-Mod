@@ -55,6 +55,11 @@ public class CanbusGuide extends Fragment {
         
         RecyclerView recyclerView = view.findViewById(R.id.pictures_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        if (!com.android.launcher66.LauncherApplication.isFytDevice()) {
+            // Below the status bar and the app bar, above the navigation bar, as the screens of the settings
+            // are (SettingsFragmentFirst/Second): the window is edge to edge, and nothing else moves the list
+            PreferenceScaleHelper.applySystemBarInsets(recyclerView);
+        }
 
         List<GuideItem> items = new ArrayList<>();
         items.add(new TitleItem(getString(R.string.codes_guide_detailed_reading_title)));
