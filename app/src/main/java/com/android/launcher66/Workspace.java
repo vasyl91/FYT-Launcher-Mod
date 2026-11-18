@@ -1491,8 +1491,8 @@ public class Workspace extends SmoothPagedView
         if (mPrefs == null) {
             mPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         }
-        boolean resizableHorizontalBar = mPrefs.getBoolean(Keys.RESIZABLE_HORIZONTAL_BAR, false);
-        if (!resizableHorizontalBar || !mPrefs.getBoolean(Keys.USER_LAYOUT, false)) {
+        // With "Resizable horizontal bar" off too, at the default height (HorizontalBarDimensions.applyBarSizes)
+        if (!mPrefs.getBoolean(Keys.USER_LAYOUT, false)) {
             return false;
         }
 
@@ -1518,30 +1518,15 @@ public class Workspace extends SmoothPagedView
         int rootHeight = screenHeight - mLauncher.getStatusBarHeight();
 
         int barHeight = getHorizontalBarHeight(screenWidth, screenHeight);
-        float xmlBarHeight = barSpec.resolveHeight(rootWidth, rootHeight);
-        if (barHeight <= 0 || !(xmlBarHeight > 0f)) {
+        boolean[] changedOut = new boolean[1];
+        Float factor = HorizontalBarDimensions.applyBarSizes(barRoot, barHeight, rootWidth, rootHeight, changedOut);
+        if (factor == null) {
             return false;
         }
-        float factor = barHeight / xmlBarHeight;
-
         RecyclerView recycler = barRoot.findViewById(R.id.recycler_view);
-
-        boolean changed = HorizontalBarDimensions.applyExactHeight(barBackground, barHeight);
-        changed |= HorizontalBarDimensions.applyScaledHeight(recycler, factor, rootWidth, rootHeight, barHeight);
-        changed |= HorizontalBarDimensions.applyScaledHeight(barRoot.findViewById(R.id.rl_music_two),
-                factor, rootWidth, rootHeight, barHeight);
-        // Only present in the landscape widget bar; findViewById() returns null otherwise.
-        changed |= HorizontalBarDimensions.applyScaledHeight(barRoot.findViewById(R.id.bar_widget_date),
-                factor, rootWidth, rootHeight, barHeight);
-        changed |= HorizontalBarDimensions.applyScaledHeight(barRoot.findViewById(R.id.bar_widget_weather),
-                factor, rootWidth, rootHeight, barHeight);
-        changed |= HorizontalBarDimensions.applyScaledIconHeight(barRoot.findViewById(R.id.rl_allapps),
-                factor, rootWidth, rootHeight, barHeight);
-        changed |= HorizontalBarDimensions.applyScaledIconHeight(barRoot.findViewById(R.id.show_bar),
-                factor, rootWidth, rootHeight, barHeight);
-
+        boolean changed = changedOut[0];
         if (changed) {
-            Log.d(TAG, "Resizable horizontal bar applied (" + source + "): " + barHeight
+            Log.d(TAG, "Horizontal bar sized (" + source + "): " + barHeight
                     + "px, x" + factor + " of the XML bar");
             if (recycler != null) {
                 recycler.invalidateItemDecorations();
@@ -2258,10 +2243,10 @@ public class Workspace extends SmoothPagedView
         // Auto-hide overlay. horizontalBarHeight is already the resizable height (showOverlayHorizontalBar);
         // barScale carries it into the one size the XML derives from a view's own width - the
         // portrait recycler - and is exactly 1f when Keys.RESIZABLE_HORIZONTAL_BAR is off.
-        boolean resizableHorizontalBar = mPrefs.getBoolean(Keys.RESIZABLE_HORIZONTAL_BAR, false);
-        float barScale = resizableHorizontalBar
-                ? getHorizontalBarScale(screenWidth, Launcher.screenHeight, horizontalBarHeight)
-                : 1f;
+        // Sized the same way with "Resizable horizontal bar" off: the scale is then 1 and nothing taller than the
+        // bar (HorizontalBarDimensions.applyBarSizes)
+        boolean resizableHorizontalBar = true;
+        float barScale = getHorizontalBarScale(screenWidth, Launcher.screenHeight, horizontalBarHeight);
         if (widgetBar) {
             forceOriginalSizesLayoutTwo(screenWidth, horizontalBarHeight, resizableHorizontalBar, barScale);
         } else {

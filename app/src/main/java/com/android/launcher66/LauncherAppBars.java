@@ -278,7 +278,8 @@ final class LauncherAppBars {
      * Keys.RESIZABLE_HORIZONTAL_BAR off it does nothing and the XML stays in charge.
      */
     boolean ensureResizableHorizontalBar(String source) {
-        if (mLauncher.mWorkspace == null || mLauncher.mPrefs == null || !HorizontalBarDimensions.isResizable(mLauncher.mPrefs)) {
+        // With "Resizable horizontal bar" off too, at the default height (HorizontalBarDimensions.applyBarSizes)
+        if (mLauncher.mWorkspace == null || mLauncher.mPrefs == null) {
             return false;
         }
         // When something changed, Workspace also invalidates the recycler's item decorations, and

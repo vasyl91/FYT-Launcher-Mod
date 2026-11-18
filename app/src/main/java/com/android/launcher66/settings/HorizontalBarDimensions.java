@@ -438,6 +438,53 @@ public final class HorizontalBarDimensions {
     }
 
     /**
+     * Sizes the first page's horizontal bar and what is in it to a bar of {@code barHeight} px: the background
+     * exactly, the list, the music widget, the date and the weather scaled from their XML sizes and never taller
+     * than the bar, the buttons' icons likewise. The rule: this runs whether "Resizable horizontal bar" is on or
+     * off; off, the bar has the default height and the factor is about 1. Until 2026-11-18 it ran only when the
+     * setting was on, and off the music widget kept the height the XML gives it from its own width: in portrait,
+     * widened because the weather was hidden, 216 px in a bar of 153 px on the A55, so its title and artist were
+     * sized for that and lay partly above the bar (the owner).
+     *
+     * @param barRoot    the layout root with the bar (the first page's custom_layout_*_user*)
+     * @param rootWidth  the width the XML percentages of the bar refer to
+     * @param rootHeight the height they refer to
+     * @return whether anything changed, or null when the bar cannot be sized (no bar, no XML size)
+     */
+    @Nullable
+    public static Float applyBarSizes(@NonNull View barRoot, int barHeight, int rootWidth, int rootHeight,
+                                      boolean[] changedOut) {
+        View barBackground = barRoot.findViewById(com.android.launcher66.R.id.iv_list_bg);
+        XmlSizeSpec barSpec = getXmlSpec(barBackground);
+        if (barSpec == null) {
+            return null;
+        }
+        float xmlBarHeight = barSpec.resolveHeight(rootWidth, rootHeight);
+        if (barHeight <= 0 || !(xmlBarHeight > 0f)) {
+            return null;
+        }
+        float factor = barHeight / xmlBarHeight;
+        boolean changed = applyExactHeight(barBackground, barHeight);
+        changed |= applyScaledHeight(barRoot.findViewById(com.android.launcher66.R.id.recycler_view), factor,
+                rootWidth, rootHeight, barHeight);
+        changed |= applyScaledHeight(barRoot.findViewById(com.android.launcher66.R.id.rl_music_two), factor,
+                rootWidth, rootHeight, barHeight);
+        // Only present in the landscape widget bar; findViewById() returns null otherwise.
+        changed |= applyScaledHeight(barRoot.findViewById(com.android.launcher66.R.id.bar_widget_date), factor,
+                rootWidth, rootHeight, barHeight);
+        changed |= applyScaledHeight(barRoot.findViewById(com.android.launcher66.R.id.bar_widget_weather), factor,
+                rootWidth, rootHeight, barHeight);
+        changed |= applyScaledIconHeight(barRoot.findViewById(com.android.launcher66.R.id.rl_allapps), factor,
+                rootWidth, rootHeight, barHeight);
+        changed |= applyScaledIconHeight(barRoot.findViewById(com.android.launcher66.R.id.show_bar), factor,
+                rootWidth, rootHeight, barHeight);
+        if (changedOut != null && changedOut.length > 0) {
+            changedOut[0] = changed;
+        }
+        return factor;
+    }
+
+    /**
      * For fitCenter icon buttons (rl_allapps, show_bar) the visible icon is
      * min(box width, box height). The box width is kept - the horizontal budget of the bar, and
      * AppListAdapter's tile maths, stay valid - and the height becomes the scaled icon size, so
