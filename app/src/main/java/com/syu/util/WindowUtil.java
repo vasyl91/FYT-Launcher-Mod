@@ -2711,8 +2711,10 @@ public class WindowUtil {
             mapBottomRightX = prefs.getInt(bottomRightXKey, def[2]);
         }
 
-        int mapTopLeftY = prefs.getInt(topLeftYKey, def[1]) + launcher.getStatusBarHeight();
-        int mapBottomRightY = prefs.getInt(bottomRightYKey, def[3]) + launcher.getStatusBarHeight();
+        // Below the page's top on the screen, where the creator puts it (Launcher.getPageTopOnScreen())
+        int pageTop = launcher.getPageTopOnScreen();
+        int mapTopLeftY = prefs.getInt(topLeftYKey, def[1]) + pageTop;
+        int mapBottomRightY = prefs.getInt(bottomRightYKey, def[3]) + pageTop;
 
         // top-left x, top left y, bottom right x, bottom right y
         SystemProperties.set("sys.lsec.pip_rect", mapTopLeftX + " " + mapTopLeftY + " " + mapBottomRightX + " " + mapBottomRightY);

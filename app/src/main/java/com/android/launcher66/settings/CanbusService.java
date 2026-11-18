@@ -847,7 +847,10 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 } else {
                     statsTopLeftX = prefs.getInt("statsTopLeftX", margin + 10);
                 }   
-                statsTopLeftY = prefs.getInt("statsTopLeftY", margin + 10) + getStatusBarHeight();                 
+                // Below the page's top on the screen, where the creator puts it (Launcher.getPageTopOnScreen())
+                Launcher pageLauncher = Launcher.getLauncher();
+                statsTopLeftY = prefs.getInt("statsTopLeftY", margin + 10)
+                        + (pageLauncher != null ? pageLauncher.getPageTopOnScreen() : getStatusBarHeight());
             }
             
             absoluteStats = li.inflate(R.layout.absolute_stats, null); 

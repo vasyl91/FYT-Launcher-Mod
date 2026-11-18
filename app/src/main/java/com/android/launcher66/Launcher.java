@@ -3635,6 +3635,27 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         return ""; 
     }
 
+    /** The top logged last by getPageTopOnScreen(), so that the line comes once per change. */
+    private int mPageTopLogged = Integer.MIN_VALUE;
+
+    /**
+     * Where the home screen's pages begin on the screen, in px from its top: the first page's box as measured
+     * (Workspace.barBoxOnScreen(), else the window's top inset, else the status bar's resource). The rule: an
+     * element placed by its distance from the page's top (the statistics window, the panes, the pinned PiP's
+     * rectangle) is put that far below this, which is where the creator shows it. The status bar's resource is
+     * not that place: in landscape on the A55 it is higher than the inset the window really has, and the
+     * statistics window lay that much lower than in the creator (the owner, 2026-11-18).
+     */
+    public int getPageTopOnScreen() {
+        int top = mWorkspace != null ? mWorkspace.barBoxOnScreen().top : getStatusBarHeight();
+        if (top != mPageTopLogged) {
+            mPageTopLogged = top;
+            Log.i(TAG, "The pages begin " + top + " px from the top of the screen (status bar resource "
+                    + getStatusBarHeight() + " px)");
+        }
+        return top;
+    }
+
     public int getStatusBarHeight() { 
           int result = 0;
           int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");

@@ -4434,7 +4434,8 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             lp.y = topLeftY;
 
             // Store absolute position
-            mUserWidgetCells.put(placeholder, new int[]{lp.x, lp.y + mLauncher.getStatusBarHeight(), lp.width, lp.height, pipScreen});
+            // Below the page's top on the screen, where the creator puts it (Launcher.getPageTopOnScreen())
+            mUserWidgetCells.put(placeholder, new int[]{lp.x, lp.y + mLauncher.getPageTopOnScreen(), lp.width, lp.height, pipScreen});
 
             // Mark cells as occupied BEFORE adding the view
             markCellsForView(startCell[0], startCell[1], spanX, spanY, mOccupied, true);
@@ -4521,7 +4522,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
 
             // The same place in the page as addPipPlaceholder() gives it (PageFit), without its log line
             int[] fit = fitElementToPage(null, topLeftX, topLeftY, width, height);
-            return new int[]{ fit[0], fit[1] + mLauncher.getStatusBarHeight(), fit[2], fit[3] };
+            return new int[]{ fit[0], fit[1] + mLauncher.getPageTopOnScreen(), fit[2], fit[3] };
         } catch (Throwable t) {
             Log.w(TAG, "computePipPlaceholderPosition failed for " + pipType, t);
             return null;
@@ -4630,7 +4631,8 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             lp.y = topLeftY;
 
             // Store absolute position
-            mStatsCells.put(placeholder, new int[]{lp.x, lp.y + mLauncher.getStatusBarHeight(), lp.width, lp.height, pipScreen});
+            // Below the page's top on the screen, where the creator puts it (Launcher.getPageTopOnScreen())
+            mStatsCells.put(placeholder, new int[]{lp.x, lp.y + mLauncher.getPageTopOnScreen(), lp.width, lp.height, pipScreen});
             long resolvedScreenId = workspace.getIdForScreen(this);
 
             int childId = LauncherModel.getCellLayoutChildId(
@@ -4701,7 +4703,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
                     ? p.getInt("statsTopLeftX", margin) + verticalBarWidth
                     : p.getInt("statsTopLeftX", margin);
             int topLeftY = p.getInt("statsTopLeftY", margin);
-            return new int[]{topLeftX, topLeftY + mLauncher.getStatusBarHeight(), statsWidth,
+            return new int[]{topLeftX, topLeftY + mLauncher.getPageTopOnScreen(), statsWidth,
                     statsHeight, currentScreen};
         } catch (Throwable t) {
             Log.w(TAG, "computeStatsPlaceholderPosition failed", t);
