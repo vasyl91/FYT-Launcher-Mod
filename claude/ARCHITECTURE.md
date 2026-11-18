@@ -201,9 +201,11 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
     panes, so nothing is built or swapped on a return.
   - `L/BarWindows` (2026-11-16): the bars' windows, the auto-hide bar's and the edge handle's are sub-windows
     of the launcher's window (through the activity's window manager): under every floating button and
-    overlay, no permission to draw over other apps needed (D-64). The windows of the bars on every page are
-    sub-panels (`TYPE_APPLICATION_SUB_PANEL`), over the panes of the PiPs (panels) whatever the order they
-    were added in; the auto-hide bar and the edge handle are panels (`TYPE_APPLICATION_PANEL`).
+    overlay, no permission to draw over other apps needed (D-64). Layers from the bottom (2026-11-18): the
+    panes of the PiPs (panels), the statistics window on the home screen (`BarWindows.HOME_STATS_TYPE`, a
+    sub-panel added by `CanbusService.addHomeStatsWindow`), the bars on every page (`EVERY_PAGE_TYPE`, the
+    layer above sub-panels, falling back to lower layers if refused); the auto-hide bar and the edge handle
+    are panels. The statistics over an app stay an overlay.
   - `L/PageBarSwap` (2026-11-15): while a bar's window is shown, the first page's own bar is hidden; it is
     hidden from the moment the page is built (the windows are built in the page's first frame) and seen
     only while the window steps aside (overview, drag, folder, all apps) or could not be added. A swap

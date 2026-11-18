@@ -3202,6 +3202,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mWallpaperPicker.hideWallpaperPickerIndicator();
         mPermissionFlow.onDestroy();
         PinnedPipFocus.release("launcher destroyed");
+        // The home screen's statistics window is a sub-window of this activity's window: it goes with it
+        com.android.launcher66.settings.CanbusService.onLauncherDestroyed();
         // Unconditional, and before any field is cleared. onPause() returns early on
         // (mHomeButtonPressed && isOnMainWorkspaceScreen()), so leaving via HOME from the
         // main screen never unregistered the refreshers and the static NOTIFIER_* kept

@@ -52,6 +52,7 @@ import androidx.preference.PreferenceManager;
 import com.android.launcher66.Folder;
 import com.android.launcher66.BackgroundChoice;
 import com.android.launcher66.BarBackground;
+import com.android.launcher66.BarWindows;
 import com.android.launcher66.Launcher;
 import com.android.launcher66.RoundedColorDrawable;
 import com.android.launcher66.LauncherApplication;
@@ -981,9 +982,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
                         statsHost = new FrameLayout(this);
                         statsHost.addView(absoluteStats, new FrameLayout.LayoutParams(statsWidth, statsHeight));
 
-                        StatsOverlayAlpha.applyBeforeAdd(this, statsLayoutParams);
-                        wm.addView(statsHost, statsLayoutParams);
-                        onStatsWindowAdded();
+                        addHomeStatsWindow(statsHost);
                         absoluteStats.setTranslationX(desiredScreenX);
                     } else {
                         // Before Android 14 relayout() waits for WindowManager, which places the
@@ -999,9 +998,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
                         statsLayoutParams.x = desiredScreenX;
                         statsLayoutParams.y = placeholderY;
 
-                        StatsOverlayAlpha.applyBeforeAdd(this, statsLayoutParams);
-                        wm.addView(absoluteStats, statsLayoutParams);
-                        onStatsWindowAdded();
+                        addHomeStatsWindow(absoluteStats);
                         absoluteStats.setTranslationX(0f);
                     }
 
@@ -1031,9 +1028,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
                                 statsHost = null;
                                 statsLayoutParams.width = statsWidth;
                             }
-                            StatsOverlayAlpha.applyBeforeAdd(this, statsLayoutParams);
-                            wm.addView(absoluteStats, statsLayoutParams);
-                            onStatsWindowAdded();
+                            addHomeStatsWindow(absoluteStats);
                         }
                     } catch (Exception ex) {
                         Log.w(TAG, "Fallback addView failed: " + ex.getMessage());
@@ -1054,6 +1049,49 @@ public class CanbusService extends Service implements PropertyChangeListener {
             mUpdaterOilExpend();
             mUpdaterDrivingMileage();
             mUpdaterRPM();
+        }
+    }
+
+    /** The home screen's statistics window is a sub-window of the launcher's window (addHomeStatsWindow()). */
+    private boolean statsAsSubWindow;
+
+    /**
+     * Adds the statistics window of the home screen. The rule: it is a sub-window of the launcher's window
+     * (BarWindows.HOME_STATS_TYPE), between the panes of the PiPs, which it may lie over, and the bars on every page,
+     * which it moves under during a swipe as the pages and the panes do; it goes and comes with the launcher's
+     * window. Until 2026-11-18 it was an overlay above every window of the launcher and passed over the vertical
+     * bar (the owner, 7862). A sub-window is not cut to the limit of obscuring opacity, so StatsOverlayAlpha is
+     * not needed for it. Without the launcher's window, or if the system refuses the sub-window, it is an overlay
+     * as before. The statistics over an app stay an overlay.
+     */
+    private void addHomeStatsWindow(View window) {
+        Launcher launcher = Launcher.getLauncher();
+        if (launcher != null && BarWindows.parentReady(launcher)) {
+            int overlayType = statsLayoutParams.type;
+            statsLayoutParams.type = BarWindows.HOME_STATS_TYPE;
+            try {
+                launcher.getWindowManager().addView(window, statsLayoutParams);
+                statsAsSubWindow = true;
+                Log.i(TAG, "stats window: a sub-window of the launcher's window, under the bars");
+                return;
+            } catch (RuntimeException e) {
+                Log.w(TAG, "stats window: not added to the launcher's window (" + e + "), an overlay");
+                statsLayoutParams.type = overlayType;
+            }
+        }
+        StatsOverlayAlpha.applyBeforeAdd(this, statsLayoutParams);
+        wm.addView(window, statsLayoutParams);
+        onStatsWindowAdded();
+    }
+
+    /**
+     * The launcher's activity is destroyed: a statistics window that is its sub-window goes with it now, before
+     * the system closes it as leaked. The next launcher adds it again on its resume.
+     */
+    public static void onLauncherDestroyed() {
+        CanbusService service = sInstance;
+        if (service != null && service.statsAsSubWindow) {
+            service.removeView();
         }
     }
 
@@ -1094,6 +1132,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
                     statsWindowAdded = false;
                     StatsOverlayAlpha.onWindowHidden(this);
                 }
+                statsAsSubWindow = false;
                 absoluteStats = null;
                 statsHost = null;
                 statsLayoutParams = null;

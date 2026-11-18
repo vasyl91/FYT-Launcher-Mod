@@ -16,27 +16,38 @@ import android.view.WindowManager;
  * overlay added later lies over one added earlier; the bars are built after the floating buttons, so the owner
  * saw them cover the buttons on the pages after the first.
  *
- * <p>The windows of the bars on every page (the horizontal bar's and the vertical bar's) are sub-panels: they
- * lie over the panes of the PiPs, which are panels of the same launcher's window and move with the pages. Among
- * sub-windows of one kind the one added later lies higher, and the bars were built before the panes at a cold
- * start but after them on every return from an app, so a pane moving with its page passed over the vertical
- * bar after a start and under it after a return. A sub-panel lies over every panel whatever the order, so the
- * pages and their panes always move under the bars that stand still. The auto-hide bar and the edge handle stay
- * panels. If the system refuses a sub-panel, the bar's window is a panel as before ({@link #addEveryPageBar}).
+ * <p>The layers of the launcher's own sub-windows, from the bottom: the panes of the PiPs ({@code PANEL}, they
+ * move with the pages), the statistics window on the home screen ({@link #HOME_STATS_TYPE}, a sub-panel, it
+ * moves with its page and lies over a pane it shares a place with), the bars on every page
+ * ({@link #EVERY_PAGE_TYPE}, the layer above sub-panels), which stand still while everything else moves under
+ * them. A layer decides whatever the order the windows were added in; within one layer the one added later lies
+ * higher, and the panes are added again at every start of the PiPs, the bars once. Before 2026-11-18 the
+ * statistics window was an overlay above every window of the launcher and passed over the vertical bar during a
+ * swipe (the owner, 7862). The auto-hide bar and the edge handle stay panels. If the system refuses a type, the
+ * window takes the next one down ({@link #addEveryPageBar}) and the log says so.
  *
  * <p>A sub-window needs the launcher's window to be there (its token), and nothing else: no permission to
  * draw over other apps. It goes with the launcher's window. The coordinates stay the screen's: the windows keep
  * FLAG_LAYOUT_IN_SCREEN.
  */
-final class BarWindows {
+public final class BarWindows {
 
     private static final String TAG = "BarWindows";
 
     /** The window type of the auto-hide bar and the edge handle: a panel of the launcher's window. */
     static final int TYPE = WindowManager.LayoutParams.TYPE_APPLICATION_PANEL;
 
-    /** The window type of the bars on every page: a sub-panel of the launcher's window, over its panels. */
-    static final int EVERY_PAGE_TYPE = WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL;
+    /**
+     * The window type of the bars on every page: the layer above the sub-panels
+     * (WindowManager.LayoutParams.TYPE_APPLICATION_ABOVE_SUB_PANEL, hidden in the SDK, FIRST_SUB_WINDOW + 5).
+     */
+    static final int EVERY_PAGE_TYPE = WindowManager.LayoutParams.FIRST_SUB_WINDOW + 5;
+
+    /** The window type of the statistics window on the home screen: a sub-panel, between the panes and the bars. */
+    public static final int HOME_STATS_TYPE = WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL;
+
+    /** The types a bar on every page is tried with, in this order (see the class). */
+    private static final int[] EVERY_PAGE_TYPES = {EVERY_PAGE_TYPE, HOME_STATS_TYPE, TYPE};
 
     private BarWindows() {
     }
@@ -45,7 +56,7 @@ final class BarWindows {
      * Whether the launcher's window is there for a bar's window to be added to. A bar that could not be added
      * while it was not there has not failed: it is built again by the next update.
      */
-    static boolean parentReady(Activity launcher) {
+    public static boolean parentReady(Activity launcher) {
         if (launcher == null || launcher.getWindow() == null) {
             return false;
         }
@@ -54,20 +65,27 @@ final class BarWindows {
     }
 
     /**
-     * Adds the window of a bar on every page as a sub-panel, and as a panel if the system refuses that.
+     * Adds the window of a bar on every page in the layer above the sub-panels, else in the next one down that the
+     * system takes (EVERY_PAGE_TYPES).
      *
      * @throws RuntimeException what adding it as a panel threw: the launcher's window is not there
      */
     static void addEveryPageBar(WindowManager windowManager, View root, WindowManager.LayoutParams params,
                                 String what) {
-        params.type = EVERY_PAGE_TYPE;
-        try {
-            windowManager.addView(root, params);
-            return;
-        } catch (RuntimeException e) {
-            Log.w(TAG, what + ": not added as a sub-panel (" + e + "), added as a panel");
+        for (int i = 0; i < EVERY_PAGE_TYPES.length; i++) {
+            params.type = EVERY_PAGE_TYPES[i];
+            try {
+                windowManager.addView(root, params);
+                if (i > 0) {
+                    Log.w(TAG, what + ": added with the window type " + params.type);
+                }
+                return;
+            } catch (RuntimeException e) {
+                if (i == EVERY_PAGE_TYPES.length - 1) {
+                    throw e;
+                }
+                Log.w(TAG, what + ": not added with the window type " + params.type + " (" + e + ")");
+            }
         }
-        params.type = TYPE;
-        windowManager.addView(root, params);
     }
 }
