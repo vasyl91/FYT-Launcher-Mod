@@ -3159,15 +3159,6 @@ public class Workspace extends SmoothPagedView
     }
 
     /**
-     * Whether the bar's views stay bound while an app is in front: the horizontal bar on every page (without
-     * auto-hide) keeps its window and the first page's bar through a pause (PersistentBarWindow), so
-     * Launcher.onPause() must not let go of them.
-     */
-    public boolean keepsBarViewsThroughPause() {
-        return mEveryPage && !autoHideHorizontalBar && workspaceView != null;
-    }
-
-    /**
      * The first page has just been built: its own bars that are on every page are hidden at once, before its
      * first frame, and the bars' windows are built in that frame (see createUserPage()).
      */

@@ -3075,12 +3075,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     + (front != null ? front : "unknown"));
         }
         allowPip = false;
-        // The bar on every page keeps its window through a pause (PersistentBarWindow): nothing of the bar is
-        // removed, so its views are not let go either - the buttons of the window would not answer after the
-        // return, as nothing builds it again then.
-        if (mWorkspace == null || !mWorkspace.keepsBarViewsThroughPause()) {
-            cleanWidgetBar();
-        }
+        // The bar on every page keeps its window and its views through a pause (BarViews)
+        cleanWidgetBar();
         if (mWorkspace != null) {
             // Something else takes the screen - usually an app opened from the bottom or the side
             // bar: the auto-hide bar goes away now instead of waiting for its timeout. (Already
@@ -5820,14 +5816,23 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mVisible = false;
         mAttached = false;
         updateRunning();
-        cleanWidgetBar();
+        // The launcher's window goes: the views of every bar are let go (BarViews)
+        releaseWidgetBar(true);
     }
 
+    /**
+     * An app is opened or the launcher pauses: the bar's widgets let go of their views, unless the bar's window
+     * stays (BarViews): then they stay bound, as nothing binds them again on the return.
+     */
     public void cleanWidgetBar() {
+        releaseWidgetBar(false);
+    }
+
+    /** @param windowGone the launcher's window goes (BarViews) */
+    private void releaseWidgetBar(boolean windowGone) {
         boolean autoHideHorizontalBar = mPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false);
-        // The bar on every page (without auto-hide) is an overlay too, and lets go of the same views.
-        boolean overlayBar = autoHideHorizontalBar || mPrefs.getBoolean(Keys.HORIZONTAL_BAR_EVERY_PAGE, false);
-        if (overlayBar && widgetBar) {
+        boolean everyPage = mPrefs.getBoolean(Keys.HORIZONTAL_BAR_EVERY_PAGE, false);
+        if (BarViews.release(autoHideHorizontalBar, everyPage, widgetBar, windowGone)) {
             if (mWorkspace != null) {
                 if (autoHideHorizontalBar) {
                     // Not for the persistent bar: this would also disable the page's own recycler.
