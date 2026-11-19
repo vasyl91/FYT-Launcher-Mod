@@ -135,8 +135,8 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   - The creator's elements take their cells (`CellLayout.handleConflictingViews` moves what lies there), except
     the statistics window's placeholder, which only says where the window lies (`CustomElement.takesCells`,
     D-65). After a load, every drag and every resize each page moves an item that does not lie wholly in its
-    grid or that shares a cell with another (`L/PageFit`, `L/CellOverlap`: icons stay, widgets move; KI-37,
-    KI-39). The creator's elements are shown wholly in the page (`PageFit.intoBox`); the box measured last is
+    grid or that shares a cell with another (`L/PageFit`, `L/CellOverlap`: icons stay, widgets move; KI-37;
+    KI-39, closed 2026-11-16). The creator's elements are shown wholly in the page (`PageFit.intoBox`); the box measured last is
     kept per orientation for the time before the launcher has measured one (`S/HorizontalBarDimensions`).
     Outside a reorder an item's temporary cell is its cell (`CellLayout.LayoutParams.setCell`). A drop asks at most for the size an item has and takes no area of size 0
     (`L/DropSpan`). The loader shows an icon whose activity can be started as the list of apps finds it, and

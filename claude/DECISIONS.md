@@ -3,7 +3,8 @@
 Important technical and product decisions. Last consolidated on 2026-11-12 from the code, git, the briefs
 (`prompts/archive/`), the 15 chat reports (`chat_archive/CHAT_01.MD` … `CHAT_15.MD`) and the owner's answers
 of that day. D-52 … D-57 were added on 2026-11-13 with round 13, D-58 … D-63 on 2026-11-15 with round 14,
-D-64 and D-65 on 2026-11-16 with round 15, D-66 with round 16, D-67 with round 19, D-68 with round 22.
+D-64 and D-65 on 2026-11-16 with round 15, D-66 with round 16, D-67 with round 19, D-68 … D-74 with round 22
+(2026-11-18/19).
 
 ## How to read this file
 
@@ -101,6 +102,12 @@ entry that replaces it.
 | D-66 | A widget that cannot be shown shows its preview, and its app is told to update it | ACTIVE | Owner |
 | D-67 | A bar on every page stands still: one window, no swap while the pages move | ACTIVE | Owner (requirement) / Assistant |
 | D-68 | Robolectric for the tests of views | ACTIVE | Owner |
+| D-69 | The statistics window on the home screen lies under the bars, over the panes | ACTIVE | Owner (requirement) / Assistant |
+| D-70 | The vertical bar's width may be set, 4–10 % of the longer edge | ACTIVE | Owner |
+| D-71 | The number of app icons on each bar may be set | ACTIVE | Owner |
+| D-72 | "Transparent status bar" in "Home screen layout" | ACTIVE | Owner |
+| D-73 | The settings list keeps its place; the guides lie below the app bar | ACTIVE | Owner |
+| D-74 | Choices the assistant made in round 22 (table) | UNDER_REVIEW | Assistant |
 
 ---
 
@@ -266,8 +273,9 @@ entry that replaces it.
 
 ### D-16 The stats window is only moved by the bars
 - **Status:** ACTIVE. **By:** owner.
-- **Decision:** the stats window lies above every element. It is not an obstacle for the layout and is never
-  resized; the bars move it into the room beside them (`StatsBarFit`, `f791b67e`).
+- **Decision:** the stats window lies above every element of the page. It is not an obstacle for the layout and
+  is never resized; the bars move it into the room beside them (`StatsBarFit`, `f791b67e`). Since 2026-11-18 it
+  lies under the bars themselves and over the panes on the home screen (D-69).
 - **Rejected first design:** the brief first made it a fixed obstacle in `CustomLayoutResolver`. The owner
   corrected that ("to okno nie koliduje nigdy z pozostałymi elementami"), and the brief was amended
   (`7b920b51`).
@@ -873,8 +881,68 @@ The round had no brief; its result is in `reports/implementation_report_2026-11-
   of the changes"; approved as a dependency on 2026-11-15, D-62).
 - **Decision:** `testImplementation` Robolectric 4.18 with JUnit 4 and the vintage engine beside JUnit 5;
   `unitTests.isIncludeAndroidResources = true`; tests run on SDK 34 (`app/src/test/resources/robolectric.properties`).
-  Tests of views live in `app/src/test/java/com/android/launcher66/views/`. New changes to views and settings
+  Tests of views live in `app/src/test/java/com/android/launcher66/views/` or beside the class they test. New changes to views and settings
   get a Robolectric test where one can show them.
 - **Context:** Maven Central sends Robolectric's large files to `gcp.mirrors.maven.org`; the owner added that host
   to the cloud environment on 2026-11-18. CI has a full network.
+
+## Added on 2026-11-18/19 (round 22: the owner's log of 2026-11-16 18:42 on the 7862 and eight guidelines)
+
+### D-69 The statistics window on the home screen lies under the bars, over the panes
+- **Status:** ACTIVE. **By:** the owner's requirement, 2026-11-16 ("it should move under the vertical bar like the
+  PiPs and everything else"); the assistant chose the means.
+- **Decision:** on the home screen the statistics window is a sub-window of the launcher's window
+  (`TYPE_APPLICATION_SUB_PANEL`, `CanbusService.addHomeStatsWindow`), and the windows of the bars on every page
+  lie one layer above it (`BarWindows.EVERY_PAGE_TYPE`, the hidden layer above sub-panels, falling back to lower
+  ones with a log). Layers from the bottom: the PiP panes (panels), the statistics, the bars. Over another app
+  the window stays an overlay, with the alpha limit handled as before (`StatsOverlayAlpha`).
+- **Consequence:** the system's opacity limit for overlays does not apply to the window on the home screen.
+- **Updates:** D-16 (it lies under the bars), D-64 (the bars on every page are no longer plain panels).
+- **Risk [A]:** that Android 10 and 16 accept the hidden layer; the fallback keeps the old order.
+- **Where:** `cbd7c10cf`.
+
+### D-70 The vertical bar's width may be set, 4–10 % of the longer edge
+- **Status:** ACTIVE. **By:** owner, 2026-11-16 ("with all that follows, as for the horizontal bar"; the range
+  4–10 %).
+- **Decision:** "Resizable vertical bar" and its slider in "Bars", per orientation, as a share of the screen's
+  longer edge. Off, or at the default, the width is the old one to the pixel. Everything counts with the one
+  value (`Launcher.calculatedVerticalBarWidth`, `VerticalBarDimensions`): the bar and its window, its icons,
+  the grid, the panes, the statistics, the creators. Counts in the user layout only. Extends D-61: the launcher's
+  width now replaces the layout's share in landscape too.
+- **Where:** `fa3e84d9e`.
+
+### D-71 The number of app icons on each bar may be set
+- **Status:** ACTIVE. **By:** owner, 2026-11-16 and 2026-11-18.
+- **Decision:** with a bar's "Resizable" switch on, a slider (like the grid's) chooses 1 … as many icons as the
+  bar has room for, worked out as the launcher does and following every option that changes it. Nothing chosen =
+  as many as fit. A newly worked-out most lowers a chosen number only where the number is above it (the owner,
+  2026-11-18), and the lowered number is stored. The icons keep their size and are spread evenly.
+- **Where:** `BarIconCount`, `BarIconLimits`, `5a6272396`.
+
+### D-72 "Transparent status bar" in "Home screen layout"
+- **Status:** ACTIVE. **By:** owner, 2026-11-18.
+- **Decision:** the switch is in "Home screen layout" on the second screen, directly above "Set the start
+  page". With the built-in layout it cannot be reached (KI-33).
+- **Where:** `a43efdf66`.
+
+### D-73 The settings list keeps its place; the guides lie below the app bar
+- **Status:** ACTIVE. **By:** owner, 2026-11-18.
+- **Decision:** the position of the list is kept when a row opens a window the user comes back from (the
+  creator through ADJUST, the guides, the Spotify sign-in, the wallpaper picker, the device settings …) and
+  restored before the first frame. It is dropped between screens 1 and 2, on the way out to the home screen,
+  and when the settings start afresh (`SettingsScrollMemory`). The Canbus guide and the Spotify instructions lie
+  below the app bar like the other screens.
+- **Where:** `6449c7b22`, `e703c9a55`.
+
+### D-74 Choices the assistant made in round 22
+- **Status:** UNDER_REVIEW. **By:** assistant.
+
+| Choice | Why |
+|---|---|
+| The icon number counts only with the bar's "Resizable" switch on | its slider is shown only then (the owner's wish) |
+| The settings count the vertical bar's room from the geometry; the launcher shows min(choice, measured room) | the room must follow options before the launcher has measured anything (D-71) |
+| The vertical bar's width per orientation, like the horizontal bar's height | the same shape as the existing slider |
+| In landscape the first page's vertical bar takes the launcher's width instead of the layout's 7.1 % | without it the setting would not show; equal to the pixel on the 7862 |
+| The new strings follow the existing horizontal ones: the 51 full language files and the `pt-rPT` override | the regional files (`en-rGB`, `fr-rCA` …) fall back to their language |
+| Tests of views also beside the class they test, not only in `views/` | D-68 asked for them where they show a change |
 

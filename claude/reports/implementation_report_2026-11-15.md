@@ -306,3 +306,62 @@ and with every look of the minute while it is shown (`StatsOverlayAlpha.RELAYOUT
 A layout with the same parameters changes nothing that is seen. The 7862 (a trusted overlay) is not affected.
 If the window is still see-through after the series, the next step is to add the window again. Not tested on a
 device.
+
+## Round 22 (2026-11-18/19): the owner's log of 2026-11-16 18:42 on the 7862, and eight guidelines
+
+The owner [H]: the statistics window moves over the vertical bar during a swipe (P1); the buttons of the bar's
+music widget do not respond and its title and artist are not updated (P2); the vertical bar's width should be
+adjustable, 4–10 % of the longer edge (P3); sliders of the number of icons on each bar (P4). Added on
+2026-11-18: Robolectric in the repository (W1); a chosen number of icons is lowered only where it is above the
+newly worked-out most, and nothing chosen means the most (W2); the guides below the app bar (W3); "Transparent
+status bar" moved above "Set the start page" (W4); the bar's title and artist wrongly sized with "Resizable
+horizontal bar" off (W5); the statistics window in landscape a few pixels below the creator's place (W6); the
+settings list keeping its place (W7); one current list in `KNOWN_ISSUES.md` (W8).
+
+| Commit | Subject |
+|---|---|
+| `62fc51126` | Build: Robolectric for tests of views |
+| `bb7caf843` | Bars: the bar's views stay bound while its window stays |
+| `e968fcaa2` | Bars: the title and the artist are sized the same with or without "Resizable horizontal bar" |
+| `6449c7b22` | Settings: the guides lie below the app bar like the other screens |
+| `a43efdf66` | Settings: "Transparent status bar" in "Home screen layout" |
+| `d46e345ec` | Fuel stats: the window lies where the creator puts it, in landscape too |
+| `cbd7c10cf` | Fuel stats: on the home screen the window lies under the bars, over the panes |
+| `e703c9a55` | Settings: the list keeps its place across the screens it opens |
+| `fa3e84d9e` | Bars: the vertical bar's width may be set |
+| `5a6272396` | Bars: the number of icons on each bar may be set |
+
+**What was found [V]:**
+- P2: `Launcher.cleanWidgetBar()` let go of the bar's views (the music buttons' listeners, the title and
+  artist, the weather) at every app start: from an icon, the bar's list, a widget, the settings button, the
+  music widget. Since round 19 the window of a bar on every page stays while the app is in front, so nothing
+  bound them again; round 19 had kept them only in `onPause()`. `BarViews.release()` keeps them while the window
+  stays, and they go when the launcher's window goes.
+- W5: with the setting off nothing sized the first page's bar. In portrait the widened music widget's XML height
+  ("H,0.45" of its width, 216 px on the A55) is above the bar's 153 px; `MusicWidgetSizer` sized the text for that.
+  `HorizontalBarDimensions.applyBarSizes()` now runs whatever the setting says.
+- W6: the statistics (and the panes and the pinned PiP rectangle) took the `status_bar_height` resource as the
+  page's top; the page lies on the window's real inset. `Launcher.getPageTopOnScreen()` gives the measured top.
+- P1: the statistics were an overlay, above every window of the launcher. On the home screen they are a
+  sub-panel of the launcher's window now, and the bars on every page one layer above (D-69).
+- P3: `Launcher.calculatedVerticalBarWidth` was computed once and three places worked out 0.071 by themselves;
+  the landscape layout's 7.1 % share was never replaced. `VerticalBarDimensions` is the one source (D-70).
+- P4: `BarCapacity` gives the room; `BarIconCount` the rule; `BarIconLimits` the live most in the settings (D-71).
+- W1: Robolectric 4.18 runs on JUnit 4 beside JUnit 5 (D-68); the owner allowed `gcp.mirrors.maven.org` for its
+  large files. View tests of this round: the guides' insets, the bar's sizes, the vertical bar's width in both
+  orientations, the rows' order, the scroll memory, the icon sliders.
+
+**Deviations from the plan:**
+- W4: the switch's code on screen 1 was removed, not moved: the row stores its value itself and the launcher reads
+  it on return; nothing on screen 2 needed it.
+- P3: the fallbacks for a process without the launcher (`PipEdgeTrim`, the creator) keep the old formula through
+  a shared constant rather than reading the setting; the settings work the width out from the launcher's value.
+- P4: the number counts only with the bar's "Resizable" switch on (D-74); the vertical most in the settings comes
+  from the geometry, and the launcher shows min(choice, measured room).
+- W7: the restore happens in `onViewCreated` of the new screen, before its first layout; a screen kept while an
+  activity is in front keeps its own place.
+- Strings: the four new ones are in the 51 full language files and `pt-rPT`, as the horizontal bar's are; the
+  regional files fall back to their language.
+
+**What a device has to show:** `KNOWN_ISSUES.md` KI-40 (and KI-34, KI-35, KI-38). Nothing of this round has run
+on a device.
