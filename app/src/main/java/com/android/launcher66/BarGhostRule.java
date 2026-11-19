@@ -9,10 +9,13 @@ package com.android.launcher66;
  * they stayed empty there, where the first page, which has its bars in itself, showed them small with the
  * rest of the page.
  *
- * <p>The rule: while the pages are small, every page after the first shows a picture of each bar that stays
- * on it, in the bar's strip, small with the page and moving with it. The picture is taken of the bar's own
- * window when the pages become small. It stays until the pages are at their full size again: the windows
- * come back at the moment the way back begins, and the pictures are under them until it has ended, so
+ * <p>The rule: while the bars' windows are put away and the pages are seen, every page after the first shows a
+ * picture of each bar that stays on it, in the bar's strip, small with the page and moving with it. That is while
+ * the pages are small (the overview, a drag from all apps), and also at their full size while an item of a page
+ * is moved, a folder is open or the list of apps of a bar is shown: the windows step aside for those too, and the
+ * pages after the first were left without their bars (the owner, 2026-11-19). The picture is taken of the bar's
+ * own window when it is put away. It stays until the windows are back: after a change of size until the way back
+ * has ended (the windows come back at its beginning), otherwise until the windows have been shown again, so
  * nothing is missing in between. The first page never has a picture: it has the bars. A bar that hides
  * itself (auto-hide) stays on no page and has none either. Pure Java, so that it has a test.
  */
@@ -26,9 +29,11 @@ final class BarGhostRule {
      *
      * @param small     the pages are small: the overview, or the state in which an icon is dragged
      * @param switching the pages are on their way from one size to another
+     * @param aside     the windows are put away at full size: an item of a page is moved, a folder is open, the
+     *                  list of apps of a bar is shown
      */
-    static boolean shown(boolean small, boolean switching) {
-        return small || switching;
+    static boolean shown(boolean small, boolean switching, boolean aside) {
+        return small || switching || aside;
     }
 
     /**

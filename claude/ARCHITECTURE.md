@@ -221,8 +221,9 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
     only while the window steps aside (overview, drag, folder, all apps) or could not be added. A swap
     happens only then, at rest: the page's bar is shown first, the window goes after the page has drawn
     it, and back the other way; at once both ways while the launcher is not in front.
-  - `L/BarGhostRule` and `L/PageBarGhost`: while the pages are small (overview, dragging) every page after
-    the first draws a recording of the bars' windows in their strips (`Canvas.drawPicture`, no bitmap on
+  - `L/BarGhostRule` and `L/PageBarGhost`: while the bars' windows step aside and the pages are seen (the
+    overview, a drag of any kind, an open folder, the list of apps of a bar; 2026-11-19 also at full size) every
+    page after the first draws a recording of the bars' windows in their strips (`Canvas.drawPicture`, no bitmap on
     Android 9+). `L/BarSwipeFrame` feeds a swipe on a bar's window to the pages and logs when they take it.
   - `L/PageBox` and `L/TopBarFrame` keep the windows on the page's box, below the status bar and the
     cut-out. The box is taken from a page **at rest** (`PageBox.pageRestLeft`), never from the pager's own

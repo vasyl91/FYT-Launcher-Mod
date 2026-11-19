@@ -3273,7 +3273,8 @@ public class Workspace extends SmoothPagedView
      */
     private void updateBarPictures(String reason) {
         boolean small = mState == State.OVERVIEW || mState == State.SPRING_LOADED;
-        boolean wanted = BarGhostRule.shown(small, mIsSwitchingState) && mPrefs != null && mLauncher != null
+        boolean aside = barWindowsAsideAtFullSize();
+        boolean wanted = BarGhostRule.shown(small, mIsSwitchingState, aside) && mPrefs != null && mLauncher != null
                 && mPrefs.getBoolean(Keys.USER_LAYOUT, false);
         if (!wanted) {
             if (mBarPicturesShown && !mBarPicturesLeaving) {
@@ -3283,7 +3284,7 @@ public class Workspace extends SmoothPagedView
                 post(() -> {
                     mBarPicturesLeaving = false;
                     boolean stillSmall = mState == State.OVERVIEW || mState == State.SPRING_LOADED;
-                    if (!BarGhostRule.shown(stillSmall, mIsSwitchingState)) {
+                    if (!BarGhostRule.shown(stillSmall, mIsSwitchingState, barWindowsAsideAtFullSize())) {
                         clearBarPictures(reason);
                     }
                 });
@@ -3299,7 +3300,7 @@ public class Workspace extends SmoothPagedView
             putBarPicturesOnPages(horizontalStays, verticalStays);
             return;
         }
-        if (!small) {
+        if (!small && !aside) {
             return;   // none is put up on the way back to full size
         }
         if (!BarGhostRule.onPage(false, horizontalStays) && !BarGhostRule.onPage(false, verticalStays)) {
@@ -3768,21 +3769,37 @@ public class Workspace extends SmoothPagedView
     private boolean persistentBarFree() {
         // Only at rest (PageBox.atRest): on the way back from the overview the state is normal at its start,
         // while the pages are still small; the window comes back at its end (onTransitionEnd()), at full size
-        if (!PageBox.atRest(mState == State.NORMAL, mIsSwitchingState, getScaleX(), getScaleY()) || mIsDragOccuring
-                || mLauncher.mState != Launcher.State.WORKSPACE || getOpenFolder() != null) {
+        if (!PageBox.atRest(mState == State.NORMAL, mIsSwitchingState, getScaleX(), getScaleY())
+                || mLauncher.mState != Launcher.State.WORKSPACE) {
             return false;
+        }
+        return !barWindowsAside();
+    }
+
+    /**
+     * Whether the bars' windows step aside for something the launcher shows over the pages: an item being
+     * moved, an open folder, the list of apps of a bar.
+     */
+    private boolean barWindowsAside() {
+        if (mIsDragOccuring || getOpenFolder() != null) {
+            return true;
         }
         if (mDragController != null && mDragController.isDragging()) {
-            return false;
+            return true;
         }
         try {
-            if (AppListDialogFragment.isListDialogShowing(mLauncher.getSupportFragmentManager())) {
-                return false;
-            }
+            return AppListDialogFragment.isListDialogShowing(mLauncher.getSupportFragmentManager());
         } catch (RuntimeException e) {
-            return false;   // the activity is going away
+            return true;   // the activity is going away
         }
-        return true;
+    }
+
+    /**
+     * The windows step aside while the home screen is shown at full size (BarGhostRule): the pages after the
+     * first show the pictures of the bars meanwhile.
+     */
+    private boolean barWindowsAsideAtFullSize() {
+        return mLauncher != null && mLauncher.mState == Launcher.State.WORKSPACE && barWindowsAside();
     }
 
     /**
@@ -6505,7 +6522,7 @@ public class Workspace extends SmoothPagedView
         mIsSwitchingState = false;
         // At full size again: the bars' windows are back, their pictures on the pages go (BarGhostRule)
         boolean stillSmall = mState == State.OVERVIEW || mState == State.SPRING_LOADED;
-        if (!BarGhostRule.shown(stillSmall, false)) {
+        if (!BarGhostRule.shown(stillSmall, false, barWindowsAsideAtFullSize())) {
             clearBarPictures("transition end");
         }
         // The bars' windows waited for the end (persistentBarFree()); the page is measured at rest again first
