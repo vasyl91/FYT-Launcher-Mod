@@ -379,6 +379,7 @@
     <string name="resizable_vertical_bar_summary">Ububanzi: %1$s ohlangothini olude lwesikrini (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Ububanzi bebha eqondile</string>
     <string name="bar_icons_count">Izithonjana zama-app: %1$d</string>
+    <string name="widget_configuration_unavailable">Izilungiselelo zewijethi azikwazanga ukuvulwa, ngakho ayengezwanga.</string>
     <string name="widget_bar">Ibha evundlile yamawijethi</string>
 
     <string name="weather_not_available">N/A</string>

@@ -379,6 +379,7 @@
     <string name="resizable_vertical_bar_summary">Breite: %1$s der längeren Bildschirmkante (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Breite der vertikalen Leiste</string>
     <string name="bar_icons_count">App-Symbole: %1$d</string>
+    <string name="widget_configuration_unavailable">Die Einstellungen des Widgets konnten nicht geöffnet werden, daher wurde es nicht hinzugefügt.</string>
     <string name="widget_bar">Horizontale Widget-Leiste</string>
 
     <string name="weather_not_available">N/A</string>

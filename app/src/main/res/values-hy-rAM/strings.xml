@@ -379,6 +379,7 @@
     <string name="resizable_vertical_bar_summary">Լայնություն՝ էկրանի երկար կողմի %1$s (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Ուղղահայաց գոտու լայնություն</string>
     <string name="bar_icons_count">Հավելվածների պատկերակներ՝ %1$d</string>
+    <string name="widget_configuration_unavailable">Վիջեթի կարգավորումները չհաջողվեց բացել, ուստի այն չավելացվեց։</string>
     <string name="widget_bar">Վիջեթների հորիզոնական գոտի</string>
 
     <string name="weather_not_available">N/A</string>

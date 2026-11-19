@@ -379,6 +379,7 @@
     <string name="resizable_vertical_bar_summary">Širina: %1$s duljeg ruba zaslona (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Širina okomite trake</string>
     <string name="bar_icons_count">Ikone aplikacija: %1$d</string>
+    <string name="widget_configuration_unavailable">Postavke widgeta nije bilo moguće otvoriti pa nije dodan.</string>
     <string name="widget_bar">Vodoravna traka widgeta</string>
 
     <string name="weather_not_available">N/A</string>

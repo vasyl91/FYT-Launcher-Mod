@@ -6311,26 +6311,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (appWidgetInfo.configure != null) {
             mPendingAddWidgetInfo = appWidgetInfo;
             mPendingAddWidgetId = appWidgetId;
-
-            // Launch over to configure widget, if needed
-            Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE);
-            intent.setComponent(appWidgetInfo.configure);
-            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-            Utilities.startActivityForResultSafely(this, intent, REQUEST_CREATE_APPWIDGET);
-
-            // prepared for Android 14 and higher in case the function above fails
-            /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                ActivityOptions options = ActivityOptions.makeBasic()
-                        .setPendingIntentBackgroundActivityStartMode(
-                                ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED);
-                Bundle bundle = options.toBundle();
-                mAppWidgetHost.startAppWidgetConfigureActivityForResult(this, appWidgetId, 0, REQUEST_CREATE_APPWIDGET, bundle);
-            } else {
-                Intent intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE);
-                intent.setComponent(appWidgetInfo.configure);
-                intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-                Utilities.startActivityForResultSafely(this, intent, REQUEST_CREATE_APPWIDGET);
-            }*/
+            // Its configuration first, opened by the system for the widget's host (WidgetConfigure)
+            if (!startWidgetConfiguration(appWidgetId, appWidgetInfo)) {
+                onWidgetConfigurationFailed(appWidgetId, info, boundWidget, appWidgetInfo);
+            }
         } else {
             // Otherwise just add it
             completeAddAppWidget(appWidgetId, info.container, info.screenId, boundWidget,
@@ -6338,6 +6322,53 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             // Exit spring loaded mode if necessary after adding the widget
             exitSpringLoadedDragModeDelayed(true, false, null);
         }
+    }
+
+    /**
+     * Opens the widget's configuration screen through the system, as the widget's host (WidgetConfigure): the
+     * screen may be one its app does not export. The result comes back as REQUEST_CREATE_APPWIDGET.
+     *
+     * @return false when the system could not open it
+     */
+    private boolean startWidgetConfiguration(int appWidgetId, AppWidgetProviderInfo appWidgetInfo) {
+        Bundle options = null;
+        int mode = WidgetConfigure.backgroundStartMode(Build.VERSION.SDK_INT);
+        if (mode != WidgetConfigure.NO_MODE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            options = ActivityOptions.makeBasic().setPendingIntentBackgroundActivityStartMode(mode).toBundle();
+        }
+        try {
+            mAppWidgetHost.startAppWidgetConfigureActivityForResult(this, appWidgetId, 0,
+                    REQUEST_CREATE_APPWIDGET, options);
+            Log.i("WIDGET", "Configuration of widget " + appWidgetId + " (" + appWidgetInfo.provider
+                    .flattenToShortString() + ") opened through the system");
+            return true;
+        } catch (ActivityNotFoundException | SecurityException e) {
+            Log.w("WIDGET", "Configuration of widget " + appWidgetId + " (" + appWidgetInfo.configure
+                    .flattenToShortString() + ") could not be opened: " + e);
+            return false;
+        }
+    }
+
+    /**
+     * The configuration could not be opened (WidgetConfigure.onFailure): a widget whose configuration is optional
+     * is added without it; any other one is dropped as if its configuration had been cancelled, its id is freed
+     * and the user is told that its settings could not be opened.
+     */
+    private void onWidgetConfigurationFailed(int appWidgetId, ItemInfo info, AppWidgetHostView boundWidget,
+                                             AppWidgetProviderInfo appWidgetInfo) {
+        boolean optional = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                && (appWidgetInfo.widgetFeatures & AppWidgetProviderInfo.WIDGET_FEATURE_CONFIGURATION_OPTIONAL) != 0;
+        mPendingAddWidgetId = -1;
+        if (WidgetConfigure.onFailure(optional) == WidgetConfigure.Failure.ADD_WITHOUT_IT) {
+            Log.i("WIDGET", "Widget " + appWidgetId + " added without its configuration (optional)");
+            completeAddAppWidget(appWidgetId, info.container, info.screenId, boundWidget, appWidgetInfo);
+            exitSpringLoadedDragModeDelayed(true, false, null);
+            return;
+        }
+        Toast.makeText(this, R.string.widget_configuration_unavailable, Toast.LENGTH_SHORT).show();
+        deleteAppWidgetIdAsync(appWidgetId);
+        // After the drop that started it has finished, the way a cancelled configuration ends
+        mHandler.post(() -> completeTwoStageWidgetDrop(RESULT_CANCELED, appWidgetId));
     }
 
     protected void moveToCustomContentScreen(boolean animate) {

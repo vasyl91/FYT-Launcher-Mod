@@ -379,6 +379,7 @@
     <string name="resizable_vertical_bar_summary">Ширина: %1$s дуже ивице екрана (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Ширина вертикалне траке</string>
     <string name="bar_icons_count">Иконе апликација: %1$d</string>
+    <string name="widget_configuration_unavailable">Подешавања виџета нису могла да се отворе, па није додат.</string>
     <string name="widget_bar">Хоризонтална трака виџета</string>
 
     <string name="weather_not_available">N/A</string>

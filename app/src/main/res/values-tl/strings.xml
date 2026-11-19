@@ -379,6 +379,7 @@
     <string name="resizable_vertical_bar_summary">Lapad: %1$s ng mas mahabang gilid ng screen (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Lapad ng patayong bar</string>
     <string name="bar_icons_count">Mga icon ng app: %1$d</string>
+    <string name="widget_configuration_unavailable">Hindi mabuksan ang mga setting ng widget, kaya hindi ito naidagdag.</string>
     <string name="widget_bar">Pahalang na bar ng widget</string>
 
     <string name="weather_not_available">N/A</string>

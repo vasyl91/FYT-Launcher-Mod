@@ -379,6 +379,7 @@
     <string name="resizable_vertical_bar_summary">العرض: %1$s من الحافة الأطول للشاشة (%2$s)</string>
     <string name="vertical_bar_width_seekbar">عرض الشريط العمودي</string>
     <string name="bar_icons_count">أيقونات التطبيقات: %1$d</string>
+    <string name="widget_configuration_unavailable">تعذّر فتح إعدادات الأداة، لذا لم تتم إضافتها.</string>
     <string name="widget_bar">الشريط الأفقي لعناصر الواجهة</string>
 
     <string name="weather_not_available">N/A</string>

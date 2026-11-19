@@ -379,6 +379,7 @@
     <string name="resizable_vertical_bar_summary">Lebar: %1$s daripada sisi skrin yang lebih panjang (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Lebar bar menegak</string>
     <string name="bar_icons_count">Ikon apl: %1$d</string>
+    <string name="widget_configuration_unavailable">Tetapan widget tidak dapat dibuka, jadi ia tidak ditambah.</string>
     <string name="widget_bar">Bar mendatar widget</string>
 
     <string name="weather_not_available">N/A</string>

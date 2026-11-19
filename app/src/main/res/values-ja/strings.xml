@@ -379,6 +379,7 @@
     <string name="resizable_vertical_bar_summary">幅: 画面の長辺の%1$s（%2$s）</string>
     <string name="vertical_bar_width_seekbar">縦バーの幅</string>
     <string name="bar_icons_count">アプリアイコン: %1$d</string>
+    <string name="widget_configuration_unavailable">ウィジェットの設定を開けなかったため、追加されませんでした。</string>
     <string name="widget_bar">ウィジェット横バー</string>
 
     <string name="weather_not_available">N/A</string>

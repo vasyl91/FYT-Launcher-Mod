@@ -379,6 +379,7 @@
     <string name="resizable_vertical_bar_summary">Šířka: %1$s delší strany obrazovky (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Šířka svislého panelu</string>
     <string name="bar_icons_count">Ikony aplikací: %1$d</string>
+    <string name="widget_configuration_unavailable">Nastavení widgetu se nepodařilo otevřít, proto nebyl přidán.</string>
     <string name="widget_bar">Vodorovný panel widgetů</string>
 
     <string name="weather_not_available">N/A</string>

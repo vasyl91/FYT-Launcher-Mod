@@ -285,6 +285,9 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
 - **App widgets:** `L/LauncherAppWidgetHostView` applies the content off the main thread; a widget whose
   content fails shows its preview and opens its app on a tap, and `L/WidgetRecovery` says how its app is asked
   to send it again (options change always; APPWIDGET_UPDATE as the system or through a root host, D-66).
+  A widget's configuration screen is opened by the system for the launcher as the widget's host
+  (`Launcher.startWidgetConfiguration`, `L/WidgetConfigure`, 2026-11-19), so a screen its app does not export
+  opens too; if it cannot, a widget with optional configuration is added without it, any other is not added.
 
 ## 8. Media widgets
 

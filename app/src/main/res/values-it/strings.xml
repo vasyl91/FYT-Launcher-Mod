@@ -379,6 +379,7 @@
     <string name="resizable_vertical_bar_summary">Larghezza: %1$s del lato più lungo dello schermo (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Larghezza della barra verticale</string>
     <string name="bar_icons_count">Icone delle app: %1$d</string>
+    <string name="widget_configuration_unavailable">Non è stato possibile aprire le impostazioni del widget, quindi non è stato aggiunto.</string>
     <string name="widget_bar">Barra orizzontale dei widget</string>
 
     <string name="weather_not_available">N/A</string>

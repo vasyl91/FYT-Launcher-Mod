@@ -379,6 +379,7 @@
     <string name="resizable_vertical_bar_summary">Leveys: %1$s näytön pidemmästä sivusta (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Pystypalkin leveys</string>
     <string name="bar_icons_count">Sovelluskuvakkeet: %1$d</string>
+    <string name="widget_configuration_unavailable">Widgetin asetuksia ei voitu avata, joten sitä ei lisätty.</string>
     <string name="widget_bar">Widgetien vaakapalkki</string>
 
     <string name="weather_not_available">N/A</string>

@@ -379,6 +379,7 @@
     <string name="resizable_vertical_bar_summary">Ширина: %1$s от длинной стороны экрана (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Ширина вертикальной панели</string>
     <string name="bar_icons_count">Значки приложений: %1$d</string>
+    <string name="widget_configuration_unavailable">Не удалось открыть настройки виджета, поэтому он не добавлен.</string>
     <string name="widget_bar">Горизонтальная панель виджетов</string>
 
     <string name="weather_not_available">N/A</string>

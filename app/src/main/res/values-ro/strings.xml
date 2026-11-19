@@ -379,6 +379,7 @@
     <string name="resizable_vertical_bar_summary">Lățime: %1$s din latura mai lungă a ecranului (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Lățimea barei verticale</string>
     <string name="bar_icons_count">Pictograme de aplicații: %1$d</string>
+    <string name="widget_configuration_unavailable">Setările widgetului nu au putut fi deschise, așa că nu a fost adăugat.</string>
     <string name="widget_bar">Bara orizontală a widgeturilor</string>
 
     <string name="weather_not_available">N/A</string>

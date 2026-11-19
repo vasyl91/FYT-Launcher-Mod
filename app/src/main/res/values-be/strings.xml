@@ -379,6 +379,7 @@
     <string name="resizable_vertical_bar_summary">Шырыня: %1$s даўжэйшага боку экрана (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Шырыня вертыкальнай панэлі</string>
     <string name="bar_icons_count">Значкі праграм: %1$d</string>
+    <string name="widget_configuration_unavailable">Не ўдалося адкрыць налады віджэта, таму ён не дададзены.</string>
     <string name="widget_bar">Гарызантальная панэль віджэтаў</string>
 
     <string name="weather_not_available">N/A</string>

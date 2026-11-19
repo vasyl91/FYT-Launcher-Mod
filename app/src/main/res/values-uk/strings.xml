@@ -379,6 +379,7 @@
     <string name="resizable_vertical_bar_summary">Ширина: %1$s від довшого боку екрана (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Ширина вертикальної панелі</string>
     <string name="bar_icons_count">Значки застосунків: %1$d</string>
+    <string name="widget_configuration_unavailable">Не вдалося відкрити налаштування віджета, тому його не додано.</string>
     <string name="widget_bar">Горизонтальна панель віджетів</string>
 
     <string name="weather_not_available">N/A</string>

@@ -379,6 +379,7 @@
     <string name="resizable_vertical_bar_summary">Upana: %1$s ya ukingo mrefu wa skrini (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Upana wa upau wima</string>
     <string name="bar_icons_count">Aikoni za programu: %1$d</string>
+    <string name="widget_configuration_unavailable">Mipangilio ya wijeti haikuweza kufunguliwa, kwa hivyo haikuongezwa.</string>
     <string name="widget_bar">Upau mlalo wa wijeti</string>
 
     <string name="weather_not_available">N/A</string>

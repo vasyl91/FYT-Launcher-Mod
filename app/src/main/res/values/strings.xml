@@ -447,6 +447,7 @@
     <string name="resizable_vertical_bar_summary">Width: %1$s of the screen\'s longer edge (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Vertical bar width</string>
     <string name="bar_icons_count">App icons: %1$d</string>
+    <string name="widget_configuration_unavailable">The widget\'s settings could not be opened, so it was not added.</string>
     <string name="widget_bar">Widget horizontal bar</string>
 
     <string name="weather_not_available">N/A</string>

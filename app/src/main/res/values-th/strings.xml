@@ -379,6 +379,7 @@
     <string name="resizable_vertical_bar_summary">ความกว้าง: %1$s ของขอบยาวของหน้าจอ (%2$s)</string>
     <string name="vertical_bar_width_seekbar">ความกว้างของแถบแนวตั้ง</string>
     <string name="bar_icons_count">ไอคอนแอป: %1$d</string>
+    <string name="widget_configuration_unavailable">เปิดการตั้งค่าของวิดเจ็ตไม่ได้ จึงไม่ได้เพิ่มวิดเจ็ตนี้</string>
     <string name="widget_bar">แถบแนวนอนของวิดเจ็ต</string>
 
     <string name="weather_not_available">N/A</string>

@@ -379,6 +379,7 @@
     <string name="resizable_vertical_bar_summary">ຄວາມກວ້າງ: %1$s ຂອງຂອບຍາວຂອງໜ້າຈໍ (%2$s)</string>
     <string name="vertical_bar_width_seekbar">ຄວາມກວ້າງແຖບແນວຕັ້ງ</string>
     <string name="bar_icons_count">ໄອຄອນແອັບ: %1$d</string>
+    <string name="widget_configuration_unavailable">ບໍ່ສາມາດເປີດການຕັ້ງຄ່າຂອງວິດເຈັດໄດ້ ຈຶ່ງບໍ່ໄດ້ເພີ່ມມັນ.</string>
     <string name="widget_bar">ແຖບແນວນອນວິດເຈັດ</string>
 
     <string name="weather_not_available">N/A</string>

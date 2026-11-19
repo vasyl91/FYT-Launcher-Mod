@@ -379,6 +379,7 @@
     <string name="resizable_vertical_bar_summary">Chiều rộng: %1$s của cạnh dài hơn của màn hình (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Chiều rộng thanh dọc</string>
     <string name="bar_icons_count">Biểu tượng ứng dụng: %1$d</string>
+    <string name="widget_configuration_unavailable">Không mở được cài đặt của tiện ích nên tiện ích chưa được thêm.</string>
     <string name="widget_bar">Thanh ngang của widget</string>
 
     <string name="weather_not_available">N/A</string>

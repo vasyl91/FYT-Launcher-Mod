@@ -379,6 +379,7 @@
     <string name="resizable_vertical_bar_summary">ទទឹង៖ %1$s នៃគែមវែងជាងរបស់អេក្រង់ (%2$s)</string>
     <string name="vertical_bar_width_seekbar">ទទឹងរបារបញ្ឈរ</string>
     <string name="bar_icons_count">រូបតំណាងកម្មវិធី៖ %1$d</string>
+    <string name="widget_configuration_unavailable">មិនអាចបើកការកំណត់របស់ធាតុក្រាហ្វិកបានទេ ដូច្នេះវាមិនត្រូវបានបន្ថែមទេ។</string>
     <string name="widget_bar">របារផ្ដេកធាតុក្រាហ្វិក</string>
 
     <string name="weather_not_available">N/A</string>

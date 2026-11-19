@@ -379,6 +379,7 @@
     <string name="resizable_vertical_bar_summary">Amplada: %1$s del costat més llarg de la pantalla (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Amplada de la barra vertical</string>
     <string name="bar_icons_count">Icones d\'aplicacions: %1$d</string>
+    <string name="widget_configuration_unavailable">No s\'han pogut obrir els paràmetres del widget, així que no s\'ha afegit.</string>
     <string name="widget_bar">Barra horitzontal de widgets</string>
 
     <string name="weather_not_available">N/A</string>

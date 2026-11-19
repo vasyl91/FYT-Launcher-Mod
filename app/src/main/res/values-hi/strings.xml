@@ -379,6 +379,7 @@
     <string name="resizable_vertical_bar_summary">चौड़ाई: स्क्रीन के लंबे किनारे का %1$s (%2$s)</string>
     <string name="vertical_bar_width_seekbar">ऊर्ध्वाधर बार की चौड़ाई</string>
     <string name="bar_icons_count">ऐप आइकन: %1$d</string>
+    <string name="widget_configuration_unavailable">विजेट की सेटिंग नहीं खुल सकीं, इसलिए उसे जोड़ा नहीं गया।</string>
     <string name="widget_bar">विजेट क्षैतिज बार</string>
 
     <string name="weather_not_available">N/A</string>

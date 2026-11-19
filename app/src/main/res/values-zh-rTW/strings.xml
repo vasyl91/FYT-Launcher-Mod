@@ -379,6 +379,7 @@
     <string name="resizable_vertical_bar_summary">寬度：螢幕較長邊的 %1$s（%2$s）</string>
     <string name="vertical_bar_width_seekbar">縱欄寬度</string>
     <string name="bar_icons_count">應用程式圖示：%1$d</string>
+    <string name="widget_configuration_unavailable">無法開啟此小工具的設定，因此未新增。</string>
     <string name="widget_bar">小工具橫欄</string>
 
     <string name="weather_not_available">N/A</string>

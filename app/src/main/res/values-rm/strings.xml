@@ -379,6 +379,7 @@
     <string name="resizable_vertical_bar_summary">Ladezza: %1$s da l\'ur pli lunga da l\'visur (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Ladezza da la bara verticala</string>
     <string name="bar_icons_count">Icons d\'apps: %1$d</string>
+    <string name="widget_configuration_unavailable">Ils parameters dal widget n\'han betg pudì vegnir averts, perquai n\'è el betg vegnì agiuntà.</string>
     <string name="widget_bar">Bara orizontala dals widgets</string>
 
     <string name="weather_not_available">N/A</string>
