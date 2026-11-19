@@ -158,6 +158,9 @@ public class CustomWidgetSwitchPreference extends SwitchPreferenceCompat {
             });
         }
 
+        // Its final size before it is first measured: a row that grew a frame after it came on the screen pushed
+        // the rows below it, and the list jumped while it was scrolled up (SettingsRowSizing)
+        applySizing(resolveRowHeightFallback());
         mBoundItemView.post(() -> scheduleRuntimeSizing());
     }
 
@@ -212,8 +215,8 @@ public class CustomWidgetSwitchPreference extends SwitchPreferenceCompat {
 
     private void applySizing(int rowH) {
         // Left controls sizing & colors based on preference width/height
-        int prefW = (mBoundItemView != null) ? mBoundItemView.getWidth() : 0;
-        if (prefW <= 0) return;
+        // Sized as soon as the row is bound, before its first measure (SettingsRowSizing): the width is not needed
+        if (mBoundItemView == null) return;
 
         // Percent specs
         final float BTN_H_PCT_OF_ROW = 0.55f; // 55% of row height

@@ -120,6 +120,9 @@ public class CustomPipRestartPreference extends Preference {
         mRestartButtons.add(mRestartThirdButton);
         mRestartButtons.add(mRestartFourthButton);
 
+        // Its final size before it is first measured: a row that grew a frame after it came on the screen pushed
+        // the rows below it, and the list jumped while it was scrolled up (SettingsRowSizing)
+        applySizing(resolveRowHeightFallback());
         mBoundItemView.post(() -> scheduleRuntimeSizing());
     }
 
@@ -180,8 +183,10 @@ public class CustomPipRestartPreference extends Preference {
 
     private void applySizing(int rowH) {
         // Left controls sizing & colors based on preference width/height
-        int prefW = (mBoundItemView != null) ? mBoundItemView.getWidth() : 0;
-        if (prefW <= 0) return;
+        if (mBoundItemView == null) return;
+        // Before the row's first measure its width is not known yet: the list's width stands for it, and the pass
+        // after the layout corrects only the buttons' widths, never the row's height (SettingsRowSizing)
+        int prefW = SettingsRowSizing.width(mBoundItemView);
 
         // Percent specs
         final float BTN_H_PCT_OF_ROW = 0.55f; // 55% of row height
