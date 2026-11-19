@@ -42,7 +42,8 @@ file and named in the round's report.
 | KI-31 | StrictMode reports inside the framework (A55 log of 2026-11-09) | problem | partial | — |
 | KI-33 | Some settings of the home screen only with the user layout on | problem | open | the owner's choice |
 | KI-37 | A widget lay over icons after a change of the grid | unverified | watching | a log with `Item out of place` |
-| KI-41 | Widgets whose configuration screen is not exported could not be added | unverified | watching | the owner's test of `660b032e6` |
+| KI-42 | The bars of the pages after the first while an item is moved | unverified | watching | the owner's test of `fcfe712fd` |
+| KI-43 | A second build of the bars' lists at every start | problem | open | the owner's choice (see below) |
 
 ## Problems
 
@@ -134,7 +135,21 @@ Its updater downloads the system build. One update by hand; documented in `READM
 
 ### KI-18 Framework warnings
 `W Parcel: Expecting binder but got null!` and `E SurfaceSyncer: Failed to find sync for id=0` (Android 13)
-have no effect (D-15).
+have no effect (D-15). Looked at on 2026-11-19 in the A55's log of a start [V]:
+- `RippleDrawable: Thread doesn't have a looper. Skipping animation.` — the widgets' layouts are inflated on the
+  launcher's `WidgetApply` thread (off the main thread, for StrictMode); a ripple made there cannot start its
+  press animation, and nothing is pressed during inflation. Harmless.
+- `LocaleConfig: The resource file pointed to by the given resource ID isn't found.` — from the contexts made for
+  other apps' resources (the widgets, their previews); the launcher declares no locale config of its own.
+- `AppWidgetHostView: Error inflating RemoteViews … Permission Denial: opening provider
+  androidx.core.content.FileProvider` — Allegro's widget, written by Android before the launcher's preview
+  replaces the error (D-66). It stays until Allegro sends its widget again with the image granted; the launcher
+  may not make it do so through Shizuku. Its widget has no preview picture, so its icon is shown.
+- `WallpaperResourcesInfo`, `ashmem: Pinning is deprecated`, `InputDispatcher` (system_server), `BitmapFactory: Null
+  Options` — Samsung's framework or other processes.
+- `AppsCustomizePagedView E … can not fit on this device` — a Samsung test widget larger than the screen,
+  left out of the list of widgets; only the level of the line is too high.
+- `BitmapDrawable created with null Bitmap` (14 at a start) was the launcher's: fixed in `0e2ac7833`.
 
 ### KI-21 The stats window on the 7862 while pages scroll
 Three fixes in 2026-11 did not help; direct surface moves (`3a0217ea`) were reverted as worse (`b38f1286`, D-24),
@@ -190,12 +205,19 @@ line was `Items sharing cells` before round 20). **The owner's log of 2026-11-19
 grid (3×8 → 7×12 and 7×12 → 5×8, the second giving 4 icons of the first page a new cell) and no such line, so
 nothing shared a cell after either load.
 
-### KI-41 Widgets whose configuration screen is not exported could not be added
-The owner, 2026-11-19 on the A55 [H]: the list of widgets offers widgets that cannot be added. The log of 13:17:02
-[V]: the Google app's Stocks widget has a configuration screen its app does not export; the launcher started it
-with an intent of its own, the system refused it ("Permission Denial"), the generic "App isn't installed" was
-shown and the bound widget id was left unused. `660b032e6` opens the configuration through the system for the
-widget's host (`AppWidgetHost.startAppWidgetConfigureActivityForResult`, `WidgetConfigure`); if it still cannot
-be opened, a widget with optional configuration is added without it and any other is not added, with a message
-that says so. Not tested on a device.
+### KI-42 The bars of the pages after the first while an item is moved
+The owner, 2026-11-19 on the A55 [H]: moving an item takes both bars off the pages after the first. The log of
+20:51 [V]: the bars' windows on every page park at each drag start (they step aside for a drag, a folder, the
+list of apps of a bar) and come back at its end; the pictures of the bars (BarGhostRule) were drawn only while
+the pages are small, and a move within the home screen keeps them at full size. `fcfe712fd` draws the pictures
+whenever the windows step aside while the pages are seen. Not tested on a device.
+
+### KI-43 A second build of the bars' lists at every start
+The A55's log of a start, 2026-11-19 [V]: the home layout watchdog runs 840 ms after `onResume`, while the model is
+still binding, finds the bar's list without an adapter (`Layout unhealthy: recycler has no adapter during
+onResume:watchdog`) and leaves a repair pending; the repair then waits for the binding (`isHomeLayoutInitPending`)
+but still runs once after it (`Wake home recycler restore: watchdog:onResume:retry0`), and both lists are built a
+second time (`initAppData() started` twice, 0.8 s apart). Nothing breaks; it costs one build of both lists at the
+busiest moment of a start. A fix would let the watchdog wait for the binding before it judges. Not changed:
+`HomeLayoutRecovery` decides the cold start of the 7862 too; the owner's word first.
 

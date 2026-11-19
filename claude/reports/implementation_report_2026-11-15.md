@@ -403,3 +403,27 @@ without it, any other is not added, its id is freed and a new message says why. 
 wallpaper picker's two fallbacks (`WallpaperPickerLauncher`, `LauncherWallpaperPicker`) show the literal text
 "activity_not_found" instead of the string. Not tested on a device.
 
+**The owner, 2026-11-19 evening (logs 20:51 and a start at 20:59, A55) [H]:** KI-41 works, the widget that cannot
+be dropped works; Allegro's widget shows its app's icon and the warning is still in the log; moving an item takes
+both bars off the pages after the first. The owner asked to fix the wallpaper toasts and to look at the warnings.
+
+| Commit | Subject |
+|---|---|
+| `fcfe712fd` | Bars: the pages after the first keep their bars while an item is moved |
+| `a5e7a594c` | Wallpaper: the message when no picker opens is the text, not its key |
+| `0e2ac7833` | Bars: an icon not loaded yet leaves its row empty, without a warning |
+
+- The bars [V]: at each drag start both windows of the bars on every page park; the pages after the first got
+  pictures of the bars only while the pages were small (the overview, a drag from all apps). A move within the home
+  screen keeps them at full size, so there was neither window nor picture. The pictures now go up whenever the
+  windows step aside while the pages are seen (`BarGhostRule`, `Workspace.barWindowsAside()`); a folder and the
+  bar's list of apps had the same gap and are covered too.
+- The warnings (KI-18): `BitmapDrawable created with null Bitmap` was the bars' rows bound before their icons
+  (fixed); `RippleDrawable … no looper` is the widgets' inflation off the main thread (harmless); `LocaleConfig`
+  comes from other apps' resource contexts; Allegro's `Error inflating RemoteViews` is Android's own line about the
+  image it may not read (its widget has no preview picture, hence the icon); the rest is Samsung's framework or
+  other processes. Found and not changed: the watchdog's second build of the bars' lists at a start (KI-43), and the
+  fuel statistics asking for the GPS every 500 ms also on a phone (their design: the speed for the model).
+
+Not tested on a device.
+

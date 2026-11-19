@@ -5,7 +5,8 @@ commit). Round 22 answers the owner's log of 2026-11-16 18:42 on the 7862 and ei
 CI was green for every code push checked when this was written; the round's last commits were pushed one by
 one after it. The owner, 2026-11-19 (7862 and A55): every fix of rounds 15–22 works, the jump of the second settings
 screen after a return too (`16f256ee8`). After that test, widgets whose configuration screen is not exported
-can be added (`660b032e6`, KI-41, not yet tested). `KNOWN_ISSUES.md` is one current list since
+can be added (`660b032e6`, confirmed in the evening), and the bars stay on the pages after the first while an
+item is moved (`fcfe712fd`, KI-42, not yet tested). `KNOWN_ISSUES.md` is one current list since
 2026-11-18.** This file is the authoritative entry point for a new session. Update it at the
 end of every round (see `CLAUDE.md`).
 
@@ -130,9 +131,10 @@ JUnit 5 JVM tests: 110 files, 1011 tests, no instrumented tests. CI runs on GitH
 
 ## Active tasks
 
-**The owner's test of `660b032e6`** (KI-41): a widget whose configuration screen its app does not export, e.g.
-the Google app's Stocks widget, dropped from the list of widgets. Everything before it, rounds 15–22, is
-confirmed by the owner (2026-11-19). KI-37 waits for a log of a next widget over icons, if one happens.
+**The owner's test of `fcfe712fd`** (KI-42): the bars of the pages after the first while an item of a page is
+moved, a folder is open or the list of apps of a bar is shown. `660b032e6` (widgets with a configuration screen
+not exported) and `DropSpan` are confirmed (2026-11-19). The owner's word on KI-43 (a second build of the bars'
+lists at a start). KI-37 waits for a log of a next widget over icons, if one happens.
 
 ## Blocked or waiting
 
