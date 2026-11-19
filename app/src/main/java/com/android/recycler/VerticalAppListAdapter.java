@@ -99,7 +99,7 @@ public class VerticalAppListAdapter extends RecyclerView.Adapter<LeftAppListHold
     @Override
     public void onBindViewHolder(final LeftAppListHolder appListHolder, int position) {
         final AppListBean appListBean = this.mData.get(position);
-        appListHolder.mAppIcon.setImageBitmap(appListBean.icon);
+        BarIconImage.show(appListHolder.mAppIcon, appListBean.icon);
 
         appListHolder.itemView.setOnClickListener(view -> {
             final String packageName = appListBean.packageName;

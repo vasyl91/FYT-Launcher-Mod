@@ -286,7 +286,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder>
         if ("com.android.launcher66.settings.SettingsActivity".equals(appListBean.className)) {
             appListHolder.mAppIcon.setImageBitmap(getSettingsIconBitmap());
         } else {
-            appListHolder.mAppIcon.setImageBitmap(appListBean.icon);
+            BarIconImage.show(appListHolder.mAppIcon, appListBean.icon);
         }
 
         appListHolder.itemView.setOnClickListener(view -> {

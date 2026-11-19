@@ -570,7 +570,7 @@ public class AppListDialogFragment extends DialogFragment implements AdapterView
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
-            viewHolder.appIcon.setImageBitmap(data.iconBitmap);
+            BarIconImage.show(viewHolder.appIcon, data.iconBitmap);
             viewHolder.appName.setText(data.title);
             return convertView;
         }
