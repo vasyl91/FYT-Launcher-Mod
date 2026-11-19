@@ -61,7 +61,7 @@ final class LauncherWallpaperPicker {
             mLauncher.helpers.setWallpaperWindow(true);
             mLauncher.startActivity(intent);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(mLauncher, "activity_not_found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mLauncher, R.string.activity_not_found, Toast.LENGTH_SHORT).show();
         }
     }
 

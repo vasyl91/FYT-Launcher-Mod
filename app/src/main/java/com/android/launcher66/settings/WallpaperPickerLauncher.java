@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.LauncherApplication;
+import com.android.launcher66.R;
 import com.android.launcher66.WallpaperPickerActivity;
 
 /**
@@ -65,7 +66,7 @@ final class WallpaperPickerLauncher {
             LauncherApplication.sApp.startActivity(intent);
             return true;
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(LauncherApplication.sApp, "activity_not_found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(LauncherApplication.sApp, R.string.activity_not_found, Toast.LENGTH_SHORT).show();
             return false;
         }
     }
