@@ -378,6 +378,7 @@
     <string name="resizable_vertical_bar">Átméretezhető függőleges sáv</string>
     <string name="resizable_vertical_bar_summary">Szélesség: a képernyő hosszabb élének %1$s része (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Függőleges sáv szélessége</string>
+    <string name="bar_icons_count">Alkalmazásikonok: %1$d</string>
     <string name="widget_bar">Widgetek vízszintes sávja</string>
 
     <string name="weather_not_available">N/A</string>

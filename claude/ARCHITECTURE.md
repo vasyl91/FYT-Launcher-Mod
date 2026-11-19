@@ -194,7 +194,10 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   the settings, and when the settings change it. The bar's icons follow its width (`BarCapacity.leftIconSize`).
 - **Content:** `L/LauncherAppBars` holds the apps of both bars. The lists are stored with LitePal:
   `com/android/recycler/AppMultiple` for the horizontal bar, `LeftAppMultiple` for the vertical bar. `L/BarCapacity` and `L/BarRows` handle slots and
-  preloading.
+  preloading. `L/BarIconCount` (2026-11-18, pure): with a bar's "Resizable" switch on, the user may choose how
+  many icons it shows (1 .. what `BarCapacity` gives it room for, per bar and orientation; nothing chosen = as
+  many as fit; a number above a newly smaller room is lowered and stored lowered). The settings work the room
+  out live (`S/BarIconLimits`, `BarCapacity.leftCapacityFor`); the launcher counts with the room it measures.
 - **Bar on every page:**
   - `L/HorizontalBarPlacement` and `L/VerticalBarPlacement` decide where each bar is drawn. A bar on every
     page is its window on every page, the first one too, moving or at rest (2026-11-16): the pages move

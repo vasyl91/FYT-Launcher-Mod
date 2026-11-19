@@ -43,4 +43,19 @@ class BarCapacityTest {
         assertEquals(104, BarCapacity.leftIconSize(142));
         assertEquals(110, BarCapacity.leftIconSize(150));
     }
+
+    /** The A55 in portrait: the page 1080 x 2116, the horizontal bar 153 px at the bottom, the vertical bar left. */
+    private static BarLayout a55(int verticalWidth, boolean autoHide, boolean handleRight) {
+        return new BarLayout(1080, 2116, 153, verticalWidth, false, false, handleRight, true, true, autoHide);
+    }
+
+    @Test
+    void theRoomOfTheVerticalBarFollowsItsBandAndWidth() {
+        // 1963 px beside the bar, icon 104 (142 * 0.7394): 8 slots
+        assertEquals(8, BarCapacity.leftCapacityFor(a55(142, false, false)));
+        // wider (200 px), so a bigger icon: 6 slots
+        assertEquals(6, BarCapacity.leftCapacityFor(a55(200, false, false)));
+        // an auto-hide bar with its handle on the other side leaves the corner: the whole height, 9 slots
+        assertEquals(9, BarCapacity.leftCapacityFor(a55(142, true, true)));
+    }
 }

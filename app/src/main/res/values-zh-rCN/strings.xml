@@ -378,6 +378,7 @@
     <string name="resizable_vertical_bar">可调整大小的纵栏</string>
     <string name="resizable_vertical_bar_summary">宽度：屏幕较长边的 %1$s（%2$s）</string>
     <string name="vertical_bar_width_seekbar">纵栏宽度</string>
+    <string name="bar_icons_count">应用图标：%1$d</string>
     <string name="widget_bar">小部件横栏</string>
 
     <string name="weather_not_available">N/A</string>

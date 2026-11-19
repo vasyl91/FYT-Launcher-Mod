@@ -378,6 +378,7 @@
     <string name="resizable_vertical_bar">Хэмжээг өөрчлөх боломжтой босоо самбар</string>
     <string name="resizable_vertical_bar_summary">Өргөн: дэлгэцийн урт ирмэгийн %1$s (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Босоо самбарын өргөн</string>
+    <string name="bar_icons_count">Аппын дүрс тэмдэг: %1$d</string>
     <string name="widget_bar">Виджетийн хэвтээ самбар</string>
 
     <string name="weather_not_available">N/A</string>

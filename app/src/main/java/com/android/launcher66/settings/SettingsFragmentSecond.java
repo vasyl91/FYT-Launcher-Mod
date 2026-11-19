@@ -134,6 +134,10 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private SwitchPreferenceCompat resizableBarPreference;
     private HorizontalBarHeightSeekBarPreference barHeightSeekBar;
     private SwitchPreferenceCompat resizableVerticalBarPreference;
+    private BarIconsSeekBarPreference horizontalIconsSlider;
+    private Preference horizontalIconsTitle;
+    private BarIconsSeekBarPreference verticalIconsSlider;
+    private Preference verticalIconsTitle;
     private VerticalBarWidthSeekBarPreference verticalBarWidthSeekBar;
     private Preference margin;
     private EditText marginEditText;
@@ -207,6 +211,54 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private CustomWidgetSwitchPreference userDate;
     private CustomWidgetSwitchPreference userMusic;
     private CustomWidgetSwitchPreference userRadio;
+
+    /** The options the most icons of a bar depends on (BarIconLimits): the sliders' ends follow them at once. */
+    private static final java.util.Set<String> BAR_ICON_INPUTS = new java.util.HashSet<>(java.util.Arrays.asList(
+            Keys.HORIZONTAL_BAR_HEIGHT_PORT, Keys.HORIZONTAL_BAR_HEIGHT_LAND, Keys.RESIZABLE_HORIZONTAL_BAR,
+            Keys.VERTICAL_BAR_WIDTH_PORT, Keys.VERTICAL_BAR_WIDTH_LAND, Keys.RESIZABLE_VERTICAL_BAR,
+            Keys.WIDGET_BAR, Keys.VERTICAL_BAR, Keys.AUTO_HIDE_HORIZONTAL_BAR, Keys.HORIZONTAL_BAR_TOP,
+            Keys.VERTICAL_BAR_RIGHT, Keys.EDGE_HANDLE_RIGHT, Keys.USER_LAYOUT, Keys.HORIZONTAL_BAR_EVERY_PAGE,
+            Keys.VERTICAL_BAR_EVERY_PAGE, Keys.BAR_ROOT_BOX_PORTRAIT, Keys.BAR_ROOT_BOX_LANDSCAPE));
+
+    private final SharedPreferences.OnSharedPreferenceChangeListener barIconsListener = (prefs, key) -> {
+        if (key != null && BAR_ICON_INPUTS.contains(key)) {
+            // After the preference has finished its own work (a switch's click listener runs after it is stored)
+            handler.post(this::updateBarIconSliders);
+        }
+    };
+
+    /**
+     * The sliders of the number of icons: shown with their bar's "Resizable" switch (the vertical one with the
+     * vertical bar too), their end the most the bar has room for now, a chosen number above it lowered
+     * (BarIconLimits, BarIconCount).
+     */
+    private void updateBarIconSliders() {
+        if (!isAdded() || sharedPrefs == null) {
+            return;
+        }
+        boolean horizontal = sharedPrefs.getBoolean(Keys.RESIZABLE_HORIZONTAL_BAR, false);
+        boolean vertical = sharedPrefs.getBoolean(Keys.VERTICAL_BAR, false)
+                && sharedPrefs.getBoolean(Keys.RESIZABLE_VERTICAL_BAR, false);
+        bindBarIcons(horizontalIconsSlider, horizontalIconsTitle, true, horizontal);
+        bindBarIcons(verticalIconsSlider, verticalIconsTitle, false, vertical);
+    }
+
+    private void bindBarIcons(BarIconsSeekBarPreference slider, Preference title, boolean horizontal,
+                              boolean visible) {
+        if (slider == null || title == null) {
+            return;
+        }
+        slider.setVisible(visible);
+        title.setVisible(visible);
+        if (!visible) {
+            return;
+        }
+        Context context = requireContext();
+        int max = BarIconLimits.max(context, sharedPrefs, horizontal);
+        int shown = BarIconLimits.shownAfterLowering(context, sharedPrefs, horizontal, max);
+        slider.setRange(max, shown);
+        title.setTitle(getString(R.string.bar_icons_count, shown));
+    }
 
     private final SharedPreferences.OnSharedPreferenceChangeListener pipPkgListener =
             (prefs, key) -> {
@@ -386,6 +438,10 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         barHeightSeekBar = findPreference(Keys.HORIZONTAL_BAR_HEIGHT);
         resizableVerticalBarPreference = findPreference(Keys.RESIZABLE_VERTICAL_BAR);
         verticalBarWidthSeekBar = findPreference(Keys.VERTICAL_BAR_WIDTH);
+        horizontalIconsSlider = findPreference(Keys.HORIZONTAL_BAR_ICONS);
+        horizontalIconsTitle = findPreference(Keys.HORIZONTAL_BAR_ICONS + "_title");
+        verticalIconsSlider = findPreference(Keys.VERTICAL_BAR_ICONS);
+        verticalIconsTitle = findPreference(Keys.VERTICAL_BAR_ICONS + "_title");
 
         Preference verticalBar = findPreference(Keys.VERTICAL_BAR);
         Preference widgetBar = findPreference(Keys.WIDGET_BAR);
@@ -404,6 +460,17 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
         updatePipSummaries();
         sharedPrefs.registerOnSharedPreferenceChangeListener(pipPkgListener);        
+        sharedPrefs.registerOnSharedPreferenceChangeListener(barIconsListener);
+        for (BarIconsSeekBarPreference slider : new BarIconsSeekBarPreference[] {horizontalIconsSlider,
+                verticalIconsSlider}) {
+            if (slider != null) {
+                slider.setOnValueChangeListener(value -> {
+                    updateBarIconSliders();
+                    helpers.setBarSettingsChanged(true);
+                });
+            }
+        }
+        updateBarIconSliders();
 
         dialogStartPageEditText();
         dialogMarginEditText();
@@ -1160,6 +1227,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             verticalBarWidthSeekBar.refresh();
         }
         handler.post(updateVerticalBarWidthSummary);
+        handler.post(this::updateBarIconSliders);
         // Also while the switch is off, so its summary is current when it is turned on.
         handler.post(updateBarHeightSummary);
     }
@@ -1179,6 +1247,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }
         if (sharedPrefs != null) {
             sharedPrefs.unregisterOnSharedPreferenceChangeListener(pipPkgListener);
+            sharedPrefs.unregisterOnSharedPreferenceChangeListener(barIconsListener);
         }
     }
 
@@ -1224,6 +1293,10 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         barHeightSeekBar = null;
         resizableVerticalBarPreference = null;
         verticalBarWidthSeekBar = null;
+        horizontalIconsSlider = null;
+        horizontalIconsTitle = null;
+        verticalIconsSlider = null;
+        verticalIconsTitle = null;
         imm = null;
     }
 

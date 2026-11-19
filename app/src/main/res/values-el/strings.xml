@@ -378,6 +378,7 @@
     <string name="resizable_vertical_bar">Κάθετη γραμμή με δυνατότητα αλλαγής μεγέθους</string>
     <string name="resizable_vertical_bar_summary">Πλάτος: %1$s της μεγαλύτερης πλευράς της οθόνης (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Πλάτος κάθετης γραμμής</string>
+    <string name="bar_icons_count">Εικονίδια εφαρμογών: %1$d</string>
     <string name="widget_bar">Οριζόντια γραμμή γραφικών στοιχείων</string>
 
     <string name="weather_not_available">N/A</string>

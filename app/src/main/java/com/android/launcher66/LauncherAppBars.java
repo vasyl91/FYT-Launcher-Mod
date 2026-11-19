@@ -185,15 +185,16 @@ final class LauncherAppBars {
 
     /**
      * Slots the vertical bar shows: what its height has room for, as the layout manager last worked it
-     * out. Before the first measure of a run it is the value stored for this orientation.
+     * out (before the first measure of a run, the value stored for this orientation), or fewer where the
+     * user chose fewer (BarIconCount).
      */
     int leftCapacity() {
+        boolean portrait = mLauncher.orientation == Configuration.ORIENTATION_PORTRAIT;
         if (mLeftCapacity < 0) {
             mLeftCapacity = Launcher.EvenVerticalLayoutManager.loadCapacity(
-                    mLauncher.getApplicationContext(),
-                    mLauncher.orientation == Configuration.ORIENTATION_PORTRAIT);
+                    mLauncher.getApplicationContext(), portrait);
         }
-        return mLeftCapacity;
+        return BarIconCount.shown(BarCapacity.chosen(mLauncher.mPrefs, false, portrait), mLeftCapacity);
     }
 
     Launcher.EvenVerticalLayoutManager newLeftLayoutManager() {
@@ -222,11 +223,15 @@ final class LauncherAppBars {
 
     /**
      * Slots the horizontal bar shows with these settings: what fits at the icon size, never fewer than
-     * the bar showed before. Pure, so it can be asked before anything is measured.
+     * the bar showed before, or fewer where the user chose fewer (BarIconCount). Pure, so it can be asked
+     * before anything is measured.
      */
     int bottomCapacity(boolean currentUserLayout, boolean currentWidgetBar) {
-        return BarCapacity.bottomCapacity(mLauncher.mPrefs, mLauncher.orientation,
+        int room = BarCapacity.bottomCapacity(mLauncher.mPrefs, mLauncher.orientation,
                 currentUserLayout, currentWidgetBar);
+        boolean portrait = mLauncher.orientation == Configuration.ORIENTATION_PORTRAIT;
+        int chosen = currentUserLayout ? BarCapacity.chosen(mLauncher.mPrefs, true, portrait) : BarIconCount.UNSET;
+        return BarIconCount.shown(chosen, room);
     }
 
     boolean shouldUseLeftRecycler() {

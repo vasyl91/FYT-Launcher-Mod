@@ -9234,6 +9234,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
 
         private int mMaxItems;
+        /** The slots the recycler's height has room for, last worked out; mMaxItems may be fewer (BarIconCount). */
+        private int mMeasuredCapacity;
         private final Context mAppContext;
         private RecyclerView mHost;
         private int mNaturalItemHeight = -1;
@@ -9253,15 +9255,21 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 }
                 int icon = iconSizeFor(mHost.getWidth());
                 int capacity = BarCapacity.leftCapacity(mHost.getHeight(), icon);
-                if (capacity == mMaxItems) {
+                int shown = shownFor(capacity);
+                if (capacity == mMeasuredCapacity && shown == mMaxItems) {
                     return;
                 }
-                Log.d(LM_TAG, "capacity " + mMaxItems + " -> " + capacity + " (W=" + mHost.getWidth()
-                        + " H=" + mHost.getHeight() + " icon=" + icon + ")");
-                setMaxItems(capacity);
-                storeCapacity(capacity);
-                if (mCapacityListener != null) {
-                    mCapacityListener.onLeftCapacityChanged(capacity);
+                Log.d(LM_TAG, "capacity " + mMeasuredCapacity + " -> " + capacity + ", shown " + mMaxItems
+                        + " -> " + shown + " (W=" + mHost.getWidth() + " H=" + mHost.getHeight()
+                        + " icon=" + icon + ")");
+                setMaxItems(shown);
+                if (capacity != mMeasuredCapacity) {
+                    mMeasuredCapacity = capacity;
+                    // The room, not the number shown: that is what the next start begins with
+                    storeCapacity(capacity);
+                    if (mCapacityListener != null) {
+                        mCapacityListener.onLeftCapacityChanged(capacity);
+                    }
                 }
             }
         };
@@ -9271,6 +9279,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mMaxItems = Math.max(1, maxItems);
             mAppContext = context.getApplicationContext();
             mNaturalItemHeight = loadNaturalItemHeight();
+            mMeasuredCapacity = loadCapacity(mAppContext, isPortrait(context));
+        }
+
+        /** The items shown for a room of this many slots: fewer where the user chose fewer (BarIconCount). */
+        private int shownFor(int capacity) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mAppContext);
+            return BarIconCount.shown(BarCapacity.chosen(prefs, false, isPortrait(hostContext())), capacity);
         }
 
         public void setMaxItems(int maxItems) {
@@ -9464,7 +9479,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (!mFollowsCapacity || mHost == null || mCapacityCheckPending || width <= 0 || height <= 0) {
                 return;
             }
-            if (BarCapacity.leftCapacity(height, iconSizeFor(width)) != mMaxItems) {
+            int capacity = BarCapacity.leftCapacity(height, iconSizeFor(width));
+            if (capacity != mMeasuredCapacity || shownFor(capacity) != mMaxItems) {
                 mCapacityCheckPending = true;
                 mHost.post(mCapacityCheck);
             }

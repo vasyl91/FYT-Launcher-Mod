@@ -244,6 +244,14 @@ public final class Keys {
     /** The width of the vertical bar as a share of the screen's longer edge, per orientation. */
     public static final String VERTICAL_BAR_WIDTH_PORT = "vertical_bar_width_port";
     public static final String VERTICAL_BAR_WIDTH_LAND = "vertical_bar_width_land";
+    /** The sliders of the number of app icons on the bars; nothing is stored under these two (BarIconCount). */
+    public static final String HORIZONTAL_BAR_ICONS = "horizontal_bar_icons";
+    public static final String VERTICAL_BAR_ICONS = "vertical_bar_icons";
+    /** The number of app icons the user chose for a bar, per orientation; absent = as many as fit. */
+    public static final String HORIZONTAL_BAR_ICONS_PORT = "horizontal_bar_icons_port";
+    public static final String HORIZONTAL_BAR_ICONS_LAND = "horizontal_bar_icons_land";
+    public static final String VERTICAL_BAR_ICONS_PORT = "vertical_bar_icons_port";
+    public static final String VERTICAL_BAR_ICONS_LAND = "vertical_bar_icons_land";
 
     public static final String PIP_DUAL = "pip_dual";
     public static final String PIP_FIRST = "pip_first";

@@ -378,6 +378,7 @@
     <string name="resizable_vertical_bar">Bilah vertikal yang dapat diubah ukurannya</string>
     <string name="resizable_vertical_bar_summary">Lebar: %1$s dari sisi layar yang lebih panjang (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Lebar bilah vertikal</string>
+    <string name="bar_icons_count">Ikon aplikasi: %1$d</string>
     <string name="widget_bar">Bilah horizontal widget</string>
 
     <string name="weather_not_available">N/A</string>

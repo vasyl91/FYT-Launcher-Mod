@@ -378,6 +378,7 @@
     <string name="resizable_vertical_bar">መጠኑ ሊቀየር የሚችል ቀጥ ያለ አሞሌ</string>
     <string name="resizable_vertical_bar_summary">ስፋት፦ የማያ ገጹ ረጅም ጠርዝ %1$s (%2$s)</string>
     <string name="vertical_bar_width_seekbar">ቀጥ ያለ አሞሌ ስፋት</string>
+    <string name="bar_icons_count">የመተግበሪያ አዶዎች፦ %1$d</string>
     <string name="widget_bar">የዊጅት አግድም አሞሌ</string>
 
     <string name="weather_not_available">N/A</string>

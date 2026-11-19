@@ -378,6 +378,7 @@
     <string name="resizable_vertical_bar">Vertikale balk met aanpasbare grootte</string>
     <string name="resizable_vertical_bar_summary">Breedte: %1$s van die skerm se langer rand (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Vertikale balk se breedte</string>
+    <string name="bar_icons_count">Programikone: %1$d</string>
     <string name="widget_bar">Horisontale legstukbalk</string>
 
     <string name="weather_not_available">N/A</string>

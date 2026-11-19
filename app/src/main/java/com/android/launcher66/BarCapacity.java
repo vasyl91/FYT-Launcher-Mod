@@ -5,6 +5,7 @@ import android.content.res.Configuration;
 import android.util.Log;
 
 import com.android.launcher66.settings.HorizontalBarDimensions;
+import com.android.launcher66.settings.Keys;
 
 /**
  * How many slots the bars have room for. The horizontal bar used to show a fixed set of slots per mode
@@ -204,6 +205,39 @@ public final class BarCapacity {
         logOnce(true, "left: available=" + height + " icon=" + iconSize + " pitch=" + LEFT_MIN_ICON_PITCH
                 + " capacity=" + capacity);
         return capacity;
+    }
+
+    /**
+     * Slots a vertical bar of this geometry has room for, before any view is measured (the settings ask it for
+     * the most a slider may choose): its band's height, and the icon its width gives. The measured bar may
+     * differ by a slot; the launcher counts with what it measures.
+     */
+    public static int leftCapacityFor(BarLayout layout) {
+        int[] band = layout.verticalBarBand();
+        return leftCapacity(band[3] - band[1], leftIconSize(band[2] - band[0]));
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // The number the user chose (BarIconCount)
+    // ---------------------------------------------------------------------------------------
+
+    /**
+     * The number of icons the user chose for a bar in this orientation, or BarIconCount.UNSET: nothing chosen,
+     * the bar's "Resizable" switch off, or not the user layout.
+     */
+    public static int chosen(SharedPreferences prefs, boolean horizontal, boolean portrait) {
+        if (prefs == null) {
+            return BarIconCount.UNSET;
+        }
+        try {
+            if (!prefs.getBoolean(Keys.USER_LAYOUT, false)
+                    || !prefs.getBoolean(BarIconCount.switchKey(horizontal), false)) {
+                return BarIconCount.UNSET;
+            }
+            return prefs.getInt(BarIconCount.key(horizontal, portrait), BarIconCount.UNSET);
+        } catch (ClassCastException e) {
+            return BarIconCount.UNSET;
+        }
     }
 
     /** Keeps the log to one line per change; the capacities are asked for on every rebuild. */

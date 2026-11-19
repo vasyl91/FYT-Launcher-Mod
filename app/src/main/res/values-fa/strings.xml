@@ -378,6 +378,7 @@
     <string name="resizable_vertical_bar">نوار عمودی با اندازه قابل تغییر</string>
     <string name="resizable_vertical_bar_summary">عرض: %1$s از لبه بلندتر صفحه (%2$s)</string>
     <string name="vertical_bar_width_seekbar">عرض نوار عمودی</string>
+    <string name="bar_icons_count">نمادهای برنامه: %1$d</string>
     <string name="widget_bar">نوار افقی ویجت</string>
 
     <string name="weather_not_available">N/A</string>

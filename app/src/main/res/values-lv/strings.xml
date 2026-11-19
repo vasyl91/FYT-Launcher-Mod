@@ -378,6 +378,7 @@
     <string name="resizable_vertical_bar">Vertikālā josla ar maināmu izmēru</string>
     <string name="resizable_vertical_bar_summary">Platums: %1$s no ekrāna garākās malas (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Vertikālās joslas platums</string>
+    <string name="bar_icons_count">Lietotņu ikonas: %1$d</string>
     <string name="widget_bar">Logrīku horizontālā josla</string>
 
     <string name="weather_not_available">N/A</string>

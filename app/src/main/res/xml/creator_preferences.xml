@@ -211,6 +211,13 @@
         <com.android.launcher66.settings.HorizontalBarHeightSeekBarPreference
             android:key="bottom_bar_height"
             android:persistent="false" />
+        <!-- The number of app icons on the horizontal bar, per orientation (BarIconCount) -->
+        <Preference
+            android:key="horizontal_bar_icons_title"
+            android:title="@string/bar_icons_count"
+            android:selectable="false" />
+        <com.android.launcher66.settings.BarIconsSeekBarPreference
+            android:key="horizontal_bar_icons" />
         <Preference
             android:key="choose_bar_background"
             android:title="@string/bar_background_preference"/>  
@@ -302,6 +309,13 @@
         <com.android.launcher66.settings.VerticalBarWidthSeekBarPreference
             android:key="vertical_bar_width"
             android:persistent="false" />
+        <!-- The number of app icons on the vertical bar, per orientation (BarIconCount) -->
+        <Preference
+            android:key="vertical_bar_icons_title"
+            android:title="@string/bar_icons_count"
+            android:selectable="false" />
+        <com.android.launcher66.settings.BarIconsSeekBarPreference
+            android:key="vertical_bar_icons" />
         <Preference
             android:key="choose_vertical_bar_background"
             android:title="@string/vertical_bar_background_preference" />

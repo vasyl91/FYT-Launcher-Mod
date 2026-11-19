@@ -378,6 +378,7 @@
     <string name="resizable_vertical_bar">Barre verticale redimensionnable</string>
     <string name="resizable_vertical_bar_summary">Largeur : %1$s du bord le plus long de l\'écran (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Largeur de la barre verticale</string>
+    <string name="bar_icons_count">Icônes d\'applications : %1$d</string>
     <string name="widget_bar">Barre horizontale des widgets</string>
 
     <string name="weather_not_available">N/A</string>

@@ -378,6 +378,7 @@
     <string name="resizable_vertical_bar">Yeniden boyutlandırılabilir dikey çubuk</string>
     <string name="resizable_vertical_bar_summary">Genişlik: ekranın uzun kenarının %1$s kadarı (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Dikey çubuk genişliği</string>
+    <string name="bar_icons_count">Uygulama simgeleri: %1$d</string>
     <string name="widget_bar">Widget yatay çubuğu</string>
 
     <string name="weather_not_available">N/A</string>

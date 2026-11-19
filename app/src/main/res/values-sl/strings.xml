@@ -378,6 +378,7 @@
     <string name="resizable_vertical_bar">Navpična vrstica s spremenljivo velikostjo</string>
     <string name="resizable_vertical_bar_summary">Širina: %1$s daljšega roba zaslona (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Širina navpične vrstice</string>
+    <string name="bar_icons_count">Ikone aplikacij: %1$d</string>
     <string name="widget_bar">Vodoravna vrstica gradnikov</string>
 
     <string name="weather_not_available">N/A</string>

@@ -378,6 +378,7 @@
     <string name="resizable_vertical_bar">Keičiamo dydžio vertikalioji juosta</string>
     <string name="resizable_vertical_bar_summary">Plotis: %1$s ilgesniojo ekrano krašto (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Vertikaliosios juostos plotis</string>
+    <string name="bar_icons_count">Programų piktogramos: %1$d</string>
     <string name="widget_bar">Valdiklių horizontalioji juosta</string>
 
     <string name="weather_not_available">N/A</string>
