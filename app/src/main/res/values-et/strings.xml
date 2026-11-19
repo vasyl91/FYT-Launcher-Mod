@@ -375,6 +375,9 @@
     <string name="horizontal_bar_height_portrait">püstine</string>
     <string name="horizontal_bar_height_landscape">rõhtne</string>
     <string name="horizontal_bar_height_seekbar">Horisontaalse riba kõrgus</string>
+    <string name="resizable_vertical_bar">Muudetava suurusega vertikaalne riba</string>
+    <string name="resizable_vertical_bar_summary">Laius: %1$s ekraani pikemast servast (%2$s)</string>
+    <string name="vertical_bar_width_seekbar">Vertikaalse riba laius</string>
     <string name="widget_bar">Vidinate horisontaalne riba</string>
 
     <string name="weather_not_available">N/A</string>

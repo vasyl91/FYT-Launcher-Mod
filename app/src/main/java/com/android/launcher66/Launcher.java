@@ -125,6 +125,7 @@ import com.android.launcher66.settings.FytRating;
 import com.android.launcher66.settings.FytRatingBridgeStarter;
 import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
+import com.android.launcher66.settings.VerticalBarDimensions;
 import com.android.launcher66.settings.MainViewModel;
 import com.android.launcher66.settings.NightModeService;
 import com.android.launcher66.settings.SessionPrefs;
@@ -618,6 +619,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     public static int calculatedRadioMinHeight;
     public static int calculatedRadioMinWidth;
     public static int calculatedVerticalBarWidth;
+    /** The orientation {@link #calculatedVerticalBarWidth} was worked out for. */
+    static boolean sLayoutPortrait;
     public static int orientationDimension;
     public static int orientedWidth;
     public static int screenWidth;
@@ -1954,16 +1957,16 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             // Only feeds calculatedVerticalBarWidth (the collapsed auto-hide button width), not the bar
             // itself: left as is. The vertical bar's HEIGHT follows the bar through its XML constraint
             // (rl_vertical_bar -> top of iv_list_bg); the bar height is getHorizontalBarHeight().
-            int horizontalbarHeight = (int) (screenHeight * 0.142f);
-            calculatedVerticalBarWidth = calculateDimension(orientationDimension - horizontalbarHeight , 7.1);
             orientedWidth = screenWidth;
         } else {
             // Landscape, and ORIENTATION_UNDEFINED / SQUARE: those left both values at 0 (first
             // instance of the process) and calculateDimension() below threw from onCreate().
             orientationDimension = screenWidth;
-            calculatedVerticalBarWidth = calculateDimension(orientationDimension, 7.1);
             orientedWidth = screenHeight;
         } 
+        sLayoutPortrait = orientation == Configuration.ORIENTATION_PORTRAIT;
+        // The old 7.1 % unless "Resizable vertical bar" says otherwise (VerticalBarDimensions)
+        refreshVerticalBarWidth(mPrefs);
 
         calculatedStatsWidth = calculateDimension(orientationDimension, 21.75);
         calculatedStatsHeight = calculateDimension(orientationDimension, 5.0);
@@ -2042,6 +2045,38 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
         Log.i(TAG, "ActionBar height: 0 (not found)");
         return 0;
+    }
+
+    /**
+     * Works out {@link #calculatedVerticalBarWidth} again from the preferences, for the orientation the launcher
+     * was last laid out in (VerticalBarDimensions). Called when the launcher lays itself out, before it rebuilds
+     * its pages after the settings, and by the settings when the width changes there, so that the creators of
+     * the same process count with the new width at once. "Resizable vertical bar" counts only in the user
+     * layout, the one its row belongs to.
+     */
+    public static void refreshVerticalBarWidth(SharedPreferences prefs) {
+        if (orientationDimension <= 0) {
+            return;
+        }
+        boolean portrait = sLayoutPortrait;
+        boolean resizable = false;
+        float share = VerticalBarDimensions.defaultShare(portrait);
+        if (prefs != null) {
+            try {
+                resizable = prefs.getBoolean(Keys.USER_LAYOUT, false)
+                        && prefs.getBoolean(Keys.RESIZABLE_VERTICAL_BAR, false);
+                share = prefs.getFloat(VerticalBarDimensions.widthKey(portrait), share);
+            } catch (ClassCastException e) {
+                Log.w(TAG, "Vertical bar width: a stored value of another type, the default is used: " + e);
+            }
+        }
+        int width = VerticalBarDimensions.width(portrait, orientationDimension, resizable, share);
+        if (width != calculatedVerticalBarWidth) {
+            Log.i(TAG, "Vertical bar width: " + calculatedVerticalBarWidth + " -> " + width + " px ("
+                    + (portrait ? "portrait" : "landscape") + ", long edge " + orientationDimension
+                    + (resizable ? ", share " + share : ", the default") + ")");
+            calculatedVerticalBarWidth = width;
+        }
     }
 
     public int calculateDimension(int dimension, double percentage) {
@@ -2553,6 +2588,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         // Before the PiPs are restarted: a bar that got taller in the settings now covers widgets
         // and PiPs, and this moves them out of it. Restarting first would re-create the PiP windows
         // at the old positions and the corrected ones would only appear after the next restart.
+        // The width of the vertical bar may have been changed in the settings: the check below and the rebuild
+        // count with the new one
+        refreshVerticalBarWidth(mPrefs);
         boolean layoutChanged = helpers.checkAndResetIfOverlappingOnScreen(-1);
         if (currentUserLayout && displayPip && !atomicOnCreate.get()) {
             if (helpers.hasLayoutTypeChanged()) {

@@ -375,6 +375,9 @@
     <string name="horizontal_bar_height_portrait">դիմանկար</string>
     <string name="horizontal_bar_height_landscape">լանդշաֆտ</string>
     <string name="horizontal_bar_height_seekbar">Հորիզոնական գոտու բարձրություն</string>
+    <string name="resizable_vertical_bar">Փոփոխվող չափով ուղղահայաց գոտի</string>
+    <string name="resizable_vertical_bar_summary">Լայնություն՝ էկրանի երկար կողմի %1$s (%2$s)</string>
+    <string name="vertical_bar_width_seekbar">Ուղղահայաց գոտու լայնություն</string>
     <string name="widget_bar">Վիջեթների հորիզոնական գոտի</string>
 
     <string name="weather_not_available">N/A</string>

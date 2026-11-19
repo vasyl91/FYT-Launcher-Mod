@@ -375,6 +375,9 @@
     <string name="horizontal_bar_height_portrait">直向</string>
     <string name="horizontal_bar_height_landscape">橫向</string>
     <string name="horizontal_bar_height_seekbar">橫欄高度</string>
+    <string name="resizable_vertical_bar">可調整大小的縱欄</string>
+    <string name="resizable_vertical_bar_summary">寬度：螢幕較長邊的 %1$s（%2$s）</string>
+    <string name="vertical_bar_width_seekbar">縱欄寬度</string>
     <string name="widget_bar">小工具橫欄</string>
 
     <string name="weather_not_available">N/A</string>

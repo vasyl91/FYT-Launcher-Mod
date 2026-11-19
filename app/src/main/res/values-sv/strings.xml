@@ -375,6 +375,9 @@
     <string name="horizontal_bar_height_portrait">stående</string>
     <string name="horizontal_bar_height_landscape">liggande</string>
     <string name="horizontal_bar_height_seekbar">Höjd på horisontella fältet</string>
+    <string name="resizable_vertical_bar">Vertikalt fält med ändringsbar storlek</string>
+    <string name="resizable_vertical_bar_summary">Bredd: %1$s av skärmens längre sida (%2$s)</string>
+    <string name="vertical_bar_width_seekbar">Bredd på vertikala fältet</string>
     <string name="widget_bar">Horisontellt widgetfält</string>
 
     <string name="weather_not_available">N/A</string>

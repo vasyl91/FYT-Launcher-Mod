@@ -375,6 +375,9 @@
     <string name="horizontal_bar_height_portrait">縦向き</string>
     <string name="horizontal_bar_height_landscape">横向き</string>
     <string name="horizontal_bar_height_seekbar">横バーの高さ</string>
+    <string name="resizable_vertical_bar">サイズ変更可能な縦バー</string>
+    <string name="resizable_vertical_bar_summary">幅: 画面の長辺の%1$s（%2$s）</string>
+    <string name="vertical_bar_width_seekbar">縦バーの幅</string>
     <string name="widget_bar">ウィジェット横バー</string>
 
     <string name="weather_not_available">N/A</string>

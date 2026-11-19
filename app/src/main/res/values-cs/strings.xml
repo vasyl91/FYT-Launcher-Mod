@@ -375,6 +375,9 @@
     <string name="horizontal_bar_height_portrait">na výšku</string>
     <string name="horizontal_bar_height_landscape">na šířku</string>
     <string name="horizontal_bar_height_seekbar">Výška vodorovného panelu</string>
+    <string name="resizable_vertical_bar">Svislý panel s měnitelnou velikostí</string>
+    <string name="resizable_vertical_bar_summary">Šířka: %1$s delší strany obrazovky (%2$s)</string>
+    <string name="vertical_bar_width_seekbar">Šířka svislého panelu</string>
     <string name="widget_bar">Vodorovný panel widgetů</string>
 
     <string name="weather_not_available">N/A</string>

@@ -375,6 +375,9 @@
     <string name="horizontal_bar_height_portrait">პორტრეტი</string>
     <string name="horizontal_bar_height_landscape">ლანდშაფტი</string>
     <string name="horizontal_bar_height_seekbar">ჰორიზონტალური ზოლის სიმაღლე</string>
+    <string name="resizable_vertical_bar">ცვალებადი ზომის ვერტიკალური ზოლი</string>
+    <string name="resizable_vertical_bar_summary">სიგანე: ეკრანის უფრო გრძელი გვერდის %1$s (%2$s)</string>
+    <string name="vertical_bar_width_seekbar">ვერტიკალური ზოლის სიგანე</string>
     <string name="widget_bar">ვიჯეტების ჰორიზონტალური ზოლი</string>
 
     <string name="weather_not_available">N/A</string>

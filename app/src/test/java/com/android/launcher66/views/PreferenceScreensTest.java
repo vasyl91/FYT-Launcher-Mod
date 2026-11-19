@@ -64,4 +64,23 @@ public class PreferenceScreensTest {
         }
         assertEquals("directly above the start page", startPage - 1, statusBar);
     }
+
+    @Test
+    public void theWidthOfTheVerticalBarIsSetUnderItsRows() {
+        PreferenceCategory bars = inflate(R.xml.creator_preferences).findPreference("bars_category");
+        assertNotNull(bars);
+        int everyPage = -1;
+        int resizable = -1;
+        int width = -1;
+        for (int i = 0; i < bars.getPreferenceCount(); i++) {
+            String key = bars.getPreference(i).getKey();
+            if ("vertical_bar_every_page".equals(key)) everyPage = i;
+            if ("resizable_vertical_bar".equals(key)) resizable = i;
+            if ("vertical_bar_width".equals(key)) width = i;
+        }
+        assertEquals("the switch under \"on every page\"", everyPage + 1, resizable);
+        assertEquals("the slider under the switch", resizable + 1, width);
+        assertEquals(com.android.launcher66.settings.VerticalBarWidthSeekBarPreference.class,
+                bars.getPreference(width).getClass());
+    }
 }

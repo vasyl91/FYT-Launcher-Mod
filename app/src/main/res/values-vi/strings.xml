@@ -375,6 +375,9 @@
     <string name="horizontal_bar_height_portrait">dọc</string>
     <string name="horizontal_bar_height_landscape">ngang</string>
     <string name="horizontal_bar_height_seekbar">Chiều cao thanh ngang</string>
+    <string name="resizable_vertical_bar">Thanh dọc có thể đổi kích thước</string>
+    <string name="resizable_vertical_bar_summary">Chiều rộng: %1$s của cạnh dài hơn của màn hình (%2$s)</string>
+    <string name="vertical_bar_width_seekbar">Chiều rộng thanh dọc</string>
     <string name="widget_bar">Thanh ngang của widget</string>
 
     <string name="weather_not_available">N/A</string>

@@ -1845,11 +1845,8 @@ public class Workspace extends SmoothPagedView
         hideOverlayHorizontalBar();
     }
 
-    /** Width of the collapsed button (vertical bar only): 7.1 % of the width in landscape. */
+    /** Width of the collapsed button (vertical bar only): the vertical bar's (VerticalBarDimensions). */
     private int getCollapsedBarWidth() {
-        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            return (int) (0.071 * Launcher.screenWidth);
-        }
         return Launcher.calculatedVerticalBarWidth;
     }
 

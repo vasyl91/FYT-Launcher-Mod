@@ -375,6 +375,9 @@
     <string name="horizontal_bar_height_portrait">wima</string>
     <string name="horizontal_bar_height_landscape">mlalo</string>
     <string name="horizontal_bar_height_seekbar">Urefu wa upau mlalo</string>
+    <string name="resizable_vertical_bar">Upau wima unaoweza kubadilishwa ukubwa</string>
+    <string name="resizable_vertical_bar_summary">Upana: %1$s ya ukingo mrefu wa skrini (%2$s)</string>
+    <string name="vertical_bar_width_seekbar">Upana wa upau wima</string>
     <string name="widget_bar">Upau mlalo wa wijeti</string>
 
     <string name="weather_not_available">N/A</string>

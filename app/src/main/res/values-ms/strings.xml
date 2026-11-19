@@ -375,6 +375,9 @@
     <string name="horizontal_bar_height_portrait">potret</string>
     <string name="horizontal_bar_height_landscape">landskap</string>
     <string name="horizontal_bar_height_seekbar">Ketinggian bar mendatar</string>
+    <string name="resizable_vertical_bar">Bar menegak boleh diubah saiz</string>
+    <string name="resizable_vertical_bar_summary">Lebar: %1$s daripada sisi skrin yang lebih panjang (%2$s)</string>
+    <string name="vertical_bar_width_seekbar">Lebar bar menegak</string>
     <string name="widget_bar">Bar mendatar widget</string>
 
     <string name="weather_not_available">N/A</string>

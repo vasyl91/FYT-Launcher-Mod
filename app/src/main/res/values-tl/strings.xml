@@ -375,6 +375,9 @@
     <string name="horizontal_bar_height_portrait">portrait</string>
     <string name="horizontal_bar_height_landscape">landscape</string>
     <string name="horizontal_bar_height_seekbar">Taas ng pahalang na bar</string>
+    <string name="resizable_vertical_bar">Patayong bar na maaaring baguhin ang laki</string>
+    <string name="resizable_vertical_bar_summary">Lapad: %1$s ng mas mahabang gilid ng screen (%2$s)</string>
+    <string name="vertical_bar_width_seekbar">Lapad ng patayong bar</string>
     <string name="widget_bar">Pahalang na bar ng widget</string>
 
     <string name="weather_not_available">N/A</string>

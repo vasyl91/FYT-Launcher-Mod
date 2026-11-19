@@ -375,6 +375,9 @@
     <string name="horizontal_bar_height_portrait">세로</string>
     <string name="horizontal_bar_height_landscape">가로</string>
     <string name="horizontal_bar_height_seekbar">가로 바 높이</string>
+    <string name="resizable_vertical_bar">크기 조절 가능한 세로 바</string>
+    <string name="resizable_vertical_bar_summary">너비: 화면 긴 변의 %1$s(%2$s)</string>
+    <string name="vertical_bar_width_seekbar">세로 바 너비</string>
     <string name="widget_bar">위젯 가로 바</string>
 
     <string name="weather_not_available">N/A</string>

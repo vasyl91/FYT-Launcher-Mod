@@ -375,6 +375,9 @@
     <string name="horizontal_bar_height_portrait">staand</string>
     <string name="horizontal_bar_height_landscape">liggend</string>
     <string name="horizontal_bar_height_seekbar">Hoogte horizontale balk</string>
+    <string name="resizable_vertical_bar">Verticale balk met aanpasbare grootte</string>
+    <string name="resizable_vertical_bar_summary">Breedte: %1$s van de langste rand van het scherm (%2$s)</string>
+    <string name="vertical_bar_width_seekbar">Breedte verticale balk</string>
     <string name="widget_bar">Horizontale widgetbalk</string>
 
     <string name="weather_not_available">N/A</string>

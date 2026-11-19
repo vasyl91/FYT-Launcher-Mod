@@ -184,7 +184,14 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   vertical bar left or right, the corner, the insets) and `S/BarLayouts.of()` (reads the preferences once).
   `L/BarConstraints.apply()` rearranges an inflated layout: the bar to the top, the vertical bar mirrored to
   the right, with no extra XML. It also gives the first page's vertical bar the width the launcher counts
-  with where the portrait layout gives a ratio of its height (D-61).
+  with in place of the layout's share (of the bar's height in portrait, D-61; of the layout's width in
+  landscape, since 2026-11-18).
+- **Width of the vertical bar** (2026-11-18): `S/VerticalBarDimensions` (pure, tested) works out
+  `Launcher.calculatedVerticalBarWidth`, the one width the grid, the panes, the statistics, the creators and
+  the bar itself count with. Without "Resizable vertical bar" (or at the slider's default) it is the old 7.1 %
+  to the pixel; with it, a share of the longer edge (4–10 %, per orientation, `S/VerticalBarWidthSeekBarPreference`).
+  `Launcher.refreshVerticalBarWidth()` reads it again when the launcher is laid out, before it rebuilds after
+  the settings, and when the settings change it. The bar's icons follow its width (`BarCapacity.leftIconSize`).
 - **Content:** `L/LauncherAppBars` holds the apps of both bars. The lists are stored with LitePal:
   `com/android/recycler/AppMultiple` for the horizontal bar, `LeftAppMultiple` for the vertical bar. `L/BarCapacity` and `L/BarRows` handle slots and
   preloading.

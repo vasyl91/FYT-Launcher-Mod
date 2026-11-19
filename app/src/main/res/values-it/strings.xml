@@ -375,6 +375,9 @@
     <string name="horizontal_bar_height_portrait">verticale</string>
     <string name="horizontal_bar_height_landscape">orizzontale</string>
     <string name="horizontal_bar_height_seekbar">Altezza della barra orizzontale</string>
+    <string name="resizable_vertical_bar">Barra verticale ridimensionabile</string>
+    <string name="resizable_vertical_bar_summary">Larghezza: %1$s del lato più lungo dello schermo (%2$s)</string>
+    <string name="vertical_bar_width_seekbar">Larghezza della barra verticale</string>
     <string name="widget_bar">Barra orizzontale dei widget</string>
 
     <string name="weather_not_available">N/A</string>

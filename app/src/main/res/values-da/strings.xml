@@ -375,6 +375,9 @@
     <string name="horizontal_bar_height_portrait">stående</string>
     <string name="horizontal_bar_height_landscape">liggende</string>
     <string name="horizontal_bar_height_seekbar">Højde på vandret bjælke</string>
+    <string name="resizable_vertical_bar">Lodret bjælke med ændrelig størrelse</string>
+    <string name="resizable_vertical_bar_summary">Bredde: %1$s af skærmens længste kant (%2$s)</string>
+    <string name="vertical_bar_width_seekbar">Bredde på lodret bjælke</string>
     <string name="widget_bar">Vandret widgetbjælke</string>
 
     <string name="weather_not_available">N/A</string>

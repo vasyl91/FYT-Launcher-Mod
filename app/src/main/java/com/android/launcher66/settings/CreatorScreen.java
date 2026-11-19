@@ -229,7 +229,8 @@ public class CreatorScreen extends Fragment {
 
         /** The vertical bar's width as a share of the box's: the band keeps it whatever room the creator has. */
         float verticalBarShare() {
-            return rootWidth > 0 ? Math.min(0.5f, verticalBarWidth / (float) rootWidth) : 0.071f;
+            return rootWidth > 0 ? Math.min(0.5f, verticalBarWidth / (float) rootWidth)
+                    : VerticalBarDimensions.DEFAULT_SHARE_LANDSCAPE;
         }
     }
 

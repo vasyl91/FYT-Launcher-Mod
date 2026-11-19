@@ -291,6 +291,17 @@
             android:title="@string/vertical_bar_every_page"
             android:summaryOn="@string/horizontal_bar_every_page_on"
             android:summaryOff="@string/horizontal_bar_every_page_off" />
+        <SwitchPreferenceCompat
+            app:singleLineTitle="false"
+            android:key="resizable_vertical_bar"
+            android:defaultValue="false"
+            android:title="@string/resizable_vertical_bar"
+            android:summaryOn="@string/resizable_vertical_bar_summary" />
+        <!-- Stores its value under vertical_bar_width_port / vertical_bar_width_land
+             (per orientation), never under its own key. -->
+        <com.android.launcher66.settings.VerticalBarWidthSeekBarPreference
+            android:key="vertical_bar_width"
+            android:persistent="false" />
         <Preference
             android:key="choose_vertical_bar_background"
             android:title="@string/vertical_bar_background_preference" />

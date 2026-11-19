@@ -375,6 +375,9 @@
     <string name="horizontal_bar_height_portrait">ແນວຕັ້ງ</string>
     <string name="horizontal_bar_height_landscape">ແນວນອນ</string>
     <string name="horizontal_bar_height_seekbar">ຄວາມສູງແຖບແນວນອນ</string>
+    <string name="resizable_vertical_bar">ແຖບແນວຕັ້ງປັບຂະໜາດໄດ້</string>
+    <string name="resizable_vertical_bar_summary">ຄວາມກວ້າງ: %1$s ຂອງຂອບຍາວຂອງໜ້າຈໍ (%2$s)</string>
+    <string name="vertical_bar_width_seekbar">ຄວາມກວ້າງແຖບແນວຕັ້ງ</string>
     <string name="widget_bar">ແຖບແນວນອນວິດເຈັດ</string>
 
     <string name="weather_not_available">N/A</string>

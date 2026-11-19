@@ -375,6 +375,9 @@
     <string name="horizontal_bar_height_portrait">pionowo</string>
     <string name="horizontal_bar_height_landscape">poziomo</string>
     <string name="horizontal_bar_height_seekbar">Wysokość poziomego paska</string>
+    <string name="resizable_vertical_bar">Regulowany pasek pionowy</string>
+    <string name="resizable_vertical_bar_summary">Szerokość: %1$s dłuższej krawędzi ekranu (%2$s)</string>
+    <string name="vertical_bar_width_seekbar">Szerokość pionowego paska</string>
     <string name="widget_bar">Pasek poziomy z widgetami</string>
 
     <string name="weather_not_available">N/A</string>

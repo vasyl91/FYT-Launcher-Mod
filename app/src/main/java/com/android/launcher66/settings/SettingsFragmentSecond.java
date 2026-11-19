@@ -133,6 +133,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private CustomSwitchPreference widgetBarButtonsBesidePreference;
     private SwitchPreferenceCompat resizableBarPreference;
     private HorizontalBarHeightSeekBarPreference barHeightSeekBar;
+    private SwitchPreferenceCompat resizableVerticalBarPreference;
+    private VerticalBarWidthSeekBarPreference verticalBarWidthSeekBar;
     private Preference margin;
     private EditText marginEditText;
     private SwitchPreferenceCompat userStats;
@@ -382,6 +384,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         autoHideSeekBar = findPreference(Keys.AUTO_HIDE_TIMEOUT);
         resizableBarPreference = findPreference(Keys.RESIZABLE_HORIZONTAL_BAR);
         barHeightSeekBar = findPreference(Keys.HORIZONTAL_BAR_HEIGHT);
+        resizableVerticalBarPreference = findPreference(Keys.RESIZABLE_VERTICAL_BAR);
+        verticalBarWidthSeekBar = findPreference(Keys.VERTICAL_BAR_WIDTH);
 
         Preference verticalBar = findPreference(Keys.VERTICAL_BAR);
         Preference widgetBar = findPreference(Keys.WIDGET_BAR);
@@ -604,6 +608,19 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             barHeightSeekBar.setVisible(resizableBarBool);
             barHeightSeekBarProgress(barHeightSeekBar);
         }
+        if (resizableVerticalBarPreference != null) {
+            resizableVerticalBarPreference.setOnPreferenceClickListener(this);
+            // Formatted right away, as the horizontal bar's: summaryOn holds the raw format until then
+            updateVerticalBarWidthSummary.run();
+        }
+        if (verticalBarWidthSeekBar != null) {
+            verticalBarWidthSeekBar.setOnPreferenceChangeListener((preference, newValue) -> {
+                // Stored by the slider after this returns: the width is worked out again once it is
+                handler.post(this::verticalBarWidthChanged);
+                return true;
+            });
+        }
+        updateVerticalBarWidthRows();
         if (verticalBar != null) {
             verticalBar.setOnPreferenceClickListener(this);
         }
@@ -812,6 +829,11 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 // On or off, the launcher has to rebuild the bar (dynamic height <-> XML height).
                 helpers.setBarSettingsChanged(true);
                 break;
+            case Keys.RESIZABLE_VERTICAL_BAR:
+                // On or off: the old width or the slider's; the page is built again with it
+                updateVerticalBarWidthRows();
+                verticalBarWidthChanged();
+                break;
             case Keys.EDGE_HANDLE_RIGHT:
                 // The handle's window is placed again at the next update; no rebuild of the page
                 helpers.setBarSettingsChanged(true);
@@ -831,6 +853,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 if (verticalEveryPagePreference != null) {
                     verticalEveryPagePreference.setVisible(sharedPrefs.getBoolean(Keys.VERTICAL_BAR, false));
                 }
+                updateVerticalBarWidthRows();
                 helpers.setBarSettingsChanged(true);
                 break;
             case Keys.WIDGET_BAR:
@@ -1133,6 +1156,10 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (barHeightSeekBar != null) {
             barHeightSeekBar.refresh();
         }
+        if (verticalBarWidthSeekBar != null) {
+            verticalBarWidthSeekBar.refresh();
+        }
+        handler.post(updateVerticalBarWidthSummary);
         // Also while the switch is off, so its summary is current when it is turned on.
         handler.post(updateBarHeightSummary);
     }
@@ -1195,6 +1222,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         widgetBarButtonsBesidePreference = null;
         resizableBarPreference = null;
         barHeightSeekBar = null;
+        resizableVerticalBarPreference = null;
+        verticalBarWidthSeekBar = null;
         imm = null;
     }
 
@@ -1452,6 +1481,46 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             return true;
         });
     }
+
+    /**
+     * The rows of the vertical bar's width: the switch with the vertical bar, the slider with the switch too.
+     */
+    private void updateVerticalBarWidthRows() {
+        boolean verticalBarOn = sharedPrefs.getBoolean(Keys.VERTICAL_BAR, false);
+        boolean resizable = sharedPrefs.getBoolean(Keys.RESIZABLE_VERTICAL_BAR, false);
+        if (resizableVerticalBarPreference != null) {
+            resizableVerticalBarPreference.setVisible(verticalBarOn);
+        }
+        if (verticalBarWidthSeekBar != null) {
+            verticalBarWidthSeekBar.setVisible(verticalBarOn && resizable);
+        }
+    }
+
+    /**
+     * The width of the vertical bar changed: the launcher's value is worked out again at once (the creators of
+     * this process count with it), and the launcher builds its pages again when it comes back.
+     */
+    private void verticalBarWidthChanged() {
+        com.android.launcher66.Launcher.refreshVerticalBarWidth(sharedPrefs);
+        helpers.setBarSettingsChanged(true);
+        updateVerticalBarWidthSummary.run();
+    }
+
+    private final Runnable updateVerticalBarWidthSummary = new Runnable() {
+        @Override
+        public void run() {
+            if (resizableVerticalBarPreference == null || !isAdded()) {
+                return;
+            }
+            boolean portrait = HorizontalBarDimensions.isPortrait(requireContext());
+            float share = VerticalBarWidthSeekBarPreference.readShare(sharedPrefs, portrait);
+            resizableVerticalBarPreference.setSummaryOn(getString(R.string.resizable_vertical_bar_summary,
+                    HorizontalBarHeightSeekBarPreference.formatPercent(share),
+                    getString(portrait
+                            ? R.string.horizontal_bar_height_portrait
+                            : R.string.horizontal_bar_height_landscape)));
+        }
+    };
 
     private final Runnable updateBarHeightSummary = new Runnable() {
         @Override

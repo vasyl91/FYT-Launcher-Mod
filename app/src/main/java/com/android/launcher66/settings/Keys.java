@@ -237,6 +237,13 @@ public final class Keys {
     public static final String HORIZONTAL_BAR_HEIGHT = "bottom_bar_height"; 
     public static final String HORIZONTAL_BAR_HEIGHT_PORT = "bottom_bar_height_port";
     public static final String HORIZONTAL_BAR_HEIGHT_LAND = "bottom_bar_height_land";
+    /** "Resizable vertical bar": the width of the vertical bar follows the slider (VerticalBarDimensions). */
+    public static final String RESIZABLE_VERTICAL_BAR = "resizable_vertical_bar";
+    /** The slider's own key; nothing is stored under it, the share goes to the per-orientation keys. */
+    public static final String VERTICAL_BAR_WIDTH = "vertical_bar_width";
+    /** The width of the vertical bar as a share of the screen's longer edge, per orientation. */
+    public static final String VERTICAL_BAR_WIDTH_PORT = "vertical_bar_width_port";
+    public static final String VERTICAL_BAR_WIDTH_LAND = "vertical_bar_width_land";
 
     public static final String PIP_DUAL = "pip_dual";
     public static final String PIP_FIRST = "pip_first";

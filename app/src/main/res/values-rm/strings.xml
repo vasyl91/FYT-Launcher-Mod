@@ -375,6 +375,9 @@
     <string name="horizontal_bar_height_portrait">vertical</string>
     <string name="horizontal_bar_height_landscape">orizontal</string>
     <string name="horizontal_bar_height_seekbar">Autezza da la bara orizontala</string>
+    <string name="resizable_vertical_bar">Bara verticala cun grondezza modifitgabla</string>
+    <string name="resizable_vertical_bar_summary">Ladezza: %1$s da l\'ur pli lunga da l\'visur (%2$s)</string>
+    <string name="vertical_bar_width_seekbar">Ladezza da la bara verticala</string>
     <string name="widget_bar">Bara orizontala dals widgets</string>
 
     <string name="weather_not_available">N/A</string>

@@ -375,6 +375,9 @@
     <string name="horizontal_bar_height_portrait">портрет</string>
     <string name="horizontal_bar_height_landscape">пейзаж</string>
     <string name="horizontal_bar_height_seekbar">Височина на хоризонталната лента</string>
+    <string name="resizable_vertical_bar">Вертикална лента с променлив размер</string>
+    <string name="resizable_vertical_bar_summary">Ширина: %1$s от по-дългата страна на екрана (%2$s)</string>
+    <string name="vertical_bar_width_seekbar">Ширина на вертикалната лента</string>
     <string name="widget_bar">Хоризонтална лента на приспособленията</string>
 
     <string name="weather_not_available">N/A</string>

@@ -18,12 +18,13 @@ import androidx.constraintlayout.widget.Guideline;
  * is moved to the other edge by itself; the content is mirrored. At the top the content is mirrored
  * vertically, on the right horizontally; the bar's own arrangement from left to right is left alone.
  *
- * <p>The percentages and ratios of the XML are not touched, with one exception: the vertical bar of a portrait
- * layout gives its width as a share of its own height, which is not the width the rest of the launcher counts
- * with (the grid, the panels, the statistics, the creator: {@code Launcher.calculatedVerticalBarWidth}). Where
- * the caller passes that width, the bar takes it ({@link #widthReplacesRatio}), so that an element the creator
- * puts at the margin from the bar lies at that margin on the screen too. In landscape the layout's percentage
- * gives the same width and is left as it is.
+ * <p>The percentages and ratios of the XML are not touched, with one exception: the width of the vertical bar.
+ * The layout gives it as a share of the bar's own height (portrait) or of the layout's width (landscape), which
+ * is not the width the rest of the launcher counts with (the grid, the panels, the statistics, the creator:
+ * {@code Launcher.calculatedVerticalBarWidth}, which "Resizable vertical bar" changes). Where the caller passes
+ * that width, the bar takes it ({@link #widthReplacesLayout}), so that an element the creator puts at the margin
+ * from the bar lies at that margin on the screen too. Without "Resizable vertical bar" the landscape share gives
+ * the same width to the pixel on a layout as wide as the screen.
  */
 public final class BarConstraints {
 
@@ -85,9 +86,11 @@ public final class BarConstraints {
                 if (verticalFullHeight) {
                     fillVerticalBar(lp, top);
                 }
-                if (widthReplacesRatio(lp.dimensionRatio, verticalWidthPx)) {
-                    // Its width was a share of its height: the width the rest of the launcher counts with
+                if (widthReplacesLayout(lp.dimensionRatio, lp.matchConstraintPercentWidth, verticalWidthPx)) {
+                    // Its width was a share of its height or of the layout: the width the launcher counts with
                     lp.dimensionRatio = null;
+                    lp.matchConstraintDefaultWidth = ConstraintLayout.LayoutParams.MATCH_CONSTRAINT_SPREAD;
+                    lp.matchConstraintPercentWidth = 1f;
                     lp.width = verticalWidthPx;
                 }
             }
@@ -116,14 +119,18 @@ public final class BarConstraints {
     }
 
     /**
-     * Whether the vertical bar takes the given width instead of the layout's ratio: when the layout gives its
-     * width as a ratio (portrait) and a width is given. A width in percent of the layout (landscape) stays.
+     * Whether the vertical bar takes the given width instead of the layout's: when the layout gives its width as
+     * a ratio (portrait) or as a share of the layout (landscape) and a width is given.
      *
      * @param dimensionRatio the bar's ratio in the layout, null without one
+     * @param percentWidth   the bar's share of the layout's width, 1 without one (the default of the parameters)
      * @param widthPx        the width the launcher counts with, 0 to keep the layout's
      */
-    static boolean widthReplacesRatio(String dimensionRatio, int widthPx) {
-        return dimensionRatio != null && !dimensionRatio.isEmpty() && widthPx > 0;
+    static boolean widthReplacesLayout(String dimensionRatio, float percentWidth, int widthPx) {
+        if (widthPx <= 0) {
+            return false;
+        }
+        return (dimensionRatio != null && !dimensionRatio.isEmpty()) || (percentWidth > 0f && percentWidth < 1f);
     }
 
     /** The bar itself, or a view that hangs on the edge of the bar (not one that ends at its edge). */

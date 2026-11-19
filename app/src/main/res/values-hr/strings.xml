@@ -375,6 +375,9 @@
     <string name="horizontal_bar_height_portrait">uspravno</string>
     <string name="horizontal_bar_height_landscape">vodoravno</string>
     <string name="horizontal_bar_height_seekbar">Visina vodoravne trake</string>
+    <string name="resizable_vertical_bar">Okomita traka promjenjive veličine</string>
+    <string name="resizable_vertical_bar_summary">Širina: %1$s duljeg ruba zaslona (%2$s)</string>
+    <string name="vertical_bar_width_seekbar">Širina okomite trake</string>
     <string name="widget_bar">Vodoravna traka widgeta</string>
 
     <string name="weather_not_available">N/A</string>

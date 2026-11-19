@@ -375,6 +375,9 @@
     <string name="horizontal_bar_height_portrait">Hochformat</string>
     <string name="horizontal_bar_height_landscape">Querformat</string>
     <string name="horizontal_bar_height_seekbar">Höhe der horizontalen Leiste</string>
+    <string name="resizable_vertical_bar">Vertikale Leiste in der Größe anpassbar</string>
+    <string name="resizable_vertical_bar_summary">Breite: %1$s der längeren Bildschirmkante (%2$s)</string>
+    <string name="vertical_bar_width_seekbar">Breite der vertikalen Leiste</string>
     <string name="widget_bar">Horizontale Widget-Leiste</string>
 
     <string name="weather_not_available">N/A</string>

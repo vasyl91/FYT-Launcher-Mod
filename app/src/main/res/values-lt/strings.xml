@@ -375,6 +375,9 @@
     <string name="horizontal_bar_height_portrait">stačias</string>
     <string name="horizontal_bar_height_landscape">gulsčias</string>
     <string name="horizontal_bar_height_seekbar">Horizontaliosios juostos aukštis</string>
+    <string name="resizable_vertical_bar">Keičiamo dydžio vertikalioji juosta</string>
+    <string name="resizable_vertical_bar_summary">Plotis: %1$s ilgesniojo ekrano krašto (%2$s)</string>
+    <string name="vertical_bar_width_seekbar">Vertikaliosios juostos plotis</string>
     <string name="widget_bar">Valdiklių horizontalioji juosta</string>
 
     <string name="weather_not_available">N/A</string>

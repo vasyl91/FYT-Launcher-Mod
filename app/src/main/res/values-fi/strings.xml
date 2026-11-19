@@ -375,6 +375,9 @@
     <string name="horizontal_bar_height_portrait">pysty</string>
     <string name="horizontal_bar_height_landscape">vaaka</string>
     <string name="horizontal_bar_height_seekbar">Vaakapalkin korkeus</string>
+    <string name="resizable_vertical_bar">Kokoa muutettava pystypalkki</string>
+    <string name="resizable_vertical_bar_summary">Leveys: %1$s näytön pidemmästä sivusta (%2$s)</string>
+    <string name="vertical_bar_width_seekbar">Pystypalkin leveys</string>
     <string name="widget_bar">Widgetien vaakapalkki</string>
 
     <string name="weather_not_available">N/A</string>

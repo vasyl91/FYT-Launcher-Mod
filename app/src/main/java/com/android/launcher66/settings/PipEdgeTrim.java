@@ -15,7 +15,7 @@ public final class PipEdgeTrim {
     /** Bound that never trims. */
     public static final int NO_LIMIT = Integer.MAX_VALUE;
 
-    private static final float VERTICAL_BAR_FRACTION = 0.071f;
+    private static final float VERTICAL_BAR_FRACTION = (float) VerticalBarDimensions.LEGACY_SHARE;
 
     private PipEdgeTrim() {
     }
@@ -55,7 +55,8 @@ public final class PipEdgeTrim {
     }
 
     /**
-     * Width of the vertical bar as its layouts draw it. Landscape: 7.1 % of the box width
+     * Width of the vertical bar as its layouts draw it without "Resizable vertical bar", for where the launcher
+     * has not worked out {@code Launcher.calculatedVerticalBarWidth} yet. Landscape: 7.1 % of the box width
      * (layout_constraintWidth_percent). Portrait: the XML uses "W,0.071", i.e. 7.1 % of the bar's
      * HEIGHT, which runs from the top of the box to the horizontal bar.
      */

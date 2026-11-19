@@ -375,6 +375,9 @@
     <string name="horizontal_bar_height_portrait">кніжная</string>
     <string name="horizontal_bar_height_landscape">альбомная</string>
     <string name="horizontal_bar_height_seekbar">Вышыня гарызантальнай панэлі</string>
+    <string name="resizable_vertical_bar">Вертыкальная панэль са зменным памерам</string>
+    <string name="resizable_vertical_bar_summary">Шырыня: %1$s даўжэйшага боку экрана (%2$s)</string>
+    <string name="vertical_bar_width_seekbar">Шырыня вертыкальнай панэлі</string>
     <string name="widget_bar">Гарызантальная панэль віджэтаў</string>
 
     <string name="weather_not_available">N/A</string>
