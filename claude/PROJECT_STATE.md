@@ -3,8 +3,9 @@
 **Snapshot: 2026-11-19, `testBranch` after round 22 (`62fc51126` … `5a6272396`, then the documentation
 commit). Round 22 answers the owner's log of 2026-11-16 18:42 on the 7862 and eight guidelines of 2026-11-18.
 CI was green for every code push checked when this was written; the round's last commits were pushed one by
-one after it. The owner, 2026-11-19 on the 7862: every fix of round 22 works except a jump of the second settings
-screen scrolled up after a return, fixed in `16f256ee8` (KI-40). `KNOWN_ISSUES.md` is one current list since
+one after it. The owner, 2026-11-19 (7862 and A55): every fix of rounds 15–22 works, the jump of the second settings
+screen after a return too (`16f256ee8`). After that test, widgets whose configuration screen is not exported
+can be added (`660b032e6`, KI-41, not yet tested). `KNOWN_ISSUES.md` is one current list since
 2026-11-18.** This file is the authoritative entry point for a new session. Update it at the
 end of every round (see `CLAUDE.md`).
 
@@ -36,13 +37,13 @@ What the owner wants from it, as the briefs and chat reports show [H]:
 | Next version | 1.2.2. README, the updater and `release-assets.yml` already describe `system_release_1.2.2.apk` [V]. **No release date is recorded** [U]. |
 | Development phase | Short feature and fix rounds on `testBranch`, driven by device logs (Opus brief → Sonnet commits → owner test). 33 briefs since 2026-10-27, all implemented [V]. |
 | Active brief | **None.** `prompts/active/` is empty [V]. |
-| Last code change | **Round 22, 2026-11-18/19:** Robolectric for tests of views (D-68); the bar's music buttons, title and artist bound while its window stays (KI-35); the bar's title and artist sized the same with "Resizable horizontal bar" off; the guides below the app bar and the settings list keeping its place (D-73); "Transparent status bar" moved (D-72); the statistics window in landscape where the creator puts it, and on the home screen under the bars and over the panes (D-69); the vertical bar's width (D-70) and the number of icons on each bar (D-71) may be set; 10 code commits `62fc51126` … `5a6272396` [V]. **The owner, 2026-11-19 on the 7862 [H]: all work**, except a jump of the second settings screen scrolled up after a return; `16f256ee8` sizes the settings rows when they are bound. **That one waits for the owner's test** (KI-40). Report: `reports/implementation_report_2026-11-15.md`, section "Round 22". |
-| Round 21 | **2026-11-16:** the statistics window laid out again a few times after the alpha limit reaches 1 (`ef3d1c746`, KI-34). **Waiting for the owner's device test.** |
-| Round 16 | **2026-11-16:** a widget that cannot be dropped stays where it was, icons dropped from the list of apps survive a reload (and are mended where an app renamed its activity), a widget that cannot be shown shows its preview and is told to update where the launcher may (D-66); 5 code commits `e6349acf0` … `a654c0d60` [V]. **Icons confirmed by the owner [H]; the rest waits** (KI-36). Report: `reports/implementation_report_2026-11-15.md`, section "Round 16". |
+| Last code change | **Round 22, 2026-11-18/19:** Robolectric for tests of views (D-68); the bar's music buttons, title and artist bound while its window stays (KI-35); the bar's title and artist sized the same with "Resizable horizontal bar" off; the guides below the app bar and the settings list keeping its place (D-73); "Transparent status bar" moved (D-72); the statistics window in landscape where the creator puts it, and on the home screen under the bars and over the panes (D-69); the vertical bar's width (D-70) and the number of icons on each bar (D-71) may be set; 10 code commits `62fc51126` … `5a6272396` [V]. **The owner, 2026-11-19 on the 7862 [H]: all work**, except a jump of the second settings screen scrolled up after a return; `16f256ee8` sizes the settings rows when they are bound. **The owner confirmed that fix too (2026-11-19).** Then `660b032e6`: a widget's configuration opened by the system (KI-41), waiting for the owner's test. Report: `reports/implementation_report_2026-11-15.md`, section "Round 22". |
+| Round 21 | **2026-11-16:** the statistics window laid out again a few times after the alpha limit reaches 1 (`ef3d1c746`). **The owner confirmed it on 2026-11-19 [H].** |
+| Round 16 | **2026-11-16:** a widget that cannot be dropped stays where it was, icons dropped from the list of apps survive a reload (and are mended where an app renamed its activity), a widget that cannot be shown shows its preview and is told to update where the launcher may (D-66); 5 code commits `e6349acf0` … `a654c0d60` [V]. **The owner confirmed it on 2026-11-19 [H]**. Report: `reports/implementation_report_2026-11-15.md`, section "Round 16". |
 | Round 20 | **2026-11-16:** no item of a page outside its visible part - stale temporary cells, the padding of the first rows, the drop's page, the size of an added widget, the creator's elements kept in the page, the check of every page after each drag and resize (`PageFit`); 5 code commits `91db3326a` … `36cf3e7c3` [V]. **The owner, 2026-11-16 17:26 [H]: "it looks like it works".** Report: section "Round 20". |
-| Round 19 | **2026-11-16:** the bars on every page stand still - one window on every page, the first one too, built with the page, kept while an app is in front, over the PiP panes, nothing swapped while the pages move (D-67, after `88bacd560` did not help); 3 code commits `dffdd806b` … `33edcda65` [V], then 19b and 19c (`d939d294a`, `5199b1798`, `69353b5ca`). **The owner confirmed it on the A55 [H]; the 7862's swipes are not on record** (KI-38). Report: `reports/implementation_report_2026-11-15.md`, section "Round 19". |
-| Round 15 | **2026-11-15/16:** after the owner's test of round 14 on the A55 - icons and widgets under the statistics window (D-65), an overlap guard after loads (KI-37), the bars' windows as panels of the launcher's window under every floating button (D-64), access to all files asked for the wallpaper (D-60); 8 code commits `45673d58a` … `932d61d1c` [V]. **Waiting for the owner's device test** (KI-36). Report: `reports/implementation_report_2026-11-15.md`, section "Round 15". |
-| Round 14 | **2026-11-15:** the fixes from the owner's test of round 13, the open items of `KNOWN_ISSUES.md` (D-62), and six items from a second test on the 7862; 29 code commits `6fbd5605b` … `c7ed19880`, one of them a revert, done in one session from a plan agreed with the owner [V]. **Waiting for the owner's device test** (KI-34). Report: `reports/implementation_report_2026-11-15.md`. |
+| Round 19 | **2026-11-16:** the bars on every page stand still - one window on every page, the first one too, built with the page, kept while an app is in front, over the PiP panes, nothing swapped while the pages move (D-67, after `88bacd560` did not help); 3 code commits `dffdd806b` … `33edcda65` [V], then 19b and 19c (`d939d294a`, `5199b1798`, `69353b5ca`). **The owner confirmed it on the A55 and the 7862 (2026-11-19) [H].** Report: `reports/implementation_report_2026-11-15.md`, section "Round 19". |
+| Round 15 | **2026-11-15/16:** after the owner's test of round 14 on the A55 - icons and widgets under the statistics window (D-65), an overlap guard after loads (KI-37), the bars' windows as panels of the launcher's window under every floating button (D-64), access to all files asked for the wallpaper (D-60); 8 code commits `45673d58a` … `932d61d1c` [V]. **The owner confirmed it on 2026-11-19 [H].** Report: `reports/implementation_report_2026-11-15.md`, section "Round 15". |
+| Round 14 | **2026-11-15:** the fixes from the owner's test of round 13, the open items of `KNOWN_ISSUES.md` (D-62), and six items from a second test on the 7862; 29 code commits `6fbd5605b` … `c7ed19880`, one of them a revert, done in one session from a plan agreed with the owner [V]. **Tested by the owner on 2026-11-15; what was left, confirmed on 2026-11-19 [H].** Report: `reports/implementation_report_2026-11-15.md`. |
 | Before that | Round 13 (the owner's 19 tasks), 2026-11-12/13: `4e73d1178` … `ca27a7637` [V]. The owner tested it on 2026-11-15: 12 of 19 work, the rest went into round 14 [H]. Round 12 was confirmed on 2026-11-12 [H]. |
 | Since then | Documentation and repository layout only: `claude/` created (`a30c9a72`), reference material moved to `archive/` (`8bfc5a8d`), 15 chat reports added (`754c8258`), `android-36.jar` moved back (`ee8e4f91`), the folder unified as `claude/` (`e3ba694e`) [V]. |
 | Open GitHub issues | 0 [V] (2026-11-10). |
@@ -87,8 +88,8 @@ All features below are implemented [V]. Details are in `ARCHITECTURE.md`; user-f
 | Round 13: a colour of one's own for backgrounds, any text colour, backgrounds turned with the bar, the stats window's background | owner tested 2026-11-15; the colour tile and the frame redone in round 14 [H] | D-54, D-55. |
 | Round 13: the wallpaper read from one source with fallbacks | needed fixes (2026-11-15); redone in round 14, **no device result** | D-53, D-58 … D-60. |
 | Round 13: fixes (bar windows' side, title scrolling, the leak of the bar window, radio tap without a radio, cell view ids, start page, stats over another launcher, settings texts) | owner tested 2026-11-15 [H] | KI-30 closed. |
-| Round 14: one bar while the pages move, the bars in the overview, the vertical bar at the edge and as wide as counted, play/pause, "Unknown" titles, the listener after a reconnect, the stats window's alpha, a weather key of one's own, the hidden-API report | owner tested 2026-11-15 on the A55 [H]; the rest went into round 15 | KI-34, KI-35, D-61, D-63. |
-| Round 22: the vertical bar's width, the number of icons on each bar, the settings list's place, the statistics under the bars | owner confirmed 2026-11-19 on the 7862 [H]; the settings jump fixed after it | D-69 … D-74, KI-40. |
+| Round 14: one bar while the pages move, the bars in the overview, the vertical bar at the edge and as wide as counted, play/pause, "Unknown" titles, the listener after a reconnect, the stats window's alpha, a weather key of one's own, the hidden-API report | owner tested 2026-11-15 on the A55 [H]; the rest went into rounds 15–22, confirmed 2026-11-19 | D-61, D-63. |
+| Round 22: the vertical bar's width, the number of icons on each bar, the settings list's place, the statistics under the bars | owner confirmed 2026-11-19 [H], the settings jump fixed after it confirmed too | D-69 … D-74. |
 
 Not implemented:
 
@@ -129,10 +130,9 @@ JUnit 5 JVM tests: 110 files, 1011 tests, no instrumented tests. CI runs on GitH
 
 ## Active tasks
 
-**The owner's device review of round 15** (KI-36), and of what round 14 left to watch (KI-34, KI-35). Round
-15 is implemented, builds and passes its tests; none of it has been seen on a device. Round 14: `reports/implementation_report_2026-11-15.md` lists what to check and the
-choices made without the owner (D-63). The bar's music buttons after an app (KI-35) have no known cause;
-the round adds the log lines that should show it. The next round records the result.
+**The owner's test of `660b032e6`** (KI-41): a widget whose configuration screen its app does not export, e.g.
+the Google app's Stocks widget, dropped from the list of widgets. Everything before it, rounds 15–22, is
+confirmed by the owner (2026-11-19). KI-37 waits for a log of a next widget over icons, if one happens.
 
 ## Blocked or waiting
 
@@ -149,8 +149,8 @@ in mind before a release, from `KNOWN_ISSUES.md`:
 1. The Baseline Profile is probably stale (KI-04).
 2. Something does not work on the tester's 7870, and it is not yet known what (KI-29).
 3. Several earlier changes have no device confirmation on record (KI-25).
-4. **Round 19's swipes on the 7862 have no result on record (KI-38); round 22 is confirmed there except
-   the settings jump fixed after it (KI-40).**
+4. **Rounds 15–22 are confirmed by the owner (2026-11-19).** Waiting: the widget configuration fix (KI-41)
+   and a log of the next widget over icons, if it happens again (KI-37).
 
 The hardcoded OpenWeather key is **not** an open issue: the owner decided to keep it (D-26).
 

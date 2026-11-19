@@ -381,3 +381,25 @@ below moved down. They are sized when bound now (`SettingsRowSizing`); only the 
 after the layout, never a row's height. `SettingsRowHeightViewTest` (Robolectric, 2000 × 1200) goes the owner's way
 and failed without the fix on the radio widget's row. KI-35 is closed by the owner's result. Not tested on a device.
 
+**The owner's result, 2026-11-19 (log 13:16, A55) [H]:** every item of rounds 15–22 works, the settings jump fix
+too. Two questions came with it:
+- *"A widget that cannot be dropped, the widget preview: is that the toast 'App isn't installed' where the list
+  offers widgets that cannot be added?"* No: those two items of round 16 were a widget dropped after a change of
+  the grid at a size smaller than its minimum (`DropSpan`), and Allegro's widget that failed to show its content
+  (`getErrorView`, its preview). The toast is another fault, found in this log [V]: the Google app's Stocks widget
+  has a configuration screen its app does not export, the launcher started it with an intent of its own, the
+  system refused, and `Utilities.startActivityForResultSafely()` showed the message of an app that is not
+  installed; the bound id was left unused.
+- *The widget over icons after a change of the grid (KI-37):* the log has two changes of the grid and no
+  `Item out of place` line after either load, so nothing shared a cell.
+
+| Commit | Subject |
+|---|---|
+| `660b032e6` | Widgets: the configuration of a widget is opened by the system |
+
+The configuration is opened through `AppWidgetHost.startAppWidgetConfigureActivityForResult()`, with the background
+start option from Android 14 (`WidgetConfigure`); if it still fails, a widget with optional configuration is added
+without it, any other is not added, its id is freed and a new message says why. Seen in passing, not changed: the
+wallpaper picker's two fallbacks (`WallpaperPickerLauncher`, `LauncherWallpaperPicker`) show the literal text
+"activity_not_found" instead of the string. Not tested on a device.
+

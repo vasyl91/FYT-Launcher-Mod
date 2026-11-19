@@ -1,6 +1,6 @@
 # Known issues
 
-As of 2026-11-19 (`testBranch` after round 22, `62fc51126` … `5a6272396`, and `16f256ee8` after the owner's test). One list of what is open today,
+As of 2026-11-19 (`testBranch` after round 22 and the owner's tests of that day: `16f256ee8`, `660b032e6`). One list of what is open today,
 rewritten on 2026-11-18 at the owner's request. What was fixed or closed has been taken out; it stays in git
 and in the reports (`reports/`, `chat_archive/`). Sources: the code, git, CI, the briefs, the chat reports and
 the owner's results.
@@ -31,7 +31,7 @@ file and named in the round's report.
 | KI-16 | A standard ("phone") 1.2.1 cannot update itself | limit | accepted | — |
 | KI-17 | Lint is weak in this project | problem | open | — |
 | KI-18 | Framework warnings in logs | limit | accepted (D-15) | — |
-| KI-21 | The stats window on the 7862 while pages scroll | limit | accepted, see round 22 | the owner's look after round 22 |
+| KI-21 | The stats window on the 7862 while pages scroll | limit | accepted | — |
 | KI-22 | Two side effects of the pinned-PiP keyboard fix | unverified | open | a check on the 7862 |
 | KI-23 | Translations are machine-written and unreviewed | problem | partial (a machine check) | native speakers |
 | KI-25 | Older changes with no device confirmation on record | unverified | open | the owner's result for each |
@@ -41,11 +41,8 @@ file and named in the round's report.
 | KI-29 | "Changes do not work on the 7870" | unverified | open | the tester's reply |
 | KI-31 | StrictMode reports inside the framework (A55 log of 2026-11-09) | problem | partial | — |
 | KI-33 | Some settings of the home screen only with the user layout on | problem | open | the owner's choice |
-| KI-34 | The statistics window's full alpha with Shizuku | unverified | watching | the owner's test of rounds 21 and 22 |
-| KI-36 | Rounds 15–16 without a full device result | unverified | watching | the owner's test of each item |
-| KI-37 | A widget lay over icons after a change of the grid | unverified | watching | a log with `Items sharing cells` |
-| KI-38 | The bars on every page on the 7862 after round 19 | unverified | watching | the owner's test on the 7862 |
-| KI-40 | Round 22: the jump of the second settings screen scrolled up after a return | unverified | watching | the owner's test of `16f256ee8` |
+| KI-37 | A widget lay over icons after a change of the grid | unverified | watching | a log with `Item out of place` |
+| KI-41 | Widgets whose configuration screen is not exported could not be added | unverified | watching | the owner's test of `660b032e6` |
 
 ## Problems
 
@@ -143,7 +140,8 @@ have no effect (D-15).
 Three fixes in 2026-11 did not help; direct surface moves (`3a0217ea`) were reverted as worse (`b38f1286`, D-24),
 and a picture of the window (`5392230c2`) made the window and the floating buttons vanish (reverted,
 `fe72e5a6f`). Not to be retried that way. Since round 22 the window on the home screen is a sub-window of the
-launcher's window under the bars (D-69); how it moves on the 7862 now is not known [U].
+launcher's window under the bars (D-69); the owner, 2026-11-19 on the 7862: it moves under the vertical bar
+during a swipe as it should [H].
 
 ### KI-27 Limits of the home-screen guard
 An app `com.syu.ms` noted and the user opens within 3 s of the wake is sent back once; apps on FYT SystemUI's
@@ -184,45 +182,20 @@ The tester did not say which (2026-11-12) [H]. Open questions for the 7870's log
 current values when the launcher registers; does `com.syu.media` give up its channel when it pauses for a pane
 app; Bluetooth times in milliseconds (KI-26).
 
-### KI-34 The statistics window's full alpha with Shizuku
-The owner, 2026-11-16 17:26 [H]: after a start the window lacked its full alpha on the A55. Round 21
-(`ef3d1c746`) lays it out again 0.3, 1, 3 and 10 s after the limit reaches 1, and with every check of the minute.
-Round 22 (`cbd7c10cf`) makes the window on the home screen a sub-window of the launcher's window, which the
-system's limit for overlays does not touch; over an app it stays an overlay and the series applies. Not tested
-on a device.
-
-### KI-36 Rounds 15–16 without a full device result
-Rounds 15 and 16 build and pass the tests [V]. The owner confirmed the icons (round 17) and nothing contradicting
-the rest [H], but not each item: an icon and a widget under the statistics window (D-65); the overlap guard after
-loads; the floating buttons over the bars (D-64); access to all files asked through Shizuku at the start (the
-owner confirmed the wallpaper with the access given by hand); a widget dropped where it does not fit
-(`DropSpan`); the widget preview and the update sent where the launcher may (D-66).
-
 ### KI-37 A widget lay over icons after a change of the grid
 The owner, 2026-11-15 [H]. `GridOverflowPropertyTest` finds no overlap in 3000 random screens [V]; the way it
-happened is unknown [U]. Since `e0564df9a` a page moves an item that shares a cell (`CellOverlap`) and logs
-`Items sharing cells on page …` with both.
+happened is unknown [U]. Every page moves an item that shares a cell or lies outside its grid after every load,
+drop and resize (`CellOverlap`, `PageFit`) and logs `Item out of place on page …` with the item and the way (the
+line was `Items sharing cells` before round 20). **The owner's log of 2026-11-19 13:16 [V]:** two changes of the
+grid (3×8 → 7×12 and 7×12 → 5×8, the second giving 4 icons of the first page a new cell) and no such line, so
+nothing shared a cell after either load.
 
-### KI-38 The bars on every page on the 7862 after round 19
-Round 19 (D-67) made a bar on every page its window on every page, so nothing is swapped while the pages move;
-19b and 19c fixed what the owner saw on the A55, and the owner confirmed them there [H]. The owner's log of the
-7862 (2026-11-16 18:42) reported the statistics window and the music buttons, not the doubled bars, but no result
-of the swipes on the 7862 is on record [U]: swipes at once after a start and after a return from an app, the
-overview, a drag, a folder, all apps, the panes passing under the vertical bar.
+### KI-41 Widgets whose configuration screen is not exported could not be added
+The owner, 2026-11-19 on the A55 [H]: the list of widgets offers widgets that cannot be added. The log of 13:17:02
+[V]: the Google app's Stocks widget has a configuration screen its app does not export; the launcher started it
+with an intent of its own, the system refused it ("Permission Denial"), the generic "App isn't installed" was
+shown and the bound widget id was left unused. `660b032e6` opens the configuration through the system for the
+widget's host (`AppWidgetHost.startAppWidgetConfigureActivityForResult`, `WidgetConfigure`); if it still cannot
+be opened, a widget with optional configuration is added without it and any other is not added, with a message
+that says so. Not tested on a device.
 
-### KI-40 Round 22: the jump of the second settings screen scrolled up after a return
-**The owner, 2026-11-19 on the 7862 [H]:** every fix of round 22 works (`62fc51126` … `5a6272396`: the statistics
-under the bars, the bar's music buttons, title and artist, which closes KI-35, the vertical bar's width, the
-number of icons, the settings list's place, the guides, the moved switch, the bar's title and artist, the
-statistics in landscape), except one: the second screen of the settings jumped while it was scrolled up after a
-return, e.g. from the Canbus guide. The log of 09:40 shows only the screens' changes.
-
-**Cause [V]:** the rows of the PiPs, the dual PiP, the widgets and the restart buttons sized their buttons one post
-after they were bound. Back at its remembered place, the screen lay below rows never bound; scrolling up, each came
-in at the top and grew a frame later, pushing the list down. `16f256ee8` sizes them when they are bound
-(`SettingsRowSizing`); `SettingsRowHeightViewTest` goes the owner's way and fails without it. Not tested on a
-device.
-
-Still to look at from round 22 (no report against them): the type of the bars' windows the system took
-(`BarWindows` in the log), the statistics' alpha with Shizuku (KI-34), the vertical bar's room in the settings
-against the launcher's, which may differ by one.
