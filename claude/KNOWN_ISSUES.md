@@ -1,6 +1,6 @@
 # Known issues
 
-As of 2026-11-19 (`testBranch` after round 22, `62fc51126` … `5a6272396`). One list of what is open today,
+As of 2026-11-19 (`testBranch` after round 22, `62fc51126` … `5a6272396`, and `16f256ee8` after the owner's test). One list of what is open today,
 rewritten on 2026-11-18 at the owner's request. What was fixed or closed has been taken out; it stays in git
 and in the reports (`reports/`, `chat_archive/`). Sources: the code, git, CI, the briefs, the chat reports and
 the owner's results.
@@ -42,11 +42,10 @@ file and named in the round's report.
 | KI-31 | StrictMode reports inside the framework (A55 log of 2026-11-09) | problem | partial | — |
 | KI-33 | Some settings of the home screen only with the user layout on | problem | open | the owner's choice |
 | KI-34 | The statistics window's full alpha with Shizuku | unverified | watching | the owner's test of rounds 21 and 22 |
-| KI-35 | The bar's music buttons, title and artist after an app was opened | unverified | watching | the owner's test of round 22 on the 7862 |
 | KI-36 | Rounds 15–16 without a full device result | unverified | watching | the owner's test of each item |
 | KI-37 | A widget lay over icons after a change of the grid | unverified | watching | a log with `Items sharing cells` |
 | KI-38 | The bars on every page on the 7862 after round 19 | unverified | watching | the owner's test on the 7862 |
-| KI-40 | Round 22 has no device result | unverified | watching | the owner's test of each item |
+| KI-40 | Round 22: the jump of the second settings screen scrolled up after a return | unverified | watching | the owner's test of `16f256ee8` |
 
 ## Problems
 
@@ -192,14 +191,6 @@ Round 22 (`cbd7c10cf`) makes the window on the home screen a sub-window of the l
 system's limit for overlays does not touch; over an app it stays an overlay and the series applies. Not tested
 on a device.
 
-### KI-35 The bar's music buttons, title and artist after an app was opened
-Seen on the 7862 (the owner, 2026-11-15 and 2026-11-16 18:42) [H]: after an app was opened and closed the buttons
-of the horizontal bar's music widget did nothing and its title and artist stayed. Cause found [V]:
-`Launcher.cleanWidgetBar()` let go of the bar's views at every app start (icons, the bar's list, a widget, the
-music widget), and since round 19 the window of a bar on every page stays, so nothing bound them again. Round 22
-(`bb7caf843`, `BarViews.release`) keeps them bound while the window stays. The weather of the bar was bound the
-same way; the date updates itself [A]. Not tested on a device.
-
 ### KI-36 Rounds 15–16 without a full device result
 Rounds 15 and 16 build and pass the tests [V]. The owner confirmed the icons (round 17) and nothing contradicting
 the rest [H], but not each item: an icon and a widget under the statistics window (D-65); the overlap guard after
@@ -219,21 +210,19 @@ Round 19 (D-67) made a bar on every page its window on every page, so nothing is
 of the swipes on the 7862 is on record [U]: swipes at once after a start and after a return from an app, the
 overview, a drag, a folder, all apps, the panes passing under the vertical bar.
 
-### KI-40 Round 22 has no device result
-Commits `62fc51126` … `5a6272396` (2026-11-18/19) build and pass the tests, Robolectric included, CI green
-for those pushed [V]; none has run on a device. What to look at (report `reports/implementation_report_2026-11-15.md`,
-section "Round 22"):
-- the statistics window on the home screen under the vertical bar and over the PiPs while the pages move, at
-  full alpha (D-69); the window type of the bars on every page is a hidden one, and the log says which layer
-  the system took (`BarWindows`) [A whether Android 10 and 16 accept it];
-- the bar's music buttons, title, artist and weather after an app (KI-35);
-- the title and artist of the bar with "Resizable horizontal bar" off, the weather hidden (A55);
-- the guides below the app bar; "Transparent status bar" in "Home screen layout";
-- the statistics window in landscape where the creator puts it (A55);
-- the settings list's place after ADJUST, the Canbus guide, the Spotify sign-in, the wallpaper picker, the
-  device settings; at the top after screen 1 ↔ 2 and after a new opening;
-- the vertical bar's width (D-70): the bar, its window, its icons, the grid beside it, the PiPs and widgets at
-  the margin, the creator; in landscape the bar now takes the launcher's width instead of its 7.1 % share (equal
-  on the 7862);
-- the number of icons on each bar (D-71): the sliders' ends after each related option; the settings count the
-  vertical bar's room from the geometry and the launcher from what it measures, which may differ by one [A].
+### KI-40 Round 22: the jump of the second settings screen scrolled up after a return
+**The owner, 2026-11-19 on the 7862 [H]:** every fix of round 22 works (`62fc51126` … `5a6272396`: the statistics
+under the bars, the bar's music buttons, title and artist, which closes KI-35, the vertical bar's width, the
+number of icons, the settings list's place, the guides, the moved switch, the bar's title and artist, the
+statistics in landscape), except one: the second screen of the settings jumped while it was scrolled up after a
+return, e.g. from the Canbus guide. The log of 09:40 shows only the screens' changes.
+
+**Cause [V]:** the rows of the PiPs, the dual PiP, the widgets and the restart buttons sized their buttons one post
+after they were bound. Back at its remembered place, the screen lay below rows never bound; scrolling up, each came
+in at the top and grew a frame later, pushing the list down. `16f256ee8` sizes them when they are bound
+(`SettingsRowSizing`); `SettingsRowHeightViewTest` goes the owner's way and fails without it. Not tested on a
+device.
+
+Still to look at from round 22 (no report against them): the type of the bars' windows the system took
+(`BarWindows` in the log), the statistics' alpha with Shizuku (KI-34), the vertical bar's room in the settings
+against the launcher's, which may differ by one.

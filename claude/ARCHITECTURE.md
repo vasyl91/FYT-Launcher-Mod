@@ -411,6 +411,10 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   - Small pieces: `S/ButtonTextFit` (the text of the small buttons in a row), `S/CompatInfoText` (FYT-only
     lines of two info texts), `S/BackgroundSelectorDialog` with `S/ColorTileDrawable` and
     `S/SelectedFrameDrawable`, `L/FabButtons`.
+  - The list's place (2026-11-18, D-73): `S/SettingsScrollMemory` (pure) and `S/SettingsScroll` keep it while a
+    row's window is in front and give it back to the new screen before its first layout. The rows that size their
+    own buttons do it when bound, before their first measure (`S/SettingsRowSizing`, 2026-11-19), so a row coming
+    in at the top while the list is scrolled up does not push it.
 - **Updater:** `S/VersionChecker` reads `github.com/vasyl91/FYT-Launcher-Mod/releases/latest`, downloads
   `system_release_<v>.apk` or `standard_release_<v>.apk`, and installs it with Ackpine. `S/ReleasesPage`
   copies the link when there is no browser.

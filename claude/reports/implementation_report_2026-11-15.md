@@ -365,3 +365,19 @@ settings list keeping its place (W7); one current list in `KNOWN_ISSUES.md` (W8)
 
 **What a device has to show:** `KNOWN_ISSUES.md` KI-40 (and KI-34, KI-35, KI-38). Nothing of this round has run
 on a device.
+
+**The owner's result, 2026-11-19 on the 7862 [H]:** every fix of round 22 works, except that the second screen of
+the settings jumped while it was scrolled up after a return, e.g. from the Canbus guide (log 09:40, which shows
+only the screens' changes).
+
+| Commit | Subject |
+|---|---|
+| `16f256ee8` | Settings: a row has its size when it comes on the screen |
+
+The rows of the PiPs, the dual PiP, the widgets and the restart buttons gave their buttons and text their size one
+post after they were bound. With the list's place kept (W7), the screen comes back below rows never bound, and
+scrolling up each one came in at the top and grew a frame later; the list keeps its first row's top, so everything
+below moved down. They are sized when bound now (`SettingsRowSizing`); only the restart buttons' widths change
+after the layout, never a row's height. `SettingsRowHeightViewTest` (Robolectric, 2000 × 1200) goes the owner's way
+and failed without the fix on the radio widget's row. KI-35 is closed by the owner's result. Not tested on a device.
+

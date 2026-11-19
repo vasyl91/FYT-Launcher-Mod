@@ -3,7 +3,8 @@
 **Snapshot: 2026-11-19, `testBranch` after round 22 (`62fc51126` … `5a6272396`, then the documentation
 commit). Round 22 answers the owner's log of 2026-11-16 18:42 on the 7862 and eight guidelines of 2026-11-18.
 CI was green for every code push checked when this was written; the round's last commits were pushed one by
-one after it. Nothing of round 22 has been run on a device (KI-40). `KNOWN_ISSUES.md` is one current list since
+one after it. The owner, 2026-11-19 on the 7862: every fix of round 22 works except a jump of the second settings
+screen scrolled up after a return, fixed in `16f256ee8` (KI-40). `KNOWN_ISSUES.md` is one current list since
 2026-11-18.** This file is the authoritative entry point for a new session. Update it at the
 end of every round (see `CLAUDE.md`).
 
@@ -35,7 +36,7 @@ What the owner wants from it, as the briefs and chat reports show [H]:
 | Next version | 1.2.2. README, the updater and `release-assets.yml` already describe `system_release_1.2.2.apk` [V]. **No release date is recorded** [U]. |
 | Development phase | Short feature and fix rounds on `testBranch`, driven by device logs (Opus brief → Sonnet commits → owner test). 33 briefs since 2026-10-27, all implemented [V]. |
 | Active brief | **None.** `prompts/active/` is empty [V]. |
-| Last code change | **Round 22, 2026-11-18/19:** Robolectric for tests of views (D-68); the bar's music buttons, title and artist bound while its window stays (KI-35); the bar's title and artist sized the same with "Resizable horizontal bar" off; the guides below the app bar and the settings list keeping its place (D-73); "Transparent status bar" moved (D-72); the statistics window in landscape where the creator puts it, and on the home screen under the bars and over the panes (D-69); the vertical bar's width (D-70) and the number of icons on each bar (D-71) may be set; 10 code commits `62fc51126` … `5a6272396` [V]. **Waiting for the owner's device test** (KI-40). Report: `reports/implementation_report_2026-11-15.md`, section "Round 22". |
+| Last code change | **Round 22, 2026-11-18/19:** Robolectric for tests of views (D-68); the bar's music buttons, title and artist bound while its window stays (KI-35); the bar's title and artist sized the same with "Resizable horizontal bar" off; the guides below the app bar and the settings list keeping its place (D-73); "Transparent status bar" moved (D-72); the statistics window in landscape where the creator puts it, and on the home screen under the bars and over the panes (D-69); the vertical bar's width (D-70) and the number of icons on each bar (D-71) may be set; 10 code commits `62fc51126` … `5a6272396` [V]. **The owner, 2026-11-19 on the 7862 [H]: all work**, except a jump of the second settings screen scrolled up after a return; `16f256ee8` sizes the settings rows when they are bound. **That one waits for the owner's test** (KI-40). Report: `reports/implementation_report_2026-11-15.md`, section "Round 22". |
 | Round 21 | **2026-11-16:** the statistics window laid out again a few times after the alpha limit reaches 1 (`ef3d1c746`, KI-34). **Waiting for the owner's device test.** |
 | Round 16 | **2026-11-16:** a widget that cannot be dropped stays where it was, icons dropped from the list of apps survive a reload (and are mended where an app renamed its activity), a widget that cannot be shown shows its preview and is told to update where the launcher may (D-66); 5 code commits `e6349acf0` … `a654c0d60` [V]. **Icons confirmed by the owner [H]; the rest waits** (KI-36). Report: `reports/implementation_report_2026-11-15.md`, section "Round 16". |
 | Round 20 | **2026-11-16:** no item of a page outside its visible part - stale temporary cells, the padding of the first rows, the drop's page, the size of an added widget, the creator's elements kept in the page, the check of every page after each drag and resize (`PageFit`); 5 code commits `91db3326a` … `36cf3e7c3` [V]. **The owner, 2026-11-16 17:26 [H]: "it looks like it works".** Report: section "Round 20". |
@@ -87,7 +88,7 @@ All features below are implemented [V]. Details are in `ARCHITECTURE.md`; user-f
 | Round 13: the wallpaper read from one source with fallbacks | needed fixes (2026-11-15); redone in round 14, **no device result** | D-53, D-58 … D-60. |
 | Round 13: fixes (bar windows' side, title scrolling, the leak of the bar window, radio tap without a radio, cell view ids, start page, stats over another launcher, settings texts) | owner tested 2026-11-15 [H] | KI-30 closed. |
 | Round 14: one bar while the pages move, the bars in the overview, the vertical bar at the edge and as wide as counted, play/pause, "Unknown" titles, the listener after a reconnect, the stats window's alpha, a weather key of one's own, the hidden-API report | owner tested 2026-11-15 on the A55 [H]; the rest went into round 15 | KI-34, KI-35, D-61, D-63. |
-| Round 22: the vertical bar's width, the number of icons on each bar, the settings list's place, the statistics under the bars | **no device result** | D-69 … D-74, KI-40. |
+| Round 22: the vertical bar's width, the number of icons on each bar, the settings list's place, the statistics under the bars | owner confirmed 2026-11-19 on the 7862 [H]; the settings jump fixed after it | D-69 … D-74, KI-40. |
 
 Not implemented:
 
@@ -148,10 +149,8 @@ in mind before a release, from `KNOWN_ISSUES.md`:
 1. The Baseline Profile is probably stale (KI-04).
 2. Something does not work on the tester's 7870, and it is not yet known what (KI-29).
 3. Several earlier changes have no device confirmation on record (KI-25).
-4. **Rounds 19 (on the 7862) and 22 are untested on devices (KI-38, KI-40).** Round 22 changes the layer of
-   the bars' and the statistics' windows on the home screen (a hidden window type with fallbacks, D-69), the
-   vertical bar's width in landscape (equal on the 7862 without the new setting) and the binding of the bar's
-   music widget.
+4. **Round 19's swipes on the 7862 have no result on record (KI-38); round 22 is confirmed there except
+   the settings jump fixed after it (KI-40).**
 
 The hardcoded OpenWeather key is **not** an open issue: the owner decided to keep it (D-26).
 
