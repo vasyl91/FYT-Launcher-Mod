@@ -1,11 +1,17 @@
-# Builds the app and runs the JVM unit tests on every push and pull request, so a change that does
-# not compile is caught right away rather than in Android Studio.
+# Builds the app and runs the JVM unit tests on every push and pull request that changes the code, so
+# a change that does not compile is caught right away rather than in Android Studio.
 name: Build
 
+# A push or pull request of documentation only (claude/, *.md, *.MD) starts no run: it builds nothing
+# new, the APKs and the module of the last push of the code stand, and its run would cancel the run of
+# the code pushed just before it (concurrency below). A push that changes the code and the
+# documentation runs as always. workflow_dispatch runs it by hand.
 on:
   push:
     branches: ["**"]
+    paths-ignore: ["claude/**", "**.md", "**.MD"]
   pull_request:
+    paths-ignore: ["claude/**", "**.md", "**.MD"]
   workflow_dispatch:
 
 concurrency:
