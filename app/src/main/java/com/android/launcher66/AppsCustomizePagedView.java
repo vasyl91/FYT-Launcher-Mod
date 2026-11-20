@@ -1386,18 +1386,12 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
 
                 mWidgetPreviewLoader.setPreviewSize(
                         maxPreviewWidth, maxPreviewHeight, mWidgetSpacingLayout);
-                if (immediate) {
-                    AsyncTaskPageData data = new AsyncTaskPageData(page, items,
-                            maxPreviewWidth, maxPreviewHeight, null, null, mWidgetPreviewLoader);
-                    loadWidgetPreviewsInBackground(null, data);
-                    onSyncWidgetPageItems(data);
+                // Never read on the main thread, the page shown first included (PreviewLoadStart)
+                if (PreviewLoadStart.of(immediate, mInTransition) == PreviewLoadStart.When.NOW) {
+                    prepareLoadWidgetPreviewsTask(page, items,
+                            maxPreviewWidth, maxPreviewHeight, mWidgetCountX);
                 } else {
-                    if (mInTransition) {
-                        mDeferredPrepareLoadWidgetPreviewsTasks.add(this);
-                    } else {
-                        prepareLoadWidgetPreviewsTask(page, items,
-                                maxPreviewWidth, maxPreviewHeight, mWidgetCountX);
-                    }
+                    mDeferredPrepareLoadWidgetPreviewsTasks.add(this);
                 }
                 layout.setOnLayoutListener(null);
             }
@@ -1405,8 +1399,8 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     }
     private void loadWidgetPreviewsInBackground(AppsCustomizeAsyncTask task,
             AsyncTaskPageData data) {
-        // loadWidgetPreviewsInBackground can be called without a task to load a set of widget
-        // previews synchronously
+        // Runs on the background task's thread only: previews are never loaded on the main thread
+        // (PreviewLoadStart)
         if (task != null) {
             // Ensure that this task starts running at the correct priority
             task.syncThreadPriority();
