@@ -157,8 +157,7 @@
             app:singleLineTitle="false"
             android:key="launcher_home_cold_start"
             android:defaultValue="true"
-            android:title="@string/launcher_home_cold_start"
-            android:summary=" " />
+            android:title="@string/launcher_home_cold_start" />
         <SwitchPreferenceCompat
             app:singleLineTitle="false"
             android:key="cold_start_last_app_delay"
@@ -173,8 +172,7 @@
             android:title="@string/baseline_profile_summary" />
         <Preference
             android:key="baseline_profile_reset"
-            android:title="@string/baseline_profile_reset"
-            android:summary=" " />
+            android:title="@string/baseline_profile_reset" />
         <Preference
             android:layout="@layout/preference_separator"
             android:selectable="false" />
@@ -186,8 +184,7 @@
             app:singleLineTitle="false"
             android:key="autostart_apps_by_boot_completed"
             android:defaultValue="true"
-            android:title="@string/autostart_apps_by_boot_completed"
-            android:summary=" " />
+            android:title="@string/autostart_apps_by_boot_completed" />
 
     </PreferenceCategory>
 
@@ -297,7 +294,6 @@
             <com.android.launcher66.settings.CustomPreference
                 android:key="reset_night_mode"
                 android:title="@string/reset_night_mode"
-                android:summary=" "
                 app:layout="@layout/nested_preference_category_content" />
             
         </com.android.launcher66.settings.CustomPreferenceCategory>

@@ -11,7 +11,14 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_weight="1"
-        android:layout_marginEnd="16dp" >
+        android:layout_marginEnd="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp" >
+
+        <!-- The space above and below the text is the column's, not the title's and the summary's: a row
+             without a summary (hidden, GONE) keeps the space under its title. Without it, on a phone in portrait
+             (text 1.5 times larger) the title filled the row's minimum height and a divider below sat right
+             under it. -->
 
         <!-- Title TextView -->
         <TextView
@@ -20,8 +27,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?attr/textAppearanceListItem"
             android:textColor="?android:attr/textColorPrimary"
-            android:ellipsize="end"
-            android:paddingTop="16dp" />
+            android:ellipsize="end" />
 
         <!-- Summary TextView -->
         <TextView
@@ -31,8 +37,7 @@
             android:textAppearance="?attr/textAppearanceListItemSecondary"
             android:textColor="?android:attr/textColorSecondary"
             android:ellipsize="end"
-            android:maxLines="5"
-            android:paddingBottom="16dp" />
+            android:maxLines="5" />
 
     </LinearLayout>
 
