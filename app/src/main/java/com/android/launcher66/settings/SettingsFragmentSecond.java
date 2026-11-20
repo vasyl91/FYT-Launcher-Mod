@@ -1837,28 +1837,28 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     }
 
     private AlertDialog.Builder displayStartPageDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
+        AlertDialog.Builder builder = SettingsDialogs.builder(this.requireContext());
         builder.setTitle(R.string.start_page_str);
         if(startPageEditText.getParent() != null) {
             ((ViewGroup)startPageEditText.getParent()).removeView(startPageEditText);
         }
         builder.setView(startPageEditText);
         startPageEditText.setText(startPage.getSummary());
-        startPageEditText.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
+        SettingsDialogs.styleField(startPageEditText);
         builder.setPositiveButton(R.string.set_btn, (dialog, which) -> saveStartPage());
         builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
         return builder;
     }
 
     private AlertDialog.Builder displayMarginsDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
+        AlertDialog.Builder builder = SettingsDialogs.builder(this.requireContext());
         builder.setTitle(R.string.margins_str);
         if(marginEditText.getParent() != null) {
             ((ViewGroup)marginEditText.getParent()).removeView(marginEditText);
         }
         builder.setView(marginEditText);
         marginEditText.setText(margin.getSummary());
-        marginEditText.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
+        SettingsDialogs.styleField(marginEditText);
         builder.setPositiveButton(R.string.set_btn, (dialog, which) -> saveMargin());
         builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
         return builder;
@@ -1925,7 +1925,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     }
 
     private void showCanbusLibraryImportDialog() {
-        AlertDialog.Builder builder = lightDialog();
+        AlertDialog.Builder builder = SettingsDialogs.builder(requireContext());
         View dialogView = LayoutInflater.from(builder.getContext()).inflate(R.layout.dialog_canbus_library_import, null);
         libraryImportStatus = dialogView.findViewById(R.id.canbus_library_import_status);
         libraryImportBar = dialogView.findViewById(R.id.canbus_library_import_progress);
@@ -2024,7 +2024,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             String message = success
                     ? getString(R.string.canbus_library_import_done, outcome.added, outcome.duplicates, outcome.replaced, report)
                     : getString(R.string.canbus_library_import_failed, outcome.firstError, report);
-            libraryImportDoneDialog = new AlertDialog.Builder(requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert)
+            libraryImportDoneDialog = SettingsDialogs.builder(requireContext())
                     .setMessage(message)
                     .setPositiveButton(android.R.string.ok, null)
                     .show();
@@ -2044,7 +2044,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (libraryImportJob != null) {
             return;
         }
-        libraryResetDialog = new AlertDialog.Builder(requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert)
+        libraryResetDialog = SettingsDialogs.builder(requireContext())
                 .setMessage(R.string.canbus_library_reset_confirm)
                 .setPositiveButton(android.R.string.ok, (dialog, which) -> {
                     final Context app = LauncherApplication.sApp;
@@ -2066,7 +2066,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         EditText rangeCodeInt;
         EditText speedCodeInt;
         EditText rpmCodeInt;
-        AlertDialog.Builder builder = lightDialog();
+        AlertDialog.Builder builder = SettingsDialogs.builder(requireContext());
         // With the dialog's theme: the text is dark on its light background (with the settings' one it was white)
         View dialogView = LayoutInflater.from(builder.getContext()).inflate(R.layout.dialog_codes_layout, null);
 
@@ -2107,7 +2107,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }
         showCode(rpmCodeInt, rpmCodeStr, reader != null ? reader.rpm : -1);
         for (EditText field : new EditText[]{fuelCodeInt, rangeCodeInt, speedCodeInt, rpmCodeInt}) {
-            field.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
+            SettingsDialogs.styleField(field);
         }
         ((TextView) dialogView.findViewById(R.id.codes_info_text)).setText(codesInfoText(reader));
 
@@ -2135,8 +2135,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 cmdIntCodeInt.setHint(String.valueOf(first.cmd));
                 cmdArrCodeInt.setHint(first.intsText());
             }
-            cmdIntCodeInt.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
-            cmdArrCodeInt.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
+            SettingsDialogs.styleField(cmdIntCodeInt);
+            SettingsDialogs.styleField(cmdArrCodeInt);
             ((TextView) dialogView.findViewById(R.id.known_requests_text)).setText(
                     getString(R.string.stats_codes_known_requests, CanbusLibrary.knownRequestsText(library, carId)));
         }
@@ -2170,7 +2170,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
      * this one and is shown sooner. Built like the Canbus codes window.
      */
     private AlertDialog.Builder displayExtraCodesDialog() {
-        AlertDialog.Builder builder = lightDialog();
+        AlertDialog.Builder builder = SettingsDialogs.builder(requireContext());
         View dialogView = LayoutInflater.from(builder.getContext()).inflate(R.layout.dialog_extra_codes_layout, null);
 
         EditText vehicleMassInt = dialogView.findViewById(R.id.vehicle_mass_code_int);
@@ -2195,8 +2195,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         engineDisplacementInt.setText(carDataUnset(Keys.ENGINE_DISPLACEMENT) ? "" : sharedPrefs.getString(Keys.ENGINE_DISPLACEMENT, ""));
         vehicleMassInt.setHint("1300");
         engineDisplacementInt.setHint("1598");
-        vehicleMassInt.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
-        engineDisplacementInt.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
+        SettingsDialogs.styleField(vehicleMassInt);
+        SettingsDialogs.styleField(engineDisplacementInt);
 
         final Runnable save = () -> {
             saveExtraCode(vehicleMassInt);
@@ -2259,11 +2259,6 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         return getString(R.string.extra_stats_codes_summary, mass, displacement);
     }
 
-    /** A light dialog, as every window of these settings; inflate its view with {@code builder.getContext()}. */
-    private AlertDialog.Builder lightDialog() {
-        return new AlertDialog.Builder(this.requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
-    }
-
     /** The width the codes window gets: most of the screen, so that a label and its field fit side by side. */
     private int dialogWidth() {
         android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
@@ -2300,7 +2295,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     }
 
     private AlertDialog.Builder displaySkipCodesDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
+        AlertDialog.Builder builder = SettingsDialogs.builder(this.requireContext());
         builder.setTitle(R.string.skip_codes_dialog_str);
         if(skipCodesEditText.getParent() != null) {
             ((ViewGroup)skipCodesEditText.getParent()).removeView(skipCodesEditText);
@@ -2309,14 +2304,14 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         Set<String> skipCodesSet = sharedPrefs.getStringSet(Keys.SKIP_CODES, Collections.singleton(""));
         String skipCodesStr = skipCodesSet != null ? String.join(", ", skipCodesSet) : "";
         skipCodesEditText.setText(skipCodesStr);
-        skipCodesEditText.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
+        SettingsDialogs.styleField(skipCodesEditText);
         builder.setPositiveButton(R.string.set_btn, (dialog, which) -> saveSkipCodes());
         builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
         return builder;
     }
 
     private AlertDialog.Builder displayCodesInspectorDialog() {
-        AlertDialog.Builder builder = lightDialog();
+        AlertDialog.Builder builder = SettingsDialogs.builder(requireContext());
         View dialogView = LayoutInflater.from(builder.getContext()).inflate(R.layout.dialog_inspector_codes_layout, null);
 
         inspectorTimeoutEdit = dialogView.findViewById(R.id.code_inspector_timeout);
@@ -2329,7 +2324,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
         dialogCodesInspectorEditText(inspectorTimeoutEdit);
         inspectorTimeoutEdit.setText(codeInspectorTimeoutStr);
-        inspectorTimeoutEdit.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
+        SettingsDialogs.styleField(inspectorTimeoutEdit);
 
         builder.setView(dialogView).setPositiveButton(R.string.set_btn, (dialog, which) -> {
                 codeInspectorTimeoutStr = inspectorTimeoutEdit.getText().toString();

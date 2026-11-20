@@ -48,7 +48,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
@@ -204,7 +203,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             loadingDialog.dismiss();
         }
 
-        loadingDialog = new Dialog(requireContext());
+        loadingDialog = new Dialog(requireContext(), SettingsDialogs.THEME);
         loadingDialog.setContentView(R.layout.dialog_loading); 
         loadingDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         loadingDialog.setCancelable(false); // Prevent dismissing by touching outside
@@ -1376,7 +1375,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     }
 
     private AlertDialog.Builder displayClientIdDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
+        AlertDialog.Builder builder = SettingsDialogs.builder(this.requireContext());
         builder.setTitle(R.string.spotify_client_id);
         builder.setMessage(R.string.spotify_client_id_dialog);
         if (clientIdEditText.getParent() != null) {
@@ -1384,7 +1383,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
         builder.setView(clientIdEditText);
         clientIdEditText.setText(clientIdPreference.getSharedPreferences().getString(Keys.SPOTIFY_CLIENT_ID, ""));
-        clientIdEditText.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
+        SettingsDialogs.styleField(clientIdEditText);
         builder.setPositiveButton(R.string.set_btn, (dialog, which) -> saveClientId());
         builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
         return builder;
@@ -1428,7 +1427,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     }
 
     private AlertDialog.Builder displayDownloadConfirmationDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
+        AlertDialog.Builder builder = SettingsDialogs.builder(this.requireContext());
         builder.setTitle(getString(R.string.confirmation_dialog, latestAppVersion));
         builder.setPositiveButton(R.string.update_btn, (dialog, which) -> downloadAndInstall());
         builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
@@ -1436,14 +1435,14 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     }
 
     private AlertDialog.Builder displayLogcatServiceTimeoutDialog () {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
+        AlertDialog.Builder builder = SettingsDialogs.builder(this.requireContext());
         builder.setTitle(R.string.logcat_service_timeout_str);
         if (logcatServiceTimeoutEditText.getParent() != null) {
             ((ViewGroup)logcatServiceTimeoutEditText.getParent()).removeView(logcatServiceTimeoutEditText);
         }
         builder.setView(logcatServiceTimeoutEditText);
         logcatServiceTimeoutEditText.setText(logcatServiceTimeout.getSummary());
-        logcatServiceTimeoutEditText.setTextColor(ContextCompat.getColor(this.requireContext(), R.color.black));
+        SettingsDialogs.styleField(logcatServiceTimeoutEditText);
         builder.setPositiveButton(R.string.set_btn, (dialog, which) -> saveLogcatServiceTimeout());
         builder.setNegativeButton(R.string.cancel_btn, (dialog, which) -> dialog.dismiss());
         return builder;
@@ -1606,7 +1605,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 BaselineProfileCompiler.refreshesDone(context),
                 BaselineProfileCompiler.refreshesTotal());
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(context, androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
+        AlertDialog.Builder builder = SettingsDialogs.builder(context);
         builder.setTitle(R.string.baseline_reset_title);
         builder.setMessage(message);
         builder.setCancelable(true);
@@ -1629,7 +1628,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         if (!isAdded()) {
             return;
         }
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
+        AlertDialog.Builder builder = SettingsDialogs.builder(requireContext());
         builder.setTitle(R.string.baseline_reset_full_title);
         builder.setMessage(R.string.baseline_reset_full_message);
         builder.setCancelable(true);
@@ -1796,7 +1795,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         if (!isAdded()) {
             return;
         }
-        new AlertDialog.Builder(requireContext())
+        SettingsDialogs.builder(requireContext())
                 .setMessage(getString(R.string.wallpaper_unreadable, daytime))
                 .setNegativeButton(android.R.string.cancel, null)
                 .setPositiveButton(R.string.pick_image_manually, (dialog, which) -> {

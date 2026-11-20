@@ -271,7 +271,7 @@ class ColorPicker : DialogFragment(), OnSeekBarChangeListener {
 
         hexCode = view.findViewById(R.id.hexCode)
         activity?.let {
-            hexCode?.setTextColor(ContextCompat.getColor(it, R.color.black))
+            hexCode?.setTextColor(ContextCompat.getColor(it, R.color.white))   // the settings' dark dialog (SettingsDialogs)
         }
         hexCode?.textSize = textSize.toFloat()
         hexCode?.filters = arrayOf(InputFilter.LengthFilter(6))

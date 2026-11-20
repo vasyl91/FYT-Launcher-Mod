@@ -129,6 +129,23 @@
         <item name="android:windowTranslucentNavigation">false</item>
     </style>
     
+    <!-- Every dialog of the settings, in the colours of the settings (the owner, 2026-11-20; SettingsDialogs):
+         their dark surface with a frame in the dividers' grey, white text and the settings' blue for the buttons
+         and the active field. -->
+    <style name="SettingsDialog" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:windowBackground">@drawable/settings_dialog_background</item>
+        <item name="android:colorBackground">@color/dark_surface</item>
+        <item name="android:colorBackgroundFloating">@color/dark_surface</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/gray_medium</item>
+        <item name="android:textColorHint">@color/gray_medium</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:colorAccent">@color/colorAccent</item>
+        <item name="colorControlNormal">@color/gray_medium</item>
+        <item name="colorControlActivated">@color/colorAccent</item>
+        <item name="android:backgroundDimAmount">0.6</item>
+    </style>
+
     <!-- Non-FYT devices only (SettingsActivity.onCreate()): plain preferences start closer to
          the edge, so the nested ones (indented in code by nestedPaddingStart) stand out again. -->
     <style name="SettingsTheme.PhoneRows" parent="">

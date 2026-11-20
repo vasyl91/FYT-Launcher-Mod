@@ -22,6 +22,8 @@
     <color name="dark_secondary">#0D47A1</color> 
     <color name="dark_surface">#202020</color> 
     <color name="gray_medium">#BBBBBB</color>
+    <!-- The settings' dividers and the frame of their dialogs -->
+    <color name="settings_divider">#808080</color>
 
     <color name="materialcolorpicker__white">#ffffff</color>
     <color name="materialcolorpicker__red">#f44336</color>

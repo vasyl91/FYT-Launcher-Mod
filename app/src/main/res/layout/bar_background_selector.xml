@@ -15,8 +15,8 @@
         android:textStyle="bold"
         android:gravity="start"
         android:layout_marginBottom="16dp"
-        android:background="#ff4285f4"
-        android:textColor="#FFFFFF" />
+        android:background="@color/colorAccent"
+        android:textColor="@color/white" />
 
     <ScrollView
         android:id="@+id/bar_background_scroll_view"
@@ -39,9 +39,9 @@
         android:id="@+id/bar_background_cancel_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="#ff4285f4"
+        android:backgroundTint="@color/colorAccent"
         android:text="Cancel"
-        android:textColor="#FFFFFF"
+        android:textColor="@color/white"
         android:layout_gravity="end" />
 
 </LinearLayout>

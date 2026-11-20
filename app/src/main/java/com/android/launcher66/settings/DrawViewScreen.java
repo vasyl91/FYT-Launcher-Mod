@@ -1260,7 +1260,7 @@ public class DrawViewScreen extends View implements View.OnClickListener {
      * @param afterFit what that path does next: the toast of a saved layout, or the way back to the settings
      */
     private void displayDialog(final Runnable afterFit) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getSafeContext(), androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
+        AlertDialog.Builder builder = SettingsDialogs.builder(getSafeContext());
         builder.setTitle(getSafeContext().getString(R.string.overlapping));
         builder.setMessage(getSafeContext().getString(R.string.overlap_fit_message));
         builder.setPositiveButton(getSafeContext().getString(R.string.proceed_and_fit), new DialogInterface.OnClickListener() {

@@ -35,7 +35,7 @@ public class ProgressDialog {
                 if (activity.isFinishing() || activity.isDestroyed()) return;
 
                 if (dialog == null) {
-                    dialog = new Dialog(activity, androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert);
+                    dialog = new Dialog(activity, SettingsDialogs.THEME);
                     dialog.setContentView(R.layout.progress_dialog);
                     dialog.setCancelable(false);
                     

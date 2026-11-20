@@ -12,7 +12,6 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -70,10 +69,10 @@ final class WeatherKeyRow {
         input.setImeOptions(EditorInfo.IME_ACTION_DONE);
         input.setSingleLine(true);
         input.setText(prefs.getString(Keys.OPENWEATHER_API_KEY, ""));
-        input.setTextColor(ContextCompat.getColor(context, R.color.black));
+        SettingsDialogs.styleField(input);
 
         dismiss();
-        dialog = new AlertDialog.Builder(context, androidx.appcompat.R.style.Theme_AppCompat_Light_Dialog_Alert)
+        dialog = SettingsDialogs.builder(context)
                 .setTitle(R.string.openweather_key_title)
                 .setView(input)
                 .setPositiveButton(R.string.set_btn, (d, which) -> save(row, input))

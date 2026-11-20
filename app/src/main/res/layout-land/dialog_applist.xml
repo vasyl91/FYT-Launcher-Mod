@@ -28,7 +28,7 @@
 
             <TextView
                 android:textSize="23sp"
-                android:textColor="@android:color/white"
+                android:textColor="@color/white"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -42,7 +42,7 @@
 
             <TextView
                 android:textSize="20sp"
-                android:textColor="@android:color/white"
+                android:textColor="@color/white"
                 android:id="@+id/current_app_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
@@ -50,7 +50,7 @@
 
         <TextView
             android:textSize="22sp"
-            android:textColor="@android:color/white"
+            android:textColor="@color/white"
             android:gravity="center_horizontal"
             android:visibility="visible"
             android:layout_width="fill_parent"

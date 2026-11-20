@@ -29,7 +29,7 @@
 
     <TextView
         android:textSize="32.0px"
-        android:textColor="@android:color/white"
+        android:textColor="@color/white"
         android:id="@+id/app_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

@@ -144,7 +144,7 @@ public class BackgroundSelectorDialog extends DialogFragment {
         name = args == null ? "" : args.getString(ARG_NAME, "");
         key = args == null ? Keys.BAR_SELECTED_BACKGROUND : args.getString(ARG_KEY, Keys.BAR_SELECTED_BACKGROUND);
         defaultBackground = args == null ? null : args.getString(ARG_DEFAULT);
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
+        AlertDialog.Builder builder = SettingsDialogs.builder(requireActivity());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         int rootViewId = getResId(name + "_background_selector", R.layout.class);
         rootView = inflater.inflate(rootViewId, null);

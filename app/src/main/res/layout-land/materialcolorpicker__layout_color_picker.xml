@@ -29,7 +29,7 @@
         app:justifyContent="space_between"
         app:flexWrap="wrap"
         app:flexDirection="column"
-        android:background="@color/materialcolorpicker__white" >
+        android:background="@drawable/settings_dialog_panel" >
 
         <com.google.android.flexbox.FlexboxLayout
             android:layout_width="match_parent"
@@ -79,7 +79,7 @@
                 android:id="@+id/alphaLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/black"
+                android:textColor="@color/white"
                 android:includeFontPadding="false"
                 android:visibility="gone" />
 
@@ -91,7 +91,7 @@
                 android:maxHeight="5dp"
                 android:minHeight="5dp"
                 android:progressDrawable="@drawable/materialcolorpicker__alpha_progress"
-                android:textColorHint="@android:color/black"
+                android:textColorHint="@color/white"
                 android:thumb="@drawable/materialcolorpicker__red_thumb_drawable"
                 android:visibility="gone" />
 
@@ -120,6 +120,7 @@
                     android:layout_height="wrap_content"
                     android:labelFor="@id/hexCode"
                     android:text="@string/materialcolorpicker__hash"    
+                    android:textColor="@color/white"
                     android:includeFontPadding="false"
                     android:padding="0dp" />
 
@@ -132,8 +133,8 @@
                     android:inputType="textCapCharacters|textNoSuggestions"
                     android:lines="1"
                     android:maxLines="1"
-                    android:textColor="@android:color/primary_text_light"
-                    android:textColorHint="@android:color/primary_text_light"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/gray_medium"
                     tools:text="123456"
                     android:autofillHints=""    
                     android:includeFontPadding="false"
@@ -146,6 +147,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@color/colorAccent"
+                android:textColor="@color/white"
                 android:clickable="true"
                 android:text="@string/color_picker_default"
                 android:focusable="true"
@@ -159,6 +161,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@color/colorAccent"
+                android:textColor="@color/white"
                 android:clickable="true"
                 android:text="@string/materialcolorpicker__btnSelectColor"
                 android:focusable="true"
