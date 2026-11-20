@@ -118,6 +118,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private Preference startPage;
     /** The sizes of the icon labels, which came here from the first screen with their keys (IconTextSizeRows). */
     private IconTextSizeRows iconTextSizeRows;
+    /** The order of the horizontal bar's elements: its row in "Bars" and its dialog. */
+    private BarOrderDialog barOrderDialog;
     private EditText startPageEditText;
     private AlertDialog alertStartPageDialog;
     private SwitchPreferenceCompat autoHidePreference;
@@ -421,6 +423,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         Preference barTint = findPreference(Keys.BAR_TINT);
         iconTextSizeRows = new IconTextSizeRows(this, sharedPrefs, helpers);
         iconTextSizeRows.bind();
+        barOrderDialog = new BarOrderDialog(this, sharedPrefs, helpers);
+        barOrderDialog.bind();
         bindGridSlider(GridSeekBarPreference.ROWS, "workspace_grid_rows_title", R.string.workspace_grid_rows);
         bindGridSlider(GridSeekBarPreference.COLUMNS, "workspace_grid_columns_title", R.string.workspace_grid_columns);
         startPage = findPreference(Keys.START_PAGE);
@@ -926,12 +930,19 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             case Keys.WIDGET_BAR:
                 // The rows that belong to the widget bar appear and disappear with it.
                 updateWidgetBarRows();
+                // The elements of the bar's order change with it
+                if (barOrderDialog != null) {
+                    barOrderDialog.updateSummary();
+                }
                 break;
             case Keys.WIDGET_BAR_NO_COVER:
             case Keys.WIDGET_BAR_NO_DATE:
             case Keys.WIDGET_BAR_NO_WEATHER:
                 // The layout row below appears (or goes) at once with the first hidden widget
                 updateWidgetBarRows();
+                if (barOrderDialog != null) {
+                    barOrderDialog.updateSummary();
+                }
                 helpers.setBarSettingsChanged(true);
                 break;
             case Keys.WIDGET_BAR_BUTTONS_BESIDE:
@@ -1230,6 +1241,10 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         handler.post(this::updateBarIconSliders);
         // Also while the switch is off, so its summary is current when it is turned on.
         handler.post(updateBarHeightSummary);
+        // The order is stored per orientation: show the new one's
+        if (barOrderDialog != null) {
+            handler.post(barOrderDialog::updateSummary);
+        }
     }
 
     @Override
@@ -1430,6 +1445,9 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private void dismissDialogs() {
         if (iconTextSizeRows != null) {
             iconTextSizeRows.dismiss();
+        }
+        if (barOrderDialog != null) {
+            barOrderDialog.dismiss();
         }
         if (libraryImportDialog != null && libraryImportDialog.isShowing()) {
             // The work goes on without this screen: its result comes as a toast

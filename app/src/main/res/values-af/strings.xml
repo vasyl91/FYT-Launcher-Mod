@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">Breedte: %1$s van die skerm se langer rand (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Vertikale balk se breedte</string>
     <string name="bar_icons_count">Programikone: %1$d</string>
+    <string name="horizontal_bar_order">Volgorde van die balk se elemente</string>
+    <string name="horizontal_bar_order_hint">Sleep \'n element aan sy handvatsel. Die bokant van die lys is die linkerkant van die balk, die onderkant die regterkant.</string>
+    <string name="bar_element_drawer">Programlaai-knoppie</string>
+    <string name="bar_element_apps">Programme</string>
+    <string name="bar_element_music">Musiek</string>
+    <string name="bar_element_date">Datum</string>
+    <string name="bar_element_weather">Weer</string>
     <string name="widget_configuration_unavailable">Die legstuk se instellings kon nie oopgemaak word nie, dus is dit nie bygevoeg nie.</string>
     <string name="widget_bar">Horisontale legstukbalk</string>
 

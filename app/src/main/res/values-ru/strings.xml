@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">Ширина: %1$s от длинной стороны экрана (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Ширина вертикальной панели</string>
     <string name="bar_icons_count">Значки приложений: %1$d</string>
+    <string name="horizontal_bar_order">Порядок элементов панели</string>
+    <string name="horizontal_bar_order_hint">Перетащите элемент за его ручку. Верх списка — левая сторона панели, низ — правая.</string>
+    <string name="bar_element_drawer">Кнопка меню приложений</string>
+    <string name="bar_element_apps">Приложения</string>
+    <string name="bar_element_music">Музыка</string>
+    <string name="bar_element_date">Дата</string>
+    <string name="bar_element_weather">Погода</string>
     <string name="widget_configuration_unavailable">Не удалось открыть настройки виджета, поэтому он не добавлен.</string>
     <string name="widget_bar">Горизонтальная панель виджетов</string>
 

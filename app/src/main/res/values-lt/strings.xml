@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">Plotis: %1$s ilgesniojo ekrano krašto (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Vertikaliosios juostos plotis</string>
     <string name="bar_icons_count">Programų piktogramos: %1$d</string>
+    <string name="horizontal_bar_order">Juostos elementų tvarka</string>
+    <string name="horizontal_bar_order_hint">Vilkite elementą už jo rankenėlės. Sąrašo viršus yra kairioji juostos pusė, apačia – dešinioji.</string>
+    <string name="bar_element_drawer">Programų stalčiaus mygtukas</string>
+    <string name="bar_element_apps">Programos</string>
+    <string name="bar_element_music">Muzika</string>
+    <string name="bar_element_date">Data</string>
+    <string name="bar_element_weather">Orai</string>
     <string name="widget_configuration_unavailable">Nepavyko atidaryti valdiklio nustatymų, todėl jis nepridėtas.</string>
     <string name="widget_bar">Valdiklių horizontalioji juosta</string>
 

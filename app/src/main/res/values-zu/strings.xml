@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">Ububanzi: %1$s ohlangothini olude lwesikrini (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Ububanzi bebha eqondile</string>
     <string name="bar_icons_count">Izithonjana zama-app: %1$d</string>
+    <string name="horizontal_bar_order">Ukulandelana kwezinto zebha</string>
+    <string name="horizontal_bar_order_hint">Hudula into ngesibambo sayo. Phezulu kohlu kuyisinxele sebha, phansi kuyisokudla.</string>
+    <string name="bar_element_drawer">Inkinobho yedrowa yezinhlelo</string>
+    <string name="bar_element_apps">Izinhlelo</string>
+    <string name="bar_element_music">Umculo</string>
+    <string name="bar_element_date">Usuku</string>
+    <string name="bar_element_weather">Isimo sezulu</string>
     <string name="widget_configuration_unavailable">Izilungiselelo zewijethi azikwazanga ukuvulwa, ngakho ayengezwanga.</string>
     <string name="widget_bar">Ibha evundlile yamawijethi</string>
 

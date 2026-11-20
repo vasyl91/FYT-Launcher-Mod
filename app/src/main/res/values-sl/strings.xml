@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">Širina: %1$s daljšega roba zaslona (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Širina navpične vrstice</string>
     <string name="bar_icons_count">Ikone aplikacij: %1$d</string>
+    <string name="horizontal_bar_order">Vrstni red elementov vrstice</string>
+    <string name="horizontal_bar_order_hint">Povlecite element za njegov ročaj. Vrh seznama je leva stran vrstice, dno desna.</string>
+    <string name="bar_element_drawer">Gumb predala aplikacij</string>
+    <string name="bar_element_apps">Aplikacije</string>
+    <string name="bar_element_music">Glasba</string>
+    <string name="bar_element_date">Datum</string>
+    <string name="bar_element_weather">Vreme</string>
     <string name="widget_configuration_unavailable">Nastavitev pripomočka ni bilo mogoče odpreti, zato ni bil dodan.</string>
     <string name="widget_bar">Vodoravna vrstica gradnikov</string>
 

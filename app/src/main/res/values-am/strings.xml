@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">ስፋት፦ የማያ ገጹ ረጅም ጠርዝ %1$s (%2$s)</string>
     <string name="vertical_bar_width_seekbar">ቀጥ ያለ አሞሌ ስፋት</string>
     <string name="bar_icons_count">የመተግበሪያ አዶዎች፦ %1$d</string>
+    <string name="horizontal_bar_order">የአሞሌው ክፍሎች ቅደም ተከተል</string>
+    <string name="horizontal_bar_order_hint">አንድን ክፍል በመያዣው ይጎትቱ። የዝርዝሩ ላይኛው ክፍል የአሞሌው ግራ ነው፣ ታችኛው ቀኙ ነው።</string>
+    <string name="bar_element_drawer">የመተግበሪያ መሳቢያ አዝራር</string>
+    <string name="bar_element_apps">መተግበሪያዎች</string>
+    <string name="bar_element_music">ሙዚቃ</string>
+    <string name="bar_element_date">ቀን</string>
+    <string name="bar_element_weather">የአየር ሁኔታ</string>
     <string name="widget_configuration_unavailable">የምግብሩ ቅንብሮች ሊከፈቱ አልቻሉም፣ ስለዚህ አልታከለም።</string>
     <string name="widget_bar">የዊጅት አግድም አሞሌ</string>
 

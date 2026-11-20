@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">Chiều rộng: %1$s của cạnh dài hơn của màn hình (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Chiều rộng thanh dọc</string>
     <string name="bar_icons_count">Biểu tượng ứng dụng: %1$d</string>
+    <string name="horizontal_bar_order">Thứ tự các thành phần của thanh</string>
+    <string name="horizontal_bar_order_hint">Kéo một thành phần bằng tay cầm của nó. Đầu danh sách là bên trái thanh, cuối danh sách là bên phải.</string>
+    <string name="bar_element_drawer">Nút ngăn ứng dụng</string>
+    <string name="bar_element_apps">Ứng dụng</string>
+    <string name="bar_element_music">Nhạc</string>
+    <string name="bar_element_date">Ngày</string>
+    <string name="bar_element_weather">Thời tiết</string>
     <string name="widget_configuration_unavailable">Không mở được cài đặt của tiện ích nên tiện ích chưa được thêm.</string>
     <string name="widget_bar">Thanh ngang của widget</string>
 

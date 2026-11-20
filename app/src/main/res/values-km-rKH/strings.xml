@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">ទទឹង៖ %1$s នៃគែមវែងជាងរបស់អេក្រង់ (%2$s)</string>
     <string name="vertical_bar_width_seekbar">ទទឹងរបារបញ្ឈរ</string>
     <string name="bar_icons_count">រូបតំណាងកម្មវិធី៖ %1$d</string>
+    <string name="horizontal_bar_order">លំដាប់ធាតុរបស់របារ</string>
+    <string name="horizontal_bar_order_hint">អូសធាតុមួយដោយដៃចាប់របស់វា។ ផ្នែកខាងលើនៃបញ្ជីគឺជាខាងឆ្វេងនៃរបារ ខាងក្រោមគឺខាងស្តាំ។</string>
+    <string name="bar_element_drawer">ប៊ូតុងថតកម្មវិធី</string>
+    <string name="bar_element_apps">កម្មវិធី</string>
+    <string name="bar_element_music">តន្ត្រី</string>
+    <string name="bar_element_date">កាលបរិច្ឆេទ</string>
+    <string name="bar_element_weather">អាកាសធាតុ</string>
     <string name="widget_configuration_unavailable">មិនអាចបើកការកំណត់របស់ធាតុក្រាហ្វិកបានទេ ដូច្នេះវាមិនត្រូវបានបន្ថែមទេ។</string>
     <string name="widget_bar">របារផ្ដេកធាតុក្រាហ្វិក</string>
 

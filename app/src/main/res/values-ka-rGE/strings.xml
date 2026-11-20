@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">სიგანე: ეკრანის უფრო გრძელი გვერდის %1$s (%2$s)</string>
     <string name="vertical_bar_width_seekbar">ვერტიკალური ზოლის სიგანე</string>
     <string name="bar_icons_count">აპების ხატულები: %1$d</string>
+    <string name="horizontal_bar_order">ზოლის ელემენტების თანმიმდევრობა</string>
+    <string name="horizontal_bar_order_hint">გადაათრიეთ ელემენტი მისი სახელურით. სიის ზედა ნაწილი ზოლის მარცხენა მხარეა, ქვედა — მარჯვენა.</string>
+    <string name="bar_element_drawer">აპების უჯრის ღილაკი</string>
+    <string name="bar_element_apps">აპები</string>
+    <string name="bar_element_music">მუსიკა</string>
+    <string name="bar_element_date">თარიღი</string>
+    <string name="bar_element_weather">ამინდი</string>
     <string name="widget_configuration_unavailable">ვიჯეტის პარამეტრების გახსნა ვერ მოხერხდა, ამიტომ ის არ დაემატა.</string>
     <string name="widget_bar">ვიჯეტების ჰორიზონტალური ზოლი</string>
 

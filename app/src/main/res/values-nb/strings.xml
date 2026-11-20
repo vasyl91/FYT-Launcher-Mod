@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">Bredde: %1$s av skjermens lengste kant (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Bredde på vertikalt felt</string>
     <string name="bar_icons_count">Appikoner: %1$d</string>
+    <string name="horizontal_bar_order">Rekkefølge på linjens elementer</string>
+    <string name="horizontal_bar_order_hint">Dra et element i håndtaket. Toppen av listen er linjens venstre side, bunnen høyre side.</string>
+    <string name="bar_element_drawer">Knapp for appskuffen</string>
+    <string name="bar_element_apps">Apper</string>
+    <string name="bar_element_music">Musikk</string>
+    <string name="bar_element_date">Dato</string>
+    <string name="bar_element_weather">Vær</string>
     <string name="widget_configuration_unavailable">Innstillingene for modulen kunne ikke åpnes, så den ble ikke lagt til.</string>
     <string name="widget_bar">Horisontalt widgetfelt</string>
 

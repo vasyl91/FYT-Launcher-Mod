@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">Bredd: %1$s av skärmens längre sida (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Bredd på vertikala fältet</string>
     <string name="bar_icons_count">Appikoner: %1$d</string>
+    <string name="horizontal_bar_order">Ordning för fältets element</string>
+    <string name="horizontal_bar_order_hint">Dra ett element i dess handtag. Listans topp är fältets vänstra sida, botten dess högra.</string>
+    <string name="bar_element_drawer">Knapp för applådan</string>
+    <string name="bar_element_apps">Appar</string>
+    <string name="bar_element_music">Musik</string>
+    <string name="bar_element_date">Datum</string>
+    <string name="bar_element_weather">Väder</string>
     <string name="widget_configuration_unavailable">Widgetens inställningar kunde inte öppnas, så den lades inte till.</string>
     <string name="widget_bar">Horisontellt widgetfält</string>
 

@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">너비: 화면 긴 변의 %1$s(%2$s)</string>
     <string name="vertical_bar_width_seekbar">세로 바 너비</string>
     <string name="bar_icons_count">앱 아이콘: %1$d</string>
+    <string name="horizontal_bar_order">바 요소의 순서</string>
+    <string name="horizontal_bar_order_hint">요소를 핸들로 끌어 옮기세요. 목록의 위쪽이 바의 왼쪽, 아래쪽이 오른쪽입니다.</string>
+    <string name="bar_element_drawer">앱 서랍 버튼</string>
+    <string name="bar_element_apps">앱</string>
+    <string name="bar_element_music">음악</string>
+    <string name="bar_element_date">날짜</string>
+    <string name="bar_element_weather">날씨</string>
     <string name="widget_configuration_unavailable">위젯 설정을 열 수 없어 위젯이 추가되지 않았습니다.</string>
     <string name="widget_bar">위젯 가로 바</string>
 

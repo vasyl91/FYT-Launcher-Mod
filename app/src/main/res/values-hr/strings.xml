@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">Širina: %1$s duljeg ruba zaslona (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Širina okomite trake</string>
     <string name="bar_icons_count">Ikone aplikacija: %1$d</string>
+    <string name="horizontal_bar_order">Redoslijed elemenata trake</string>
+    <string name="horizontal_bar_order_hint">Povucite element za njegovu ručku. Vrh popisa je lijeva strana trake, dno desna.</string>
+    <string name="bar_element_drawer">Gumb ladice aplikacija</string>
+    <string name="bar_element_apps">Aplikacije</string>
+    <string name="bar_element_music">Glazba</string>
+    <string name="bar_element_date">Datum</string>
+    <string name="bar_element_weather">Vrijeme</string>
     <string name="widget_configuration_unavailable">Postavke widgeta nije bilo moguće otvoriti pa nije dodan.</string>
     <string name="widget_bar">Vodoravna traka widgeta</string>
 

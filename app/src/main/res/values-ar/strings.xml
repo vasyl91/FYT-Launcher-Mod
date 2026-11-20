@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">العرض: %1$s من الحافة الأطول للشاشة (%2$s)</string>
     <string name="vertical_bar_width_seekbar">عرض الشريط العمودي</string>
     <string name="bar_icons_count">أيقونات التطبيقات: %1$d</string>
+    <string name="horizontal_bar_order">ترتيب عناصر الشريط</string>
+    <string name="horizontal_bar_order_hint">اسحب العنصر من مقبضه. أعلى القائمة هو يسار الشريط، وأسفلها يمينه.</string>
+    <string name="bar_element_drawer">زر درج التطبيقات</string>
+    <string name="bar_element_apps">التطبيقات</string>
+    <string name="bar_element_music">الموسيقى</string>
+    <string name="bar_element_date">التاريخ</string>
+    <string name="bar_element_weather">الطقس</string>
     <string name="widget_configuration_unavailable">تعذّر فتح إعدادات الأداة، لذا لم تتم إضافتها.</string>
     <string name="widget_bar">الشريط الأفقي لعناصر الواجهة</string>
 

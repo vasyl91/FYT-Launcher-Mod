@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">Өргөн: дэлгэцийн урт ирмэгийн %1$s (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Босоо самбарын өргөн</string>
     <string name="bar_icons_count">Аппын дүрс тэмдэг: %1$d</string>
+    <string name="horizontal_bar_order">Самбарын элементүүдийн дараалал</string>
+    <string name="horizontal_bar_order_hint">Элементийг бариулаас нь чирнэ үү. Жагсаалтын дээд хэсэг нь самбарын зүүн тал, доод хэсэг нь баруун тал.</string>
+    <string name="bar_element_drawer">Аппын шургуулганы товч</string>
+    <string name="bar_element_apps">Аппууд</string>
+    <string name="bar_element_music">Хөгжим</string>
+    <string name="bar_element_date">Огноо</string>
+    <string name="bar_element_weather">Цаг агаар</string>
     <string name="widget_configuration_unavailable">Виджетийн тохиргоог нээж чадсангүй, тиймээс нэмэгдсэнгүй.</string>
     <string name="widget_bar">Виджетийн хэвтээ самбар</string>
 

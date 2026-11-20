@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">Breedte: %1$s van de langste rand van het scherm (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Breedte verticale balk</string>
     <string name="bar_icons_count">App-pictogrammen: %1$d</string>
+    <string name="horizontal_bar_order">Volgorde van de elementen van de balk</string>
+    <string name="horizontal_bar_order_hint">Sleep een element aan zijn greep. De bovenkant van de lijst is de linkerkant van de balk, de onderkant de rechterkant.</string>
+    <string name="bar_element_drawer">Knop van de app-lade</string>
+    <string name="bar_element_apps">Apps</string>
+    <string name="bar_element_music">Muziek</string>
+    <string name="bar_element_date">Datum</string>
+    <string name="bar_element_weather">Weer</string>
     <string name="widget_configuration_unavailable">De instellingen van de widget konden niet worden geopend, dus is hij niet toegevoegd.</string>
     <string name="widget_bar">Horizontale widgetbalk</string>
 

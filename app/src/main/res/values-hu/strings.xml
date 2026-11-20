@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">Szélesség: a képernyő hosszabb élének %1$s része (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Függőleges sáv szélessége</string>
     <string name="bar_icons_count">Alkalmazásikonok: %1$d</string>
+    <string name="horizontal_bar_order">A sáv elemeinek sorrendje</string>
+    <string name="horizontal_bar_order_hint">Húzza az elemet a fogantyújánál fogva. A lista teteje a sáv bal oldala, az alja a jobb oldala.</string>
+    <string name="bar_element_drawer">Alkalmazásfiók gomb</string>
+    <string name="bar_element_apps">Alkalmazások</string>
+    <string name="bar_element_music">Zene</string>
+    <string name="bar_element_date">Dátum</string>
+    <string name="bar_element_weather">Időjárás</string>
     <string name="widget_configuration_unavailable">A modul beállításait nem sikerült megnyitni, ezért nem lett hozzáadva.</string>
     <string name="widget_bar">Widgetek vízszintes sávja</string>
 

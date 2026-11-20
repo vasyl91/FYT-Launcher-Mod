@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">Breite: %1$s der längeren Bildschirmkante (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Breite der vertikalen Leiste</string>
     <string name="bar_icons_count">App-Symbole: %1$d</string>
+    <string name="horizontal_bar_order">Reihenfolge der Leistenelemente</string>
+    <string name="horizontal_bar_order_hint">Ziehen Sie ein Element an seinem Griff. Oben in der Liste ist links in der Leiste, unten rechts.</string>
+    <string name="bar_element_drawer">App-Drawer-Schaltfläche</string>
+    <string name="bar_element_apps">Apps</string>
+    <string name="bar_element_music">Musik</string>
+    <string name="bar_element_date">Datum</string>
+    <string name="bar_element_weather">Wetter</string>
     <string name="widget_configuration_unavailable">Die Einstellungen des Widgets konnten nicht geöffnet werden, daher wurde es nicht hinzugefügt.</string>
     <string name="widget_bar">Horizontale Widget-Leiste</string>
 

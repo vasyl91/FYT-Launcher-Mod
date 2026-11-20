@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">Lebar: %1$s dari sisi layar yang lebih panjang (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Lebar bilah vertikal</string>
     <string name="bar_icons_count">Ikon aplikasi: %1$d</string>
+    <string name="horizontal_bar_order">Urutan elemen bilah</string>
+    <string name="horizontal_bar_order_hint">Seret elemen pada pegangannya. Bagian atas daftar adalah sisi kiri bilah, bagian bawah sisi kanan.</string>
+    <string name="bar_element_drawer">Tombol laci aplikasi</string>
+    <string name="bar_element_apps">Aplikasi</string>
+    <string name="bar_element_music">Musik</string>
+    <string name="bar_element_date">Tanggal</string>
+    <string name="bar_element_weather">Cuaca</string>
     <string name="widget_configuration_unavailable">Setelan widget tidak dapat dibuka, jadi widget tidak ditambahkan.</string>
     <string name="widget_bar">Bilah horizontal widget</string>
 

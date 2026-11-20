@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">ความกว้าง: %1$s ของขอบยาวของหน้าจอ (%2$s)</string>
     <string name="vertical_bar_width_seekbar">ความกว้างของแถบแนวตั้ง</string>
     <string name="bar_icons_count">ไอคอนแอป: %1$d</string>
+    <string name="horizontal_bar_order">ลำดับองค์ประกอบของแถบ</string>
+    <string name="horizontal_bar_order_hint">ลากองค์ประกอบด้วยที่จับ ด้านบนของรายการคือด้านซ้ายของแถบ ด้านล่างคือด้านขวา</string>
+    <string name="bar_element_drawer">ปุ่มลิ้นชักแอป</string>
+    <string name="bar_element_apps">แอป</string>
+    <string name="bar_element_music">เพลง</string>
+    <string name="bar_element_date">วันที่</string>
+    <string name="bar_element_weather">สภาพอากาศ</string>
     <string name="widget_configuration_unavailable">เปิดการตั้งค่าของวิดเจ็ตไม่ได้ จึงไม่ได้เพิ่มวิดเจ็ตนี้</string>
     <string name="widget_bar">แถบแนวนอนของวิดเจ็ต</string>
 

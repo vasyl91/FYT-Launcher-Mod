@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">Anchura: %1$s del lado más largo de la pantalla (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Anchura de la barra vertical</string>
     <string name="bar_icons_count">Iconos de aplicaciones: %1$d</string>
+    <string name="horizontal_bar_order">Orden de los elementos de la barra</string>
+    <string name="horizontal_bar_order_hint">Arrastra un elemento por su asa. La parte superior de la lista es la izquierda de la barra; la inferior, la derecha.</string>
+    <string name="bar_element_drawer">Botón del cajón de aplicaciones</string>
+    <string name="bar_element_apps">Aplicaciones</string>
+    <string name="bar_element_music">Música</string>
+    <string name="bar_element_date">Fecha</string>
+    <string name="bar_element_weather">Tiempo</string>
     <string name="widget_configuration_unavailable">No se pudieron abrir los ajustes del widget, así que no se ha añadido.</string>
     <string name="widget_bar">Barra horizontal de widgets</string>
 

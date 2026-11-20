@@ -226,6 +226,11 @@
             android:key="choose_bar_tint"
             android:persistent="false"
             android:title="@string/black_bar"/>
+        <!-- Opens the dialog of the order of the bar's elements (BarOrderDialog); stored per orientation -->
+        <Preference
+            android:key="horizontal_bar_order"
+            android:persistent="false"
+            android:title="@string/horizontal_bar_order" />
         <!-- Divider between the bars' sections (the owner, 2026-11-20) -->
         <Preference
             android:layout="@layout/preference_separator"

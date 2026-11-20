@@ -447,6 +447,13 @@
     <string name="resizable_vertical_bar_summary">Width: %1$s of the screen\'s longer edge (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Vertical bar width</string>
     <string name="bar_icons_count">App icons: %1$d</string>
+    <string name="horizontal_bar_order">Order of the bar\'s elements</string>
+    <string name="horizontal_bar_order_hint">Drag an element by its handle. The top of the list is the left of the bar, the bottom its right.</string>
+    <string name="bar_element_drawer">App drawer button</string>
+    <string name="bar_element_apps">Apps</string>
+    <string name="bar_element_music">Music</string>
+    <string name="bar_element_date">Date</string>
+    <string name="bar_element_weather">Weather</string>
     <string name="widget_configuration_unavailable">The widget\'s settings could not be opened, so it was not added.</string>
     <string name="widget_bar">Widget horizontal bar</string>
 

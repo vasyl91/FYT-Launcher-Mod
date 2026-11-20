@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">Amplada: %1$s del costat més llarg de la pantalla (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Amplada de la barra vertical</string>
     <string name="bar_icons_count">Icones d\'aplicacions: %1$d</string>
+    <string name="horizontal_bar_order">Ordre dels elements de la barra</string>
+    <string name="horizontal_bar_order_hint">Arrossega un element per la seva nansa. La part superior de la llista és l\'esquerra de la barra, i la inferior, la dreta.</string>
+    <string name="bar_element_drawer">Botó del calaix d\'aplicacions</string>
+    <string name="bar_element_apps">Aplicacions</string>
+    <string name="bar_element_music">Música</string>
+    <string name="bar_element_date">Data</string>
+    <string name="bar_element_weather">Temps</string>
     <string name="widget_configuration_unavailable">No s\'han pogut obrir els paràmetres del widget, així que no s\'ha afegit.</string>
     <string name="widget_bar">Barra horitzontal de widgets</string>
 

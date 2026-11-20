@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">宽度：屏幕较长边的 %1$s（%2$s）</string>
     <string name="vertical_bar_width_seekbar">纵栏宽度</string>
     <string name="bar_icons_count">应用图标：%1$d</string>
+    <string name="horizontal_bar_order">栏元素的顺序</string>
+    <string name="horizontal_bar_order_hint">拖动元素的把手来移动它。列表顶部是栏的左侧，底部是右侧。</string>
+    <string name="bar_element_drawer">应用抽屉按钮</string>
+    <string name="bar_element_apps">应用</string>
+    <string name="bar_element_music">音乐</string>
+    <string name="bar_element_date">日期</string>
+    <string name="bar_element_weather">天气</string>
     <string name="widget_configuration_unavailable">无法打开该小部件的设置，因此未添加。</string>
     <string name="widget_bar">小部件横栏</string>
 

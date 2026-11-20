@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">Шырыня: %1$s даўжэйшага боку экрана (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Шырыня вертыкальнай панэлі</string>
     <string name="bar_icons_count">Значкі праграм: %1$d</string>
+    <string name="horizontal_bar_order">Парадак элементаў панэлі</string>
+    <string name="horizontal_bar_order_hint">Перацягніце элемент за яго ручку. Верх спісу — гэта левы бок панэлі, ніз — правы.</string>
+    <string name="bar_element_drawer">Кнопка меню праграм</string>
+    <string name="bar_element_apps">Праграмы</string>
+    <string name="bar_element_music">Музыка</string>
+    <string name="bar_element_date">Дата</string>
+    <string name="bar_element_weather">Надвор\'е</string>
     <string name="widget_configuration_unavailable">Не ўдалося адкрыць налады віджэта, таму ён не дададзены.</string>
     <string name="widget_bar">Гарызантальная панэль віджэтаў</string>
 

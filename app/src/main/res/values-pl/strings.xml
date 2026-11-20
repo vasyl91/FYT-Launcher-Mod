@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">Szerokość: %1$s dłuższej krawędzi ekranu (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Szerokość pionowego paska</string>
     <string name="bar_icons_count">Ikony aplikacji: %1$d</string>
+    <string name="horizontal_bar_order">Kolejność elementów paska</string>
+    <string name="horizontal_bar_order_hint">Przeciągnij element za uchwyt. Góra listy to lewa strona paska, dół – prawa.</string>
+    <string name="bar_element_drawer">Przycisk szuflady aplikacji</string>
+    <string name="bar_element_apps">Aplikacje</string>
+    <string name="bar_element_music">Muzyka</string>
+    <string name="bar_element_date">Data</string>
+    <string name="bar_element_weather">Pogoda</string>
     <string name="widget_configuration_unavailable">Nie udało się otworzyć ustawień widżetu, więc nie został dodany.</string>
     <string name="widget_bar">Pasek poziomy z widgetami</string>
 

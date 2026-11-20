@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">Lapad: %1$s ng mas mahabang gilid ng screen (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Lapad ng patayong bar</string>
     <string name="bar_icons_count">Mga icon ng app: %1$d</string>
+    <string name="horizontal_bar_order">Pagkakasunod-sunod ng mga elemento ng bar</string>
+    <string name="horizontal_bar_order_hint">I-drag ang isang elemento sa hawakan nito. Ang itaas ng listahan ay ang kaliwa ng bar, ang ibaba ang kanan.</string>
+    <string name="bar_element_drawer">Button ng app drawer</string>
+    <string name="bar_element_apps">Mga app</string>
+    <string name="bar_element_music">Musika</string>
+    <string name="bar_element_date">Petsa</string>
+    <string name="bar_element_weather">Panahon</string>
     <string name="widget_configuration_unavailable">Hindi mabuksan ang mga setting ng widget, kaya hindi ito naidagdag.</string>
     <string name="widget_bar">Pahalang na bar ng widget</string>
 

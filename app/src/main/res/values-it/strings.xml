@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">Larghezza: %1$s del lato più lungo dello schermo (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Larghezza della barra verticale</string>
     <string name="bar_icons_count">Icone delle app: %1$d</string>
+    <string name="horizontal_bar_order">Ordine degli elementi della barra</string>
+    <string name="horizontal_bar_order_hint">Trascina un elemento dalla sua maniglia. La parte alta dell\'elenco è la sinistra della barra, quella bassa la destra.</string>
+    <string name="bar_element_drawer">Pulsante del cassetto app</string>
+    <string name="bar_element_apps">App</string>
+    <string name="bar_element_music">Musica</string>
+    <string name="bar_element_date">Data</string>
+    <string name="bar_element_weather">Meteo</string>
     <string name="widget_configuration_unavailable">Non è stato possibile aprire le impostazioni del widget, quindi non è stato aggiunto.</string>
     <string name="widget_bar">Barra orizzontale dei widget</string>
 

@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">Šírka: %1$s dlhšej strany obrazovky (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Šírka zvislého panela</string>
     <string name="bar_icons_count">Ikony aplikácií: %1$d</string>
+    <string name="horizontal_bar_order">Poradie prvkov lišty</string>
+    <string name="horizontal_bar_order_hint">Potiahnite prvok za jeho úchyt. Horná časť zoznamu je ľavá strana lišty, spodná pravá.</string>
+    <string name="bar_element_drawer">Tlačidlo panela aplikácií</string>
+    <string name="bar_element_apps">Aplikácie</string>
+    <string name="bar_element_music">Hudba</string>
+    <string name="bar_element_date">Dátum</string>
+    <string name="bar_element_weather">Počasie</string>
     <string name="widget_configuration_unavailable">Nastavenia miniaplikácie sa nepodarilo otvoriť, preto nebola pridaná.</string>
     <string name="widget_bar">Vodorovný panel widgetov</string>
 

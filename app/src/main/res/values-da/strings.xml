@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">Bredde: %1$s af skærmens længste kant (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Bredde på lodret bjælke</string>
     <string name="bar_icons_count">Appikoner: %1$d</string>
+    <string name="horizontal_bar_order">Rækkefølge af bjælkens elementer</string>
+    <string name="horizontal_bar_order_hint">Træk et element i dets håndtag. Toppen af listen er bjælkens venstre side, bunden dens højre.</string>
+    <string name="bar_element_drawer">Knap til appskuffen</string>
+    <string name="bar_element_apps">Apps</string>
+    <string name="bar_element_music">Musik</string>
+    <string name="bar_element_date">Dato</string>
+    <string name="bar_element_weather">Vejr</string>
     <string name="widget_configuration_unavailable">Widgettens indstillinger kunne ikke åbnes, så den blev ikke tilføjet.</string>
     <string name="widget_bar">Vandret widgetbjælke</string>
 

@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">Largeur : %1$s du bord le plus long de l\'écran (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Largeur de la barre verticale</string>
     <string name="bar_icons_count">Icônes d\'applications : %1$d</string>
+    <string name="horizontal_bar_order">Ordre des éléments de la barre</string>
+    <string name="horizontal_bar_order_hint">Faites glisser un élément par sa poignée. Le haut de la liste est la gauche de la barre, le bas sa droite.</string>
+    <string name="bar_element_drawer">Bouton du tiroir d\'applications</string>
+    <string name="bar_element_apps">Applications</string>
+    <string name="bar_element_music">Musique</string>
+    <string name="bar_element_date">Date</string>
+    <string name="bar_element_weather">Météo</string>
     <string name="widget_configuration_unavailable">Les paramètres du widget n\'ont pas pu être ouverts : il n\'a pas été ajouté.</string>
     <string name="widget_bar">Barre horizontale des widgets</string>
 

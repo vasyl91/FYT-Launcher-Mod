@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">Լայնություն՝ էկրանի երկար կողմի %1$s (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Ուղղահայաց գոտու լայնություն</string>
     <string name="bar_icons_count">Հավելվածների պատկերակներ՝ %1$d</string>
+    <string name="horizontal_bar_order">Վահանակի տարրերի հերթականությունը</string>
+    <string name="horizontal_bar_order_hint">Քաշեք տարրը իր բռնակից։ Ցուցակի վերևը վահանակի ձախ կողմն է, ներքևը՝ աջը։</string>
+    <string name="bar_element_drawer">Հավելվածների դարակի կոճակ</string>
+    <string name="bar_element_apps">Հավելվածներ</string>
+    <string name="bar_element_music">Երաժշտություն</string>
+    <string name="bar_element_date">Ամսաթիվ</string>
+    <string name="bar_element_weather">Եղանակ</string>
     <string name="widget_configuration_unavailable">Վիջեթի կարգավորումները չհաջողվեց բացել, ուստի այն չավելացվեց։</string>
     <string name="widget_bar">Վիջեթների հորիզոնական գոտի</string>
 

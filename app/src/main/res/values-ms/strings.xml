@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">Lebar: %1$s daripada sisi skrin yang lebih panjang (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Lebar bar menegak</string>
     <string name="bar_icons_count">Ikon apl: %1$d</string>
+    <string name="horizontal_bar_order">Susunan elemen bar</string>
+    <string name="horizontal_bar_order_hint">Seret elemen pada pemegangnya. Bahagian atas senarai ialah sebelah kiri bar, bahagian bawah sebelah kanan.</string>
+    <string name="bar_element_drawer">Butang laci apl</string>
+    <string name="bar_element_apps">Apl</string>
+    <string name="bar_element_music">Muzik</string>
+    <string name="bar_element_date">Tarikh</string>
+    <string name="bar_element_weather">Cuaca</string>
     <string name="widget_configuration_unavailable">Tetapan widget tidak dapat dibuka, jadi ia tidak ditambah.</string>
     <string name="widget_bar">Bar mendatar widget</string>
 

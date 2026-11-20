@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">Platums: %1$s no ekrāna garākās malas (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Vertikālās joslas platums</string>
     <string name="bar_icons_count">Lietotņu ikonas: %1$d</string>
+    <string name="horizontal_bar_order">Joslas elementu secība</string>
+    <string name="horizontal_bar_order_hint">Velciet elementu aiz tā roktura. Saraksta augša ir joslas kreisā puse, apakša – labā.</string>
+    <string name="bar_element_drawer">Lietotņu atvilktnes poga</string>
+    <string name="bar_element_apps">Lietotnes</string>
+    <string name="bar_element_music">Mūzika</string>
+    <string name="bar_element_date">Datums</string>
+    <string name="bar_element_weather">Laikapstākļi</string>
     <string name="widget_configuration_unavailable">Logrīka iestatījumus neizdevās atvērt, tāpēc tas netika pievienots.</string>
     <string name="widget_bar">Logrīku horizontālā josla</string>
 

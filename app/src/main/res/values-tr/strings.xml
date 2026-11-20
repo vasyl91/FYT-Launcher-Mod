@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">Genişlik: ekranın uzun kenarının %1$s kadarı (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Dikey çubuk genişliği</string>
     <string name="bar_icons_count">Uygulama simgeleri: %1$d</string>
+    <string name="horizontal_bar_order">Çubuk öğelerinin sırası</string>
+    <string name="horizontal_bar_order_hint">Bir öğeyi tutamacından sürükleyin. Listenin üstü çubuğun solu, altı sağıdır.</string>
+    <string name="bar_element_drawer">Uygulama çekmecesi düğmesi</string>
+    <string name="bar_element_apps">Uygulamalar</string>
+    <string name="bar_element_music">Müzik</string>
+    <string name="bar_element_date">Tarih</string>
+    <string name="bar_element_weather">Hava durumu</string>
     <string name="widget_configuration_unavailable">Widget\'ın ayarları açılamadı, bu yüzden eklenmedi.</string>
     <string name="widget_bar">Widget yatay çubuğu</string>
 

@@ -379,6 +379,13 @@
     <string name="resizable_vertical_bar_summary">Ширина: %1$s от по-дългата страна на екрана (%2$s)</string>
     <string name="vertical_bar_width_seekbar">Ширина на вертикалната лента</string>
     <string name="bar_icons_count">Икони на приложения: %1$d</string>
+    <string name="horizontal_bar_order">Ред на елементите на лентата</string>
+    <string name="horizontal_bar_order_hint">Плъзнете елемент за дръжката му. Горе в списъка е лявата страна на лентата, долу – дясната.</string>
+    <string name="bar_element_drawer">Бутон за чекмеджето с приложения</string>
+    <string name="bar_element_apps">Приложения</string>
+    <string name="bar_element_music">Музика</string>
+    <string name="bar_element_date">Дата</string>
+    <string name="bar_element_weather">Времето</string>
     <string name="widget_configuration_unavailable">Настройките на приспособлението не можаха да се отворят, затова то не беше добавено.</string>
     <string name="widget_bar">Хоризонтална лента на приспособленията</string>
 
