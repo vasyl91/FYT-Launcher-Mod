@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.SurfaceControl;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -339,6 +340,30 @@ public class WindowHostActivityView {
             } catch (Throwable t2) {
                 Log.w(TAG, "AV release id=" + id + " fallback failed", t2);
             }
+        }
+        if (ok) {
+            releaseRootSurface(av, id);
+        }
+    }
+
+    /**
+     * Android 10's ActivityView makes a container layer for its virtual display (mRootSurfaceControl, in
+     * initVirtualDisplay()) and does not release it in performRelease(): only the finalizer did, which StrictMode
+     * reported as a leaked SurfaceControl, 13 times in the 7862's log of 2026-11-20 18:21 (KI-46).
+     *
+     * <p>It is released here, once the view itself has been. SurfaceControl.release() only lets go of this process's
+     * reference: the layer lives on with its parent exactly as it did until the finalizer ran, so nothing on the
+     * screen changes, only the time. After performRelease() the view has no surface callback left that could use the
+     * layer again. Where the field does not exist (another Android, WindowHostVdView), nothing is done.
+     */
+    private static void releaseRootSurface(Object av, int id) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return;
+        Object root = readFieldQuietly(av, "mRootSurfaceControl");
+        if (!(root instanceof SurfaceControl)) return;
+        try {
+            ((SurfaceControl) root).release();
+        } catch (Throwable t) {
+            Log.w(TAG, "AV release id=" + id + ": its root surface could not be released", t);
         }
     }
 
