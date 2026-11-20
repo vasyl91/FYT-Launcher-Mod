@@ -1,6 +1,6 @@
 # Known issues
 
-As of 2026-11-19 (`testBranch` after round 22 and the owner's tests of that day: `16f256ee8`, `660b032e6`). One list of what is open today,
+As of 2026-11-20 (`testBranch` after round 23 and the owner's logs of that day). One list of what is open today,
 rewritten on 2026-11-18 at the owner's request. What was fixed or closed has been taken out; it stays in git
 and in the reports (`reports/`, `chat_archive/`). Sources: the code, git, CI, the briefs, the chat reports and
 the owner's results.
@@ -42,8 +42,8 @@ file and named in the round's report.
 | KI-31 | StrictMode reports inside the framework (A55 log of 2026-11-09) | problem | partial | — |
 | KI-33 | Some settings of the home screen only with the user layout on | problem | open | the owner's choice |
 | KI-37 | A widget lay over icons after a change of the grid | unverified | watching | a log with `Item out of place` |
-| KI-43 | The home screen's check: a second build of the bars' lists at a start, and its timers | unverified | watching | the owner's log of the 7862 (`75af342ab`) |
-| KI-44 | The GPS of the fuel statistics only while something needs it | unverified | watching | the owner's test (`71c8e0e03`, `7e955ba65`) |
+| KI-44 | The GPS of the fuel statistics only while something needs it | unverified | partial | a unit whose code check waits for a drive |
+| KI-45 | StrictMode reports of the launcher's own code in the 7862's logs | problem | open | the owner's choice |
 
 ## Problems
 
@@ -205,19 +205,24 @@ line was `Items sharing cells` before round 20). **The owner's log of 2026-11-19
 grid (3×8 → 7×12 and 7×12 → 5×8, the second giving 4 icons of the first page a new cell) and no such line, so
 nothing shared a cell after either load.
 
-### KI-43 The home screen's check: a second build of the bars' lists at a start, and its timers
-The A55's start log, 2026-11-19 [V]: the home layout watchdog judged the bars while the model was still binding,
-left a repair pending, and that repair built both bars' lists a second time. The owner, 2026-11-19 [H]: no fixed
-intervals; a real fault is to be repaired as soon as it occurs, in any conditions, rebuilt at the root if need be
-(D-75). `f080ffbd4` and `75af342ab`: `HomeIntegrity` (the rules: a part not ready yet is waited for, not repaired)
-and `HomeLayoutRecovery` in episodes, judged after every pass of the window's layout from an event until the home
-screen is whole, with no timers; a change of the window's size is an event of its own. To look at in the 7862's log
-(`HomeCheck:` lines): a cold start (one `initAppData()`), a wake, a home press from an app and from all apps, a
-return from the settings. Not tested on a device.
-
 ### KI-44 The GPS of the fuel statistics only while something needs it
 The owner's A55 asked for the GPS every 500 ms whenever the statistics' service ran (2026-11-19) [V], also with no
 canbus. `71c8e0e03`: `LocationNeed` — none without a canbus or need, every 5 s while only a drive has to be seen,
 every 0.5 s for the estimate, the speed code's scale and the code check's recording. `7e955ba65`: the code check sees
-a drive from the speed code too, so with a known speed code it waits without the GPS. To look at: `GPS:` lines in the
-log (the A55: `none (no canbus …)`; the 7862 with a fuel code: every 500 ms as before). Not tested on a device.
+a drive from the speed code too, so with a known speed code it waits without the GPS. **The owner's logs of
+2026-11-20 [V]:** the A55 makes no location request any more (no `RequestManager_FLP` line for the launcher). It has
+no `GPS:` line either: the service logs a change of the rate, and "none" from the start is no change. The 7862 asks
+every 500 ms as before, for the estimate's altitude (it has no barometer; its speed comes from the code). Not seen yet
+on a device: a unit whose code check waits for a drive (every 5 s without a speed code, nothing with one).
+
+### KI-45 StrictMode reports of the launcher's own code in the 7862's logs
+Both are older than round 23: they are in the logs of 2026-11-15 and 2026-11-16 too [V].
+- **A launcher created again in the same process reads the screens on the main thread.** `WorkspaceScreensPreload`
+  reads the screens' ids off the main thread once, at the start of the process, and `take()` drops them. The next
+  `Workspace` (the activity created again, e.g. after the settings: log of 2026-11-20 09:32:05, "screens not read
+  ahead (none)") queries the provider on the main thread: a `DiskReadViolation` of ~144 ms in
+  `Workspace.loadWorkspaceScreensFromProvider`.
+- **The status bar strip leaves a `Choreographer` to the finalizer at each start of its service** (system flavor).
+  `StatusBarSwipeDetector` adds its window on a `HandlerThread` of its own and ends that thread with the window. The
+  thread's `Choreographer` is never disposed, so its `DisplayEventReceiver` is reported as a
+  `LeakedClosableViolation` when it is collected (3 times in the log of 2026-11-20). No other effect is known [A].

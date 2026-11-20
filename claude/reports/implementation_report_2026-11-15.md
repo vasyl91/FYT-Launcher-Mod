@@ -457,3 +457,23 @@ without a retry ("Max retries reached for RecyclerView, resetting"); the home ch
 (`APP_DATA_NOT_STARTED`) instead of waiting for nothing. `HomeLayoutRecovery` and `CanbusAutoCheck` have no tests of
 their own: they need a whole Launcher, and a FYT unit with a car. Not tested on a device.
 
+### The owner's result (2026-11-20)
+
+The owner [H]: the home screen looks as it should and everything loads correctly. Their four logs [V]:
+
+| Log | `HomeCheck` | The bars' lists |
+|---|---|---|
+| 7862, cold start (09:29) | waits for the pages, then for the bars' apps; whole after 7 passes, 2613 ms | one `initAppData()` |
+| 7862, activity created again after the settings (09:32:05) | whole after 6 passes, 411 ms | one `initAppData()` |
+| 7862, return from the settings (09:32:16) | whole after 4 passes, 201 ms; then whole after 2 passes, 42 ms | two calls, both "unchanged, skipping rebuild" |
+| 7862, wake (09:32:25) | no line: the first judgement found the screen whole (such an episode logs nothing) | none |
+| 7862, reboot (09:34) | whole after 6 passes, 2361 ms | one `initAppData()` |
+| 7862, return from the settings (09:37:54) | whole after 4 passes, 159 ms; then whole after 2 passes, 39 ms | two calls, both "unchanged, skipping rebuild" |
+| A55, start (09:31) | whole after 6 passes, 590 ms | one `initAppData()` |
+
+No log has a repair, a "Layout unhealthy" line or a crash. KI-43 is closed. The GPS: the 7862 asks every 500 ms as
+before, for the estimate's altitude; the A55 makes no request (no `RequestManager_FLP` line for the launcher) and logs
+no `GPS:` line, since "none" from the start is no change of the rate (KI-44 corrected). One thing in the return from
+the settings: its first episode ended "whole" while the page with the bars was still being bound, since a page not
+built yet has no bar to judge; the episode opened by the binding's end judged the bars. Two StrictMode reports of the
+launcher's own code, older than this round, went into KI-45.
