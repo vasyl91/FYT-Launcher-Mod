@@ -83,4 +83,35 @@ public class PreferenceScreensTest {
         assertEquals(com.android.launcher66.settings.VerticalBarWidthSeekBarPreference.class,
                 bars.getPreference(width).getClass());
     }
+
+    @Test
+    public void theBarsAreThreeSectionsWithADividerBetweenThem() {
+        // The owner, 2026-11-20: the horizontal bar, the widget bar and the vertical bar, a divider between each
+        PreferenceCategory bars = inflate(R.xml.creator_preferences).findPreference("bars_category");
+        assertNotNull(bars);
+        StringBuilder sections = new StringBuilder();
+        for (int i = 0; i < bars.getPreferenceCount(); i++) {
+            androidx.preference.Preference row = bars.getPreference(i);
+            if (row.getLayoutResource() == R.layout.preference_separator) {
+                sections.append('|');
+            } else if ("horizontal_bar_top".equals(row.getKey())) {
+                sections.append('H');
+            } else if ("widget_bar".equals(row.getKey())) {
+                sections.append('W');
+            } else if ("left_bar".equals(row.getKey())) {
+                sections.append('V');
+            }
+        }
+        assertEquals("H|W|V", sections.toString());
+        int widgetBar = -1;
+        int verticalBar = -1;
+        for (int i = 0; i < bars.getPreferenceCount(); i++) {
+            if ("widget_bar".equals(bars.getPreference(i).getKey())) widgetBar = i;
+            if ("left_bar".equals(bars.getPreference(i).getKey())) verticalBar = i;
+        }
+        assertEquals("a divider directly above the widget bar", R.layout.preference_separator,
+                bars.getPreference(widgetBar - 1).getLayoutResource());
+        assertEquals("a divider directly above the vertical bar", R.layout.preference_separator,
+                bars.getPreference(verticalBar - 1).getLayoutResource());
+    }
 }

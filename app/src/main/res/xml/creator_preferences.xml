@@ -226,6 +226,10 @@
             android:key="choose_bar_tint"
             android:persistent="false"
             android:title="@string/black_bar"/>
+        <!-- Divider between the bars' sections (the owner, 2026-11-20) -->
+        <Preference
+            android:layout="@layout/preference_separator"
+            android:selectable="false" />
         <SwitchPreferenceCompat
             app:singleLineTitle="false"
             android:key="widget_bar"
@@ -277,6 +281,10 @@
             android:summaryOn="@string/widget_bar_large_text_on"
             android:summaryOff="@string/widget_bar_large_text_off"
             app:layout="@layout/nested_preference_category_switch" />
+        <!-- Divider between the bars' sections (the owner, 2026-11-20) -->
+        <Preference
+            android:layout="@layout/preference_separator"
+            android:selectable="false" />
         <SwitchPreferenceCompat
             app:singleLineTitle="false"
             android:key="left_bar"
