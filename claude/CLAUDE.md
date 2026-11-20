@@ -43,8 +43,9 @@ present [A] as [V]. A report that says something was implemented is [H] until a 
 - Release variants are `systemRelease` and `standardRelease`. Output files are named
   `<flavor>_<buildType>_<version>.apk`.
 - Cloud sessions usually have no Android SDK, so CI (`.github/workflows/build.yml`) is the build check.
-  It runs the unit tests, both debug builds and the Magisk zip on every push. Read its result with the
-  GitHub MCP tools (`actions_list`, `get_job_logs`).
+  It runs the unit tests, both debug builds and the Magisk zip on every push that changes more than the
+  documentation (a push of `claude/`, `*.md` and `*.MD` only starts no run: `paths-ignore`). Read its result
+  with the GitHub MCP tools (`actions_list`, `get_job_logs`).
 - Without an SDK you can still test plain-Java classes with `javac` and the JUnit console jar. That checks
   those classes only; it is not a build.
 - To regenerate the CAN bus library, run `build_canbus_library.py --launcher .` (see
@@ -57,8 +58,16 @@ present [A] as [V]. A report that says something was implemented is [H] until a 
 - Commits are in English. The subject is `<Area>: <what changed>`, e.g. `Bars: the vertical bar on every page`.
   The body is wrapped at ~72 characters and says *why*, with the facts behind the change.
 - One step, one commit. Every commit builds and passes the tests on its own.
-- After each push, wait for green CI before the next commit. Fix a red build with a new commit. Never use
-  `--amend` and never force-push. If the branch moved, merge or fast-forward; do not undo the owner's commits.
+- **CI only after a change of the code** (the owner, 2026-11-20). The code is everything that goes into a
+  build or changes how it builds or runs: the modules, the Gradle files, resources and assets, the scripts
+  that generate assets, `.github/`.
+  - A commit with code: the tests and both builds locally, push, and green CI before the next commit with
+    code. Fix a red build with a new commit.
+  - A commit of documentation only (`claude/`, `*.md`, `*.MD`), or work that does not touch the code and what
+    it does: no local Gradle run, no CI, no waiting. Push it at once, also while the CI of the code pushed
+    before it still runs: such a push starts no run, so it cancels none.
+- Never use `--amend` and never force-push. If the branch moved, merge or fast-forward; do not undo the
+  owner's commits.
 - End commits with the trailers from the session's system reminder, exactly as given.
 - **Never write a model name or model ID in repository content** (code, comments, docs, commit subjects and
   bodies). The trailer lines the session requires are the one exception.
