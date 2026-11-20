@@ -1,6 +1,6 @@
 # Known issues
 
-As of 2026-11-20 (`testBranch` after round 24, which followed the owner's logs of that day). One list of what is open today,
+As of 2026-11-20 (`testBranch` after round 25 and the owner's log of 18:21 that day). One list of what is open today,
 rewritten on 2026-11-18 at the owner's request. What was fixed or closed has been taken out; it stays in git
 and in the reports (`reports/`, `chat_archive/`). Sources: the code, git, CI, the briefs, the chat reports and
 the owner's results.
@@ -43,7 +43,7 @@ file and named in the round's report.
 | KI-33 | Some settings of the home screen only with the user layout on | problem | open | the owner's choice |
 | KI-37 | A widget lay over icons after a change of the grid | unverified | watching | a log with `Item out of place` |
 | KI-44 | The GPS of the fuel statistics only while something needs it | unverified | partial | a unit whose code check waits for a drive |
-| KI-45 | StrictMode reports of the launcher's own code in the 7862's logs | problem | watching | the owner's log of the 7862 (`85f35583d`, `84a269d99`) |
+| KI-46 | StrictMode reports in the 7862's log of 2026-11-20 18:21 | problem | watching | the owner's log of the 7862 (`6670ecf8b`, `d61011f34`) |
 
 ## Problems
 
@@ -215,23 +215,19 @@ no `GPS:` line either: the service logs a change of the rate, and "none" from th
 every 500 ms as before, for the estimate's altitude (it has no barometer; its speed comes from the code). Not seen yet
 on a device: a unit whose code check waits for a drive (every 5 s without a speed code, nothing with one).
 
-### KI-45 StrictMode reports of the launcher's own code in the 7862's logs
-Both are older than round 23: they are in the logs of 2026-11-15 and 2026-11-16 too [V].
-- **A launcher created again in the same process reads the screens on the main thread.** `WorkspaceScreensPreload`
-  reads the screens' ids off the main thread once, at the start of the process, and `take()` drops them. The next
-  `Workspace` (the activity created again, e.g. after the settings: log of 2026-11-20 09:32:05, "screens not read
-  ahead (none)") queries the provider on the main thread: a `DiskReadViolation` of ~144 ms in
-  `Workspace.loadWorkspaceScreensFromProvider`.
-- **The status bar strip leaves a `Choreographer` to the finalizer at each start of its service** (system flavor).
-  `StatusBarSwipeDetector` adds its window on a `HandlerThread` of its own and ends that thread with the window. The
-  thread's `Choreographer` is never disposed, so its `DisplayEventReceiver` is reported as a
-  `LeakedClosableViolation` when it is collected (3 times in the log of 2026-11-20). No other effect is known [A].
+### KI-46 StrictMode reports in the 7862's log of 2026-11-20 18:21
+Both are older than round 24: they are in the logs since 2026-11-15 and 2026-11-19 [V].
+- **The widget previews of the page shown first were read on the main thread.** Opening the widgets tab of the list of
+  apps, `AppsCustomizePagedView.syncWidgetPageItems(page, immediate)` loaded that page's previews synchronously in
+  its layout listener: 4 `DiskReadViolation`s of 48–102 ms in `WidgetPreviewLoader.readFromDb`. `6670ecf8b`: every
+  page loads them in a background task; the page shown first starts at once (`PreviewLoadStart`). Not changed:
+  `generateWidgetPreview` when a widget is dragged out of the list may read resources on the main thread too; no log
+  has shown it [A].
+- **Android 10's `ActivityView` left its root surface to the finalizer.** 13 `LeakedClosableViolation`s for a
+  `SurfaceControl` built in `ActivityView.initVirtualDisplay` (`mRootSurfaceControl`, never released in
+  `performRelease`). `d61011f34`: `WindowHostActivityView.release` releases it once the view is released; the layer
+  lives on with its parent as before, only the time changes.
 
-Round 24 (the owner asked for all the proposed fixes) [V]: `85f35583d` keeps the screens' ids in memory for every
-`Workspace` of the process (`ScreenIdsMemory`: dropped before each write of their table, read again off the main
-thread after it). `84a269d99` gives the strip one window thread for the process. With them, `32adc8b50`: the home
-check waits for the binding before it asks whether a bar is used, so it no longer says "whole" for a page still being
-rebuilt. To look at in the 7862's log: after a setting that creates the launcher again, no "screens not read ahead"
-and no report from `WorkspaceScreensPreload.query`; after a few apps opened and closed, one "Setting up flushing for
-Thread[StatusBarSwipeWindow" per process and no report from `addOverlay`; after a return from the settings, the first
-`HomeCheck` episode ends after "Loader … bind finished". Not tested on a device.
+To look at in the 7862's log: opening the widgets tab gives no report from `WidgetPreviewLoader`; after some pane
+changes and minutes of use there is no `LeakedClosableViolation` from `ActivityView.initVirtualDisplay`. Not tested on a
+device.

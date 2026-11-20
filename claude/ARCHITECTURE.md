@@ -436,6 +436,11 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
     row's window is in front and give it back to the new screen before its first layout. The rows that size their
     own buttons do it when bound, before their first measure (`S/SettingsRowSizing`, 2026-11-19), so a row coming
     in at the top while the list is scrolled up does not push it.
+  - The dialogs (2026-11-20, D-78): `S/SettingsDialogs` gives every one of them the theme `SettingsDialog`, the
+    settings' dark colours, and the fields their colours. The order of the horizontal bar's elements is
+    `S/BarOrderDialog` (a row in "Bars", a list dragged with `ItemTouchHelper`).
+  - The rows (2026-11-20, D-79): a nested row keeps its 16dp under the text on the row itself, with or without a
+    summary, so a divider below never sits under its title; "Bars" has three sections with a divider between.
 - **Updater:** `S/VersionChecker` reads `github.com/vasyl91/FYT-Launcher-Mod/releases/latest`, downloads
   `system_release_<v>.apk` or `standard_release_<v>.apk`, and installs it with Ackpine. `S/ReleasesPage`
   copies the link when there is no browser.

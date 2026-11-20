@@ -971,3 +971,28 @@ The round had no brief; its result is in `reports/implementation_report_2026-11-
   the car gives no value, below the speed it learns).
 - **Where:** `LocationNeed`, `CanbusService.updateLocationNeed`, `CanbusAutoCheck.onSpeed`, `71c8e0e03`, `7e955ba65`.
 
+### D-77 The order of the horizontal bar's elements may be chosen, per orientation
+- **Status:** ACTIVE. **By:** owner, 2026-11-20 (the request and the answer "one order for portrait and one for
+  landscape").
+- **Decision:** a row in "Bars" opens a dialog in which the app drawer button, the apps, the music, the date and the
+  weather are dragged into an order (a tile with three lines on each); the top of the list is the left of the bar.
+  It lists what the settings and the orientation leave; a hidden element keeps its place in the stored order.
+  Nothing stored is the old order. The page's bar and its window are tied from the one order (`BarOrder`).
+- **Where:** `BarOrder`, `BarOrderLayout`, `BarOrderDialog`, `989601f65`, `8118d0af9`.
+
+### D-78 The dialogs of the settings have the settings' colours
+- **Status:** ACTIVE. **By:** owner, 2026-11-20 ("dark as the settings screen, and the same theme for the other
+  dialogs").
+- **Decision:** every dialog of the settings is dark like the settings (`dark_surface`, white text, the settings'
+  blue for the buttons and the active field, a frame in the dividers' grey): the text and field dialogs, the
+  progress and loading dialogs, the colour picker, the background selector's frame. The background selectors keep
+  the wallpaper behind their tiles, the lists of apps their transparency over it. They were light AppCompat dialogs.
+- **Where:** `SettingsDialogs`, `R.style.SettingsDialog`, `fdf25b8e9`.
+
+### D-79 "Bars" has three sections; no blank summaries above dividers
+- **Status:** ACTIVE. **By:** owner, 2026-11-20 (the request and the answer "three sections").
+- **Decision:** dividers between the horizontal bar, the widget bar and the vertical bar in "Bars". The blank
+  summaries (" ") that kept a divider from sitting under a row's title on a phone are gone; the nested rows keep
+  their space under the text themselves, so it looks the same on any device.
+- **Where:** `3dfae9e7d`, `129fc7fc3`, `SeparatorSpacingViewTest`.
+

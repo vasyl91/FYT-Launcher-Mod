@@ -505,3 +505,52 @@ CI only when the code has changed, not after the documentation or work that does
 
 **Deviations from the plan:** none. Not tested on a device.
 
+### The owner's result (2026-11-20 18:21)
+
+The owner [H]: the status bar swipe works. Their log of the 7862 [V] (an older one from 18:08 was of an earlier
+build and is not counted):
+- the activity created again at 18:21:35 finds the screens in memory: no "screens not read ahead", no report from
+  `WorkspaceScreensPreload.query`;
+- "Setting up flushing for Thread[StatusBarSwipeWindow" once for 11 resumes, no report from `addOverlay`;
+- the `HomeCheck` episodes after `recreateView` end after the binding (18:22:10.385 after "Loader 3 bind finished"
+  10.198; 18:22:59.149 after 59.085). No repair in the log.
+
+KI-45 is closed. The log holds two older StrictMode reports, fixed in round 25 (KI-46).
+
+## Round 25 (2026-11-20): StrictMode, the order of the horizontal bar, the settings' rows and dialogs
+
+The owner, 2026-11-20 [H]: a dialog in "Bars" to drag the horizontal bar's elements into an order (a tile with three
+lines on each, the list following the settings and the orientation, its top the left of the bar), dividers between
+the bars' sections, no blank summaries above dividers and a spacing that looks right on any device, the fixes of the
+StrictMode reports found. Answers: one order per orientation, three sections, the dialog dark like the settings and
+the same theme for the other dialogs.
+
+| Commit | Subject |
+|---|---|
+| `6670ecf8b` | Widgets: the previews of the page shown first are read off the main thread too |
+| `d61011f34` | Panes: a released ActivityView gives back its surface at once |
+| `3dfae9e7d` | Settings: a row keeps its space under the title without a summary |
+| `129fc7fc3` | Settings: dividers between the bars in "Bars" |
+| `fdf25b8e9` | Settings: the dialogs in the colours of the settings |
+| `989601f65` | Bars: the elements of the horizontal bar in the order chosen |
+| `8118d0af9` | Settings: the order of the horizontal bar's elements |
+
+- **StrictMode [V]:** the widgets tab read the previews of its first page on the main thread; every page now loads
+  them in a background task (`PreviewLoadStart`, 2 tests). Android 10's `ActivityView` left `mRootSurfaceControl`
+  to the finalizer; it is released with the view.
+- **The rows [V]:** the nested rows carried their bottom space on the summary, which is GONE without one; the space
+  is now the row's. `SeparatorSpacingViewTest` fails on the old layouts (`reset_night_mode`, 0 px) and passes now.
+- **The dialogs [V]:** `SettingsDialogs` and `R.style.SettingsDialog` for all of them; 13 fields white instead of
+  black; the colour picker dark; the selectors and lists keep the wallpaper behind them.
+- **The order [V]:** `BarOrder` (pure, 6 tests) and `BarOrderLayout` tie the page's bar and the window from one
+  source. Measured in Robolectric: the default order lies exactly as before where nothing is hidden; with the date or
+  the weather hidden in landscape the page's bar moves by up to 21 px to lie as the window always did.
+  `BarOrderViewTest` and `BarOrderDialogViewTest` check the order on the views and the dialog on the settings screen.
+
+**Deviations from the plan:**
+- The background selectors' frame comes from the theme; their title strip and button were already the settings'
+  blue and white, now from the colour resources.
+- The launcher's own list of apps for the bar (`dialog_fragment_applist`) takes the colour resources too; it looks
+  the same.
+- Not tested on a device.
+
