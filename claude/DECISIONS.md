@@ -973,12 +973,15 @@ The round had no brief; its result is in `reports/implementation_report_2026-11-
 
 ### D-77 The order of the horizontal bar's elements may be chosen, per orientation
 - **Status:** ACTIVE. **By:** owner, 2026-11-20 (the request and the answer "one order for portrait and one for
-  landscape").
+  landscape", made precise the same day: "the launcher is mostly seen in one orientation, so one row, opening the
+  list of the orientation the screen is in").
 - **Decision:** a row in "Bars" opens a dialog in which the app drawer button, the apps, the music, the date and the
   weather are dragged into an order (a tile with three lines on each); the top of the list is the left of the bar.
   It lists what the settings and the orientation leave; a hidden element keeps its place in the stored order.
   Nothing stored is the old order. The page's bar and its window are tied from the one order (`BarOrder`).
-- **Where:** `BarOrder`, `BarOrderLayout`, `BarOrderDialog`, `989601f65`, `8118d0af9`.
+  One row for both orientations: it opens, and names, the list of the orientation the screen is in now; a turn with
+  the dialog open shows it again with the new orientation's list.
+- **Where:** `BarOrder`, `BarOrderLayout`, `BarOrderDialog`, `989601f65`, `8118d0af9`, `2098a8037`.
 
 ### D-78 The dialogs of the settings have the settings' colours
 - **Status:** ACTIVE. **By:** owner, 2026-11-20 ("dark as the settings screen, and the same theme for the other
