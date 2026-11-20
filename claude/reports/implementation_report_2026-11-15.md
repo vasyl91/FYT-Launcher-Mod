@@ -427,3 +427,33 @@ both bars off the pages after the first. The owner asked to fix the wallpaper to
 
 Not tested on a device.
 
+## Round 23 (2026-11-20): the home screen's check without timers, and the GPS of the fuel statistics
+
+The owner, 2026-11-19 [H]: KI-42 works. KI-43 is to be done, without fixed intervals, repairing a real fault at once,
+in any conditions, rebuilt at the root if need be. The GPS every 500 ms: check that the estimate runs only for a car
+that gives its consumption from a certain speed (it does, D-13), and propose how the code check that waits for a drive
+could do better.
+
+| Commit | Subject |
+|---|---|
+| `f080ffbd4` | Home: the rules of a whole home screen, in one place |
+| `75af342ab` | Home: the home screen is checked when it changes, not on timers |
+| `71c8e0e03` | Fuel stats: the GPS only while something needs it |
+| `7e955ba65` | Fuel stats: the code check sees the car move from its speed code too |
+
+- **The home screen's check [V]:** the old recovery polled (350 + 400 ms; 0, 250, 900 and then 300 ms up to 8
+  times; 400 ms up to 25 s; a 30 s window after a wake; 1.2 s for the focus) and took a part not ready yet for a
+  fault. `HomeIntegrity` (pure, 15 tests) holds the checks and repairs of before, one by one, with the parts that
+  are waited for; `HomeLayoutRecovery` judges after every pass of the window's layout from an event until the home
+  screen is whole, the repairs in that pass. An event during an episode joins it and the steps taken stay taken, and a
+  rebuild of the bars' apps on its way is waited for (`LauncherAppBars.appDataState()`), so the events a repair brings
+  about cannot repair a fault for ever. The bars' delayed decoration refresh (300 ms) went too.
+- **The GPS [V]:** `CanbusService` asked for it every 0.5 s whenever it ran. `LocationNeed` (pure, 8 tests) gives the
+  rate each need asks for; `updateLocationNeed()` follows the changes; the code check reports its phase and takes a
+  drive from the speed code too.
+
+**Deviations from the plan:** none in substance. Seen while doing it: `initAppData()` can end without a build and
+without a retry ("Max retries reached for RecyclerView, resetting"); the home check now starts it again once
+(`APP_DATA_NOT_STARTED`) instead of waiting for nothing. `HomeLayoutRecovery` and `CanbusAutoCheck` have no tests of
+their own: they need a whole Launcher, and a FYT unit with a car. Not tested on a device.
+

@@ -39,6 +39,7 @@ What the owner wants from it, as the briefs and chat reports show [H]:
 | Development phase | Short feature and fix rounds on `testBranch`, driven by device logs (Opus brief → Sonnet commits → owner test). 33 briefs since 2026-10-27, all implemented [V]. |
 | Active brief | **None.** `prompts/active/` is empty [V]. |
 | Last code change | **Round 22, 2026-11-18/19:** Robolectric for tests of views (D-68); the bar's music buttons, title and artist bound while its window stays (KI-35); the bar's title and artist sized the same with "Resizable horizontal bar" off; the guides below the app bar and the settings list keeping its place (D-73); "Transparent status bar" moved (D-72); the statistics window in landscape where the creator puts it, and on the home screen under the bars and over the panes (D-69); the vertical bar's width (D-70) and the number of icons on each bar (D-71) may be set; 10 code commits `62fc51126` … `5a6272396` [V]. **The owner, 2026-11-19 on the 7862 [H]: all work**, except a jump of the second settings screen scrolled up after a return; `16f256ee8` sizes the settings rows when they are bound. **The owner confirmed that fix too (2026-11-19).** Then `660b032e6`: a widget's configuration opened by the system (KI-41), waiting for the owner's test. Report: `reports/implementation_report_2026-11-15.md`, section "Round 22". |
+| Round 23 | **2026-11-20:** the home screen checked when it changes, in episodes judged after every pass of the window's layout, without delays or retry timers (`HomeIntegrity`, D-75, KI-43); the GPS of the fuel statistics at the rate something needs, none on a phone (`LocationNeed`, D-76, KI-44); the code check sees a drive from the speed code; 4 code commits `f080ffbd4` … `7e955ba65` [V]. **Waiting for the owner's device test.** Report: `reports/implementation_report_2026-11-15.md`, section "Round 23". |
 | Round 21 | **2026-11-16:** the statistics window laid out again a few times after the alpha limit reaches 1 (`ef3d1c746`). **The owner confirmed it on 2026-11-19 [H].** |
 | Round 16 | **2026-11-16:** a widget that cannot be dropped stays where it was, icons dropped from the list of apps survive a reload (and are mended where an app renamed its activity), a widget that cannot be shown shows its preview and is told to update where the launcher may (D-66); 5 code commits `e6349acf0` … `a654c0d60` [V]. **The owner confirmed it on 2026-11-19 [H]**. Report: `reports/implementation_report_2026-11-15.md`, section "Round 16". |
 | Round 20 | **2026-11-16:** no item of a page outside its visible part - stale temporary cells, the padding of the first rows, the drop's page, the size of an added widget, the creator's elements kept in the page, the check of every page after each drag and resize (`PageFit`); 5 code commits `91db3326a` … `36cf3e7c3` [V]. **The owner, 2026-11-16 17:26 [H]: "it looks like it works".** Report: section "Round 20". |
@@ -131,10 +132,10 @@ JUnit 5 JVM tests: 110 files, 1011 tests, no instrumented tests. CI runs on GitH
 
 ## Active tasks
 
-**The owner's test of `fcfe712fd`** (KI-42): the bars of the pages after the first while an item of a page is
-moved, a folder is open or the list of apps of a bar is shown. `660b032e6` (widgets with a configuration screen
-not exported) and `DropSpan` are confirmed (2026-11-19). The owner's word on KI-43 (a second build of the bars'
-lists at a start). KI-37 waits for a log of a next widget over icons, if one happens.
+**Round 23 (2026-11-20), waiting for the owner's test:** the home screen's check without timers (KI-43, D-75), to
+be looked at in the 7862's log; the GPS of the fuel statistics only while something needs it (KI-44, D-76). KI-42
+(the bars while an item is moved) and everything before are confirmed by the owner (2026-11-19). KI-37 waits for a
+log of a next widget over icons, if one happens.
 
 ## Blocked or waiting
 
@@ -171,7 +172,7 @@ The hardcoded OpenWeather key is **not** an open issue: the owner decided to kee
 |---|---|
 | [`CLAUDE.md`](CLAUDE.md) | Rules, commands, Opus/Sonnet workflow |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | What exists and where: modules, subsystems, data, services, privileges |
-| [`DECISIONS.md`](DECISIONS.md) | Why: 74 decisions with status, who decided and the source |
+| [`DECISIONS.md`](DECISIONS.md) | Why: 76 decisions with status, who decided and the source |
 | [`ROADMAP.md`](ROADMAP.md) | History in milestones, confirmed plans, recommendations |
 | [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md) | One current list: problems, accepted limits, unverified reports |
 | [`prompts/README.md`](prompts/README.md) | Catalogue of all briefs → commits → status |

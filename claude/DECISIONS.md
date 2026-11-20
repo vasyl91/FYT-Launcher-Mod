@@ -4,7 +4,7 @@ Important technical and product decisions. Last consolidated on 2026-11-12 from 
 (`prompts/archive/`), the 15 chat reports (`chat_archive/CHAT_01.MD` … `CHAT_15.MD`) and the owner's answers
 of that day. D-52 … D-57 were added on 2026-11-13 with round 13, D-58 … D-63 on 2026-11-15 with round 14,
 D-64 and D-65 on 2026-11-16 with round 15, D-66 with round 16, D-67 with round 19, D-68 … D-74 with round 22
-(2026-11-18/19).
+(2026-11-18/19), D-75 and D-76 with round 23 (2026-11-20).
 
 ## How to read this file
 
@@ -108,6 +108,8 @@ entry that replaces it.
 | D-72 | "Transparent status bar" in "Home screen layout" | ACTIVE | Owner |
 | D-73 | The settings list keeps its place; the guides lie below the app bar | ACTIVE | Owner |
 | D-74 | Choices the assistant made in round 22 (table) | UNDER_REVIEW | Assistant |
+| D-75 | The home screen is checked when it changes, without timers | ACTIVE | Owner |
+| D-76 | The fuel statistics ask for the GPS only while something needs it | ACTIVE | Owner (approved plan) |
 
 ---
 
@@ -428,6 +430,8 @@ entry that replaces it.
 - **Status:** ACTIVE. **By:** owner, through the briefs.
 - **Decision:** the estimate is shown (marked `≈`) only where the car gives no value. It is learned from the
   car's own values and never offered for a car without a fuel code. Model v3 is power-based (`8b51f33a`).
+  Checked again on 2026-11-20 at the owner's question: so it is in the code (`loadFuelModel`, `carGivesNoValue`,
+  `FuelSpeedThreshold`); the GPS it uses follows D-76.
   The car's mass and engine size are optional settings.
 - **Source:** fuel briefs 2026-10-30/31, `README.MD` [H].
 
@@ -945,4 +949,25 @@ The round had no brief; its result is in `reports/implementation_report_2026-11-
 | In landscape the first page's vertical bar takes the launcher's width instead of the layout's 7.1 % | without it the setting would not show; equal to the pixel on the 7862 |
 | The new strings follow the existing horizontal ones: the 51 full language files and the `pt-rPT` override | the regional files (`en-rGB`, `fr-rCA` …) fall back to their language |
 | Tests of views also beside the class they test, not only in `views/` | D-68 asked for them where they show a change |
+
+## Added on 2026-11-20 (round 23)
+
+### D-75 The home screen is checked when it changes, without timers
+- **Status:** ACTIVE. **By:** owner, 2026-11-19 ("a solution that repairs a real problem at once when it occurs,
+  without fixed intervals; rebuild the logic at the root if need be, so that it works in any conditions").
+- **Decision:** an event opens an episode (home press, resume, new intent, focus, configuration, a phase of a wake,
+  the end of the binding, the bars' apps given, a change of the window's size); the home screen is judged after every
+  pass of the window's layout and repaired in it, until it is whole or every repair was tried. A part not ready yet is
+  waited for, not repaired. No delays, retry timers or time limits. The watchdog of the workspace's loading (30 s
+  without a bind step) is a different mechanism and stays.
+- **Where:** `HomeIntegrity`, `HomeLayoutRecovery`, `f080ffbd4`, `75af342ab`.
+
+### D-76 The fuel statistics ask for the GPS only while something needs it
+- **Status:** ACTIVE. **By:** owner, 2026-11-20 (the plan approved: "check whether the estimate runs only for a car
+  that gives its consumption; propose how the code check could do better").
+- **Decision:** `LocationNeed`: none without a canbus or need, every 5 s while only a drive has to be seen, every
+  0.5 s as before for the estimate, the speed code's scale and the code check's start and recording; the code check
+  sees a drive from the speed code too. The estimate itself is unchanged (D-13: only with a fuel code, shown only where
+  the car gives no value, below the speed it learns).
+- **Where:** `LocationNeed`, `CanbusService.updateLocationNeed`, `CanbusAutoCheck.onSpeed`, `71c8e0e03`, `7e955ba65`.
 

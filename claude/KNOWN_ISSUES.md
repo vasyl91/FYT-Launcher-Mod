@@ -42,8 +42,8 @@ file and named in the round's report.
 | KI-31 | StrictMode reports inside the framework (A55 log of 2026-11-09) | problem | partial | — |
 | KI-33 | Some settings of the home screen only with the user layout on | problem | open | the owner's choice |
 | KI-37 | A widget lay over icons after a change of the grid | unverified | watching | a log with `Item out of place` |
-| KI-42 | The bars of the pages after the first while an item is moved | unverified | watching | the owner's test of `fcfe712fd` |
-| KI-43 | A second build of the bars' lists at every start | problem | open | the owner's choice (see below) |
+| KI-43 | The home screen's check: a second build of the bars' lists at a start, and its timers | unverified | watching | the owner's log of the 7862 (`75af342ab`) |
+| KI-44 | The GPS of the fuel statistics only while something needs it | unverified | watching | the owner's test (`71c8e0e03`, `7e955ba65`) |
 
 ## Problems
 
@@ -205,19 +205,19 @@ line was `Items sharing cells` before round 20). **The owner's log of 2026-11-19
 grid (3×8 → 7×12 and 7×12 → 5×8, the second giving 4 icons of the first page a new cell) and no such line, so
 nothing shared a cell after either load.
 
-### KI-42 The bars of the pages after the first while an item is moved
-The owner, 2026-11-19 on the A55 [H]: moving an item takes both bars off the pages after the first. The log of
-20:51 [V]: the bars' windows on every page park at each drag start (they step aside for a drag, a folder, the
-list of apps of a bar) and come back at its end; the pictures of the bars (BarGhostRule) were drawn only while
-the pages are small, and a move within the home screen keeps them at full size. `fcfe712fd` draws the pictures
-whenever the windows step aside while the pages are seen. Not tested on a device.
+### KI-43 The home screen's check: a second build of the bars' lists at a start, and its timers
+The A55's start log, 2026-11-19 [V]: the home layout watchdog judged the bars while the model was still binding,
+left a repair pending, and that repair built both bars' lists a second time. The owner, 2026-11-19 [H]: no fixed
+intervals; a real fault is to be repaired as soon as it occurs, in any conditions, rebuilt at the root if need be
+(D-75). `f080ffbd4` and `75af342ab`: `HomeIntegrity` (the rules: a part not ready yet is waited for, not repaired)
+and `HomeLayoutRecovery` in episodes, judged after every pass of the window's layout from an event until the home
+screen is whole, with no timers; a change of the window's size is an event of its own. To look at in the 7862's log
+(`HomeCheck:` lines): a cold start (one `initAppData()`), a wake, a home press from an app and from all apps, a
+return from the settings. Not tested on a device.
 
-### KI-43 A second build of the bars' lists at every start
-The A55's log of a start, 2026-11-19 [V]: the home layout watchdog runs 840 ms after `onResume`, while the model is
-still binding, finds the bar's list without an adapter (`Layout unhealthy: recycler has no adapter during
-onResume:watchdog`) and leaves a repair pending; the repair then waits for the binding (`isHomeLayoutInitPending`)
-but still runs once after it (`Wake home recycler restore: watchdog:onResume:retry0`), and both lists are built a
-second time (`initAppData() started` twice, 0.8 s apart). Nothing breaks; it costs one build of both lists at the
-busiest moment of a start. A fix would let the watchdog wait for the binding before it judges. Not changed:
-`HomeLayoutRecovery` decides the cold start of the 7862 too; the owner's word first.
-
+### KI-44 The GPS of the fuel statistics only while something needs it
+The owner's A55 asked for the GPS every 500 ms whenever the statistics' service ran (2026-11-19) [V], also with no
+canbus. `71c8e0e03`: `LocationNeed` — none without a canbus or need, every 5 s while only a drive has to be seen,
+every 0.5 s for the estimate, the speed code's scale and the code check's recording. `7e955ba65`: the code check sees
+a drive from the speed code too, so with a known speed code it waits without the GPS. To look at: `GPS:` lines in the
+log (the A55: `none (no canbus …)`; the 7862 with a fuel code: every 500 ms as before). Not tested on a device.
