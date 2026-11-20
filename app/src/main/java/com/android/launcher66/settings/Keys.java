@@ -252,6 +252,11 @@ public final class Keys {
     public static final String HORIZONTAL_BAR_ICONS_LAND = "horizontal_bar_icons_land";
     public static final String VERTICAL_BAR_ICONS_PORT = "vertical_bar_icons_port";
     public static final String VERTICAL_BAR_ICONS_LAND = "vertical_bar_icons_land";
+    /** The row that opens the dialog of the horizontal bar's order; nothing is stored under it (BarOrderDialog). */
+    public static final String HORIZONTAL_BAR_ORDER = "horizontal_bar_order";
+    /** The order of the horizontal bar's elements, per orientation (BarOrder.format); absent = the default order. */
+    public static final String HORIZONTAL_BAR_ORDER_PORT = "horizontal_bar_order_port";
+    public static final String HORIZONTAL_BAR_ORDER_LAND = "horizontal_bar_order_land";
 
     public static final String PIP_DUAL = "pip_dual";
     public static final String PIP_FIRST = "pip_first";

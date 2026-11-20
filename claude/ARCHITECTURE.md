@@ -253,6 +253,10 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
 - **Widget bar** (the music widget on the horizontal bar): `L/WidgetBarLayout`, `L/WidgetBarPlan`,
   `L/WidgetBarLines` (four arrangements: two lines either way round, or one line either way round).
   `L/MarqueeRestart` keeps the title scrolling in whichever of the two bars is bound.
+- **The order of the horizontal bar's elements** (2026-11-20): `L/BarOrder` (pure, tested) holds the order per
+  orientation, what is shown and how each element is tied; `L/BarOrderLayout` ties the elements of the page's bar
+  (`Workspace.createUserPage`, after `WidgetBarLayout`) and of the bar's window (`Workspace.forceOriginalSizes`,
+  after the sizes) from that one source. `WidgetBarLayout` only widens the music widget.
 
 ## 6. Layout creator
 

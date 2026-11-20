@@ -936,6 +936,8 @@ public class Workspace extends SmoothPagedView
                 mLauncher.preSetMusicWidgets();
                 mBarWeatherWidget = workspaceView.findViewById(R.id.bar_widget_weather);
             }
+            // The elements in the order chosen in the settings, tied as the window ties them (BarOrderLayout)
+            BarOrderLayout.apply(workspaceView, mPrefs, orientation == Configuration.ORIENTATION_PORTRAIT);
             // After the widget bar has chosen its variant: the bars to their edges
             applyBarConstraints(workspaceView, verticalBar, true);
             
@@ -2249,6 +2251,8 @@ public class Workspace extends SmoothPagedView
         } else {
             forceOriginalSizesLayoutOne(screenWidth, horizontalBarHeight, resizableHorizontalBar, barScale);
         }
+        // The elements' left and right anchors, in the order chosen in the settings, as on the page's bar
+        BarOrderLayout.apply(overlayHorizontalBar, mPrefs, orientation == Configuration.ORIENTATION_PORTRAIT);
     }
 
     private void forceOriginalSizesLayoutOne(int screenWidth, int horizontalBarHeight,
@@ -2303,7 +2307,6 @@ public class Workspace extends SmoothPagedView
         if (allAppsParams instanceof ConstraintLayout.LayoutParams constraintParams) {
             constraintParams.width = allAppsWidth;
             constraintParams.height = allAppsHeight;
-            constraintParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
             constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
             constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
             if (resizableHorizontalBar) {
@@ -2317,8 +2320,6 @@ public class Workspace extends SmoothPagedView
         if (recyclerParams instanceof ConstraintLayout.LayoutParams constraintParams) {
             constraintParams.width = recyclerWidth;
             constraintParams.height = recyclerHeight;
-            constraintParams.startToEnd = R.id.rl_allapps;
-            constraintParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
             constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
             constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
             if (resizableHorizontalBar) {
@@ -2414,7 +2415,6 @@ public class Workspace extends SmoothPagedView
         if (allAppsParams instanceof ConstraintLayout.LayoutParams constraintParams) {
             constraintParams.width = allAppsWidth;
             constraintParams.height = allAppsHeight;
-            constraintParams.startToStart = ConstraintLayout.LayoutParams.PARENT_ID;
             constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
             constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
             if (resizableHorizontalBar) {
@@ -2428,8 +2428,6 @@ public class Workspace extends SmoothPagedView
         if (recyclerParams instanceof ConstraintLayout.LayoutParams constraintParams) {
             constraintParams.width = recyclerWidth;
             constraintParams.height = recyclerHeight;
-            constraintParams.startToEnd = R.id.rl_allapps;
-            constraintParams.endToStart = R.id.rl_music_two;
             constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
             constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
             if (resizableHorizontalBar) {
@@ -2444,15 +2442,6 @@ public class Workspace extends SmoothPagedView
             if (musicParams instanceof ConstraintLayout.LayoutParams constraintParams) {
                 constraintParams.width = musicWidgetWidth;
                 constraintParams.height = horizontalBarHeight;
-                constraintParams.startToEnd = R.id.recycler_view;
-                if (noWeather && (noDate || portraitBar)) {
-                    // Nothing is left of the bar after the music widget (the portrait bar has no date).
-                    constraintParams.endToStart = ConstraintLayout.LayoutParams.UNSET;
-                    constraintParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
-                } else {
-                    constraintParams.endToEnd = ConstraintLayout.LayoutParams.UNSET;
-                    constraintParams.endToStart = noDate ? R.id.bar_widget_weather : R.id.bar_widget_date;
-                }
                 constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
                 constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
                 if (resizableHorizontalBar) {
@@ -2470,14 +2459,6 @@ public class Workspace extends SmoothPagedView
                 if (dateParams instanceof ConstraintLayout.LayoutParams constraintParams) {
                     constraintParams.width = dateWidgetWidth;
                     constraintParams.height = horizontalBarHeight;
-                    constraintParams.startToEnd = R.id.rl_music_two;
-                    if (noWeather) {
-                        constraintParams.endToStart = ConstraintLayout.LayoutParams.UNSET;
-                        constraintParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
-                    } else {
-                        constraintParams.endToEnd = ConstraintLayout.LayoutParams.UNSET;
-                        constraintParams.endToStart = R.id.bar_widget_weather;
-                    }
                     constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
                     constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
                     if (resizableHorizontalBar) {
@@ -2494,8 +2475,6 @@ public class Workspace extends SmoothPagedView
             if (weatherParams instanceof ConstraintLayout.LayoutParams constraintParams) {
                 constraintParams.width = weatherWidgetWidth;
                 constraintParams.height = horizontalBarHeight;
-                constraintParams.startToEnd = noDate ? R.id.rl_music_two : R.id.bar_widget_date;
-                constraintParams.endToEnd = ConstraintLayout.LayoutParams.PARENT_ID;
                 constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
                 constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID;
                 if (resizableHorizontalBar) {

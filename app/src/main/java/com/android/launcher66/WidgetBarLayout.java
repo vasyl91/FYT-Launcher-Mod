@@ -121,26 +121,11 @@ final class WidgetBarLayout {
             return true;
         }
 
-        // The music widget ends where the last widget that is left begins, or at the bar's edge.
-        boolean dateLeft = date != null && !noDate;
-        boolean weatherLeft = weather != null && !noWeather;
+        // The music widget gets the room of the widgets that are hidden. Where it lies, and what it is tied to,
+        // is the order of the bar's elements (BarOrderLayout, after this).
         ConstraintSet set = new ConstraintSet();
         set.clone(root);
         set.constrainPercentWidth(R.id.rl_music_two, WidgetBarPlan.musicShare(portrait, noDate, noWeather));
-        int musicId = R.id.rl_music_two;
-        if (dateLeft) {
-            set.connect(musicId, ConstraintSet.RIGHT, R.id.bar_widget_date, ConstraintSet.LEFT);
-            set.connect(R.id.bar_widget_date, ConstraintSet.LEFT, musicId, ConstraintSet.RIGHT);
-            if (!weatherLeft) {
-                set.connect(R.id.bar_widget_date, ConstraintSet.RIGHT, ConstraintSet.PARENT_ID,
-                        ConstraintSet.RIGHT);
-            }
-        } else if (weatherLeft) {
-            set.connect(musicId, ConstraintSet.RIGHT, R.id.bar_widget_weather, ConstraintSet.LEFT);
-            set.connect(R.id.bar_widget_weather, ConstraintSet.LEFT, musicId, ConstraintSet.RIGHT);
-        } else {
-            set.connect(musicId, ConstraintSet.RIGHT, ConstraintSet.PARENT_ID, ConstraintSet.RIGHT);
-        }
         set.applyTo(root);
         return true;
     }
