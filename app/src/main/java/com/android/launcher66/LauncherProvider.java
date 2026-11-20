@@ -114,14 +114,18 @@ public class LauncherProvider extends ContentProvider {
         SqlArguments args = new SqlArguments(uri);
         screensMayChange(args);
         SQLiteDatabase db = this.mOpenHelper.getWritableDatabase();
-        addModifiedTime(initialValues);
-        long rowId = dbInsertAndCheck(this.mOpenHelper, db, args.table, null, initialValues);
-        if (rowId <= 0) {
-            return null;
+        try {
+            addModifiedTime(initialValues);
+            long rowId = dbInsertAndCheck(this.mOpenHelper, db, args.table, null, initialValues);
+            if (rowId <= 0) {
+                return null;
+            }
+            Uri uri2 = ContentUris.withAppendedId(uri, rowId);
+            sendNotify(uri2);
+            return uri2;
+        } finally {
+            screensWritten(args, db);
         }
-        Uri uri2 = ContentUris.withAppendedId(uri, rowId);
-        sendNotify(uri2);
-        return uri2;
     }
 
     @Override
@@ -129,23 +133,28 @@ public class LauncherProvider extends ContentProvider {
         SqlArguments args = new SqlArguments(uri);
         screensMayChange(args);
         SQLiteDatabase db = this.mOpenHelper.getWritableDatabase();
-        db.beginTransaction();
         try {
-            int numValues = values.length;
-            for (int i = 0; i < numValues; i++) {
-                addModifiedTime(values[i]);
-                if (dbInsertAndCheck(this.mOpenHelper, db, args.table, null, values[i]) < 0) {
-                    db.endTransaction();
-                    return 0;
+            db.beginTransaction();
+            try {
+                int numValues = values.length;
+                for (int i = 0; i < numValues; i++) {
+                    addModifiedTime(values[i]);
+                    if (dbInsertAndCheck(this.mOpenHelper, db, args.table, null, values[i]) < 0) {
+                        db.endTransaction();
+                        return 0;
+                    }
                 }
+                db.setTransactionSuccessful();
+                db.endTransaction();
+                sendNotify(uri);
+                return values.length;
+            } catch (Throwable th) {
+                db.endTransaction();
+                throw th;
             }
-            db.setTransactionSuccessful();
-            db.endTransaction();
-            sendNotify(uri);
-            return values.length;
-        } catch (Throwable th) {
-            db.endTransaction();
-            throw th;
+        } finally {
+            // After the transaction has ended, so the read sees what it left
+            screensWritten(args, db);
         }
     }
 
@@ -155,20 +164,26 @@ public class LauncherProvider extends ContentProvider {
         SqlArguments args = new SqlArguments(uri, selection, selectionArgs);
         screensMayChange(args);
         SQLiteDatabase db = this.mOpenHelper.getWritableDatabase();
-        int count = db.delete(args.table, args.where, args.args);
-        if (count > 0) {
-            sendNotify(uri);
+        try {
+            int count = db.delete(args.table, args.where, args.args);
+            if (count > 0) {
+                sendNotify(uri);
+            }
+            return count;
+        } finally {
+            screensWritten(args, db);
         }
-        return count;
     }
 
     /**
      * Applies the whole batch in one transaction, so it is saved completely or not at all.
-     * LauncherModel.updateWorkspaceScreenOrder() relies on this: it replaces the screen table.
+     * LauncherModel.updateWorkspaceScreenOrder() relies on this: it replaces the screen table. A batch that
+     * writes the screen table has it read again once the transaction has ended (see screensWritten()).
      */
     @Override
     public ContentProviderResult[] applyBatch(ArrayList<ContentProviderOperation> operations)
             throws OperationApplicationException {
+        boolean screens = writesScreens(operations);
         SQLiteDatabase db = this.mOpenHelper.getWritableDatabase();
         db.beginTransaction();
         try {
@@ -177,7 +192,20 @@ public class LauncherProvider extends ContentProvider {
             return result;
         } finally {
             db.endTransaction();
+            if (screens && !db.inTransaction()) {
+                WorkspaceScreensPreload.written(getContext());
+            }
         }
+    }
+
+    private static boolean writesScreens(ArrayList<ContentProviderOperation> operations) {
+        for (ContentProviderOperation operation : operations) {
+            List<String> segments = operation.getUri().getPathSegments();
+            if (!segments.isEmpty() && TABLE_WORKSPACE_SCREENS.equals(segments.get(0))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -187,17 +215,36 @@ public class LauncherProvider extends ContentProvider {
         screensMayChange(args);
         addModifiedTime(values);
         SQLiteDatabase db = this.mOpenHelper.getWritableDatabase();
-        int count = db.update(args.table, values, args.where, args.args);
-        if (count > 0) {
-            sendNotify(uri);
+        try {
+            int count = db.update(args.table, values, args.where, args.args);
+            if (count > 0) {
+                sendNotify(uri);
+            }
+            return count;
+        } finally {
+            screensWritten(args, db);
         }
-        return count;
     }
 
-    /** The screens Workspace may have read ahead are dropped before their table is written. */
+    /**
+     * The screens kept in memory for every Workspace of the process are dropped before their table is
+     * written, and read again once the write is committed (screensWritten(), applyBatch()): what is in memory
+     * is the table as last written (ScreenIdsMemory). Every write of the screen table goes through this
+     * provider for that reason.
+     */
     private static void screensMayChange(SqlArguments args) {
         if (TABLE_WORKSPACE_SCREENS.equals(args.table)) {
             WorkspaceScreensPreload.changed();
+        }
+    }
+
+    /**
+     * After a write of the screen table outside a transaction, the screens are read again off the main thread.
+     * Inside one (applyBatch()), that is done once the transaction has ended, so the read sees what it left.
+     */
+    private void screensWritten(SqlArguments args, SQLiteDatabase db) {
+        if (TABLE_WORKSPACE_SCREENS.equals(args.table) && !db.inTransaction()) {
+            WorkspaceScreensPreload.written(getContext());
         }
     }
 

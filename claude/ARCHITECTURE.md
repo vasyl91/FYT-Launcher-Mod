@@ -164,7 +164,9 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   - `S/PipEdgeTrim` and `S/StatsBarFit` handle the bars.
   - `L/CustomLayoutDb` and `S/WorkspaceOccupancy` know which grid cells hold icons and widgets.
 - **Startup:** `L/StartupSteps`, `L/WorkspaceScreensPreload`, and `L/ColdStart` (the about 10 s boot stall,
-  the launcher kept in front, the autostart apps).
+  the launcher kept in front, the autostart apps). The screens' ids are read off the main thread at the start
+  and kept in memory for every Workspace of the process, a launcher created again too; a write of their table
+  (always through `L/LauncherProvider`) drops them and has them read again (`L/ScreenIdsMemory`, pure, tested).
 - **A whole home screen** (2026-11-20, KI-43): `L/HomeIntegrity` (pure, tested) judges a snapshot of the views
   (the window's, the pages' and the hotseat's sizes, the bars' lists, the buttons, the creator's elements) and gives
   each fault a ladder of repairs; a part not ready yet (the binding, the bars' apps on their way, the elements on
