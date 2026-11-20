@@ -1872,6 +1872,9 @@ public class CanbusService extends Service implements PropertyChangeListener {
         }
         if (scale > 0) {
             onDriving(speedValue / (double) scale);
+            if (autoCheck != null) {
+                autoCheck.onSpeed(speedValue / (double) scale);
+            }
         }
         if (scale > 0 && fuelModel != null) {
             long now = System.currentTimeMillis();
@@ -2052,7 +2055,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
         CodePairChooser chooser = pairChooser;
         in.pairNeedsDriving = chooser != null && chooser.status().pairs.size() > 1;
         in.check = autoCheck != null ? autoCheck.phase() : LocationNeed.Check.OFF;
-        in.checkSeesSpeedCode = false;
+        in.checkSeesSpeedCode = true;   // CanbusAutoCheck.onSpeed()
         return in;
     }
 

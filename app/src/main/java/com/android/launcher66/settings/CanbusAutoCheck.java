@@ -27,7 +27,8 @@ import java.util.concurrent.TimeUnit;
  * the process of {@link CanbusService}, which hands it the GPS fixes; the rules are in
  * {@link CanbusAutoCheckPolicy}.
  *
- * <p>It starts 2 minutes after the car was first seen moving (a GPS speed above 5 km/h), provided it
+ * <p>It starts 2 minutes after the car was first seen moving (a speed above 5 km/h, from the GPS or from the speed
+ * code once its scale is known, so that it waits for a drive without the GPS where the car gives its speed), provided it
  * moved within the last 30 seconds when that time comes; it runs for the code reader's recording time
  * (300 s unless set otherwise) and stops without a result when the unit sleeps or ACC goes off, the
  * car changes, the service ends or the reader is started by hand. At the end the guesses go where the
@@ -105,22 +106,39 @@ final class CanbusAutoCheck {
             return;
         }
         double kmh = location.getSpeed() * 3.6;
-        long now = System.currentTimeMillis();
         if (recorder != null) {
             recorder.addFix(location);
             return;
         }
+        onMovement(kmh, "GPS");
+    }
+
+    /**
+     * A speed from the car's speed code, once its scale is known: the car is seen to move without the GPS, which the
+     * check then needs only from the movement on (LocationNeed). The recording still takes its fixes from the GPS:
+     * they are what the codes are matched with.
+     */
+    void onSpeed(double kmh) {
+        if (destroyed || recorder != null) {
+            return;
+        }
+        onMovement(kmh, "speed code");
+    }
+
+    /** The same rule for both: the first speed above the threshold schedules the start (CanbusAutoCheckPolicy). */
+    private void onMovement(double kmh, String source) {
         if (!CanbusAutoCheckPolicy.isMoving(kmh)) {
             return;
         }
-        lastMovingAt = now;
+        lastMovingAt = System.currentTimeMillis();
         if (startTask == null && conditionsMet(false)) {
             startTask = () -> {
                 start();
                 phaseMayHaveChanged();
             };
             main.postDelayed(startTask, CanbusAutoCheckPolicy.START_DELAY_MS);
-            Log.i(TAG, "movement seen, the check starts in " + CanbusAutoCheckPolicy.START_DELAY_MS / 1000 + " s");
+            Log.i(TAG, "movement seen (" + source + "), the check starts in "
+                    + CanbusAutoCheckPolicy.START_DELAY_MS / 1000 + " s");
             phaseMayHaveChanged();
         }
     }
