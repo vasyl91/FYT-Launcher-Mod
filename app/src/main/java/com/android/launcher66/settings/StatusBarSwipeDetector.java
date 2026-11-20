@@ -34,8 +34,16 @@ public class StatusBarSwipeDetector extends Service {
      * SprdViewRootImpl.<init> <- WindowManager.addView <- StatusBarSwipeDetector.onCreate).
      * The window thread only owns the window and delivers its touches; each event is handed to the
      * main thread as a copy, and the gesture is handled there exactly as before.
+     *
+     * The rule: one window thread for the life of the process. The service starts at every return of
+     * the launcher to the front and stops at every pause; a thread of its own for each start ended with
+     * its window, and left the Choreographer the window's ViewRootImpl made for it (with the display
+     * event receiver it holds) to the finalizer, which StrictMode reported as a leaked resource each
+     * time (log of 2026-11-20, KI-45). The thread waits idle between starts. Its messages run in order,
+     * so the removal of one instance's window comes before the next instance adds its own.
      */
-    private HandlerThread windowThread;
+    private static HandlerThread sWindowThread;   // main thread only
+    private static Handler sWindowHandler;
     private Handler windowHandler;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private View overlayView;      // window thread only
@@ -74,10 +82,18 @@ public class StatusBarSwipeDetector extends Service {
         params.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL; // Horizontally centered, vertically top-aligned
         params.y = statusBarHeight - params.height; // Positioned at the bottom of the status bar
 
-        windowThread = new HandlerThread("StatusBarSwipeWindow");
-        windowThread.start();
-        windowHandler = new Handler(windowThread.getLooper());
+        windowHandler = windowHandler();
         windowHandler.post(() -> addOverlay(params));
+    }
+
+    /** Main thread: the process's window thread, started the first time it is needed. */
+    private static Handler windowHandler() {
+        if (sWindowHandler == null) {
+            sWindowThread = new HandlerThread("StatusBarSwipeWindow");
+            sWindowThread.start();
+            sWindowHandler = new Handler(sWindowThread.getLooper());
+        }
+        return sWindowHandler;
     }
 
     /** Window thread: creates the strip and adds its window. */
@@ -185,7 +201,7 @@ public class StatusBarSwipeDetector extends Service {
             cancel.recycle();
         }
         // The window belongs to its thread, so it is removed there -- after the add, which may still
-        // be waiting for system_server. The thread ends itself once the window is gone.
+        // be waiting for system_server. The thread stays for the next start (see sWindowThread).
         if (windowHandler != null) {
             windowHandler.post(this::removeOverlay);
         }
@@ -204,7 +220,6 @@ public class StatusBarSwipeDetector extends Service {
                 Log.w(TAG, "Cannot remove the status bar swipe strip", e);
             }
         }
-        windowThread.quitSafely();
     }
 
     @Override
