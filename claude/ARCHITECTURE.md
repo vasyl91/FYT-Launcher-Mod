@@ -290,7 +290,7 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   overlay that takes the input focus so the launcher gets the keyboard beside the pinned PiP (D-44; the
   owner confirmed it on 2026-11-12).
 - **Extras:** floating app-switch buttons in `S/FabOverlayService`; the status-bar swipe area in
-  `S/StatusBarSwipeDetector` (system only).
+  `S/StatusBarSwipeDetector` (system only; its window lies on one thread of its own for the whole process).
 
 - **App widgets:** `L/LauncherAppWidgetHostView` applies the content off the main thread; a widget whose
   content fails shows its preview and opens its app on a tap, and `L/WidgetRecovery` says how its app is asked

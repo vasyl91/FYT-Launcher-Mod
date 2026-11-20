@@ -1,6 +1,6 @@
 # Known issues
 
-As of 2026-11-20 (`testBranch` after round 23 and the owner's logs of that day). One list of what is open today,
+As of 2026-11-20 (`testBranch` after round 24, which followed the owner's logs of that day). One list of what is open today,
 rewritten on 2026-11-18 at the owner's request. What was fixed or closed has been taken out; it stays in git
 and in the reports (`reports/`, `chat_archive/`). Sources: the code, git, CI, the briefs, the chat reports and
 the owner's results.
@@ -43,7 +43,7 @@ file and named in the round's report.
 | KI-33 | Some settings of the home screen only with the user layout on | problem | open | the owner's choice |
 | KI-37 | A widget lay over icons after a change of the grid | unverified | watching | a log with `Item out of place` |
 | KI-44 | The GPS of the fuel statistics only while something needs it | unverified | partial | a unit whose code check waits for a drive |
-| KI-45 | StrictMode reports of the launcher's own code in the 7862's logs | problem | open | the owner's choice |
+| KI-45 | StrictMode reports of the launcher's own code in the 7862's logs | problem | watching | the owner's log of the 7862 (`85f35583d`, `84a269d99`) |
 
 ## Problems
 
@@ -226,3 +226,12 @@ Both are older than round 23: they are in the logs of 2026-11-15 and 2026-11-16 
   `StatusBarSwipeDetector` adds its window on a `HandlerThread` of its own and ends that thread with the window. The
   thread's `Choreographer` is never disposed, so its `DisplayEventReceiver` is reported as a
   `LeakedClosableViolation` when it is collected (3 times in the log of 2026-11-20). No other effect is known [A].
+
+Round 24 (the owner asked for all the proposed fixes) [V]: `85f35583d` keeps the screens' ids in memory for every
+`Workspace` of the process (`ScreenIdsMemory`: dropped before each write of their table, read again off the main
+thread after it). `84a269d99` gives the strip one window thread for the process. With them, `32adc8b50`: the home
+check waits for the binding before it asks whether a bar is used, so it no longer says "whole" for a page still being
+rebuilt. To look at in the 7862's log: after a setting that creates the launcher again, no "screens not read ahead"
+and no report from `WorkspaceScreensPreload.query`; after a few apps opened and closed, one "Setting up flushing for
+Thread[StatusBarSwipeWindow" per process and no report from `addOverlay`; after a return from the settings, the first
+`HomeCheck` episode ends after "Loader … bind finished". Not tested on a device.

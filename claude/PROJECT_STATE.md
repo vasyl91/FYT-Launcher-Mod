@@ -1,7 +1,8 @@
 # Project state
 
-**Snapshot: 2026-11-20, `testBranch` after round 23 (`f080ffbd4` … `7e955ba65`, then the documentation
-commits). Round 23 checks the home screen when it changes, without timers (KI-43, D-75), and asks for the GPS of the
+**Snapshot: 2026-11-20, `testBranch` after round 24 (`46b59b2a7` … `32adc8b50`, then the documentation commit).
+Round 24 fixes the two StrictMode reports of KI-45 and makes CI run only for a change of the code (the owner's
+rule of 2026-11-20). Round 23 checks the home screen when it changes, without timers (KI-43, D-75), and asks for the GPS of the
 fuel statistics only while something needs it (KI-44, D-76). The owner, 2026-11-20 (logs of the 7862 and the A55):
 the home screen looks as it should and loads correctly after a cold start, a reboot, a wake and a return from the
 settings; the logs show no repair and one build of the bars' lists per start (KI-43 closed), and the A55 no longer
@@ -38,6 +39,7 @@ What the owner wants from it, as the briefs and chat reports show [H]:
 | Development phase | Short feature and fix rounds on `testBranch`, driven by device logs (Opus brief → Sonnet commits → owner test). 33 briefs since 2026-10-27, all implemented [V]. |
 | Active brief | **None.** `prompts/active/` is empty [V]. |
 | Last code change | **Round 22, 2026-11-18/19:** Robolectric for tests of views (D-68); the bar's music buttons, title and artist bound while its window stays (KI-35); the bar's title and artist sized the same with "Resizable horizontal bar" off; the guides below the app bar and the settings list keeping its place (D-73); "Transparent status bar" moved (D-72); the statistics window in landscape where the creator puts it, and on the home screen under the bars and over the panes (D-69); the vertical bar's width (D-70) and the number of icons on each bar (D-71) may be set; 10 code commits `62fc51126` … `5a6272396` [V]. **The owner, 2026-11-19 on the 7862 [H]: all work**, except a jump of the second settings screen scrolled up after a return; `16f256ee8` sizes the settings rows when they are bound. **The owner confirmed that fix too (2026-11-19).** Then `660b032e6`: a widget's configuration opened by the system (KI-41), waiting for the owner's test. Report: `reports/implementation_report_2026-11-15.md`, section "Round 22". |
+| Round 24 | **2026-11-20:** CI only for pushes that change more than the documentation (`46b59b2a7`, the rule in `CLAUDE.md`); the screens' ids kept in memory for a launcher created again in the process (`ScreenIdsMemory`); one window thread for the status bar strip; the home check waits for the binding before it judges the bars (KI-45); 3 code commits `85f35583d` … `32adc8b50` [V]. **Waiting for the owner's log of the 7862.** Report: `reports/implementation_report_2026-11-15.md`, section "Round 24". |
 | Round 23 | **2026-11-20:** the home screen checked when it changes, in episodes judged after every pass of the window's layout, without delays or retry timers (`HomeIntegrity`, D-75, KI-43); the GPS of the fuel statistics at the rate something needs, none on a phone (`LocationNeed`, D-76, KI-44); the code check sees a drive from the speed code; 4 code commits `f080ffbd4` … `7e955ba65` [V]. **The owner, 2026-11-20 [H], with logs of the 7862 and the A55 [V]: everything loads correctly, no repair in any log, one `initAppData()` per start; the A55 makes no location request.** Report: `reports/implementation_report_2026-11-15.md`, section "Round 23". |
 | Round 21 | **2026-11-16:** the statistics window laid out again a few times after the alpha limit reaches 1 (`ef3d1c746`). **The owner confirmed it on 2026-11-19 [H].** |
 | Round 16 | **2026-11-16:** a widget that cannot be dropped stays where it was, icons dropped from the list of apps survive a reload (and are mended where an app renamed its activity), a widget that cannot be shown shows its preview and is told to update where the launcher may (D-66); 5 code commits `e6349acf0` … `a654c0d60` [V]. **The owner confirmed it on 2026-11-19 [H]**. Report: `reports/implementation_report_2026-11-15.md`, section "Round 16". |
@@ -131,9 +133,10 @@ JUnit 5 JVM tests: 110 files, 1011 tests, no instrumented tests. CI runs on GitH
 
 ## Active tasks
 
-**After round 23 (2026-11-20):** no brief is open. KI-43 is closed (the owner's logs). KI-44 waits for a unit whose
-code check waits for a drive. KI-45 (two StrictMode reports of the launcher's own code, older than round 23) waits
-for the owner's choice. KI-37 waits for a log of a next widget over icons, if one happens.
+**Round 24 (2026-11-20), waiting for the owner's log of the 7862:** the fixes of KI-45 (what to look at is in its
+entry). KI-43 is closed (the owner's logs). KI-44 waits for a unit whose code check waits for a drive. KI-37 waits
+for a log of a next widget over icons, if one happens. Since round 24, CI runs only for a change of the code
+(`CLAUDE.md`).
 
 ## Blocked or waiting
 

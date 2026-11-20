@@ -477,3 +477,31 @@ no `GPS:` line, since "none" from the start is no change of the rate (KI-44 corr
 the settings: its first episode ended "whole" while the page with the bars was still being bound, since a page not
 built yet has no bar to judge; the episode opened by the binding's end judged the bars. Two StrictMode reports of the
 launcher's own code, older than this round, went into KI-45.
+
+## Round 24 (2026-11-20): KI-45, and CI only after a change of the code
+
+The owner, 2026-11-20 [H]: a plan for KI-45 with all three proposed fixes, in a plan file of its own (the plans of
+rounds 14–23 went to `../prompts/archive/plan-2026-11-15-rounds-14-23.md`, `1c3eddd84`), and a new general rule:
+CI only when the code has changed, not after the documentation or work that does not touch the code.
+
+| Commit | Subject |
+|---|---|
+| `46b59b2a7` | Build: CI only for pushes that change more than the documentation |
+| `d4b1c8693` | Docs: CI after a change of the code only |
+| `85f35583d` | Workspace: a launcher created again finds the screens in memory |
+| `84a269d99` | Status bar strip: one window thread for the launcher's process |
+| `32adc8b50` | Home: the bars are judged once the pages are bound, built or not |
+
+- **CI [V]:** `build.yml` ignores pushes and pull requests of `claude/**`, `**.md` and `**.MD` only; such a push
+  also no longer cancels the run of code pushed just before it (`cancel-in-progress`). Checked: the push of
+  `d4b1c8693` started no run. `CLAUDE.md` holds the rule.
+- **The screens [V]:** `ScreenIdsMemory` (pure, 4 tests) keeps the ids for every `Workspace` of the process: dropped
+  before each write of their table, read again on `WorkspaceScreensPreload`'s own thread once it is committed
+  (`LauncherProvider`: after the write outside a transaction, after `applyBatch`'s transaction). A read begun
+  before a later write is refused.
+- **The strip [V]:** one `HandlerThread` for the process instead of one per start of the service; no JVM test (no
+  logic of its own), the device's log shows it.
+- **The home check [V]:** `judgeBars()` waits for the binding before it asks whether a bar is used; 2 tests.
+
+**Deviations from the plan:** none. Not tested on a device.
+
