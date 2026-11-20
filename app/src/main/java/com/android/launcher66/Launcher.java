@@ -281,8 +281,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private static final long SERVICE_RUNNING_CACHE_MS = 15000L;
     private static final long FAST_HOME_RESUME_DEFER_MS = 450L;
     private static final long FAST_HOME_PIP_DEFER_MS = 1000L;
-    /** Total time the recovery loop may spend waiting cheaply before it insists on a repair pass. */
-    static final long HOME_RECOVERY_INIT_WAIT_MAX_MS = 25000L;
+    /** The pauses this long after a wake say in the log what took the screen (the 7870's ROM pauses the launcher often then). */
+    private static final long PAUSE_AFTER_WAKE_LOG_MS = 30000L;
     private static final long WORKSPACE_NULL_LOADER_THROTTLE_MS = 1200L;
     static final String TAG = "Launcher";
     private static boolean sKwapiSkipLogged;
@@ -1300,7 +1300,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         Launcher.this.updateRunning();
                         break;                     
                     case WakeDetection.ACTION_WAKE_REFRESH:
-                        mHomeRecovery.repairLayoutAfterWake(intent.getStringExtra("phase"));
+                        mHomeRecovery.onWake(intent.getStringExtra("phase"));
                         break;
                     case Intent.ACTION_CLOSE_SYSTEM_DIALOGS:
                         String reason = intent.getStringExtra(Keys.SYSTEM_DIALOG_REASON_KEY);
@@ -1317,7 +1317,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                                 if (isOnMainWorkspaceScreen()) {
                                     mHomeFromAllAppsPending = false;
                                     mHomeWorkspaceRefreshHandled = mHomeRecovery.refreshWorkspaceAfterHome();
-                                    mHomeRecovery.scheduleHomeLayoutWatchdog("homeBroadcastMain", true);
+                                    mHomeRecovery.check("homeBroadcastMain", true);
                                     return;
                                 }
                                 // Only run the complex logic if we're not already on main workspace
@@ -1341,7 +1341,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                                     helpers.setInOverviewMode(false);
                                 }
                                 mHomeWorkspaceRefreshHandled = mHomeRecovery.refreshWorkspaceAfterHome();
-                                mHomeRecovery.scheduleHomeLayoutWatchdog("homeBroadcast", true);
+                                mHomeRecovery.check("homeBroadcast", true);
                                 if (mHomeFromAllAppsPending && mHomeWorkspaceRefreshHandled) {
                                     mOnResumeState = State.NONE;
                                 }
@@ -2350,7 +2350,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 && (homeRefreshAlreadyHandled || mState == State.WORKSPACE)
                 && !mRestoring
                 && !mOnResumeNeedsLoad;
-        boolean wakeHomeRecovery = homeButtonResume && mHomeRecovery.shouldRunWakeHomeRecovery();
         mHomeButtonPressed = false;
         mHomeWorkspaceRefreshHandled = false;
         if (homeButtonResume && !homeRefreshAlreadyHandled) {
@@ -2361,7 +2360,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     && mHomeWorkspaceRefreshHandled
                     && !mRestoring
                     && !mOnResumeNeedsLoad;
-            wakeHomeRecovery = mHomeRecovery.shouldRunWakeHomeRecovery();
         }
         if (fastHomeFromAllApps) {
             mOnResumeState = State.NONE;
@@ -2438,16 +2436,13 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
         if (fastHomeFromAllApps || fastHomeFromApp) {
             mFastHomeResumePending = true;
-            if (wakeHomeRecovery) {
-                mHomeRecovery.scheduleWakeHomeRecovery("fastHome");
-            }
             InstallShortcutReceiver.disableAndFlushInstallQueue(this);
             if (mWorkspace != null) {
                 mWorkspace.updateInteractionForState();
                 mWorkspace.onResume();
             }
             scheduleFastHomeDeferredResumeWork(true);
-            mHomeRecovery.scheduleHomeLayoutWatchdog("fastHomeResume", true);
+            mHomeRecovery.check("fastHomeResume", true);
             return;
         }
         if (mAppsCustomizeContent != null) {
@@ -2460,7 +2455,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mWorkspace.reinflateWidgetsIfNecessary();
         } else {
             Log.e(TAG, "Workspace is null in onResume");
-            mHomeRecovery.mWakeHomeRecoveryPending = true;
             requestWorkspaceReloadFromRecovery("onResume");
             return;
         }
@@ -2477,10 +2471,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mMusicWidget.setPlayPauseIcon(true);
 
         processPendingUpdateOnResume();
-
-        if (wakeHomeRecovery) {
-            mHomeRecovery.scheduleWakeHomeRecovery("normalHome");
-        }
 
         if (isAllAppsVisible()) {
             WindowUtil.removePip();
@@ -2500,7 +2490,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 onBackPip = false;
             }
         }
-        mHomeRecovery.scheduleHomeLayoutWatchdog("onResume", !isAllAppsVisible());
+        mHomeRecovery.check("onResume", !isAllAppsVisible());
         mPipStarter.schedulePipWatchdog("onResume");
         markStartup("onResumeEnd");
         logFirstFrame();
@@ -2538,7 +2528,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             if (processPendingUpdate) {
                 processPendingUpdateOnResume();
             }
-            mHomeRecovery.scheduleHomeLayoutWatchdog("fastHomeDeferred", true);
+            mHomeRecovery.check("fastHomeDeferred", true);
             scheduleFastHomeDeferredPip();
             mHomeFromAllAppsPending = false;
             mFastHomeResumePending = false;
@@ -2951,7 +2941,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 Log.w(TAG, "recreateView: post layout refresh failed", e);
             }
         }, 200);
-        mHomeRecovery.scheduleHomeLayoutWatchdog("recreateView", true);
+        mHomeRecovery.check("recreateView", true);
     }
 
 
@@ -3021,7 +3011,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
         if (mWorkspace == null) {
             // Can be cases where mWorkspace is null, this prevents a NPE
-            mHomeRecovery.mWakeHomeRecoveryPending = true;
             requestWorkspaceReloadFromRecovery("closeSystemDialogs");
             return;
         }
@@ -3107,7 +3096,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         // 26-10-2026 19:45:55); this says what took the screen each time. The app is the one
         // ForegroundAppTracker saw last, which needs no query here.
         long sinceWake = WakeDetection.msSinceWake();
-        if (sinceWake >= 0L && sinceWake <= HomeLayoutRecovery.WAKE_HOME_RECOVERY_WINDOW_MS) {
+        if (sinceWake >= 0L && sinceWake <= PAUSE_AFTER_WAKE_LOG_MS) {
             String front = ForegroundAppTracker.lastKnownPackage();
             Log.i(TAG, "onPause " + sinceWake / 1000L + " s after the wake, in front: "
                     + (front != null ? front : "unknown"));
@@ -4298,7 +4287,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mHasFocus = hasFocus;
         if (hasFocus) {
             com.syu.util.WindowHostVdView.noteLauncherInteraction();
-            mHomeRecovery.scheduleFocusHomeRecovery("focus");
+            mHomeRecovery.check("focus", false);
         }
     }
 
@@ -5005,8 +4994,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         mAppBars.markAppDataDirty();
         mAppBars.requestPostResumeAppDataRefresh();
         mAppBars.refreshRecyclerViewDecorations();
-        mHomeRecovery.scheduleFocusHomeRecovery("configuration");
-        mHomeRecovery.scheduleHomeLayoutWatchdog("configuration", !isAllAppsVisible());
+        mHomeRecovery.check("configuration", !isAllAppsVisible());
     }
 
 
@@ -6101,7 +6089,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     mAppsCustomizeTabHost.setVisibility(View.GONE);
                 }
                 mHomeRecovery.refreshWorkspaceAfterHome();
-                mHomeRecovery.scheduleHomeLayoutWatchdog("newIntentFast", true);
+                mHomeRecovery.check("newIntentFast", true);
                 return;
             }
 
@@ -6113,7 +6101,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
             if (mWorkspace == null) {
                 // Can be cases where mWorkspace is null, this prevents a NPE
-                mHomeRecovery.mWakeHomeRecoveryPending = true;
                 requestWorkspaceReloadFromRecovery("newIntent");
                 return;
             }
@@ -6132,10 +6119,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             // otherwise, just wait until onResume to set the state back to Workspace
             if (alreadyOnHome) {
                 showWorkspace(true);
-                if (mHomeRecovery.shouldRunWakeHomeRecovery()) {
-                    mHomeRecovery.scheduleWakeHomeRecovery("newIntent");
-                }
-                mHomeRecovery.scheduleHomeLayoutWatchdog("newIntent", true);
+                mHomeRecovery.check("newIntent", true);
             } else {
                 mOnResumeState = State.WORKSPACE;
             }
@@ -7924,8 +7908,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         if (contentType == AppsCustomizePagedView.ContentType.Widgets) {
             startWidgetSort("widget picker opened");
         }
-        mHomeRecovery.cancelHomeLayoutWatchdog();
-        mHomeRecovery.cancelWakeHomeRecovery("showAllApps:" + contentType);
+        mHomeRecovery.stop("showAllApps:" + contentType);
         if (mState == State.WORKSPACE) {
             Log.d("showAllApps", String.valueOf(contentType) + ": removePip");
             WindowUtil.removePip(0);
@@ -8909,7 +8892,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             placeCustomElements("finishBindingItems");
             // And a strip of empty screens that was held back during the bind.
             mWorkspace.onWorkspaceLoadFinished();
-            mHomeRecovery.scheduleHomeLayoutWatchdog("finishBindingItems", !isAllAppsVisible());
+            mHomeRecovery.check("finishBindingItems", !isAllAppsVisible());
         }
     }
 

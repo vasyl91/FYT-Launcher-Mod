@@ -6528,6 +6528,10 @@ public class Workspace extends SmoothPagedView
         // The bars' windows waited for the end (persistentBarFree()); the page is measured at rest again first
         barBoxOnScreen();
         updatePersistentBar("transition end");
+        // A check of the home screen that waited for the end judges now (HomeLayoutRecovery)
+        if (mLauncher != null) {
+            mLauncher.mHomeRecovery.onHomeChanged();
+        }
         updateChildrenLayersEnabled(false);
         // The code in getChangeStateAnimation to determine initialAlpha and finalAlpha will ensure
         // ensure that only the current page is visible during (and subsequently, after) the

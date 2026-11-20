@@ -21,8 +21,9 @@ import java.util.Set;
  *       there (the model still binding, the bars' data on its way), the creator's elements on their way. Judging
  *       them then made the launcher repair what was only not ready yet, and build the bars' lists a second time at
  *       every start (KI-43).</li>
- *   <li>Nothing is judged while the launcher is not in front, nor while all apps are shown, unless the event asks
- *       for the home screen (a home press, a wake).</li>
+ *   <li>Nothing is judged while the launcher is not in front, nor while all apps are shown or opening: all apps is
+ *       not the home screen, and the way from it to the home screen is the home press's own (it ends the episode
+ *       when all apps opens).</li>
  *   <li>Each fault has a ladder of repairs, the lightest first. A step is taken once per episode (the time from an
  *       event until the home screen is whole); a fault still there at the next judgement takes the next step. After
  *       the last step the fault is reported once and left until the next event, so nothing loops.</li>
@@ -32,7 +33,7 @@ public final class HomeIntegrity {
 
     /** What may be wrong. */
     public enum Fault {
-        /** The event asks for the home screen, and the launcher is not on it (all apps, the overview) or it is hidden. */
+        /** The event asks for the home screen, and the launcher is not on it (the overview) or it is hidden. */
         NOT_ON_WORKSPACE,
         /** On the home screen, and its view is not shown. */
         WORKSPACE_HIDDEN,
@@ -160,7 +161,7 @@ public final class HomeIntegrity {
 
     /** What a judgement found. */
     public static final class Verdict {
-        /** False: nothing is judged now (not in front, all apps without a home press); the episode ends. */
+        /** False: nothing is judged now (not in front, all apps); the episode ends. */
         public final boolean judged;
         public final Set<Fault> faults;
         /** Something was not judged because its precondition is not met: the episode waits for the next pass. */
@@ -186,12 +187,12 @@ public final class HomeIntegrity {
      * @param wantsWorkspace the event of the episode asks for the home screen (a home press, a wake)
      */
     public static Verdict judge(Snapshot s, boolean wantsWorkspace) {
-        if (!s.resumed || (s.allAppsShown && !wantsWorkspace)) {
+        if (!s.resumed || s.allAppsShown) {
             return new Verdict(false, EnumSet.noneOf(Fault.class), false, "");
         }
         Set<Fault> faults = EnumSet.noneOf(Fault.class);
         List<String> waiting = new ArrayList<>();
-        if (wantsWorkspace && (!s.onWorkspace || s.allAppsShown || !s.workspaceVisible)) {
+        if (wantsWorkspace && (!s.onWorkspace || !s.workspaceVisible)) {
             faults.add(Fault.NOT_ON_WORKSPACE);
         } else if (s.onWorkspace && !s.workspaceVisible) {
             faults.add(Fault.WORKSPACE_HIDDEN);

@@ -164,7 +164,14 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   - `S/PipEdgeTrim` and `S/StatsBarFit` handle the bars.
   - `L/CustomLayoutDb` and `S/WorkspaceOccupancy` know which grid cells hold icons and widgets.
 - **Startup:** `L/StartupSteps`, `L/WorkspaceScreensPreload`, and `L/ColdStart` (the about 10 s boot stall,
-  the launcher kept in front, the autostart apps). `L/HomeLayoutRecovery` restores the layout after a wake.
+  the launcher kept in front, the autostart apps).
+- **A whole home screen** (2026-11-20, KI-43): `L/HomeIntegrity` (pure, tested) judges a snapshot of the views
+  (the window's, the pages' and the hotseat's sizes, the bars' lists, the buttons, the creator's elements) and gives
+  each fault a ladder of repairs; a part not ready yet (the binding, the bars' apps on their way, the elements on
+  their way, the pages changing state) is waited for, not repaired. `L/HomeLayoutRecovery` opens an episode on an
+  event (home press, resume, new intent, focus, configuration, a phase of a wake, the end of the binding, the bars'
+  apps given, a change of the window's size) and judges after every pass of the window's layout until the home
+  screen is whole or every repair was tried; no delays or retry timers.
 - **Keeping the home screen in front:** `L/HomeFrontGuard` sends back only the app the device itself
   reopens after a wake or a boot, never one the user opened (`DECISIONS.md` D-28).
   - `L/DefaultDisplayTask` reads what is in front from the task stack of the default display.

@@ -5,71 +5,354 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.android.launcher66.settings.Keys;
 import com.syu.util.WindowUtil;
 
 /**
- * Keeps the home screen whole: after a home press, a focus change or a wake it checks the
- * workspace, hotseat, app bars and custom elements, repairs what it can and retries for a while
- * (the home layout watchdog, the wake home recovery and the wake layout repair passes).
- * Split out of Launcher, whose views and state it works on.
+ * Keeps the home screen whole: the workspace, the hotseat, the bars and the creator's elements. Split out of
+ * Launcher, whose views and state it works on; the rules are HomeIntegrity's.
+ *
+ * <p><b>When it looks.</b> An event opens an episode ({@link #check}): a home press, a resume, a new intent, the
+ * focus, a change of the configuration, a phase of a wake, the end of the binding, the bars' apps given, and a
+ * change of the size of the launcher's window (its own listener, so a window the system sized wrongly after a wake
+ * is seen without anyone asking). While an episode is open, the home screen is judged after every pass of the
+ * window's layout, which is where a fault shows and where whatever it waits for arrives (an adapter set, the
+ * bars' apps, the elements placed, the window resized), and the repairs run in that pass, before the frame is
+ * drawn. They ask for one more pass, which judges what they did. There is no delay, retry timer or time limit
+ * (the owner, 2026-11-19): the episode ends when the home screen is whole, when nothing is to be judged (not in
+ * front, all apps), or when every repair of what is left was tried, which is said once in the log; the next event
+ * opens a new one. Outside an episode nothing listens to the layout.
+ *
+ * <p>A part that is not ready yet is not judged (HomeIntegrity): at a start the bars were taken for broken while the
+ * model was binding, and their lists were built a second time (KI-43).
  */
 final class HomeLayoutRecovery {
 
+    private static final String TAG = "HomeCheck";
+
     // Not final: field initializers below use it in lambdas, which javac rejects for a blank final.
     private Launcher mLauncher;
+
+    /** The episode in progress, null when none. */
+    private HomeIntegrity.Episode mEpisode;
+    private String mReason = "";
+    private boolean mWantsWorkspace;
+    private boolean mWorkspaceRefreshed;
+    private long mOpenedAt;
+    private boolean mSomethingDone;
+    private String mWaitingFor;
+    private boolean mRepairing;
+    private View mListenedDecor;
+    private View mSizeWatchedDecor;
+
+    private final ViewTreeObserver.OnGlobalLayoutListener mLayoutPass = this::onLayoutPass;
+
+    /** A change of the window's size opens an episode: after a wake the system may size the window late or wrongly. */
+    private final View.OnLayoutChangeListener mWindowSize = (v, left, top, right, bottom,
+            oldLeft, oldTop, oldRight, oldBottom) -> {
+        int width = right - left;
+        int height = bottom - top;
+        int oldWidth = oldRight - oldLeft;
+        int oldHeight = oldBottom - oldTop;
+        if ((width != oldWidth || height != oldHeight) && oldWidth > 0 && oldHeight > 0) {
+            check("window " + oldWidth + "x" + oldHeight + " -> " + width + "x" + height, false);
+        }
+    };
 
     HomeLayoutRecovery(Launcher launcher) {
         mLauncher = launcher;
     }
 
-    static final long WAKE_HOME_RECOVERY_WINDOW_MS = 30000L;
+    /**
+     * An event after which the home screen may not be whole: opens an episode. During one in progress the event joins
+     * it and the steps taken stay taken: the events a repair itself brings about (the bars' apps given after a rebuild)
+     * must not start its ladder again, or a fault that no repair cures would be repaired for ever. The first judgement
+     * comes with the next pass of the layout, which is asked for.
+     *
+     * @param wantsWorkspace the event asks for the home screen (a home press, a wake): the launcher goes back to it
+     *                       (out of the overview, the workspace shown) once, at the first judgement
+     */
+    void check(String reason, boolean wantsWorkspace) {
+        if (mLauncher.mWorkspace == null) {
+            Log.w(TAG, "no workspace (" + reason + "): reloading it");
+            mLauncher.requestWorkspaceReloadFromRecovery("home check:" + reason);
+            return;
+        }
+        View decor = mLauncher.getWindow() != null ? mLauncher.getWindow().getDecorView() : null;
+        if (decor == null) {
+            return;
+        }
+        watchWindowSize(decor);
+        if (mEpisode == null) {
+            mOpenedAt = SystemClock.uptimeMillis();
+            mSomethingDone = false;
+            mWaitingFor = null;
+            mWorkspaceRefreshed = false;
+            mWantsWorkspace = wantsWorkspace;
+            mReason = reason;
+        } else {
+            mWantsWorkspace |= wantsWorkspace;
+            if (!mReason.contains(reason) && mReason.length() < 160) {
+                mReason = mReason + ", " + reason;
+            }
+        }
+        if (mEpisode == null) {
+            mEpisode = new HomeIntegrity.Episode();
+        }
+        listen(decor);
+        decor.requestLayout();
+    }
 
-    static final long FOCUS_HOME_RECOVERY_THROTTLE_MS = 1200L;
+    /** A phase of a wake: the home screen and the widget bar are checked again. */
+    void onWake(String phase) {
+        String wakePhase = phase == null ? "unknown" : phase;
+        check("wake:" + wakePhase, true);
+        mLauncher.mDeviceWake.scheduleWidgetBarWakeRefresh("wake:" + wakePhase);
+    }
 
-    static final int MAX_HOME_LAYOUT_HEALTH_RETRIES = 8;
-
-    static final long HOME_LAYOUT_HEALTH_FIRST_RETRY_MS = 900L;
-
-    static final long HOME_LAYOUT_HEALTH_RETRY_MS = 300L;
-
-    /** Cheap re-checks while the model is still binding; see isHomeLayoutInitPending(). */
-    static final long HOME_LAYOUT_INIT_WAIT_MS = 400L;
-
-    long mHomeRecoveryInitWaitUntil = 0L;
-
-    static final long HOME_LAYOUT_WATCHDOG_DELAY_MS = 350L;
-
-    boolean mWakeHomeRecoveryPending = false;
-
-    long mLastWakeRefreshMs = 0L;
-
-    long mLastFocusHomeRecoveryMs = 0L;
-
-    Runnable mWakeHomeRecoveryRunnable;
-
-    Runnable mHomeLayoutWatchdogRunnable;
-
-    void cancelHomeLayoutWatchdog() {
-        if (mHomeLayoutWatchdogRunnable != null) {
-            mLauncher.mHandler.removeCallbacks(mHomeLayoutWatchdogRunnable);
-            mHomeLayoutWatchdogRunnable = null;
+    /**
+     * Something changed that takes no pass of the layout by itself (the end of a change of the pages' state): an
+     * episode in progress is judged again.
+     */
+    void onHomeChanged() {
+        if (mEpisode != null && mListenedDecor != null) {
+            mListenedDecor.requestLayout();
         }
     }
 
-    void cancelWakeHomeRecovery(String source) {
-        boolean hadPendingRecovery = mWakeHomeRecoveryPending || mWakeHomeRecoveryRunnable != null;
-        if (mWakeHomeRecoveryRunnable != null) {
-            mLauncher.mHandler.removeCallbacks(mWakeHomeRecoveryRunnable);
-            mWakeHomeRecoveryRunnable = null;
+    /** All apps is opened (it is not the home screen), or the launcher is going away: the episode ends. */
+    void stop(String why) {
+        if (mEpisode != null && mSomethingDone) {
+            Log.i(TAG, "ended (" + why + ") during " + mReason);
         }
-        mWakeHomeRecoveryPending = false;
-        if (hadPendingRecovery) {
-            Log.d(Launcher.TAG, "Wake home recovery cancelled: " + source);
+        end();
+    }
+
+    private void end() {
+        mEpisode = null;
+        unlisten();
+    }
+
+    private void unlisten() {
+        if (mListenedDecor != null) {
+            ViewTreeObserver observer = mListenedDecor.getViewTreeObserver();
+            if (observer.isAlive()) {
+                observer.removeOnGlobalLayoutListener(mLayoutPass);
+            }
+            mListenedDecor = null;
         }
     }
+
+    private void listen(View decor) {
+        if (mListenedDecor == decor && decor.getViewTreeObserver().isAlive()) {
+            return;
+        }
+        unlisten();
+        ViewTreeObserver observer = decor.getViewTreeObserver();
+        if (observer.isAlive()) {
+            observer.addOnGlobalLayoutListener(mLayoutPass);
+            mListenedDecor = decor;
+        }
+    }
+
+    private void watchWindowSize(View decor) {
+        if (mSizeWatchedDecor == decor) {
+            return;
+        }
+        if (mSizeWatchedDecor != null) {
+            mSizeWatchedDecor.removeOnLayoutChangeListener(mWindowSize);
+        }
+        decor.addOnLayoutChangeListener(mWindowSize);
+        mSizeWatchedDecor = decor;
+    }
+
+    /** After a pass of the window's layout while an episode is open: the judgement and the repairs. */
+    private void onLayoutPass() {
+        HomeIntegrity.Episode episode = mEpisode;
+        if (episode == null || mRepairing || mLauncher.mWorkspace == null) {
+            return;
+        }
+        HomeIntegrity.Snapshot snapshot = snapshot();
+        HomeIntegrity.Verdict verdict = HomeIntegrity.judge(snapshot, mWantsWorkspace);
+        HomeIntegrity.Episode.Step step = episode.next(verdict);
+        boolean refresh = verdict.judged && mWantsWorkspace && !mWorkspaceRefreshed && !snapshot.switchingState;
+        if (verdict.waiting && !verdict.waitingFor.equals(mWaitingFor)) {
+            mWaitingFor = verdict.waitingFor;
+            Log.d(TAG, "waits for " + verdict.waitingFor + " (" + mReason + ")");
+        }
+        if (!step.taken.isEmpty()) {
+            Log.w(TAG, String.join("; ", step.taken) + " (" + mReason + "; " + facts(snapshot) + ")");
+        }
+        for (HomeIntegrity.Fault fault : step.givenUp) {
+            Log.w(TAG, fault + " remains after every repair (" + mReason + "); left until the next change");
+        }
+        if (refresh || !step.repairs.isEmpty()) {
+            mRepairing = true;
+            try {
+                if (refresh) {
+                    // A home press or a wake: back to the home screen once, as the launcher always did for them
+                    mWorkspaceRefreshed = true;
+                    refreshWorkspaceAfterHome();
+                }
+                for (HomeIntegrity.Repair repair : step.repairs) {
+                    if (repair == HomeIntegrity.Repair.SHOW_WORKSPACE && refresh) {
+                        continue;   // done just above
+                    }
+                    run(repair);
+                }
+                WindowUtil.updatePipPositionsForScroll(mLauncher.mWorkspace.mUnboundedScrollX);
+            } finally {
+                mRepairing = false;
+            }
+            mSomethingDone |= !step.repairs.isEmpty();
+            if (mListenedDecor != null) {
+                mListenedDecor.requestLayout();   // the next pass judges what the repairs did
+            }
+            return;
+        }
+        if (step.over) {
+            if (mSomethingDone || mWaitingFor != null) {
+                Log.i(TAG, (verdict.whole() ? "whole" : verdict.judged ? "left as it is" : "not judged")
+                        + " after " + episode.judgements() + " passes, "
+                        + (SystemClock.uptimeMillis() - mOpenedAt) + " ms (" + mReason + ")");
+            }
+            end();
+        }
+    }
+
+    private void run(HomeIntegrity.Repair repair) {
+        switch (repair) {
+            case SHOW_WORKSPACE:
+                refreshWorkspaceAfterHome();
+                break;
+            case MAKE_WORKSPACE_VISIBLE:
+                mLauncher.mWorkspace.setVisibility(View.VISIBLE);
+                forceWorkspaceLayoutPass();
+                break;
+            case FORCE_LAYOUT:
+                forceWorkspaceLayoutPass();
+                break;
+            case REFRESH_HOTSEAT:
+                if (mLauncher.mHotseat != null) {
+                    mLauncher.mHotseat.refreshLayoutAfterWake();
+                }
+                break;
+            case START_APP_DATA:
+                mLauncher.mAppBars.triggerAppData();
+                break;
+            case REATTACH_BARS:
+                restoreBottomRecyclerAfterHome("home check");
+                break;
+            case RELAYOUT_BARS:
+                relayoutBars();
+                break;
+            case REBUILD_APP_DATA:
+                mLauncher.mAppBars.markAppDataDirty();
+                if (mLauncher.mAppBars.atomicInitAppData.get()) {
+                    mLauncher.mAppBars.requestPostResumeAppDataRefresh();
+                } else {
+                    mLauncher.mAppBars.triggerAppData();
+                }
+                break;
+            case FIX_CHROME:
+                fixChrome();
+                break;
+            case PLACE_ELEMENTS:
+                mLauncher.placeCustomElements("home check");
+                break;
+        }
+    }
+
+    // ------------------------------------------------------------------------------------- the facts
+
+    private HomeIntegrity.Snapshot snapshot() {
+        Workspace workspace = mLauncher.mWorkspace;
+        HomeIntegrity.Snapshot s = new HomeIntegrity.Snapshot();
+        s.resumed = !mLauncher.mPaused;
+        s.allAppsShown = mLauncher.isAppsCustomizeVisibleOrOpening();
+        s.onWorkspace = mLauncher.mState == Launcher.State.WORKSPACE && !workspace.isInOverviewMode();
+        s.workspaceVisible = workspace.getVisibility() == View.VISIBLE;
+        s.switchingState = workspace.isSwitchingState();
+        s.bindingDone = !mLauncher.mWorkspaceLoading && AllAppsList.data != null && !AllAppsList.data.isEmpty();
+        s.appData = mLauncher.mAppBars.appDataState();
+        DisplayMetrics metrics = mLauncher.getResources().getDisplayMetrics();
+        s.displayWidth = Math.max(Launcher.screenWidth, metrics.widthPixels);
+        s.displayHeight = Math.max(Launcher.screenHeight, metrics.heightPixels);
+        View decor = mLauncher.getWindow() != null ? mLauncher.getWindow().getDecorView() : null;
+        s.decor = size(decor);
+        s.workspace = size(workspace);
+        s.dragLayer = mLauncher.mDragLayer != null ? size(mLauncher.mDragLayer) : null;
+        s.hotseatShown = shouldValidateHotseatForHealth();
+        s.hotseat = size(mLauncher.mHotseat);
+        boolean autoHide = mLauncher.mPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false);
+        RecyclerView bottom = (RecyclerView) workspace.findViewById(R.id.recycler_view);
+        bar(s.horizontalBar, bottom, bottom != null && !autoHide, false);
+        RecyclerView left = (RecyclerView) workspace.findViewById(R.id.vertical_recycler_view);
+        bar(s.verticalBar, left, left != null && mLauncher.mAppBars.shouldUseLeftRecycler(), true);
+        s.chromeMatches = chromeMatches();
+        s.elementsMissing = !areCustomElementsInPlace();
+        s.elementsOnTheirWay = s.elementsMissing && isCustomElementsSetupInFlight();
+        return s;
+    }
+
+    private static HomeIntegrity.Size size(View view) {
+        return view == null ? new HomeIntegrity.Size(0, 0) : new HomeIntegrity.Size(view.getWidth(), view.getHeight());
+    }
+
+    private static void bar(HomeIntegrity.Bar bar, RecyclerView recycler, boolean used, boolean vertical) {
+        bar.used = used;
+        if (!used) {
+            return;
+        }
+        bar.hasAdapter = recycler.getAdapter() != null;
+        bar.hasLayoutManager = recycler.getLayoutManager() != null;
+        bar.size = size(recycler);
+        bar.items = recycler.getAdapter() != null ? recycler.getAdapter().getItemCount() : 0;
+        if (recycler.getChildCount() > 0) {
+            View child = recycler.getChildAt(0);
+            bar.firstChildSize = vertical ? child.getHeight() : child.getWidth();
+        }
+    }
+
+    /** The buttons of the stock layout and of the user layout's widgets are shown as the layout says. */
+    private boolean chromeMatches() {
+        if (mLauncher.bottomButtons == null || mLauncher.bottomButtonsWidgets == null) {
+            return true;
+        }
+        boolean userLayout = mLauncher.mPrefs.getBoolean(Keys.USER_LAYOUT, false);
+        return mLauncher.bottomButtons.getVisibility() == (userLayout ? View.GONE : View.VISIBLE)
+                && mLauncher.bottomButtonsWidgets.getVisibility() == (userLayout ? View.VISIBLE : View.GONE);
+    }
+
+    private void fixChrome() {
+        boolean userLayout = mLauncher.mPrefs.getBoolean(Keys.USER_LAYOUT, false);
+        if (mLauncher.bottomButtons != null && mLauncher.bottomButtonsWidgets != null) {
+            mLauncher.bottomButtons.setVisibility(userLayout ? View.GONE : View.VISIBLE);
+            mLauncher.bottomButtonsWidgets.setVisibility(userLayout ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    /** The bars' lists laid out again, with their spacing. */
+    private void relayoutBars() {
+        for (int id : new int[] {R.id.recycler_view, R.id.vertical_recycler_view}) {
+            RecyclerView recycler = (RecyclerView) mLauncher.mWorkspace.findViewById(id);
+            if (recycler != null) {
+                recycler.requestLayout();
+                mLauncher.mAppBars.refreshRecyclerDecorationsAfterLayout(recycler);
+            }
+        }
+    }
+
+    /** The sizes in a fault's line of the log. */
+    private static String facts(HomeIntegrity.Snapshot s) {
+        return "decor " + s.decor + ", workspace " + s.workspace + ", bars " + s.horizontalBar.size + "/"
+                + s.verticalBar.size + ", apps " + s.appData;
+    }
+
+    // ------------------------------------------------------------------------------------- the repairs
 
     boolean refreshWorkspaceAfterHome() {
         if (mLauncher.mWorkspace == null) {
@@ -96,86 +379,9 @@ final class HomeLayoutRecovery {
         return true;
     }
 
-    void repairLayoutAfterWake(String phase) {
-        String wakePhase = phase == null ? "unknown" : phase;
-        mWakeHomeRecoveryPending = true;
-        mLastWakeRefreshMs = SystemClock.uptimeMillis();
-        Log.d(Launcher.TAG, "Wake layout repair: " + wakePhase);
-        runWakeHomeRecoveryPass("wake:" + wakePhase + ":now");
-        scheduleWakeLayoutRepair(250L, wakePhase);
-        scheduleWakeHomeRecoveryRetry("wake:" + wakePhase, 0, HOME_LAYOUT_HEALTH_FIRST_RETRY_MS);
-        mLauncher.mDeviceWake.scheduleWidgetBarWakeRefresh("wake:" + wakePhase);
-    }
-
-    void scheduleWakeLayoutRepair(long delayMs, String phase) {
-        Runnable repair = () -> {
-            if (mLauncher.mPaused || mLauncher.mWorkspace == null) {
-                mWakeHomeRecoveryPending = true;
-                return;
-            }
-            Log.d(Launcher.TAG, "Wake layout repair pass: " + phase + " +" + delayMs + "ms");
-            boolean healthy = runWakeHomeRecoveryPass("wakeLayout:" + phase + "+" + delayMs);
-            if (!healthy) {
-                scheduleWakeHomeRecoveryRetry("wakeLayout:" + phase + "+" + delayMs, 0,
-                        HOME_LAYOUT_HEALTH_RETRY_MS);
-            }
-        };
-        mLauncher.mHandler.postDelayed(repair, delayMs);
-    }
-
-    boolean shouldRunWakeHomeRecovery() {
-        if (mWakeHomeRecoveryPending) {
-            return true;
-        }
-        return mLastWakeRefreshMs > 0L
-                && SystemClock.uptimeMillis() - mLastWakeRefreshMs <= WAKE_HOME_RECOVERY_WINDOW_MS;
-    }
-
-    void scheduleWakeHomeRecovery(String source) {
-        if (mLauncher.mWorkspace == null) {
-            mWakeHomeRecoveryPending = true;
-            return;
-        }
-        if (mWakeHomeRecoveryRunnable != null) {
-            mLauncher.mHandler.removeCallbacks(mWakeHomeRecoveryRunnable);
-            mWakeHomeRecoveryRunnable = null;
-        }
-        mHomeRecoveryInitWaitUntil = SystemClock.uptimeMillis() + Launcher.HOME_RECOVERY_INIT_WAIT_MAX_MS;
-        if (isHomeLayoutInitPending()) {
-            // The model is still binding (or the custom elements are on their way): a repair
-            // pass now cannot attach anything and only adds layout work to the busiest moment of
-            // a cold start. The retry below waits for the end cheaply and checks then.
-            mWakeHomeRecoveryPending = true;
-            scheduleWakeHomeRecoveryRetry(source, 0, HOME_LAYOUT_INIT_WAIT_MS);
-            return;
-        }
-        runWakeHomeRecoveryPass(source + ":now");
-        scheduleWakeHomeRecoveryRetry(source, 0, HOME_LAYOUT_HEALTH_FIRST_RETRY_MS);
-    }
-
-    /**
-     * True while the layout cannot be judged yet because app data has not been attached.
-     *
-     * isRecyclerViewHealthy() reports "recycler has no adapter" until initAppData() runs, and that
-     * only happens once the model has finished binding. Nothing runWakeHomeRecoveryPass() does can
-     * attach an adapter, so retrying against it burned eight full repair passes -- measured as
-     * 3.5 s of continuous main-thread layout work, overlapping the PiP rebuild.
-     */
-    boolean isHomeLayoutInitPending() {
-        if (mLauncher.mWorkspaceLoading) return true;
-        if (AllAppsList.data == null || AllAppsList.data.isEmpty()) return true;
-        if (isCustomElementsSetupInFlight()) return true;
-        if (mLauncher.mWorkspace == null || mLauncher.mPrefs == null) return false;
-        if (mLauncher.mPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false)) return false;
-
-        RecyclerView recycler = (RecyclerView) mLauncher.mWorkspace.findViewById(R.id.recycler_view);
-        return recycler != null && recycler.getAdapter() == null;
-    }
-
     /**
      * A page has custom elements assigned that are not on it yet, and what they wait for is the
-     * size of the page or the post that places them. A repair pass in that window cannot help
-     * (see isHomeLayoutInitPending()).
+     * size of the page or the post that places them: not a fault, they are waited for (HomeIntegrity).
      */
     boolean isCustomElementsSetupInFlight() {
         if (mLauncher.mWorkspace == null) {
@@ -188,107 +394,6 @@ final class HomeLayoutRecovery {
             }
         }
         return false;
-    }
-
-    void scheduleWakeHomeRecoveryRetry(String source, int attempt, long delayMs) {
-        if (attempt >= MAX_HOME_LAYOUT_HEALTH_RETRIES) {
-            mWakeHomeRecoveryPending = !isLauncherLayoutHealthy(source + ":max");
-            if (mWakeHomeRecoveryPending) {
-                Log.w(Launcher.TAG, "Wake home recovery stopped with unhealthy layout: " + source);
-            }
-            return;
-        }
-        if (mWakeHomeRecoveryRunnable != null) {
-            mLauncher.mHandler.removeCallbacks(mWakeHomeRecoveryRunnable);
-        }
-        mWakeHomeRecoveryPending = true;
-        mWakeHomeRecoveryRunnable = () -> {
-            mWakeHomeRecoveryRunnable = null;
-
-            // Wait it out cheaply rather than running a repair pass that cannot help, and do not
-            // spend a retry attempt on it.
-            if (isHomeLayoutInitPending() && SystemClock.uptimeMillis() < mHomeRecoveryInitWaitUntil) {
-                mWakeHomeRecoveryPending = true;
-                scheduleWakeHomeRecoveryRetry(source, attempt, HOME_LAYOUT_INIT_WAIT_MS);
-                return;
-            }
-
-            boolean healthy = runWakeHomeRecoveryPass(source + ":retry" + attempt);
-            if (!healthy) {
-                scheduleWakeHomeRecoveryRetry(source, attempt + 1, HOME_LAYOUT_HEALTH_RETRY_MS);
-            }
-        };
-        mLauncher.mHandler.postDelayed(mWakeHomeRecoveryRunnable, delayMs);
-    }
-
-    boolean runWakeHomeRecoveryPass(String source) {
-        if (mLauncher.mPaused || mLauncher.mWorkspace == null) {
-            mWakeHomeRecoveryPending = true;
-            return false;
-        }
-        if (mLauncher.isAppsCustomizeVisibleOrOpening()) {
-            cancelWakeHomeRecovery("overlay:" + source);
-            return true;
-        }
-        refreshWorkspaceAfterHome();
-        repairWorkspaceChromeAfterHome(source);
-        forceWorkspaceLayoutPass();
-        WindowUtil.updatePipPositionsForScroll(mLauncher.mWorkspace.mUnboundedScrollX);
-        boolean healthy = isLauncherLayoutHealthy(source);
-        mWakeHomeRecoveryPending = !healthy;
-        if (!healthy) {
-            Log.w(Launcher.TAG, "Wake home recovery layout still unhealthy: " + source);
-        }
-        return healthy;
-    }
-
-    boolean isLauncherLayoutHealthy(String source) {
-        if (mLauncher.mWorkspace == null) {
-            return false;
-        }
-
-        boolean healthy = true;
-        View decor = mLauncher.getWindow() != null ? mLauncher.getWindow().getDecorView() : null;
-        healthy &= isRootViewSizeHealthy(decor, "decor", source);
-        healthy &= isRootViewSizeHealthy(mLauncher.mWorkspace, "workspace", source);
-        if (mLauncher.mDragLayer != null) {
-            healthy &= isRootViewSizeHealthy(mLauncher.mDragLayer, "dragLayer", source);
-        }
-        if (shouldValidateHotseatForHealth()) {
-            healthy &= isMeasuredViewHealthy(mLauncher.mHotseat, "hotseat", source);
-        }
-        if (mLauncher.mWorkspace.getVisibility() != View.VISIBLE) {
-            Log.w(Launcher.TAG, "Layout unhealthy: workspace hidden during " + source);
-            healthy = false;
-        }
-
-        RecyclerView recycler = (RecyclerView) mLauncher.mWorkspace.findViewById(R.id.recycler_view);
-        if (recycler != null && !mLauncher.mPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false)) {
-            healthy &= isRecyclerViewHealthy(recycler, false, source);
-        }
-        RecyclerView leftRecycler = (RecyclerView) mLauncher.mWorkspace.findViewById(R.id.vertical_recycler_view);
-        if (leftRecycler != null && mLauncher.mAppBars.shouldUseLeftRecycler()) {
-            healthy &= isRecyclerViewHealthy(leftRecycler, true, source);
-        }
-
-        boolean customElementsHealthy = true;
-        for (int i = 0; i < mLauncher.mWorkspace.getChildCount(); i++) {
-            View child = mLauncher.mWorkspace.getChildAt(i);
-            if (child instanceof CellLayout) {
-                customElementsHealthy &= ((CellLayout) child).hasHealthyCustomElements();
-            }
-        }
-        if (!customElementsHealthy) {
-            healthy = false;
-            if (isCustomElementsSetupInFlight()) {
-                // Not a fault: a page waits for its size or for the post that places its elements.
-                Log.d(Launcher.TAG, "Custom elements on their way during " + source);
-            } else {
-                Log.w(Launcher.TAG, "Custom elements missing during " + source + ", placing them");
-            }
-            mLauncher.placeCustomElements(source);
-        }
-        return healthy;
     }
 
     /** Every configured custom element is attached, or on its way, on its page. */
@@ -311,175 +416,6 @@ final class HomeLayoutRecovery {
         }
         ViewGroup.LayoutParams layoutParams = mLauncher.mHotseat.getLayoutParams();
         if (layoutParams != null && (layoutParams.width == 0 || layoutParams.height == 0)) {
-            return false;
-        }
-        return true;
-    }
-
-    boolean isRootViewSizeHealthy(View view, String label, String source) {
-        if (!isMeasuredViewHealthy(view, label, source)) {
-            return false;
-        }
-        DisplayMetrics metrics = mLauncher.getResources().getDisplayMetrics();
-        int displayWidth = Math.max(Launcher.screenWidth, metrics.widthPixels);
-        int displayHeight = Math.max(Launcher.screenHeight, metrics.heightPixels);
-        int minWidth = Math.max(320, displayWidth / 2);
-        int minHeight = Math.max(240, displayHeight / 2);
-        if (view.getWidth() < minWidth || view.getHeight() < minHeight) {
-            Log.w(Launcher.TAG, "Layout unhealthy: " + label + " too small "
-                    + view.getWidth() + "x" + view.getHeight() + " during " + source);
-            return false;
-        }
-        return true;
-    }
-
-    boolean isMeasuredViewHealthy(View view, String label, String source) {
-        if (view == null) {
-            Log.w(Launcher.TAG, "Layout unhealthy: missing " + label + " during " + source);
-            return false;
-        }
-        if (view.getWidth() <= 0 || view.getHeight() <= 0) {
-            Log.w(Launcher.TAG, "Layout unhealthy: " + label + " has zero size during " + source);
-            return false;
-        }
-        return true;
-    }
-
-    boolean isRecyclerViewHealthy(RecyclerView recycler, boolean vertical, String source) {
-        if (!isMeasuredViewHealthy(recycler, vertical ? "leftRecycler" : "bottomRecycler", source)) {
-            return false;
-        }
-        if (recycler.getAdapter() == null) {
-            Log.w(Launcher.TAG, "Layout unhealthy: recycler has no adapter during " + source);
-            return false;
-        }
-        if (recycler.getLayoutManager() == null) {
-            Log.w(Launcher.TAG, "Layout unhealthy: recycler has no layout manager during " + source);
-            return false;
-        }
-        if (recycler.getAdapter().getItemCount() > 0 && recycler.getChildCount() > 0) {
-            View child = recycler.getChildAt(0);
-            int childSize = vertical ? child.getHeight() : child.getWidth();
-            if (childSize <= 0) {
-                Log.w(Launcher.TAG, "Layout unhealthy: recycler child has zero size during " + source);
-                return false;
-            }
-        }
-        return true;
-    }
-
-    void scheduleFocusHomeRecovery(String source) {
-        if (mLauncher.mWorkspace == null || mLauncher.isAppsCustomizeVisibleOrOpening()) {
-            return;
-        }
-        if (mLauncher.mWorkspaceLoading) {
-            // Mid-bind the probe can only report the recycler without its adapter (cold start,
-            // return from the settings). finishBindingItems() runs the layout watchdog anyway.
-            return;
-        }
-        if (!shouldRunWakeHomeRecovery() && isLauncherLayoutHealthy(source + ":probe")) {
-            return;
-        }
-        long now = SystemClock.uptimeMillis();
-        if (now - mLastFocusHomeRecoveryMs < FOCUS_HOME_RECOVERY_THROTTLE_MS) {
-            return;
-        }
-        mLastFocusHomeRecoveryMs = now;
-        mWakeHomeRecoveryPending = true;
-        scheduleWakeHomeRecovery(source);
-    }
-
-    void scheduleHomeLayoutWatchdog(String source, boolean forceWorkspace) {
-        // While the model is still binding the watchdog can only report what it cannot fix, so
-        // give it enough delay to land after initAppData() instead of racing it.
-        long delay = isHomeLayoutInitPending()
-                ? HOME_LAYOUT_WATCHDOG_DELAY_MS + HOME_LAYOUT_INIT_WAIT_MS
-                : HOME_LAYOUT_WATCHDOG_DELAY_MS;
-        scheduleHomeLayoutWatchdog(source, forceWorkspace, delay);
-    }
-
-    void scheduleHomeLayoutWatchdog(String source, boolean forceWorkspace, long delayMs) {
-        if (mHomeLayoutWatchdogRunnable != null) {
-            mLauncher.mHandler.removeCallbacks(mHomeLayoutWatchdogRunnable);
-            mHomeLayoutWatchdogRunnable = null;
-        }
-        mHomeLayoutWatchdogRunnable = () -> {
-            mHomeLayoutWatchdogRunnable = null;
-            runHomeLayoutWatchdog(source, forceWorkspace);
-        };
-        mLauncher.mHandler.postDelayed(mHomeLayoutWatchdogRunnable, Math.max(0L, delayMs));
-    }
-
-    void runHomeLayoutWatchdog(String source, boolean forceWorkspace) {
-        if (mLauncher.mPaused) {
-            if (forceWorkspace) {
-                mWakeHomeRecoveryPending = true;
-            }
-            return;
-        }
-        if (mLauncher.mWorkspace == null) {
-            mWakeHomeRecoveryPending = true;
-            mLauncher.requestWorkspaceReloadFromRecovery("watchdog:" + source);
-            return;
-        }
-        if (mLauncher.isAppsCustomizeVisibleOrOpening()) {
-            return;
-        }
-        if (forceWorkspace) {
-            refreshWorkspaceAfterHome();
-        }
-        if (!isLauncherLayoutHealthy(source + ":watchdog")) {
-            mWakeHomeRecoveryPending = true;
-            scheduleWakeHomeRecovery("watchdog:" + source);
-        }
-    }
-
-    void repairWorkspaceChromeAfterHome(String source) {
-        boolean currentUserLayout = mLauncher.mPrefs.getBoolean(Keys.USER_LAYOUT, false);
-        if (mLauncher.bottomButtons != null && mLauncher.bottomButtonsWidgets != null) {
-            mLauncher.bottomButtons.setVisibility(currentUserLayout ? View.GONE : View.VISIBLE);
-            mLauncher.bottomButtonsWidgets.setVisibility(currentUserLayout ? View.VISIBLE : View.GONE);
-        }
-
-        if (mLauncher.mWorkspace != null) {
-            mLauncher.mWorkspace.post(() -> {
-                if (mLauncher.mWorkspace == null) return;
-                // Only when something is missing; placing is idempotent, but there is no reason to
-                // walk the pages when every element is in place.
-                if (currentUserLayout && !areCustomElementsInPlace()) {
-                    mLauncher.placeCustomElements(source);
-                }
-                restoreBottomRecyclerAfterHome(source);
-                mLauncher.mWorkspace.requestLayout();
-                mLauncher.mWorkspace.invalidate();
-            });
-        }
-
-        // Rebuilding the bars when they are in place only redraws them -- the second rebuild seen
-        // after the settings, run because a custom element was still on its way.
-        if (areAppBarsAttached()) {
-            return;
-        }
-        mLauncher.mAppBars.markAppDataDirty();
-        if (mLauncher.mAppBars.atomicInitAppData.get()) {
-            mLauncher.mAppBars.requestPostResumeAppDataRefresh();
-        } else {
-            mLauncher.mAppBars.triggerAppData();
-        }
-    }
-
-    /** Both app bars of the current page show the adapters, and those have their apps. */
-    boolean areAppBarsAttached() {
-        if (mLauncher.mWorkspace == null || mLauncher.mAppBars.mAppListAdapter == null || mLauncher.mAppBars.mAppListAdapter.getItemCount() == 0) {
-            return false;
-        }
-        RecyclerView recycler = (RecyclerView) mLauncher.mWorkspace.findViewById(R.id.recycler_view);
-        if (recycler != null && recycler.getAdapter() != mLauncher.mAppBars.mAppListAdapter) {
-            return false;
-        }
-        RecyclerView leftRecycler = (RecyclerView) mLauncher.mWorkspace.findViewById(R.id.vertical_recycler_view);
-        if (leftRecycler != null && mLauncher.mAppBars.shouldUseLeftRecycler()
-                && (mLauncher.mAppBars.mVerticalAppListAdapter == null || leftRecycler.getAdapter() != mLauncher.mAppBars.mVerticalAppListAdapter)) {
             return false;
         }
         return true;

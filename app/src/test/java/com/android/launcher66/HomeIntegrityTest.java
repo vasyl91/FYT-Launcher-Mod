@@ -133,14 +133,17 @@ class HomeIntegrityTest {
     }
 
     @Test
-    void aHomePressFromAllAppsShowsTheHomeScreen() {
+    void allAppsIsNotJudgedAndAHomePressFromTheOverviewShowsTheHomeScreen() {
         Snapshot s = whole();
         s.allAppsShown = true;
         s.onWorkspace = false;
-        assertFalse(HomeIntegrity.judge(s, false).judged, "all apps on its own is not judged");
+        assertFalse(HomeIntegrity.judge(s, false).judged, "all apps is not the home screen");
+        assertFalse(HomeIntegrity.judge(s, true).judged, "a home press leaves all apps by its own way");
+        s.allAppsShown = false;                   // the overview
         Verdict v = HomeIntegrity.judge(s, true);
         assertTrue(v.faults.contains(Fault.NOT_ON_WORKSPACE));
         assertEquals(Repair.SHOW_WORKSPACE, new Episode().next(v).repairs.get(0));
+        assertTrue(HomeIntegrity.judge(s, false).faults.isEmpty(), "the overview by itself is no fault");
     }
 
     @Test

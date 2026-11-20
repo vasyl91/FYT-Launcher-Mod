@@ -251,10 +251,7 @@ final class LauncherAppBars {
             recyclerView.invalidateItemDecorations();
             recyclerView.requestLayout();
         });
-        recyclerView.postDelayed(() -> {
-            recyclerView.invalidateItemDecorations();
-            recyclerView.requestLayout();
-        }, HomeLayoutRecovery.HOME_LAYOUT_HEALTH_RETRY_MS);
+        // Once more after the bar's next layout, when its items have their widths (no timer: HomeLayoutRecovery)
         recyclerView.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
@@ -392,12 +389,14 @@ final class LauncherAppBars {
         }
         mPostResumeAppDataDirty = false;
         mLastPostResumeAppDataRefreshMs = SystemClock.uptimeMillis();
+        mPostResumeRefreshInFlight = true;
         mLauncher.bg.execute(() -> {
             int capacity = bottomCapacity(mLauncher.mPrefs.getBoolean(Keys.USER_LAYOUT, false),
                     mLauncher.mPrefs.getBoolean(Keys.WIDGET_BAR, false));
             List<AppMultiple> data = ensureBottomRows(BarRows.bottom(), capacity);
             List<LeftAppMultiple> left = BarRows.left(BarCapacity.LEFT_MEMORY);
             mLauncher.runOnUiThread(() -> {
+                mPostResumeRefreshInFlight = false;
                 refreshCycle(data);
                 refreshVerticalBar(left);
             });
@@ -409,7 +408,7 @@ final class LauncherAppBars {
         if (pendingAction != null) {
             appDataHandler.removeCallbacks(pendingAction);
         }
-        
+        mAppDataPending = true;
         pendingAction = new Runnable() {
             @Override
             public void run() {
@@ -418,6 +417,29 @@ final class LauncherAppBars {
         };
         
         appDataHandler.postDelayed(pendingAction, getAppDataDelayMs());
+    }
+
+    /**
+     * A build of the bars' apps is queued or a retry of it is scheduled; cleared when initAppData() runs. With
+     * mIsInitializingAppData and mAwaitingAllAppsBind it says what is really on its way, so that the home check
+     * (HomeIntegrity) waits for it and never for a build that will not come.
+     */
+    boolean mAppDataPending;
+    /** The rebuild after a resume reads the bars' rows off the main thread and has not given them to the lists yet. */
+    boolean mPostResumeRefreshInFlight;
+
+    /**
+     * The state of the bars' apps, for the home check: on their way (a first build or a rebuild, queued, waiting or
+     * running), given, or nothing asked for them. A rebuild on its way counts as on its way: the check waits for it
+     * rather than judging the lists it is about to replace, and a repair that started it cannot start it again
+     * before it ends (HomeIntegrity).
+     */
+    HomeIntegrity.AppData appDataState() {
+        if (mAppDataPending || mIsInitializingAppData || mAwaitingAllAppsBind
+                || mPostResumeAppDataRefreshPending || mPostResumeRefreshInFlight) {
+            return HomeIntegrity.AppData.STARTED;
+        }
+        return atomicInitAppData.get() ? HomeIntegrity.AppData.READY : HomeIntegrity.AppData.NOT_STARTED;
     }
 
     void markAppDataDirty() {
@@ -460,9 +482,11 @@ final class LauncherAppBars {
     };
 
     public void initAppData() {
+        mAppDataPending = false;
         // Prevent re-entrant calls — but schedule a deferred retry so the refresh is not lost
         if (mIsInitializingAppData) {
             Log.i(Launcher.TAG, "initAppData() already in progress, scheduling deferred retry");
+            mAppDataPending = true;
             mLauncher.mHandler.postDelayed(() -> {
                 if (!mIsInitializingAppData) {
                     initAppData();
@@ -499,6 +523,7 @@ final class LauncherAppBars {
                 mIsInitializingAppData = false;
                 
                 if (mInitRetryCount < MAX_INIT_RETRIES) {
+                    mAppDataPending = true;
                     mLauncher.mHandler.postDelayed(() -> initAppData(), 1000);
                 } else {
                     Log.e(Launcher.TAG, "Max retries reached, initializing with defaults");
@@ -530,6 +555,7 @@ final class LauncherAppBars {
             mIsInitializingAppData = false;
             
             if (mInitRetryCount < MAX_INIT_RETRIES) {
+                mAppDataPending = true;
                 // Wait for the workspace to be laid out properly
                 if (mLauncher.mWorkspace.getViewTreeObserver().isAlive()) {
                     mLauncher.mWorkspace.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -1570,7 +1596,7 @@ final class LauncherAppBars {
                 }, 1500); 
             }
         }
-        mLauncher.mHomeRecovery.scheduleHomeLayoutWatchdog("appListInitialized", !mLauncher.isAllAppsVisible());
+        mLauncher.mHomeRecovery.check("appListInitialized", !mLauncher.isAllAppsVisible());
     }
 
     void refreshRecyclerViewDecorations() {
