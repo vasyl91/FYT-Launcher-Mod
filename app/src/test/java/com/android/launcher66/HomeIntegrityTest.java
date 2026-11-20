@@ -71,6 +71,36 @@ class HomeIntegrityTest {
     }
 
     @Test
+    void aPageTheBindingStillRebuildsHasNoBarYetAndIsWaitedFor() {
+        // KI-45: after recreateView the user page waits for the rebind, so no bar's view was there and the home
+        // screen was called whole half a second before the binding ended (the 7862, 2026-11-20 09:37:54)
+        Snapshot s = whole();
+        s.bindingDone = false;
+        s.horizontalBar.used = false;
+        s.verticalBar.used = false;
+        Verdict v = HomeIntegrity.judge(s, true);
+        assertFalse(v.whole());
+        assertTrue(v.waiting);
+        assertEquals("the pages being bound", v.waitingFor);
+        assertFalse(new Episode().next(v).over);
+
+        Snapshot bound = whole();
+        bound.horizontalBar.used = false;
+        bound.verticalBar.used = false;
+        assertTrue(HomeIntegrity.judge(bound, true).whole(), "bound pages without bars are whole");
+    }
+
+    @Test
+    void aWindowTooSmallWhileThePagesAreBeingBoundIsRepairedAtOnce() {
+        Snapshot s = whole();
+        s.bindingDone = false;
+        s.decor = new Size(1080, 600);
+        Verdict v = HomeIntegrity.judge(s, true);
+        assertEquals(EnumSet.of(Fault.ROOT_TOO_SMALL), v.faults);
+        assertEquals(Collections.singletonList(Repair.FORCE_LAYOUT), new Episode().next(v).repairs);
+    }
+
+    @Test
     void whileTheBarsAppsAreOnTheirWayNothingIsRebuilt() {
         Snapshot s = whole();
         s.appData = AppData.STARTED;

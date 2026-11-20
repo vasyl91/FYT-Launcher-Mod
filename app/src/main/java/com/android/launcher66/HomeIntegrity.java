@@ -20,7 +20,9 @@ import java.util.Set;
  *   <li>A part whose precondition is not met is not judged, and that is no fault: the bars before their apps are
  *       there (the model still binding, the bars' data on its way), the creator's elements on their way. Judging
  *       them then made the launcher repair what was only not ready yet, and build the bars' lists a second time at
- *       every start (KI-43).</li>
+ *       every start (KI-43). While the pages are being bound, the bars are waited for even where no bar's view is
+ *       there yet: whether a bar is used is known only from the bound pages (a page the binding rebuilds,
+ *       recreateView, has none until then). The other faults are judged and repaired during the binding too.</li>
  *   <li>Nothing is judged while the launcher is not in front, nor while all apps are shown or opening: all apps is
  *       not the home screen, and the way from it to the home screen is the home press's own (it ends the episode
  *       when all apps opens).</li>
@@ -223,12 +225,13 @@ public final class HomeIntegrity {
     }
 
     private static void judgeBars(Snapshot s, Set<Fault> faults, List<String> waiting) {
-        boolean anyBar = s.horizontalBar.used || s.verticalBar.used;
-        if (!anyBar) {
+        if (!s.bindingDone) {
+            // Before anyBar: a page still to be rebuilt by the binding has no bar's view yet (see the rules)
+            waiting.add("the pages being bound");
             return;
         }
-        if (!s.bindingDone) {
-            waiting.add("the pages being bound");
+        boolean anyBar = s.horizontalBar.used || s.verticalBar.used;
+        if (!anyBar) {
             return;
         }
         if (s.appData == AppData.NOT_STARTED) {
