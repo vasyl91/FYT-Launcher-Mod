@@ -351,6 +351,10 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   - Files go to `Download/Launcher66_Canbus`.
 - **Estimate** (where the car gives no value): `S/FuelModel` (v3, power-based), `S/FuelSpeedThreshold`,
   `S/RoadGrade`, `S/FuelUnit`, `S/ConsumptionUnits`.
+- **GPS** (2026-11-20): `S/LocationNeed` (pure, tested) says how often the service asks for it: none on a unit without
+  a canbus or when nothing needs it, every 5 s while only a drive has to be seen (the code check waiting, the pair of
+  codes counting its driving time), every 0.5 s for the estimate's speed or altitude, the scale of the speed code and
+  the code check's start and recording. `CanbusService.updateLocationNeed()` follows every change of those.
 - **Stats window:** `S/StatsWindowSize`, `S/StatsOverlayAlpha` (full alpha through the host; the window is
   laid out again whenever the limit reaches 1 after it was laid out under less, `needsRelayout`),
   `S/StatsBarFit` (the bars move the window, never resize it).

@@ -69,6 +69,36 @@ final class CanbusAutoCheck {
         this.main = main;
     }
 
+    /** Told on the main thread when the check may have changed its phase: the service asks for the GPS it needs then. */
+    private Runnable phaseListener;
+
+    void setPhaseListener(Runnable listener) {
+        phaseListener = listener;
+    }
+
+    private void phaseMayHaveChanged() {
+        if (phaseListener != null) {
+            phaseListener.run();
+        }
+    }
+
+    /**
+     * Where the check is, for the GPS it needs (LocationNeed): recording, about to start, waiting for a drive of a car
+     * it has not checked yet, or off (no car, done, not a FYT unit, the reader on, no permission).
+     */
+    LocationNeed.Check phase() {
+        if (destroyed) {
+            return LocationNeed.Check.OFF;
+        }
+        if (recorder != null) {
+            return LocationNeed.Check.RECORDING;
+        }
+        if (startTask != null) {
+            return LocationNeed.Check.STARTING;
+        }
+        return conditionsMet(false) ? LocationNeed.Check.WAITING : LocationNeed.Check.OFF;
+    }
+
     /** A fix from the service's location updates. */
     void onLocation(Location location) {
         if (destroyed || location == null || !location.hasSpeed()) {
@@ -85,9 +115,13 @@ final class CanbusAutoCheck {
         }
         lastMovingAt = now;
         if (startTask == null && conditionsMet(false)) {
-            startTask = this::start;
+            startTask = () -> {
+                start();
+                phaseMayHaveChanged();
+            };
             main.postDelayed(startTask, CanbusAutoCheckPolicy.START_DELAY_MS);
             Log.i(TAG, "movement seen, the check starts in " + CanbusAutoCheckPolicy.START_DELAY_MS / 1000 + " s");
+            phaseMayHaveChanged();
         }
     }
 
@@ -100,6 +134,11 @@ final class CanbusAutoCheck {
 
     /** The unit goes to sleep or ACC goes off, a code reader starts, ...: a check in progress is dropped. */
     void interrupt(String why) {
+        interruptNow(why);
+        phaseMayHaveChanged();
+    }
+
+    private void interruptNow(String why) {
         cancelStart();
         if (recorder == null) {
             return;
@@ -202,7 +241,10 @@ final class CanbusAutoCheck {
             rec.begin(System.currentTimeMillis());
             rec.registerCodes();
         });
-        endTask = () -> finish(rec, carId);
+        endTask = () -> {
+            finish(rec, carId);
+            phaseMayHaveChanged();
+        };
         main.postDelayed(endTask, seconds * 1000L);
     }
 

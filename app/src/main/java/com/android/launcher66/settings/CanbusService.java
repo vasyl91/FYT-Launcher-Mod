@@ -251,12 +251,14 @@ public class CanbusService extends Service implements PropertyChangeListener {
         helpers = new Helpers();
         if (LauncherApplication.isFytDevice()) {
             autoCheck = new CanbusAutoCheck(getApplicationContext(), uiHandler);
+            autoCheck.setPhaseListener(() -> updateLocationNeed("the code check's phase"));
         }
         CanbusLibrary.preload(getApplicationContext());
         accessibilityManager = (AccessibilityManager) getSystemService(ACCESSIBILITY_SERVICE);
         registerAccessibilityEventListener();
-        requestLocationUpdates();
+        // Before the GPS is asked for: with a barometer the estimate takes its altitude from it (LocationNeed)
         registerBarometer();
+        requestLocationUpdates();
         uiHandler.postDelayed(fuelTick, FUEL_TICK_MS);
 
         mPropertyChangeClass.addObserver(Keys.ALLAPPS, this);
@@ -1331,6 +1333,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
         rpmCode = rpm > 0 ? rpm : reader != null && reader.rpm > 0 ? reader.rpm : 0;
         loadFuelModel(carId);
         registerStatsCodes();
+        updateLocationNeed("the codes of the car");
     }
 
     /** The codes of the settings, for a start without an intent. */
@@ -1840,6 +1843,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
         if (fuelCode <= 0) {
             fuelModel = null;
             fuelModelKey = null;
+            updateLocationNeed("no fuel code");
             return;
         }
         String key = FuelModel.key(carId, fuelCode);
@@ -1847,6 +1851,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
             fuelModel = FuelModel.parse(prefs.getString(key, null));
             fuelModelKey = key;
             applyCarData();
+            updateLocationNeed("the estimate's model");
         }
     }
 
@@ -1859,8 +1864,12 @@ public class CanbusService extends Service implements PropertyChangeListener {
 
     /** A value of the speed code: km/h once its scale is known. Main thread. */
     private void onSpeedCode() {
+        int scaleBefore = speedScale.scale();
         speedScale.onValue(speedValue);
         int scale = speedScale.scale();
+        if (scale != scaleBefore) {
+            updateLocationNeed("the scale of the speed code");
+        }
         if (scale > 0) {
             onDriving(speedValue / (double) scale);
         }
@@ -1903,30 +1912,13 @@ public class CanbusService extends Service implements PropertyChangeListener {
     }
 
     /**
-     * The GPS speed, for the estimate of the consumption where the car gives none (FuelModel), when there is
-     * no speed code, and to find the scale of the speed code.
+     * The GPS: for the speed and the altitude of the estimate where the car gives no consumption (FuelModel), the scale of
+     * the speed code, the automatic code check and the driving time of the pair of codes, each at the rate it needs and
+     * only while it needs it (LocationNeed). At the start the user is asked for the permission as before.
      */
     private void requestLocationUpdates() {
-        requestLocationUpdates(true);
-    }
-
-    /** The location updates again if they are not running and the permission is there now. Main thread. */
-    private void retryLocationUpdates() {
-        if (locationUpdates == null) {
-            requestLocationUpdates(false);
-        }
-    }
-
-    /** @param askForPermission whether the user is asked for the permission when it is missing (at the start only) */
-    private void requestLocationUpdates(boolean askForPermission) {
-        removeLocationUpdates();
-
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && 
-            ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            // The speed, about every half second: the GPS provider of the platform, Google Play
-            // services only if the unit has none (see DeviceLocation).
-            locationUpdates = DeviceLocation.requestUpdates(this, 500L, this::onLocation, Looper.getMainLooper());
-        } else if (askForPermission) {
+        updateLocationNeed("the service started");
+        if (!hasLocationPermission()) {
             ActivityCompat.requestPermissions(
                     Launcher.getLauncher(),
                     new String[]{
@@ -2017,7 +2009,11 @@ public class CanbusService extends Service implements PropertyChangeListener {
         double kmh = location.getSpeed() * 3.6;
         onDriving(kmh);
         if (speedCode > 0) {
+            int scaleBefore = speedScale.scale();
             speedScale.onGps(kmh);
+            if (speedScale.scale() != scaleBefore) {
+                updateLocationNeed("the scale of the speed code");
+            }
         }
         // The speed code, once its scale is known, is the better speed: faster, and exactly 0 at a stop
         if (fuelModel != null && (speedCode <= 0 || speedScale.scale() == 0)) {
@@ -2028,11 +2024,66 @@ public class CanbusService extends Service implements PropertyChangeListener {
         }
     }
 
+    /** Main thread: the permission may have been given since, or something changed. */
+    private void retryLocationUpdates() {
+        updateLocationNeed("back in front");
+    }
+
+    private boolean hasLocationPermission() {
+        return ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED;
+    }
+
+    /** The rate the GPS is asked for now; NONE while no updates run. */
+    private LocationNeed.Rate locationRate = LocationNeed.Rate.NONE;
+
+    /** What the statistics need of the GPS now (LocationNeed). Main thread. */
+    private LocationNeed.Inputs locationInputs() {
+        LocationNeed.Inputs in = new LocationNeed.Inputs();
+        in.canbusUnit = LauncherApplication.isFytDevice();
+        in.permission = hasLocationPermission();
+        in.fuelModel = fuelModel != null;
+        int scale = speedScale != null ? speedScale.scale() : 0;
+        in.speedFromCode = speedCode > 0 && scale > 0;
+        in.learningSpeedScale = speedCode > 0 && scale == 0;
+        in.barometer = sensorManager != null;
+        CodePairChooser chooser = pairChooser;
+        in.pairNeedsDriving = chooser != null && chooser.status().pairs.size() > 1;
+        in.check = autoCheck != null ? autoCheck.phase() : LocationNeed.Check.OFF;
+        in.checkSeesSpeedCode = false;
+        return in;
+    }
+
+    /**
+     * Asks for the GPS at the rate the statistics need now, or stops it (LocationNeed). The updates are asked for again
+     * only when the rate changes. Main thread.
+     */
+    private void updateLocationNeed(String reason) {
+        LocationNeed.Decision decision = LocationNeed.decide(locationInputs());
+        boolean running = locationUpdates != null;
+        if (decision.rate == locationRate && running == (decision.rate != LocationNeed.Rate.NONE)) {
+            return;
+        }
+        removeLocationUpdates();
+        if (decision.rate != LocationNeed.Rate.NONE) {
+            // The platform's GPS provider; Google Play services only where the unit has none (DeviceLocation)
+            locationUpdates = DeviceLocation.requestUpdates(this, decision.rate.intervalMs, this::onLocation,
+                    Looper.getMainLooper());
+        }
+        locationRate = locationUpdates != null ? decision.rate : LocationNeed.Rate.NONE;
+        Log.i(TAG, "GPS: " + (decision.rate == LocationNeed.Rate.NONE ? "none"
+                : "every " + decision.rate.intervalMs + " ms" + (locationUpdates == null ? ", not available" : ""))
+                + " (" + decision.why + "; " + reason + ")");
+    }
+
     private void removeLocationUpdates() {
         if (locationUpdates != null) {
             locationUpdates.remove();
         }
         locationUpdates = null;
+        locationRate = LocationNeed.Rate.NONE;
     }
 
     public static class PropertyChangeClass {
