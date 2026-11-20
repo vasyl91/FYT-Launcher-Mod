@@ -1241,9 +1241,9 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         handler.post(this::updateBarIconSliders);
         // Also while the switch is off, so its summary is current when it is turned on.
         handler.post(updateBarHeightSummary);
-        // The order is stored per orientation: show the new one's
+        // The order is stored per orientation: show the new one's, in the row and in an open dialog
         if (barOrderDialog != null) {
-            handler.post(barOrderDialog::updateSummary);
+            handler.post(barOrderDialog::onOrientationChanged);
         }
     }
 

@@ -33,7 +33,12 @@ import java.util.List;
 /**
  * The row "Order of the bar's elements" in "Bars" and its dialog (the owner, 2026-11-20): the horizontal bar's
  * elements the settings and the orientation leave (BarOrder.shown), each with a drag handle on a tile; the top of the
- * list is the left of the bar, the bottom its right. An element is dragged by its handle at once, or by its row after
+ * list is the left of the bar, the bottom its right.
+ *
+ * <p>The rule (the owner, 2026-11-20): <b>one row, and the list it opens is the one of the orientation the screen is
+ * in now.</b> The launcher is mostly seen in one orientation, so the other one's order is not shown beside it. The
+ * settings are not created again when the screen turns (configChanges), so a turn with the dialog open shows it again
+ * with the new orientation's list ({@link #onOrientationChanged}); moves not yet confirmed with OK are dropped. An element is dragged by its handle at once, or by its row after
  * a long press. OK stores the order of the orientation the settings are shown in (BarOrder.merge: a hidden element
  * keeps its place), "Default" puts the old order back. The bar is built again when the settings are left
  * (Helpers.setBarSettingsChanged). The dialog is in the settings' colours (SettingsDialogs).
@@ -75,6 +80,14 @@ final class BarOrderDialog {
             names.add(fragment.getString(nameOf(e)));
         }
         row.setSummary(String.join(" · ", names));
+    }
+
+    /** The screen turned: the row names the new orientation's order, and an open dialog shows its list. */
+    void onOrientationChanged() {
+        updateSummary();
+        if (dialog != null && dialog.isShowing() && fragment.isAdded()) {
+            show();
+        }
     }
 
     /** With the fragment's view: a dialog must not outlive it. */

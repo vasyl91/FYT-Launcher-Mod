@@ -100,4 +100,44 @@ public class BarOrderDialogViewTest {
 
         controller.pause().stop().destroy();
     }
+
+    @Test
+    public void oneRowOpensTheListOfTheOrientationTheScreenIsInAlsoAfterATurn() {
+        // The owner, 2026-11-20: one row, the list of the orientation the screen is in now
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(RuntimeEnvironment.getApplication());
+        prefs.edit().putBoolean(Keys.USER_LAYOUT, true).putBoolean(Keys.WIDGET_BAR, true)
+                .putBoolean(Keys.WIDGET_BAR_NO_WEATHER, false).putBoolean(Keys.WIDGET_BAR_NO_DATE, false)
+                .remove(Keys.HORIZONTAL_BAR_ORDER_LAND).remove(Keys.HORIZONTAL_BAR_ORDER_PORT).commit();
+        ActivityController<SettingsActivity> controller = Robolectric.buildActivity(SettingsActivity.class).setup();
+        SettingsActivity activity = controller.get();
+        SettingsFragmentSecond screen = new SettingsFragmentSecond();
+        activity.getSupportFragmentManager().beginTransaction().replace(android.R.id.content, screen).commitNow();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        Preference row = screen.findPreference(Keys.HORIZONTAL_BAR_ORDER);
+        row.performClick();
+        shadowOf(Looper.getMainLooper()).idle();
+        AlertDialog landscape = (AlertDialog) ShadowDialog.getLatestDialog();
+        assertEquals("landscape: the five, the date among them", 5,
+                ((RecyclerView) landscape.findViewById(R.id.bar_order_list)).getAdapter().getItemCount());
+
+        // The screen turns with the dialog open: the settings are not created again (configChanges)
+        RuntimeEnvironment.setQualifiers("w1200dp-h2000dp-port-mdpi");
+        controller.configurationChange(RuntimeEnvironment.getApplication().getResources().getConfiguration());
+        shadowOf(Looper.getMainLooper()).idle();
+        AlertDialog portrait = (AlertDialog) ShadowDialog.getLatestDialog();
+        assertFalse("the landscape list is gone", landscape.isShowing());
+        assertEquals("portrait: four, no date", 4,
+                ((RecyclerView) portrait.findViewById(R.id.bar_order_list)).getAdapter().getItemCount());
+        assertEquals(names(activity, BarOrderLayout.shown(prefs, true)), String.valueOf(row.getSummary()));
+
+        // OK stores the portrait order only
+        ((BarOrderDialog.Adapter) ((RecyclerView) portrait.findViewById(R.id.bar_order_list)).getAdapter()).move(0, 3);
+        portrait.getButton(DialogInterface.BUTTON_POSITIVE).performClick();
+        shadowOf(Looper.getMainLooper()).idle();
+        assertNotNull(prefs.getString(Keys.HORIZONTAL_BAR_ORDER_PORT, null));
+        assertFalse(prefs.contains(Keys.HORIZONTAL_BAR_ORDER_LAND));
+
+        controller.pause().stop().destroy();
+    }
 }
