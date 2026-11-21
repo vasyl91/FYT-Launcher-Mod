@@ -5,6 +5,14 @@ package com.android.launcher66;
  * {@code constraintWidth_percent} of custom_layout_two_user in layout-land and layout-port) and
  * what happens to them when the date or the weather is hidden: the music widget takes their room.
  * Kept free of views so that the arithmetic can be tested; {@link WidgetBarLayout} applies it.
+ *
+ * <p>The apps list fitted to its icons (the owner, 2026-11-21, "Fit the apps to their icons"): the list is as
+ * wide as the tiles it shows, each tile as wide as it is with the most icons the list has room for, so the icons
+ * keep the margins they have at the maximum. The room it gives up goes to the widgets: <b>the date and the weather
+ * get 10% of it each, the music the rest</b>; a widget that is not shown (the date in portrait, a hidden date or
+ * weather) gets nothing, and its 10% goes to the music too ({@link #shares}). Only with the widget bar: without it
+ * the list keeps its usual width. The total of the shares does not change. An element whose height comes from its
+ * own width (the portrait list and weather) keeps the height of its usual width ({@link #keptRatio}).
  */
 public final class WidgetBarPlan {
 
@@ -14,6 +22,36 @@ public final class WidgetBarPlan {
 
     static final float MUSIC_PORT = 0.295f;
     static final float WEATHER_PORT = 0.15f;
+
+    /** The apps list's usual share: the one BarCapacity counts its room with. */
+    static final float APPS_LAND = BarCapacity.RECYCLER_W_WIDGET_LANDSCAPE;
+    static final float APPS_PORT = BarCapacity.RECYCLER_W_WIDGET_PORTRAIT;
+    /** Of the room the apps list gives up, the date and the weather each get this share; the music the rest. */
+    static final float FREED_TO_DATE = 0.10f;
+    static final float FREED_TO_WEATHER = 0.10f;
+    /** Height per width of the portrait list and weather (their "H," ratios in layout-port). */
+    static final float APPS_RATIO_PORT = BarCapacity.RECYCLER_H_WIDGET_PORTRAIT;
+    static final float WEATHER_RATIO_PORT = 0.95f;
+
+    /** The widths of the widget bar's elements, as shares of the bar's width; the drawer button keeps its own. */
+    public static final class Shares {
+        public final float apps;
+        public final float music;
+        /** 0 where the date is not shown. */
+        public final float date;
+        /** 0 where the weather is hidden. */
+        public final float weather;
+        /** The apps list gave up room: the list, the date and the weather have other widths than usual. */
+        public final boolean appsChanged;
+
+        Shares(float apps, float music, float date, float weather, boolean appsChanged) {
+            this.apps = apps;
+            this.music = music;
+            this.date = date;
+            this.weather = weather;
+            this.appsChanged = appsChanged;
+        }
+    }
 
     /** 'Large text': the text rows of the weather widget get this much more of its height. */
     static final float WEATHER_ROW_GROWTH = 0.15f;
@@ -44,6 +82,46 @@ public final class WidgetBarPlan {
         float largeIcon = Math.max(usualIcon * WEATHER_ICON_MIN_SHARE,
                 usualIcon - 2f * (largeRow - usualRow));
         return new float[] {largeRow, largeIcon};
+    }
+
+    static float usualApps(boolean portrait) {
+        return portrait ? APPS_PORT : APPS_LAND;
+    }
+
+    static float usualWeather(boolean portrait) {
+        return portrait ? WEATHER_PORT : WEATHER_LAND;
+    }
+
+    /**
+     * The apps list's share: its usual one, or, fitted, the share of the {@code shown} tiles at the width a tile has
+     * with {@code room} of them (the most the list has room for). Fitted only when it shows fewer than it has room for.
+     */
+    public static float appsShare(boolean portrait, boolean fit, int shown, int room) {
+        float usual = usualApps(portrait);
+        if (fit && room > 0 && shown > 0 && shown < room) {
+            return usual * shown / room;
+        }
+        return usual;
+    }
+
+    /** The widths of all the elements for an apps list of the share {@code apps} (see the class for the rule). */
+    public static Shares shares(boolean portrait, boolean dateHidden, boolean weatherHidden, float apps) {
+        float freed = Math.max(0f, usualApps(portrait) - apps);
+        boolean dateShown = !portrait && !dateHidden;
+        float dateGain = dateShown ? freed * FREED_TO_DATE : 0f;
+        float weatherGain = weatherHidden ? 0f : freed * FREED_TO_WEATHER;
+        float music = musicShare(portrait, dateHidden, weatherHidden) + freed - dateGain - weatherGain;
+        float date = dateShown ? DATE_LAND + dateGain : 0f;
+        float weather = weatherHidden ? 0f : usualWeather(portrait) + weatherGain;
+        return new Shares(apps, music, date, weather, freed > 0f);
+    }
+
+    /**
+     * The "H," ratio (height per width) that keeps the height an element has at its usual width when it gets
+     * another width: the portrait list and weather are as high as their own width says.
+     */
+    static float keptRatio(float ratio, float usualShare, float share) {
+        return share > 0f ? ratio * usualShare / share : ratio;
     }
 
     /** In portrait the bar has no date, so only the weather can be hidden there. */

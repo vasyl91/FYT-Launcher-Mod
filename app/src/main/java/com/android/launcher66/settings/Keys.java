@@ -163,6 +163,8 @@ public final class Keys {
     public static final String WIDGET_BAR_NO_DATE = "widget_bar_no_date";
     /** The weather is not shown in the widget bar and the music widget takes its room. */
     public static final String WIDGET_BAR_NO_WEATHER = "widget_bar_no_weather";
+    /** The widget bar's apps list as wide as its icons, its room to the widgets (WidgetBarPlan). */
+    public static final String WIDGET_BAR_FIT_APPS = "widget_bar_fit_apps";
     /**
      * With the date or the weather hidden, the buttons of the music widget are beside the title and
      * artist in two rows (on), or below them as usual (off).

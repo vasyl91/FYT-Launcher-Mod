@@ -147,9 +147,9 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
             boolean coverHidden = WidgetBarLayout.coverHidden(prefs);
             // The cover and the space behind it are sized from the widget's usual width, the one it
             // has with the date and the weather shown, so they do not move when those are hidden.
+            // Its share with the apps list's room too, when the list is fitted to its icons (WidgetBarPlan)
             int baseW = MusicWidgetPlan.usualWidth(w, WidgetBarPlan.baseShare(portraitBar),
-                    WidgetBarPlan.musicShare(portraitBar, WidgetBarLayout.dateHidden(prefs, portraitBar),
-                            WidgetBarLayout.weatherHidden(prefs)));
+                    WidgetBarLayout.shares(prefs, portraitBar).music);
             if (buttons instanceof FlexboxLayout) {
                 // The wide layout (WidgetBarLayout): the buttons are a block beside the text.
                 plan = MusicWidgetPlan.planBarWide(w, h, baseW, density, largeText, oneLine,

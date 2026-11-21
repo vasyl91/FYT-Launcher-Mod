@@ -448,7 +448,11 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder>
             return;
         }
 
-        int tileWidth = recyclerWidth / itemCount;
+        // With the widget bar's list fitted to its icons, a tile keeps the width it has with the most icons
+        // (BarCapacity.bottomTiles): the list is as wide as its tiles
+        int tiles = BarCapacity.bottomTiles(mPrefs, portrait ? Configuration.ORIENTATION_PORTRAIT
+                : Configuration.ORIENTATION_LANDSCAPE, userLayout, widgetBar, itemCount);
+        int tileWidth = recyclerWidth / tiles;
         if (tileWidth <= 0) {
             return;
         }

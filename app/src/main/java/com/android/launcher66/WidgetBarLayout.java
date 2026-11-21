@@ -1,6 +1,7 @@
 package com.android.launcher66;
 
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,8 @@ import com.android.launcher66.settings.Keys;
 
 /**
  * Hides the date and the weather of the widget bar when the settings say so, and gives their room
- * to the music widget. One piece of code for the four layouts (custom_layout_two_user and
+ * to the music widget; fits the apps list to its icons and gives its room to the widgets
+ * (WidgetBarPlan has the rules). One piece of code for the four layouts (custom_layout_two_user and
  * custom_layout_two_user_vertical, in layout-land and layout-port), for the bar of the first page and
  * for the overlay of the auto-hide bar.
  *
@@ -36,6 +38,26 @@ final class WidgetBarLayout {
 
     static boolean coverHidden(SharedPreferences prefs) {
         return prefs.getBoolean(Keys.WIDGET_BAR_NO_COVER, false);
+    }
+
+    /** "Fit the apps to their icons" (only with the widget bar, where this class is used). */
+    static boolean fitApps(SharedPreferences prefs) {
+        return prefs.getBoolean(Keys.WIDGET_BAR_FIT_APPS, false);
+    }
+
+    /** The apps list's icons now: {shown, room}, as the launcher counts them (BarCapacity, BarIconCount). */
+    static int[] appIcons(SharedPreferences prefs, boolean portrait) {
+        int room = BarCapacity.bottomCapacity(prefs,
+                portrait ? Configuration.ORIENTATION_PORTRAIT : Configuration.ORIENTATION_LANDSCAPE, true, true);
+        int shown = BarIconCount.shown(BarCapacity.chosen(prefs, true, portrait), room);
+        return new int[] {shown, room};
+    }
+
+    /** The widths of the bar's elements with these settings, for the page's bar and for the window. */
+    static WidgetBarPlan.Shares shares(SharedPreferences prefs, boolean portrait) {
+        int[] icons = appIcons(prefs, portrait);
+        float apps = WidgetBarPlan.appsShare(portrait, fitApps(prefs), icons[0], icons[1]);
+        return WidgetBarPlan.shares(portrait, dateHidden(prefs, portrait), weatherHidden(prefs), apps);
     }
 
     static boolean buttonsBeside(SharedPreferences prefs, boolean portrait) {
@@ -83,12 +105,14 @@ final class WidgetBarLayout {
                 buttonsBeside(prefs, portrait));
     }
 
-    /** @return whether the bar was changed (some widget or the cover is hidden) */
+    /** @return whether the bar was changed (some widget or the cover is hidden, or the apps list fitted) */
     static boolean apply(View bar, LayoutInflater inflater, SharedPreferences prefs, boolean portrait) {
         boolean noDate = dateHidden(prefs, portrait);
         boolean noWeather = weatherHidden(prefs);
         boolean noCover = coverHidden(prefs);
-        if (!WidgetBarPlan.wide(noDate, noWeather, noCover) || !(bar instanceof ConstraintLayout)) {
+        WidgetBarPlan.Shares shares = shares(prefs, portrait);
+        if (!(WidgetBarPlan.wide(noDate, noWeather, noCover) || shares.appsChanged)
+                || !(bar instanceof ConstraintLayout)) {
             return false;
         }
         ConstraintLayout root = (ConstraintLayout) bar;
@@ -117,15 +141,35 @@ final class WidgetBarLayout {
         if (noCover && cover != null) {
             cover.setVisibility(View.GONE);
         }
-        if (!WidgetBarPlan.widensMusic(noDate, noWeather)) {
+        if (!WidgetBarPlan.widensMusic(noDate, noWeather) && !shares.appsChanged) {
             return true;
         }
 
-        // The music widget gets the room of the widgets that are hidden. Where it lies, and what it is tied to,
-        // is the order of the bar's elements (BarOrderLayout, after this).
+        // The music widget gets the room of the widgets that are hidden, and the apps list's room goes to the
+        // widgets. Where they lie, and what they are tied to, is the order of the bar's elements (BarOrderLayout,
+        // after this).
         ConstraintSet set = new ConstraintSet();
         set.clone(root);
-        set.constrainPercentWidth(R.id.rl_music_two, WidgetBarPlan.musicShare(portrait, noDate, noWeather));
+        set.constrainPercentWidth(R.id.rl_music_two, shares.music);
+        if (shares.appsChanged) {
+            set.constrainPercentWidth(R.id.recycler_view, shares.apps);
+            if (date != null && !noDate) {
+                set.constrainPercentWidth(R.id.bar_widget_date, shares.date);
+            }
+            if (weather != null && !noWeather) {
+                set.constrainPercentWidth(R.id.bar_widget_weather, shares.weather);
+            }
+            if (portrait) {
+                // The list and the weather are as high as their own width says ("H,"): the height of their usual
+                // width, so the bar and the icons keep their height (HorizontalBarDimensions reads the ratio)
+                set.setDimensionRatio(R.id.recycler_view, "H," + WidgetBarPlan.keptRatio(
+                        WidgetBarPlan.APPS_RATIO_PORT, WidgetBarPlan.usualApps(true), shares.apps));
+                if (weather != null && !noWeather) {
+                    set.setDimensionRatio(R.id.bar_widget_weather, "H," + WidgetBarPlan.keptRatio(
+                            WidgetBarPlan.WEATHER_RATIO_PORT, WidgetBarPlan.usualWeather(true), shares.weather));
+                }
+            }
+        }
         set.applyTo(root);
         return true;
     }

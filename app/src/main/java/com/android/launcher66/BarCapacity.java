@@ -167,6 +167,20 @@ public final class BarCapacity {
     }
 
     /**
+     * How many tiles the widths of the horizontal bar's tiles are counted for: the icons it shows, or, with the
+     * widget bar's apps list fitted to its icons, the most it has room for, so that a tile keeps the width it has
+     * at the maximum (WidgetBarPlan). The list is then exactly as wide as its tiles.
+     */
+    public static int bottomTiles(SharedPreferences prefs, int orientation, boolean userLayout, boolean widgetBar,
+                                  int itemCount) {
+        if (!userLayout || !widgetBar || prefs == null || !prefs.getBoolean(Keys.WIDGET_BAR_FIT_APPS, false)) {
+            return itemCount;
+        }
+        int room = bottomCapacity(prefs, orientation, true, true);
+        return itemCount > 0 && itemCount < room ? room : itemCount;
+    }
+
+    /**
      * Whether the slot (AppMultiple.index) is shown at this capacity. A slot is the logical index
      * of its row, not a position in the query result or in the adapter.
      */

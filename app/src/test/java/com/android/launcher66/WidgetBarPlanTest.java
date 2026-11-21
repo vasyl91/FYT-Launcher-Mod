@@ -97,4 +97,68 @@ class WidgetBarPlanTest {
         assertTrue(WidgetBarPlan.buttonsBeside(false, false, true, true));
         assertFalse(WidgetBarPlan.buttonsBeside(false, false, true, false));
     }
+
+    private static float total(WidgetBarPlan.Shares s) {
+        return s.apps + s.music + s.date + s.weather;
+    }
+
+    @Test
+    void aFittedListGivesItsRoomTenPercentToTheDateAndTheWeatherAndTheRestToTheMusic() {
+        // Landscape, 2 of 8 icons: the list keeps a quarter of its usual share
+        float apps = WidgetBarPlan.appsShare(false, true, 2, 8);
+        assertEquals(0.4395f / 4f, apps, 0.0001f);
+        WidgetBarPlan.Shares s = WidgetBarPlan.shares(false, false, false, apps);
+        float freed = 0.4395f - apps;
+        assertTrue(s.appsChanged);
+        assertEquals(0.05f + 0.1f * freed, s.date, 0.0001f);
+        assertEquals(0.12f + 0.1f * freed, s.weather, 0.0001f);
+        assertEquals(0.28f + 0.8f * freed, s.music, 0.0001f);
+        assertEquals(0.4395f + 0.28f + 0.05f + 0.12f, total(s), 0.0001f, "the bar's width does not change");
+    }
+
+    @Test
+    void aWidgetThatIsNotShownGetsNothingAndItsTenPercentGoesToTheMusic() {
+        float apps = WidgetBarPlan.appsShare(false, true, 1, 5);
+        float freed = 0.4395f - apps;
+        // The date hidden: its own share and its 10% to the music
+        WidgetBarPlan.Shares noDate = WidgetBarPlan.shares(false, true, false, apps);
+        assertEquals(0f, noDate.date, 0.0001f);
+        assertEquals(0.12f + 0.1f * freed, noDate.weather, 0.0001f);
+        assertEquals(0.28f + 0.05f + 0.9f * freed, noDate.music, 0.0001f);
+        // Portrait has no date: the weather 10%, the music 90%
+        float portraitApps = WidgetBarPlan.appsShare(true, true, 2, 4);
+        float portraitFreed = 0.4385f - portraitApps;
+        WidgetBarPlan.Shares portrait = WidgetBarPlan.shares(true, false, false, portraitApps);
+        assertEquals(0f, portrait.date, 0.0001f);
+        assertEquals(0.15f + 0.1f * portraitFreed, portrait.weather, 0.0001f);
+        assertEquals(0.295f + 0.9f * portraitFreed, portrait.music, 0.0001f);
+        assertEquals(0.4385f + 0.295f + 0.15f, total(portrait), 0.0001f);
+        // Both hidden: all of it to the music
+        WidgetBarPlan.Shares both = WidgetBarPlan.shares(false, true, true, apps);
+        assertEquals(0.28f + 0.05f + 0.12f + freed, both.music, 0.0001f);
+    }
+
+    @Test
+    void theListKeepsItsWidthWhenItShowsAllItHasRoomForOrIsNotFitted() {
+        assertEquals(0.4395f, WidgetBarPlan.appsShare(false, true, 8, 8), 0.0001f);
+        assertEquals(0.4395f, WidgetBarPlan.appsShare(false, false, 2, 8), 0.0001f, "the switch off");
+        assertEquals(0.4385f, WidgetBarPlan.appsShare(true, true, 0, 4), 0.0001f, "nothing counted yet");
+        WidgetBarPlan.Shares usual = WidgetBarPlan.shares(false, false, false, 0.4395f);
+        assertFalse(usual.appsChanged);
+        assertEquals(0.28f, usual.music, 0.0001f, "as before: nothing changes");
+        assertEquals(0.05f, usual.date, 0.0001f);
+        assertEquals(0.12f, usual.weather, 0.0001f);
+        // A hidden weather widens the music as it always did
+        assertEquals(WidgetBarPlan.musicShare(false, false, true),
+                WidgetBarPlan.shares(false, false, true, 0.4395f).music, 0.0001f);
+    }
+
+    @Test
+    void anElementWhoseHeightComesFromItsWidthKeepsItsHeight() {
+        float ratio = WidgetBarPlan.keptRatio(0.295f, 0.4385f, 0.4385f / 2f);
+        assertEquals(0.295f * 2f, ratio, 0.0001f);
+        // height = width x ratio, the same as at the usual width
+        assertEquals(1080 * 0.4385f * 0.295f, 1080 * (0.4385f / 2f) * ratio, 0.01f);
+        assertEquals(0.95f, WidgetBarPlan.keptRatio(0.95f, 0.15f, 0f), 0.0001f, "no width: the ratio as it is");
+    }
 }

@@ -2384,12 +2384,20 @@ public class Workspace extends SmoothPagedView
             weatherWidgetWidth = (int) (screenWidth * 0.12);
         }
 
-        // A hidden date or weather (WidgetBarLayout): the music widget takes their room.
+        // A hidden date or weather (WidgetBarLayout): the music widget takes their room. The apps list fitted
+        // to its icons: its room goes to the widgets, as on the page's bar (WidgetBarPlan.shares); the list keeps
+        // the height of its usual width, worked out above.
         final boolean portraitBar = orientation == Configuration.ORIENTATION_PORTRAIT;
         final boolean noDate = WidgetBarLayout.dateHidden(mPrefs, portraitBar);
         final boolean noWeather = WidgetBarLayout.weatherHidden(mPrefs);
-        if (WidgetBarPlan.widensMusic(noDate, noWeather)) {
-            musicWidgetWidth = (int) (screenWidth * WidgetBarPlan.musicShare(portraitBar, noDate, noWeather));
+        final WidgetBarPlan.Shares shares = WidgetBarLayout.shares(mPrefs, portraitBar);
+        if (WidgetBarPlan.widensMusic(noDate, noWeather) || shares.appsChanged) {
+            musicWidgetWidth = (int) (screenWidth * shares.music);
+        }
+        if (shares.appsChanged) {
+            recyclerWidth = (int) (screenWidth * shares.apps);
+            dateWidgetWidth = (int) (screenWidth * shares.date);
+            weatherWidgetWidth = (int) (screenWidth * shares.weather);
         }
         
         // Apply forced dimensions
