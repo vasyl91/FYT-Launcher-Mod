@@ -165,6 +165,10 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             TURN_BASELINE_FULL_RESET, KEY_BASELINE_PROFILE_RESET, Keys.SPOTIFY_CLIENT_ID,
             Keys.LOGCAT_SERVICE_TIMEOUT, Keys.APP_VERSION_UPDATE, Keys.OPENWEATHER_API_KEY, TURN_WALLPAPER_PICK
     };
+    /** The download of an update, through a turn of the screen (HandedWork has the rule); package-private for its test. */
+    static final HandedWork<VersionChecker, SettingsFragmentFirst> DOWNLOAD = new HandedWork<>();
+    /** The save of the day's or the night's wallpaper, through a turn of the screen (HandedWork). */
+    private static final HandedWork<SaveWallpaperTask, SettingsFragmentFirst> WALLPAPER_SAVE = new HandedWork<>();
     /** The offer to choose a wallpaper, and the time of day it is for. */
     private AlertDialog alertWallpaperPickDialog;
     private String wallpaperPickDaytime;
@@ -231,8 +235,10 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         super.onViewCreated(view, savedInstanceState);
         // Back from a window this screen was left for: where it was (SettingsScrollMemory)
         SettingsScroll.restore(this, 1);
-        // Created again for a turn of the screen: the dialog that was open is open again (SettingsDialogMemory)
+        // Created again for a turn of the screen: the dialog that was open is open again (SettingsDialogMemory),
+        // and a download or a save that goes on shows its dialog here (HandedWork)
         handler.post(this::reopenAfterTurn);
+        handler.post(this::takeOverWork);
 
         if (!LauncherApplication.isFytDevice()) {
             // Only the system bar insets: the proportions come from SettingsActivity's
@@ -933,12 +939,12 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             case Keys.SAVE_DAY_WALLPAPER:
                 helpers.setCorrectionChanged(true);
                 wallpaperSet = true;
-                new SaveWallpaperTask().execute("Day");
+                startWallpaperSave("Day");
                 break;
             case Keys.SAVE_NIGHT_WALLPAPER:
                 helpers.setCorrectionChanged(true);
                 wallpaperSet = true;
-                new SaveWallpaperTask().execute("Night");
+                startWallpaperSave("Night");
                 break;
             case Keys.BRIGHTNESS_PREF:
                 brightnessDirty = true;
@@ -1050,15 +1056,29 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         clearPreferenceListeners(getPreferenceScreen());
         handler.removeCallbacksAndMessages(null);
         mHandler.removeCallbacksAndMessages(null);
-        if (versionChecker != null) {
-            // cancelAll() clears the callback references before trying to stop the tasks.
-            // Those references (VersionChecker$1.val$callback -> SettingsFragmentFirst$2
-            // -> this$0) held this fragment on the 'pool-4-thread-1' stack for as long as
-            // the HTTP request ran.
+        // cancelAll() clears the callback references before trying to stop the tasks.
+        // Those references (VersionChecker$1.val$callback -> SettingsFragmentFirst$2
+        // -> this$0) held this fragment on the 'pool-4-thread-1' stack for as long as
+        // the HTTP request ran. The download's callback holds no screen now (DownloadToScreen).
+        boolean turning = getActivity() != null && getActivity().isChangingConfigurations();
+        VersionChecker download = DOWNLOAD.job();
+        if (versionChecker != null && versionChecker != download) {
             versionChecker.cancelAll();
-            versionChecker = null;
         }
+        if (download != null) {
+            if (turning) {
+                // The download goes on for the new screen; only this screen's check for an update stops
+                download.cancelCheck();
+                DOWNLOAD.leave(this);
+            } else {
+                download.cancelAll();
+                DOWNLOAD.end();
+            }
+        }
+        versionChecker = null;
         progressDialogDismiss();
+        // A save goes on in any case; its end goes to a screen that is there then, or to none
+        WALLPAPER_SAVE.leave(this);
         removeTickRunnable();
         cancelCountDownTimer();
         LogcatWorker.get().clearStateListener(logcatStateListener);
@@ -1354,43 +1374,131 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 Log.w(TAG, "No screen to allow installing unknown apps, trying the update anyway", e);
             }
         }
-        versionChecker.downloadAndInstallApk(LauncherApplication.sApp, latestAppVersion, new VersionChecker.DownloadCallback() {
-            @Override
-            public void onDownloadStarted(String fileName) {
-                requireActivity().runOnUiThread(() -> progrssDialogShow());
-            }
+        if (DOWNLOAD.running()) {
+            // One download at a time; its dialog is on the screen already
+            return;
+        }
+        DOWNLOAD.start(versionChecker, latestAppVersion, this);
+        versionChecker.downloadAndInstallApk(LauncherApplication.sApp, latestAppVersion,
+                new DownloadToScreen(versionChecker));
+    }
 
-            @Override
-            public void onDownloadProgress(int progress) {
-                mPropertyChangeClass.setInt(Keys.DOWNLOAD_PERCENTAGE, progress);
-            }
+    /** The download's progress for the progress dialog. */
+    private void showDownloadProgress(int progress) {
+        mPropertyChangeClass.setInt(Keys.DOWNLOAD_PERCENTAGE, progress);
+    }
 
-            @Override
-            public void onDownloadComplete() {
-                requireActivity().runOnUiThread(() -> progressDialogDismiss());
-            }
+    /**
+     * The download's callbacks, held by the download for as long as it runs. They keep no screen: they ask DOWNLOAD
+     * for the screen of now, which a turn of the screen replaces (HandedWork). Everything on the main thread.
+     */
+    static final class DownloadToScreen implements VersionChecker.DownloadCallback {
+        private final Handler main = new Handler(Looper.getMainLooper());
+        private final VersionChecker job;
 
-            @Override
-            public void onDownloadError(String error) {
-                mHandler.post(() -> showErrorToast(error));
+        DownloadToScreen(VersionChecker job) {
+            this.job = job;
+        }
+
+        /** The screen of now, while this download is the one that runs; null otherwise. */
+        private SettingsFragmentFirst screen() {
+            SettingsFragmentFirst screen = DOWNLOAD.job() == job ? DOWNLOAD.screen() : null;
+            return screen != null && screen.isAdded() ? screen : null;
+        }
+
+        @Override
+        public void onDownloadStarted(String fileName) {
+            main.post(() -> {
+                if (DOWNLOAD.job() == job) {
+                    DOWNLOAD.progress(0);
+                }
+                SettingsFragmentFirst screen = screen();
+                if (screen != null) {
+                    screen.progrssDialogShow();
+                }
+            });
+        }
+
+        @Override
+        public void onDownloadProgress(int progress) {
+            main.post(() -> {
+                if (DOWNLOAD.job() == job) {
+                    DOWNLOAD.progress(progress);
+                }
+                SettingsFragmentFirst screen = screen();
+                if (screen != null) {
+                    screen.showDownloadProgress(progress);
+                }
+            });
+        }
+
+        @Override
+        public void onDownloadComplete() {
+            main.post(() -> {
+                SettingsFragmentFirst screen = screen();
+                if (DOWNLOAD.job() == job) {
+                    DOWNLOAD.end();
+                }
+                if (screen != null) {
+                    screen.progressDialogDismiss();
+                }
+            });
+        }
+
+        @Override
+        public void onDownloadError(String error) {
+            main.post(() -> {
+                SettingsFragmentFirst screen = screen();
+                if (DOWNLOAD.job() == job) {
+                    DOWNLOAD.end();
+                }
+                if (screen != null) {
+                    // The dialog does not wait for a download that is over
+                    screen.progressDialogDismiss();
+                }
+                Toast.makeText(LauncherApplication.sApp, error, Toast.LENGTH_LONG).show();
+            });
+        }
+    }
+
+    /**
+     * The screen is new after a turn of the screen: a download or a save its predecessor started goes on, and its
+     * dialog is shown here again with the last progress (HandedWork).
+     */
+    private void takeOverWork() {
+        if (!isAdded()) {
+            return;
+        }
+        if (WALLPAPER_SAVE.join(this) != null) {
+            showLoading(WALLPAPER_SAVE.what());
+        }
+        if (DOWNLOAD.join(this) != null) {
+            int[] progress = DOWNLOAD.lastProgress();
+            if (progress != null) {
+                // Started: its dialog with the percent reached so far
+                progrssDialogShow();
+                showDownloadProgress(progress[0]);
             }
-        });  
+        }
     }
 
     private void progrssDialogShow() {
-        progressDialog = new ProgressDialog();        
-        progressDialog.setOnCancelListener(() -> versionChecker.cancelDownload());
-        progressDialog.show(this.requireContext(), latestAppVersion);
+        progressDialogDismiss();
+        progressDialog = new ProgressDialog();
+        progressDialog.setOnCancelListener(() -> {
+            VersionChecker download = DOWNLOAD.job();
+            if (download != null) {
+                download.cancelDownload();
+            }
+            DOWNLOAD.end();
+        });
+        progressDialog.show(this.requireContext(), DOWNLOAD.what() != null ? DOWNLOAD.what() : latestAppVersion);
     }
 
     private void progressDialogDismiss() {
         if (progressDialog != null) {
             progressDialog.dismiss();
         }
-    }
-
-    private void showErrorToast(String error) {
-        Toast.makeText(LauncherApplication.sApp, error, Toast.LENGTH_LONG).show();
     }
 
     private AlertDialog.Builder displayClientIdDialog() {
@@ -1867,7 +1975,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     /** The mode ("Day" or "Night") whose wallpaper is saved once the user is back from the picker; null for none. */
     private String mPendingWallpaperMode;
     /** The id of the wallpaper that could not be read: the save is tried again only for another one. */
-    private volatile int mUnreadableWallpaperId = -1;
+    private static volatile int sUnreadableWallpaperId = -1;
 
     /**
      * The wallpaper cannot be read here (from Android 13 an app needs access to all files for it, and no
@@ -1906,7 +2014,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             return;
         }
         mPendingWallpaperMode = null;
-        final int before = mUnreadableWallpaperId;
+        final int before = sUnreadableWallpaperId;
         final Handler main = new Handler(Looper.getMainLooper());
         AsyncTask.THREAD_POOL_EXECUTOR.execute(() -> {
             int now;
@@ -1923,17 +2031,34 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 if (isAdded()) {
                     helpers.setCorrectionChanged(true);
                     wallpaperSet = true;
-                    new SaveWallpaperTask().execute(mode);
+                    startWallpaperSave(mode);
                 }
             });
         });
     }
 
-    private class SaveWallpaperTask extends AsyncTask<String, Void, Boolean> {
+    /** Saves the wallpaper of the mode ("Day" or "Night"), one save at a time; it goes on through a turn. */
+    private void startWallpaperSave(String mode) {
+        if (WALLPAPER_SAVE.running()) {
+            return;
+        }
+        SaveWallpaperTask task = new SaveWallpaperTask(mode);
+        WALLPAPER_SAVE.start(task, mode, this);
+        showLoading(mode);
+        task.execute(mode);
+    }
+
+    /**
+     * Saves the home screen's wallpaper for a mode. It keeps no screen: its end goes to the screen of now, which a turn
+     * of the screen replaces (WALLPAPER_SAVE, HandedWork); with no screen it ends unseen, as it did before.
+     */
+    private static final class SaveWallpaperTask extends AsyncTask<String, Void, Boolean> {
         private final WallpaperManager mWallpaperManager;
-        private String daytime = "";
-        public SaveWallpaperTask() {
+        private final String daytime;
+
+        SaveWallpaperTask(String mode) {
             mWallpaperManager = WallpaperManager.getInstance(LauncherApplication.sApp);
+            daytime = mode;
         }
 
         /** The picture to save: the home screen's wallpaper by the best way this device has; null when there is none. */
@@ -1943,7 +2068,6 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
 
         @Override
         protected Boolean doInBackground(String[] input) throws Exception {
-            daytime = input[0];
             saveWallpaper(input[0]);
             return true;
         }
@@ -1954,16 +2078,15 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
 
         private void saveWallpaper(String name) throws WallpaperUnreadable {
-            requireActivity().runOnUiThread(() -> showLoading(name));
             // The home screen's wallpaper by the best way this device has, never the lock screen's, and never
             // an exception of the system as the result: where it cannot be read the user picks an image
             Bitmap mBitmap = sourceBitmap();
             if (mBitmap == null) {
                 // Which wallpaper it was that could not be read: the save is tried again only for another one
                 try {
-                    mUnreadableWallpaperId = mWallpaperManager.getWallpaperId(WallpaperManager.FLAG_SYSTEM);
+                    sUnreadableWallpaperId = mWallpaperManager.getWallpaperId(WallpaperManager.FLAG_SYSTEM);
                 } catch (RuntimeException e) {
-                    mUnreadableWallpaperId = -1;
+                    sUnreadableWallpaperId = -1;
                 }
                 throw new WallpaperUnreadable();
             }
@@ -2015,8 +2138,9 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                     if (hex.length() == 1) hexString.append('0');
                     hexString.append(hex);
                 }
-                editor.putString(name + "_hash", hexString.toString());
-                editor.apply();
+                PreferenceManager.getDefaultSharedPreferences(LauncherApplication.sApp).edit()
+                        .putString(name + "_hash", hexString.toString())
+                        .apply();
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
             }
@@ -2088,27 +2212,25 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             toast.show();
         }
 
+        /** On the main thread: the end of the save, shown on the screen of now; nothing without one. */
         private void hideLoadingSafely(int where, String e) {
-            Activity activity = getActivity();
-            if (activity != null && !activity.isFinishing() && !activity.isDestroyed()) {
-                activity.runOnUiThread(() -> {
-                    // Re-check activity validity and fragment's state
-                    Activity currentActivity = getActivity();
-                    if (currentActivity != null && !currentActivity.isFinishing() 
-                            && !currentActivity.isDestroyed() && isAdded()) {
-                        hideLoading();
-                        if (where == 1) {
-                            showToast(LauncherApplication.sApp.getString(R.string.wallpaper_set, daytime));
-                        } else if (where == 2) {
-                            showToast(LauncherApplication.sApp.getString(R.string.wallpaper_not_set, daytime));
-                        } else if (where == 3) {
-                            showToast(LauncherApplication.sApp.getString(R.string.wallpaper_error, daytime) + e);
-                        } else if (where == 4) {
-                            offerWallpaperPick(daytime);
-                        }
-                        
-                    }
-                });
+            SettingsFragmentFirst screen = WALLPAPER_SAVE.job() == this ? WALLPAPER_SAVE.screen() : null;
+            if (WALLPAPER_SAVE.job() == this) {
+                WALLPAPER_SAVE.end();
+            }
+            Activity activity = screen != null ? screen.getActivity() : null;
+            if (activity == null || activity.isFinishing() || activity.isDestroyed() || !screen.isAdded()) {
+                return;
+            }
+            screen.hideLoading();
+            if (where == 1) {
+                showToast(LauncherApplication.sApp.getString(R.string.wallpaper_set, daytime));
+            } else if (where == 2) {
+                showToast(LauncherApplication.sApp.getString(R.string.wallpaper_not_set, daytime));
+            } else if (where == 3) {
+                showToast(LauncherApplication.sApp.getString(R.string.wallpaper_error, daytime) + e);
+            } else if (where == 4) {
+                screen.offerWallpaperPick(daytime);
             }
         }
     }

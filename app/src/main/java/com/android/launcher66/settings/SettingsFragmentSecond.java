@@ -179,8 +179,11 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private AlertDialog libraryResetDialog;
     private TextView libraryImportStatus;
     private ProgressBar libraryImportBar;
-    /** The user chose "Run in background", or the screen is gone: the result comes as a toast. */
-    private boolean libraryImportBackground;
+    /**
+     * The import of the CAN bus library, through a turn of the screen (HandedWork has the rule). Sent to the
+     * background (by "Run in background", or by a screen left for good), its result comes as a toast.
+     */
+    static final HandedWork<CanbusLibraryImport.Job, SettingsFragmentSecond> IMPORT = new HandedWork<>();
     private PreferenceCategory inspectorCategory;
     private Preference codeInspector;
     private Preference codeInspectorData;
@@ -321,8 +324,10 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         super.onViewCreated(view, savedInstanceState);
         // Back from a window this screen was left for: where it was (SettingsScrollMemory)
         SettingsScroll.restore(this, 2);
-        // Created again for a turn of the screen: the dialog that was open is open again (SettingsDialogMemory)
+        // Created again for a turn of the screen: the dialog that was open is open again (SettingsDialogMemory),
+        // and an import that goes on shows its dialog here (HandedWork)
         handler.post(this::reopenAfterTurn);
+        handler.post(this::takeOverImport);
 
         if (!LauncherApplication.isFytDevice()) {
             // Only the system bar insets: the proportions come from SettingsActivity's
@@ -1267,6 +1272,11 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     public void onDestroyView() {
         // Gone for a turn of the screen: the dialog that is open comes back with the new screen
         DialogTurn.keep(this, 2, TURN_DIALOGS, this::turnDialog, this::turnArg);
+        // An import goes on: for the new screen after a turn, else in the background (its result as a toast)
+        if (getActivity() == null || !getActivity().isChangingConfigurations()) {
+            IMPORT.toBackground();
+        }
+        IMPORT.leave(this);
         super.onDestroyView();
         recyclerView = null;
         handler.removeCallbacksAndMessages(null);
@@ -1519,8 +1529,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             barOrderDialog.dismiss();
         }
         if (libraryImportDialog != null && libraryImportDialog.isShowing()) {
-            // The work goes on without this screen: its result comes as a toast
-            libraryImportBackground = true;
+            // The work goes on without this screen (IMPORT, onDestroyView)
             libraryImportDialog.dismiss();
         }
         libraryImportDialog = null;
@@ -2002,12 +2011,12 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     }
 
     private void onCanbusLibraryPicked(Uri uri) {
-        if (uri == null || libraryImportJob != null || !isAdded()) {
+        if (uri == null || libraryImportJob != null || IMPORT.running() || !isAdded()) {
             return;
         }
-        libraryImportBackground = false;
         showCanbusLibraryImportDialog();
-        libraryImportJob = CanbusLibraryImport.start(requireContext(), uri, canbusLibraryImportListener);
+        libraryImportJob = CanbusLibraryImport.start(requireContext(), uri, IMPORT_TO_SCREEN);
+        IMPORT.start(libraryImportJob, null, this);
         updateCanbusLibraryPrefs();
     }
 
@@ -2037,7 +2046,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 }
             });
             libraryImportDialog.getButton(DialogInterface.BUTTON_NEUTRAL).setOnClickListener(v -> {
-                libraryImportBackground = true;
+                IMPORT.toBackground();
                 dismissCanbusLibraryImportDialog();
             });
         });
@@ -2051,76 +2060,140 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         libraryImportDialog = null;
     }
 
-    private final CanbusLibraryImport.Listener canbusLibraryImportListener = new CanbusLibraryImport.Listener() {
+    /**
+     * The import's callbacks, on the main thread. They keep no screen: they ask IMPORT for the screen of now, which a
+     * turn of the screen replaces (HandedWork). Package-private for its test.
+     */
+    static final CanbusLibraryImport.Listener IMPORT_TO_SCREEN = new CanbusLibraryImport.Listener() {
         @Override
         public void onProgress(int phase, int percent, int line, int totalLines) {
-            if (!isAdded() || libraryImportDialog == null || !libraryImportDialog.isShowing()) {
-                return;
-            }
-            if (percent >= 0) {
-                libraryImportBar.setProgress(percent);
-            }
-            switch (phase) {
-                case CanbusLibraryImport.PHASE_READ:
-                    libraryImportStatus.setText(R.string.canbus_library_phase_read);
-                    break;
-                case CanbusLibraryImport.PHASE_VALIDATE:
-                    libraryImportStatus.setText(getString(R.string.canbus_library_phase_validate,
-                            line, Math.max(totalLines, line)));
-                    break;
-                case CanbusLibraryImport.PHASE_MERGE:
-                    libraryImportStatus.setText(R.string.canbus_library_phase_merge);
-                    break;
-                default:
-                    libraryImportStatus.setText(R.string.canbus_library_phase_save);
-                    break;
+            // A phase without a percent keeps the bar where it was
+            int[] last = IMPORT.lastProgress();
+            int bar = percent >= 0 ? percent : (last != null ? last[1] : -1);
+            IMPORT.progress(phase, bar, line, totalLines);
+            SettingsFragmentSecond screen = IMPORT.screen();
+            if (screen != null) {
+                screen.showImportProgress(phase, percent, line, totalLines);
             }
         }
 
         @Override
         public void onSaving() {
-            if (libraryImportDialog != null && libraryImportDialog.isShowing()) {
-                libraryImportDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setEnabled(false);
+            SettingsFragmentSecond screen = IMPORT.screen();
+            if (screen != null) {
+                screen.showImportSaving();
             }
         }
 
         @Override
         public void onFinished(CanbusLibraryImport.Outcome outcome) {
-            onCanbusLibraryImportFinished(outcome);
+            SettingsFragmentSecond screen = IMPORT.screen();
+            boolean background = IMPORT.inBackground();
+            IMPORT.end();
+            if (screen != null) {
+                screen.onCanbusLibraryImportFinished(outcome, background);
+            } else {
+                importEndToast(outcome);
+            }
         }
     };
 
-    private void onCanbusLibraryImportFinished(CanbusLibraryImport.Outcome outcome) {
+    /** What the import is doing, in its dialog. */
+    private void showImportProgress(int phase, int percent, int line, int totalLines) {
+        if (!isAdded() || libraryImportDialog == null || !libraryImportDialog.isShowing()) {
+            return;
+        }
+        if (percent >= 0) {
+            libraryImportBar.setProgress(percent);
+        }
+        switch (phase) {
+            case CanbusLibraryImport.PHASE_READ:
+                libraryImportStatus.setText(R.string.canbus_library_phase_read);
+                break;
+            case CanbusLibraryImport.PHASE_VALIDATE:
+                libraryImportStatus.setText(getString(R.string.canbus_library_phase_validate,
+                        line, Math.max(totalLines, line)));
+                break;
+            case CanbusLibraryImport.PHASE_MERGE:
+                libraryImportStatus.setText(R.string.canbus_library_phase_merge);
+                break;
+            default:
+                libraryImportStatus.setText(R.string.canbus_library_phase_save);
+                break;
+        }
+    }
+
+    /** Saving has begun: the import can no longer be cancelled. */
+    private void showImportSaving() {
+        if (libraryImportDialog != null && libraryImportDialog.isShowing()) {
+            libraryImportDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setEnabled(false);
+        }
+    }
+
+    /**
+     * The screen is new (after a turn, or back on this screen): an import that goes on is this screen's again; its
+     * rows stay off, and its dialog comes back with the last phase unless it was sent to the background (HandedWork).
+     */
+    private void takeOverImport() {
+        if (!isAdded()) {
+            return;
+        }
+        CanbusLibraryImport.Job job = IMPORT.join(this);
+        if (job == null) {
+            return;
+        }
+        libraryImportJob = job;
+        updateCanbusLibraryPrefs();
+        if (IMPORT.inBackground()) {
+            return;
+        }
+        showCanbusLibraryImportDialog();
+        int[] last = IMPORT.lastProgress();
+        if (last != null && last.length == 4) {
+            showImportProgress(last[0], last[1], last[2], last[3]);
+        }
+        if (job.isSaving()) {
+            showImportSaving();
+        }
+    }
+
+    private void onCanbusLibraryImportFinished(CanbusLibraryImport.Outcome outcome, boolean background) {
         libraryImportJob = null;
-        final Context app = LauncherApplication.sApp;
         // A screen that is gone behaves as "Run in background"
-        final boolean showDialog = !libraryImportBackground && isAdded() && libraryImportDialog != null;
+        final boolean showDialog = !background && isAdded() && libraryImportDialog != null;
         dismissCanbusLibraryImportDialog();
         if (isAdded()) {
             updateCanbusLibraryPrefs();
             initUserStats();
         }
+        if (!showDialog || outcome.kind == CanbusLibraryImport.Kind.CANCELLED) {
+            importEndToast(outcome);
+            return;
+        }
+        final boolean success = outcome.kind == CanbusLibraryImport.Kind.SUCCESS;
+        String report = outcome.reportPath() != null ? outcome.reportPath()
+                : getString(R.string.canbus_library_report_not_saved);
+        String message = success
+                ? getString(R.string.canbus_library_import_done, outcome.added, outcome.duplicates, outcome.replaced, report)
+                : getString(R.string.canbus_library_import_failed, outcome.firstError, report);
+        showLibraryImportDone(message);
+    }
+
+    /** The end of an import as a toast: it was cancelled, or no dialog of a screen shows it. */
+    private static void importEndToast(CanbusLibraryImport.Outcome outcome) {
+        final Context app = LauncherApplication.sApp;
         if (outcome.kind == CanbusLibraryImport.Kind.CANCELLED) {
             Toast.makeText(app, R.string.canbus_library_cancelled, Toast.LENGTH_LONG).show();
             return;
         }
         final boolean success = outcome.kind == CanbusLibraryImport.Kind.SUCCESS;
-        if (showDialog) {
-            String report = outcome.reportPath() != null ? outcome.reportPath()
-                    : getString(R.string.canbus_library_report_not_saved);
-            String message = success
-                    ? getString(R.string.canbus_library_import_done, outcome.added, outcome.duplicates, outcome.replaced, report)
-                    : getString(R.string.canbus_library_import_failed, outcome.firstError, report);
-            showLibraryImportDone(message);
+        int text;
+        if (outcome.reportFolder != null) {
+            text = success ? R.string.canbus_library_toast_success : R.string.canbus_library_toast_failed;
+            Toast.makeText(app, app.getString(text, outcome.reportFolder), Toast.LENGTH_LONG).show();
         } else {
-            int text;
-            if (outcome.reportFolder != null) {
-                text = success ? R.string.canbus_library_toast_success : R.string.canbus_library_toast_failed;
-                Toast.makeText(app, app.getString(text, outcome.reportFolder), Toast.LENGTH_LONG).show();
-            } else {
-                text = success ? R.string.canbus_library_toast_success_no_report : R.string.canbus_library_toast_failed_no_report;
-                Toast.makeText(app, text, Toast.LENGTH_LONG).show();
-            }
+            text = success ? R.string.canbus_library_toast_success_no_report : R.string.canbus_library_toast_failed_no_report;
+            Toast.makeText(app, text, Toast.LENGTH_LONG).show();
         }
     }
 
