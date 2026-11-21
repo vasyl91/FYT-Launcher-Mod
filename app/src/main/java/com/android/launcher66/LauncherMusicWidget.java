@@ -667,6 +667,10 @@ final class LauncherMusicWidget {
     private String mId3Path;
     private byte[] mId3Pic;
     private boolean mId3Read;
+    /** The file whose read could not open it, and how often it was read (FileCoverRetry). */
+    private String mId3RetryPath;
+    private String mId3TriedPath;
+    private int mId3Tries;
 
     /**
      * The cover in a track's file is read off the main thread, once per file: read there it took
@@ -674,9 +678,10 @@ final class LauncherMusicWidget {
      * capture 18-10-2026 23:18:46). False while it is being read; the widget is drawn again then.
      */
     private boolean isId3Read(String path) {
-        if (path.equals(mId3Path)) {
+        if (path.equals(mId3Path) && !path.equals(mId3RetryPath)) {
             return mId3Read;
         }
+        mId3RetryPath = null;
         mId3Path = path;
         mId3Pic = null;
         if (!StockTitles.isLocalFile(path)
@@ -686,21 +691,39 @@ final class LauncherMusicWidget {
             return true;
         }
         mId3Read = false;
+        // The 7870's player: the file's picture as com.syu.media reads it, any format (FileCover). The 7862 and
+        // the other units keep the launcher's ID3 reader.
+        final boolean retriever = StockSources.isSyuMediaUnit();
+        final int tries = path.equals(mId3TriedPath) ? mId3Tries : 0;
         ID3_READER.execute(() -> {
             byte[] pic = null;
-            try {
-                Id3Info info = new Lrc().getId3Info(path);
-                pic = info != null ? info.dataPic : null;
-            } catch (RuntimeException e) {
-                Log.w(Launcher.TAG, "Unreadable tags: " + path, e);
+            boolean opened = true;
+            if (retriever) {
+                FileCover.Result read = FileCover.read(path);
+                pic = read.picture;
+                opened = read.opened;
+            } else {
+                try {
+                    Id3Info info = new Lrc().getId3Info(path);
+                    pic = info != null ? info.dataPic : null;
+                } catch (RuntimeException e) {
+                    Log.w(Launcher.TAG, "Unreadable tags: " + path, e);
+                }
             }
             byte[] cover = pic;
+            boolean fileOpened = opened;
             mLauncher.mHandler.post(() -> {
                 if (!path.equals(mId3Path)) {
                     return; // another track meanwhile
                 }
                 mId3Pic = cover;
                 mId3Read = true;
+                mId3TriedPath = path;
+                mId3Tries = tries + 1;
+                if (FileCoverRetry.readAgain(fileOpened, mId3Tries)) {
+                    // Not opened (not there yet): no answer, read once more at the next update
+                    mId3RetryPath = path;
+                }
                 redrawLastRefresh();
             });
         });
