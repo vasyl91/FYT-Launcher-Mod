@@ -37,6 +37,11 @@ import com.google.android.flexbox.FlexboxLayout
  *
  * The rule for both: nothing is reported while the sliders move. The colour goes to the callback only when
  * "Select" is pressed; closing the picker any other way reports nothing, so the caller keeps what it had.
+ *
+ * A turn of the screen creates the picker again from its arguments (on a phone the settings are created again for
+ * the other orientation): the colour, the mode, whether it closes on "Select" ([enableAutoClose]) and where its
+ * colour goes ([storesUnder]). The callbacks are not in them; the screen that opened the picker binds them again from
+ * [storeKey] and [storeExtra] (settings.ColorPickerTargets), so "Select" stores the colour after a turn too.
  */
 class ColorPicker : DialogFragment(), OnSeekBarChangeListener {
     private var colorView: View? = null
@@ -67,6 +72,9 @@ class ColorPicker : DialogFragment(), OnSeekBarChangeListener {
         private const val ARG_WITH_ALPHA = "with_alpha"
         private const val ARG_COLOR = "color"
         private const val ARG_ALLOW_DEFAULT = "allow_default"
+        private const val ARG_AUTO_CLOSE = "auto_close"
+        private const val ARG_STORE_KEY = "store_key"
+        private const val ARG_STORE_EXTRA = "store_extra"
 
         /** The text mode: an opaque colour; with [allowDefault] the picker also offers "Default". */
         @JvmStatic
@@ -178,6 +186,7 @@ class ColorPicker : DialogFragment(), OnSeekBarChangeListener {
                 withAlpha = args.getBoolean(ARG_WITH_ALPHA, false)
             }
             allowDefault = args.getBoolean(ARG_ALLOW_DEFAULT, false)
+            autoclose = args.getBoolean(ARG_AUTO_CLOSE, autoclose)
         }
         // The slider counts in percent; the colour is kept at the alpha of that percent from the start
         alphaPercent = ColorAlpha.toPercent(alpha)
@@ -348,11 +357,31 @@ class ColorPicker : DialogFragment(), OnSeekBarChangeListener {
 
     fun enableAutoClose() {
         this.autoclose = true
+        keptArguments().putBoolean(ARG_AUTO_CLOSE, true)
     }
 
     fun disableAutoClose() {
         this.autoclose = false
+        keptArguments().putBoolean(ARG_AUTO_CLOSE, false)
     }
+
+    /** Where the colour goes (a key, and a second key or null), kept across a turn of the screen. */
+    fun storesUnder(key: String, extra: String?) {
+        val args = keptArguments()
+        args.putString(ARG_STORE_KEY, key)
+        if (extra != null) {
+            args.putString(ARG_STORE_EXTRA, extra)
+        } else {
+            args.remove(ARG_STORE_EXTRA)
+        }
+    }
+
+    fun storeKey(): String? = arguments?.getString(ARG_STORE_KEY)
+
+    fun storeExtra(): String? = arguments?.getString(ARG_STORE_EXTRA)
+
+    /** The arguments, which a turn of the screen gives back; made before the picker is shown when there are none. */
+    private fun keptArguments(): Bundle = arguments ?: Bundle().also { arguments = it }
 
     fun setCallback(listener: ColorPickerCallback?) {
         callback = listener

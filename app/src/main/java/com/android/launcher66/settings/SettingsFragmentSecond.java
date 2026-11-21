@@ -48,6 +48,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
@@ -65,7 +66,6 @@ import com.android.launcher66.ServiceIntentGate;
 import com.android.launcher66.WidgetBarPlan;
 import com.android.launcher66.WorkspaceScreenPlan;
 import com.android.launcher66.colorpicker.ColorPicker;
-import com.android.launcher66.colorpicker.ColorPickerCallback;
 import com.fyt.skin.SkinAttribute;
 import com.fyt.skin.SkinUtils;
 import com.syu.module.canbus.DataCanbus;
@@ -328,6 +328,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         // and an import that goes on shows its dialog here (HandedWork)
         handler.post(this::reopenAfterTurn);
         handler.post(this::takeOverImport);
+        // A colour picker the settings brought back stores its colour as before (ColorPickerTargets)
+        handler.post(this::rebindColorPickers);
 
         if (!LauncherApplication.isFytDevice()) {
             // Only the system bar insets: the proportions come from SettingsActivity's
@@ -1041,13 +1043,9 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 colorPicker = new WeakReference<>(picker);
 
                 picker.enableAutoClose();
-
-                ColorPickerCallback callback = color -> {
-                    editor.putString("stats_color", String.format("#%06X", (0xFFFFFF & color)));
-                    editor.apply();
-                };
-                picker.setCallback(callback);
-                picker.show(getParentFragmentManager(), "ColorPicker");
+                // Bound again after a turn of the screen (ColorPickerTargets)
+                ColorPickerTargets.bindStats(picker, sharedPrefs);
+                picker.show(getParentFragmentManager(), ColorPickerTargets.TAG_STATS);
                 break;
             case Keys.APP_LIST:
                 Log.i("checkStatsPermission()", String.valueOf(checkStatsPermission()));
@@ -1155,9 +1153,9 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         ColorPicker picker = ColorPicker.newTextInstance(current, true);
         tintPicker = new WeakReference<>(picker);
         picker.enableAutoClose();
-        picker.setCallback(color -> sharedPrefs.edit().putInt(colorKey, 0xFF000000 | color).apply());
-        picker.setDefaultCallback(() -> sharedPrefs.edit().remove(colorKey).apply());
-        picker.show(getParentFragmentManager(), "TintPicker");
+        // Bound again after a turn of the screen (ColorPickerTargets)
+        ColorPickerTargets.bindTint(picker, sharedPrefs, colorKey);
+        picker.show(getParentFragmentManager(), ColorPickerTargets.TAG_TINT);
     }
 
     private void checkAndShowWidgetsBackgroundSelector() {
@@ -1521,7 +1519,28 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         DialogTurn.fill(turnDialog(kept.dialog), kept.fields);
     }
 
+    /** The colour pickers that came back with the screen after a turn: bound again, and closed with it for good. */
+    private void rebindColorPickers() {
+        if (!isAdded()) {
+            return;
+        }
+        FragmentManager fragments = getParentFragmentManager();
+        ColorPickerTargets.rebind(fragments, sharedPrefs, requireContext().getApplicationContext());
+        ColorPicker stats = ColorPickerTargets.find(fragments, ColorPickerTargets.TAG_STATS);
+        if (stats != null) {
+            colorPicker = new WeakReference<>(stats);
+        }
+        ColorPicker tint = ColorPickerTargets.find(fragments, ColorPickerTargets.TAG_TINT);
+        if (tint != null) {
+            tintPicker = new WeakReference<>(tint);
+        }
+    }
+
     private void dismissDialogs() {
+        // A DialogFragment comes back by itself after a turn of the screen: left open then. Removed without
+        // executePendingTransactions(): called while the FragmentManager replaces this screen, that threw
+        // "FragmentManager is already executing transactions"; the removal runs right after.
+        boolean turning = getActivity() != null && getActivity().isChangingConfigurations();
         if (iconTextSizeRows != null) {
             iconTextSizeRows.dismiss();
         }
@@ -1555,34 +1574,38 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }
         if (colorPicker != null) {
             ColorPicker dialog = colorPicker.get();
-            if (dialog != null && dialog.isAdded()) {
+            if (!turning && dialog != null && dialog.isAdded()) {
                 dialog.dismissAllowingStateLoss();
-                getParentFragmentManager().executePendingTransactions();
             }
             colorPicker = null;
         }
         if (tintPicker != null) {
             ColorPicker tintDialog = tintPicker.get();
-            if (tintDialog != null && tintDialog.isAdded()) {
+            if (!turning && tintDialog != null && tintDialog.isAdded()) {
                 tintDialog.dismissAllowingStateLoss();
-                getParentFragmentManager().executePendingTransactions();
             }
             tintPicker = null;
         }
+        if (!turning) {
+            // The background selector's picker, which this screen did not keep a reference to
+            ColorPicker backgroundPicker = ColorPickerTargets.find(getParentFragmentManager(),
+                    ColorPickerTargets.TAG_BACKGROUND);
+            if (backgroundPicker != null) {
+                backgroundPicker.dismissAllowingStateLoss();
+            }
+        }
         if (appListStatsDialog != null) {
             AppListStatsDialogFragment statsDialog = appListStatsDialog.get();
-            if (statsDialog != null && statsDialog.isAdded()) {
+            if (!turning && statsDialog != null && statsDialog.isAdded()) {
                 statsDialog.dismissAllowingStateLoss();
-                getParentFragmentManager().executePendingTransactions();
             }
             appListStatsDialog = null;
         }
         Fragment pipPicker = requireActivity()
                 .getSupportFragmentManager()
                 .findFragmentByTag(AppListPipDialogFragment.TAG);
-        if (pipPicker instanceof AppListPipDialogFragment && pipPicker.isAdded()) {
+        if (!turning && pipPicker instanceof AppListPipDialogFragment && pipPicker.isAdded()) {
             ((AppListPipDialogFragment) pipPicker).dismissAllowingStateLoss();
-            requireActivity().getSupportFragmentManager().executePendingTransactions();
         }
         if (alertSkipCodesDialog != null && alertSkipCodesDialog.isShowing()) {
             alertSkipCodesDialog.dismiss();

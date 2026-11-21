@@ -573,14 +573,9 @@ public class BackgroundSelectorDialog extends DialogFragment {
         dismiss();
         ColorPicker picker = ColorPicker.newBackgroundInstance(startColor);
         picker.enableAutoClose();
-        picker.setCallback(color -> {
-            PreferenceManager.getDefaultSharedPreferences(app).edit()
-                    .putInt(colorKey, color)
-                    .putString(choiceKey, BackgroundChoice.CUSTOM)
-                    .apply();
-            Log.i(TAG, "Own background colour stored under " + colorKey + ": #" + String.format("%08X", color));
-        });
-        picker.show(fragments, "BackgroundColorPicker");
+        // Bound again after a turn of the screen by the settings' second screen (ColorPickerTargets)
+        ColorPickerTargets.bindBackground(picker, app, colorKey, choiceKey);
+        picker.show(fragments, ColorPickerTargets.TAG_BACKGROUND);
     }
 
     private Bitmap getCenterCroppedBitmap(Bitmap src, int targetW, int targetH) {

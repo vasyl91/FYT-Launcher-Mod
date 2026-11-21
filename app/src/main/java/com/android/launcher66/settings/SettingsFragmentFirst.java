@@ -1876,23 +1876,24 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     }
 
     private void dismissDialogs() {
+        // A DialogFragment comes back by itself after a turn of the screen: left open then. Removed without
+        // executePendingTransactions(), which throws while the FragmentManager replaces this screen.
+        boolean turning = getActivity() != null && getActivity().isChangingConfigurations();
         if (alertWallpaperPickDialog != null && alertWallpaperPickDialog.isShowing()) {
             alertWallpaperPickDialog.dismiss();
         }
         alertWallpaperPickDialog = null;
         if (appListCacheDialog != null) {
             AppListCacheDialogFragment cacheDialog = appListCacheDialog.get();
-            if (cacheDialog != null && cacheDialog.isAdded()) {
+            if (!turning && cacheDialog != null && cacheDialog.isAdded()) {
                 cacheDialog.dismissAllowingStateLoss();
-                getParentFragmentManager().executePendingTransactions();
             }
             appListCacheDialog = null;
         }
         if (appListAutostartDialog != null) {
             AppListAutostartDialogFragment autostartDialog = appListAutostartDialog.get();
-            if (autostartDialog != null && autostartDialog.isAdded()) {
+            if (!turning && autostartDialog != null && autostartDialog.isAdded()) {
                 autostartDialog.dismissAllowingStateLoss();
-                getParentFragmentManager().executePendingTransactions();
             }
             appListAutostartDialog = null;
         }

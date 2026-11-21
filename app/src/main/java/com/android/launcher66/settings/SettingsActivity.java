@@ -523,8 +523,12 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        AppListStatsDialogFragment.dismissListDialog(getSupportFragmentManager());
-        AppListPipDialogFragment.dismissListDialog(getSupportFragmentManager());
+        // Not for a turn of the screen: the lists come back with the new settings, as the other DialogFragments do.
+        // Dismissed here, before the state is saved, they were gone after a turn.
+        if (!isChangingConfigurations()) {
+            AppListStatsDialogFragment.dismissListDialog(getSupportFragmentManager());
+            AppListPipDialogFragment.dismissListDialog(getSupportFragmentManager());
+        }
         System.gc();
     }
 
