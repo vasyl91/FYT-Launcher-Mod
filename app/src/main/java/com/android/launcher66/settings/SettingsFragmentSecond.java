@@ -3,6 +3,7 @@ package com.android.launcher66.settings;
 import com.android.launcher66.SysCalls;
 import android.Manifest;
 import android.app.AppOpsManager;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -173,6 +174,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private CanbusLibraryImport.Job libraryImportJob;
     private AlertDialog libraryImportDialog;
     private AlertDialog libraryImportDoneDialog;
+    /** What the import's result dialog says, kept across a turn of the screen. */
+    private String libraryImportDoneMessage;
     private AlertDialog libraryResetDialog;
     private TextView libraryImportStatus;
     private ProgressBar libraryImportBar;
@@ -185,6 +188,17 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private CountDownTimer countDownTimer;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final Handler handler = new Handler(Looper.getMainLooper());
+    /** The result of an import of the CAN bus library, which no row opens: its name across a turn. */
+    private static final String TURN_LIBRARY_IMPORT_DONE = "canbus_library_import_done";
+    /**
+     * The plain dialogs of this screen that are open again after a turn of the screen (SettingsDialogMemory), by
+     * the key of the row that opens them.
+     */
+    private static final String[] TURN_DIALOGS = {
+            Keys.START_PAGE, Keys.LAYOUT_MARGIN, Keys.STATS_CODES, Keys.EXTRA_STATS_CODES, Keys.SKIP_CODES,
+            Keys.CODE_INSPECTOR_DATA, Keys.CANBUS_LIBRARY_RESET, TURN_LIBRARY_IMPORT_DONE,
+            Keys.ALL_APPS_TEXT_SIZE, Keys.WORKSPACE_TEXT_SIZE, Keys.HORIZONTAL_BAR_ORDER
+    };
     private EditText skipCodesEditText;
     private AlertDialog alertPipDialog;
     private AlertDialog alertMarginsDialog;
@@ -307,6 +321,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         super.onViewCreated(view, savedInstanceState);
         // Back from a window this screen was left for: where it was (SettingsScrollMemory)
         SettingsScroll.restore(this, 2);
+        // Created again for a turn of the screen: the dialog that was open is open again (SettingsDialogMemory)
+        handler.post(this::reopenAfterTurn);
 
         if (!LauncherApplication.isFytDevice()) {
             // Only the system bar insets: the proportions come from SettingsActivity's
@@ -1249,6 +1265,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
     @Override
     public void onDestroyView() {
+        // Gone for a turn of the screen: the dialog that is open comes back with the new screen
+        DialogTurn.keep(this, 2, TURN_DIALOGS, this::turnDialog, this::turnArg);
         super.onDestroyView();
         recyclerView = null;
         handler.removeCallbacksAndMessages(null);
@@ -1440,6 +1458,57 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 clearPreferenceListeners((PreferenceGroup) p);
             }
         }
+    }
+
+    /** The dialog of this screen opened with that key (TURN_DIALOGS); null when it is not open. */
+    private Dialog turnDialog(String key) {
+        switch (key) {
+            case Keys.START_PAGE:
+                return alertStartPageDialog;
+            case Keys.LAYOUT_MARGIN:
+                return alertMarginsDialog;
+            case Keys.STATS_CODES:
+                return alertCodesDialog;
+            case Keys.EXTRA_STATS_CODES:
+                return alertExtraCodesDialog;
+            case Keys.SKIP_CODES:
+                return alertSkipCodesDialog;
+            case Keys.CODE_INSPECTOR_DATA:
+                return alertCodesInspectorDialog;
+            case Keys.CANBUS_LIBRARY_RESET:
+                return libraryResetDialog;
+            case TURN_LIBRARY_IMPORT_DONE:
+                return libraryImportDoneDialog;
+            case Keys.ALL_APPS_TEXT_SIZE:
+            case Keys.WORKSPACE_TEXT_SIZE:
+                return iconTextSizeRows != null ? iconTextSizeRows.openDialog(key) : null;
+            case Keys.HORIZONTAL_BAR_ORDER:
+                return barOrderDialog != null ? barOrderDialog.openDialog() : null;
+            default:
+                return null;
+        }
+    }
+
+    /** What the dialog with that key was opened for: the message of an import's result. */
+    private String turnArg(String key) {
+        return TURN_LIBRARY_IMPORT_DONE.equals(key) ? libraryImportDoneMessage : null;
+    }
+
+    /**
+     * The screen was created again for a turn: the dialog that was open is opened as before, with its texts. The
+     * order of the bar's elements opens the list of the new orientation (moves not confirmed with OK are dropped).
+     */
+    private void reopenAfterTurn() {
+        SettingsDialogMemory.Kept kept = SettingsDialogMemory.takeFor(2);
+        if (kept == null || !isAdded()) {
+            return;
+        }
+        if (TURN_LIBRARY_IMPORT_DONE.equals(kept.dialog)) {
+            showLibraryImportDone(kept.arg);
+        } else {
+            DialogTurn.tap(findPreference(kept.dialog));
+        }
+        DialogTurn.fill(turnDialog(kept.dialog), kept.fields);
     }
 
     private void dismissDialogs() {
@@ -2042,10 +2111,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             String message = success
                     ? getString(R.string.canbus_library_import_done, outcome.added, outcome.duplicates, outcome.replaced, report)
                     : getString(R.string.canbus_library_import_failed, outcome.firstError, report);
-            libraryImportDoneDialog = SettingsDialogs.builder(requireContext())
-                    .setMessage(message)
-                    .setPositiveButton(android.R.string.ok, null)
-                    .show();
+            showLibraryImportDone(message);
         } else {
             int text;
             if (outcome.reportFolder != null) {
@@ -2056,6 +2122,18 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 Toast.makeText(app, text, Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    /** The result of an import: what was added, or why nothing was. */
+    private void showLibraryImportDone(String message) {
+        if (message == null || !isAdded()) {
+            return;
+        }
+        libraryImportDoneMessage = message;
+        libraryImportDoneDialog = SettingsDialogs.builder(requireContext())
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, null)
+                .show();
     }
 
     private void confirmCanbusLibraryReset() {

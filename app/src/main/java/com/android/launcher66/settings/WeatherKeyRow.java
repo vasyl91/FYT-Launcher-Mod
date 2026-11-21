@@ -49,6 +49,11 @@ final class WeatherKeyRow {
         });
     }
 
+    /** The open dialog, kept across a turn of the screen (SettingsDialogMemory); null when none. */
+    AlertDialog openDialog() {
+        return dialog;
+    }
+
     /** With the fragment's view: a dialog must not outlive it. */
     void dismiss() {
         if (dialog != null && dialog.isShowing()) {

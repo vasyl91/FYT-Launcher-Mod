@@ -201,8 +201,9 @@ public class SettingsActivity extends AppCompatActivity {
         }
         helpers.setSettingsOpenedBoolean(true);
         if (savedInstanceState == null) {
-            // Opened afresh: from the top (SettingsScrollMemory)
+            // Opened afresh: from the top (SettingsScrollMemory), and no dialog of an earlier one (SettingsDialogMemory)
             SettingsScrollMemory.forget();
+            SettingsDialogMemory.forget();
             getSupportFragmentManager()
                 .beginTransaction()
                 .replace(android.R.id.content, new SettingsFragmentFirst())

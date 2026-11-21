@@ -36,10 +36,12 @@ import java.util.List;
  * list is the left of the bar, the bottom its right.
  *
  * <p>The rule (the owner, 2026-11-20): <b>one row, and the list it opens is the one of the orientation the screen is
- * in now.</b> The launcher is mostly seen in one orientation, so the other one's order is not shown beside it. The
- * settings are not created again when the screen turns (configChanges), so a turn with the dialog open shows it again
- * with the new orientation's list ({@link #onOrientationChanged}); moves not yet confirmed with OK are dropped. An element is dragged by its handle at once, or by its row after
- * a long press. OK stores the order of the orientation the settings are shown in (BarOrder.merge: a hidden element
+ * in now.</b> The launcher is mostly seen in one orientation, so the other one's order is not shown beside it. A turn
+ * with the dialog open shows it again with the new orientation's list; moves not yet confirmed with OK are dropped.
+ * On a FYT unit the settings stay through the turn (configChanges) and the dialog is shown again by
+ * {@link #onOrientationChanged}; on a phone or a tablet the settings are created again for the other density
+ * (SettingsActivity.onConfigurationChanged calls recreate()), and the new screen opens the dialog again
+ * (SettingsDialogMemory). An element is dragged by its handle at once, or by its row after a long press. OK stores the order of the orientation the settings are shown in (BarOrder.merge: a hidden element
  * keeps its place), "Default" puts the old order back. The bar is built again when the settings are left
  * (Helpers.setBarSettingsChanged). The dialog is in the settings' colours (SettingsDialogs).
  */
@@ -88,6 +90,11 @@ final class BarOrderDialog {
         if (dialog != null && dialog.isShowing() && fragment.isAdded()) {
             show();
         }
+    }
+
+    /** The open dialog, kept across a turn of the screen (SettingsDialogMemory); null when none. */
+    AlertDialog openDialog() {
+        return dialog;
     }
 
     /** With the fragment's view: a dialog must not outlive it. */

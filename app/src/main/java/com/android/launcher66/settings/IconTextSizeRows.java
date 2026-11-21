@@ -35,6 +35,8 @@ final class IconTextSizeRows {
     private final SharedPreferences prefs;
     private final Helpers helpers;
     private AlertDialog dialog;
+    /** The key of the row whose dialog is open. */
+    private String dialogKey;
 
     IconTextSizeRows(PreferenceFragmentCompat fragment, SharedPreferences prefs, Helpers helpers) {
         this.fragment = fragment;
@@ -46,6 +48,11 @@ final class IconTextSizeRows {
     void bind() {
         bind(Keys.ALL_APPS_TEXT_SIZE, "18", R.string.all_apps_textSize_str, true);
         bind(Keys.WORKSPACE_TEXT_SIZE, "28", R.string.workspace_textSize_str, false);
+    }
+
+    /** The open dialog of the row with that key, kept across a turn of the screen; null when none. */
+    AlertDialog openDialog(String key) {
+        return key.equals(dialogKey) ? dialog : null;
     }
 
     /** With the fragment's view: a dialog must not outlive it. */
@@ -78,6 +85,7 @@ final class IconTextSizeRows {
         SettingsDialogs.styleField(input);
 
         dismiss();
+        dialogKey = key;
         dialog = SettingsDialogs.builder(context)
                 .setTitle(title)
                 .setView(input)

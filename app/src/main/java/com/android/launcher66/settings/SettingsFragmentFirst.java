@@ -153,6 +153,21 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
 
     private static final String KEY_BASELINE_PROFILE_SUMMARY = "baseline_profile_summary";
     private static final String KEY_BASELINE_PROFILE_RESET = "baseline_profile_reset";
+    /** The second dialog of the reset, which no row opens: its name across a turn (SettingsDialogMemory). */
+    private static final String TURN_BASELINE_FULL_RESET = "baseline_profile_reset_full";
+    /** The offer to choose a wallpaper, which no row opens: its name across a turn (SettingsDialogMemory). */
+    private static final String TURN_WALLPAPER_PICK = "wallpaper_pick_offer";
+    /**
+     * The plain dialogs of this screen that are open again after a turn of the screen (SettingsDialogMemory), a
+     * dialog that opens over another one before that one.
+     */
+    private static final String[] TURN_DIALOGS = {
+            TURN_BASELINE_FULL_RESET, KEY_BASELINE_PROFILE_RESET, Keys.SPOTIFY_CLIENT_ID,
+            Keys.LOGCAT_SERVICE_TIMEOUT, Keys.APP_VERSION_UPDATE, Keys.OPENWEATHER_API_KEY, TURN_WALLPAPER_PICK
+    };
+    /** The offer to choose a wallpaper, and the time of day it is for. */
+    private AlertDialog alertWallpaperPickDialog;
+    private String wallpaperPickDaytime;
     private Preference baselineProfileSummary;
     private AlertDialog alertBaselineResetDialog;
     private AlertDialog alertBaselineFullResetDialog;
@@ -216,6 +231,8 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         super.onViewCreated(view, savedInstanceState);
         // Back from a window this screen was left for: where it was (SettingsScrollMemory)
         SettingsScroll.restore(this, 1);
+        // Created again for a turn of the screen: the dialog that was open is open again (SettingsDialogMemory)
+        handler.post(this::reopenAfterTurn);
 
         if (!LauncherApplication.isFytDevice()) {
             // Only the system bar insets: the proportions come from SettingsActivity's
@@ -1027,6 +1044,8 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
 
     @Override
     public void onDestroyView() {
+        // Gone for a turn of the screen: the dialog that is open comes back with the new screen
+        DialogTurn.keep(this, 1, TURN_DIALOGS, this::turnDialog, this::turnArg);
         super.onDestroyView();
         clearPreferenceListeners(getPreferenceScreen());
         handler.removeCallbacksAndMessages(null);
@@ -1687,7 +1706,72 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         negativeButton.setLayoutParams(layoutParams);
     }
 
+    /** The dialog of this screen opened with that key (TURN_DIALOGS); null when it is not open. */
+    private Dialog turnDialog(String key) {
+        switch (key) {
+            case TURN_BASELINE_FULL_RESET:
+                return alertBaselineFullResetDialog;
+            case KEY_BASELINE_PROFILE_RESET:
+                return alertBaselineResetDialog;
+            case Keys.SPOTIFY_CLIENT_ID:
+                return alertClientIdDialog;
+            case Keys.LOGCAT_SERVICE_TIMEOUT:
+                return alertLogcatServiceTimeoutDialog;
+            case Keys.APP_VERSION_UPDATE:
+                return alertUpdateDialog;
+            case Keys.OPENWEATHER_API_KEY:
+                return weatherKeyRow != null ? weatherKeyRow.openDialog() : null;
+            case TURN_WALLPAPER_PICK:
+                return alertWallpaperPickDialog;
+            default:
+                return null;
+        }
+    }
+
+    /** What the dialog with that key was opened for: the version to update to, the time of day of a wallpaper. */
+    private String turnArg(String key) {
+        switch (key) {
+            case Keys.APP_VERSION_UPDATE:
+                return latestAppVersion;
+            case TURN_WALLPAPER_PICK:
+                return wallpaperPickDaytime;
+            default:
+                return null;
+        }
+    }
+
+    /** The screen was created again for a turn: the dialog that was open is opened as before, with its texts. */
+    private void reopenAfterTurn() {
+        SettingsDialogMemory.Kept kept = SettingsDialogMemory.takeFor(1);
+        if (kept == null || !isAdded()) {
+            return;
+        }
+        switch (kept.dialog) {
+            case TURN_BASELINE_FULL_RESET:
+                showBaselineFullResetDialog();
+                break;
+            case TURN_WALLPAPER_PICK:
+                offerWallpaperPick(kept.arg);
+                break;
+            case Keys.APP_VERSION_UPDATE:
+                // The new screen's check for an update may not have answered yet
+                if (latestAppVersion == null) {
+                    latestAppVersion = kept.arg;
+                }
+                DialogTurn.tap(findPreference(kept.dialog));
+                break;
+            default:
+                DialogTurn.tap(findPreference(kept.dialog));
+                break;
+        }
+        DialogTurn.fill(turnDialog(kept.dialog), kept.fields);
+    }
+
     private void dismissDialogs() {
+        if (alertWallpaperPickDialog != null && alertWallpaperPickDialog.isShowing()) {
+            alertWallpaperPickDialog.dismiss();
+        }
+        alertWallpaperPickDialog = null;
         if (appListCacheDialog != null) {
             AppListCacheDialogFragment cacheDialog = appListCacheDialog.get();
             if (cacheDialog != null && cacheDialog.isAdded()) {
@@ -1792,10 +1876,15 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
      * tried once more if the wallpaper is another one (onResume).
      */
     private void offerWallpaperPick(String daytime) {
-        if (!isAdded()) {
+        if (!isAdded() || daytime == null) {
             return;
         }
-        SettingsDialogs.builder(requireContext())
+        if (alertWallpaperPickDialog != null && alertWallpaperPickDialog.isShowing()) {
+            alertWallpaperPickDialog.dismiss();
+        }
+        // In a field: dismissed with the screen's view (it outlived it before) and kept across a turn
+        wallpaperPickDaytime = daytime;
+        alertWallpaperPickDialog = SettingsDialogs.builder(requireContext())
                 .setMessage(getString(R.string.wallpaper_unreadable, daytime))
                 .setNegativeButton(android.R.string.cancel, null)
                 .setPositiveButton(R.string.pick_image_manually, (dialog, which) -> {
