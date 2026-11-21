@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">Fihla usuku</string>
     <string name="widget_bar_no_weather">Fihla isimo sezulu</string>
     <string name="widget_bar_hidden_on">Iwijethi yomculo ithatha indawo yayo</string>
+    <string name="widget_bar_no_apps">Fihla izinhlelo</string>
+    <string name="widget_bar_no_apps_on">Ibha ayibonisi izinhlelo; indawo yazo iya kumawijethi</string>
+    <string name="widget_bar_no_apps_off">Ibha ibonisa izinhlelo</string>
+    <string name="widget_bar_fit_apps">Lungisa izinhlelo zifane nezithonjana zazo</string>
+    <string name="widget_bar_fit_apps_on">Izinhlelo zithatha kuphela indawo yezithonjana zazo; okusele kuya kumawijethi</string>
+    <string name="widget_bar_fit_apps_off">Izinhlelo zigcina ububanzi bazo obujwayelekile</string>
     <string name="widget_bar_large_text">Umbhalo omkhulu</string>
     <string name="widget_bar_large_text_on">Mkhulu njengoba ibha inendawo</string>
     <string name="widget_bar_large_text_off">Usayizi wombhalo ojwayelekile</string>

@@ -114,4 +114,19 @@ public class PreferenceScreensTest {
         assertEquals("a divider directly above the vertical bar", R.layout.preference_separator,
                 bars.getPreference(verticalBar - 1).getLayoutResource());
     }
+
+    @Test
+    public void theAppsListRowsStandWithTheWidgetBarsHiddenWidgets() {
+        // The owner, 2026-11-21: "Hide the apps" with "Hide the date" / "Hide the weather", then "Fit the apps"
+        PreferenceCategory bars = inflate(R.xml.creator_preferences).findPreference("bars_category");
+        java.util.List<String> keys = new java.util.ArrayList<>();
+        for (int i = 0; i < bars.getPreferenceCount(); i++) {
+            keys.add(bars.getPreference(i).getKey());
+        }
+        int weather = keys.indexOf("widget_bar_no_weather");
+        assertEquals("widget_bar_no_apps", keys.get(weather + 1));
+        assertEquals("widget_bar_fit_apps", keys.get(weather + 2));
+        assertEquals(true, keys.indexOf("widget_bar") < weather);
+        assertEquals(true, weather + 2 < keys.indexOf("left_bar"));
+    }
 }

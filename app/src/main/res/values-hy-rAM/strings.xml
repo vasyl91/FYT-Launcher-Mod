@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">Թաքցնել ամսաթիվը</string>
     <string name="widget_bar_no_weather">Թաքցնել եղանակը</string>
     <string name="widget_bar_hidden_on">Նրա տեղը զբաղեցնում է երաժշտության վիջեթը</string>
+    <string name="widget_bar_no_apps">Թաքցնել հավելվածները</string>
+    <string name="widget_bar_no_apps_on">Վահանակը հավելվածներ չի ցույցադրում, նրանց տեղը տրվում է վիջեթներին</string>
+    <string name="widget_bar_no_apps_off">Վահանակը ցույցադրում է հավելվածները</string>
+    <string name="widget_bar_fit_apps">Հարմարեցնել հավելվածները իրենց պատկերակներին</string>
+    <string name="widget_bar_fit_apps_on">Հավելվածները զբաղեցնում են միայն իրենց պատկերակների տեղը, մնացածը տրվում է վիջեթներին</string>
+    <string name="widget_bar_fit_apps_off">Հավելվածները պահպանում են իրենց սովորական լայնությունը</string>
     <string name="widget_bar_large_text">Մեծ տեքստ</string>
     <string name="widget_bar_large_text_on">Այնքան մեծ, որքան տեղ կա գոտում</string>
     <string name="widget_bar_large_text_off">Սովորական տեքստի չափ</string>

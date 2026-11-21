@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">Tarihi gizle</string>
     <string name="widget_bar_no_weather">Hava durumunu gizle</string>
     <string name="widget_bar_hidden_on">Yerini müzik widget\'ı alır</string>
+    <string name="widget_bar_no_apps">Uygulamaları gizle</string>
+    <string name="widget_bar_no_apps_on">Çubuk uygulama göstermez; yerleri widget\'lara gider</string>
+    <string name="widget_bar_no_apps_off">Çubuk uygulamaları gösterir</string>
+    <string name="widget_bar_fit_apps">Uygulamaları simgelerine sığdır</string>
+    <string name="widget_bar_fit_apps_on">Uygulamalar yalnızca simgelerinin yerini kaplar; kalanı widget\'lara gider</string>
+    <string name="widget_bar_fit_apps_off">Uygulamalar olağan genişliklerini korur</string>
     <string name="widget_bar_large_text">Büyük metin</string>
     <string name="widget_bar_large_text_on">Çubukta yer olduğu kadar büyük</string>
     <string name="widget_bar_large_text_off">Olağan metin boyutu</string>

@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">Skrij datum</string>
     <string name="widget_bar_no_weather">Skrij vreme</string>
     <string name="widget_bar_hidden_on">Njegovo mesto zavzame gradnik za glasbo</string>
+    <string name="widget_bar_no_apps">Skrij aplikacije</string>
+    <string name="widget_bar_no_apps_on">Vrstica ne prikazuje aplikacij; njihov prostor dobijo pripomočki</string>
+    <string name="widget_bar_no_apps_off">Vrstica prikazuje aplikacije</string>
+    <string name="widget_bar_fit_apps">Prilagodi aplikacije njihovim ikonam</string>
+    <string name="widget_bar_fit_apps_on">Aplikacije zasedejo le prostor svojih ikon; ostalo dobijo pripomočki</string>
+    <string name="widget_bar_fit_apps_off">Aplikacije obdržijo običajno širino</string>
     <string name="widget_bar_large_text">Veliko besedilo</string>
     <string name="widget_bar_large_text_on">Tako veliko, kot dopušča prostor v vrstici</string>
     <string name="widget_bar_large_text_off">Običajna velikost besedila</string>

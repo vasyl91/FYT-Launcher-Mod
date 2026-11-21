@@ -130,6 +130,9 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private CustomSwitchPreference widgetBarNoCoverPreference;
     private CustomSwitchPreference widgetBarNoDatePreference;
     private CustomSwitchPreference widgetBarNoWeatherPreference;
+    /** "Hide the apps" and "Fit the apps to their icons": with the widget bar only (WidgetBarPlan). */
+    private CustomSwitchPreference widgetBarNoAppsPreference;
+    private CustomSwitchPreference widgetBarFitAppsPreference;
     private CustomSwitchPreference widgetBarLargeTextPreference;
     private Preference widgetBarLineModePreference;
     private CustomSwitchPreference widgetBarButtonsOneLinePreference;
@@ -237,7 +240,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             Keys.VERTICAL_BAR_WIDTH_PORT, Keys.VERTICAL_BAR_WIDTH_LAND, Keys.RESIZABLE_VERTICAL_BAR,
             Keys.WIDGET_BAR, Keys.VERTICAL_BAR, Keys.AUTO_HIDE_HORIZONTAL_BAR, Keys.HORIZONTAL_BAR_TOP,
             Keys.VERTICAL_BAR_RIGHT, Keys.EDGE_HANDLE_RIGHT, Keys.USER_LAYOUT, Keys.HORIZONTAL_BAR_EVERY_PAGE,
-            Keys.VERTICAL_BAR_EVERY_PAGE, Keys.BAR_ROOT_BOX_PORTRAIT, Keys.BAR_ROOT_BOX_LANDSCAPE));
+            Keys.VERTICAL_BAR_EVERY_PAGE, Keys.BAR_ROOT_BOX_PORTRAIT, Keys.BAR_ROOT_BOX_LANDSCAPE,
+            Keys.WIDGET_BAR_NO_APPS));
 
     private final SharedPreferences.OnSharedPreferenceChangeListener barIconsListener = (prefs, key) -> {
         if (key != null && BAR_ICON_INPUTS.contains(key)) {
@@ -247,15 +251,17 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     };
 
     /**
-     * The sliders of the number of icons: the horizontal one always, the vertical one with the vertical bar, with
-     * or without their bar's "Resizable" switch (the owner, 2026-11-21); their end the most the bar has room for
-     * now, a chosen number above it lowered (BarIconLimits, BarIconCount).
+     * The sliders of the number of icons: the horizontal one unless its apps list is hidden, the vertical one with
+     * the vertical bar, with or without their bar's "Resizable" switch (the owner, 2026-11-21); their end the most
+     * the bar has room for now, a chosen number above it lowered (BarIconLimits, BarIconCount).
      */
     private void updateBarIconSliders() {
         if (!isAdded() || sharedPrefs == null) {
             return;
         }
-        boolean horizontal = true;
+        // Without its apps list the horizontal bar has no icons to count (WidgetBarPlan.appsHidden)
+        boolean horizontal = !WidgetBarPlan.appsHidden(sharedPrefs.getBoolean(Keys.USER_LAYOUT, false),
+                sharedPrefs.getBoolean(Keys.WIDGET_BAR, false), sharedPrefs.getBoolean(Keys.WIDGET_BAR_NO_APPS, false));
         boolean vertical = sharedPrefs.getBoolean(Keys.VERTICAL_BAR, false);
         bindBarIcons(horizontalIconsSlider, horizontalIconsTitle, true, horizontal);
         bindBarIcons(verticalIconsSlider, verticalIconsTitle, false, vertical);
@@ -474,6 +480,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         widgetBarNoCoverPreference = findPreference(Keys.WIDGET_BAR_NO_COVER);
         widgetBarNoDatePreference = findPreference(Keys.WIDGET_BAR_NO_DATE);
         widgetBarNoWeatherPreference = findPreference(Keys.WIDGET_BAR_NO_WEATHER);
+        widgetBarNoAppsPreference = findPreference(Keys.WIDGET_BAR_NO_APPS);
+        widgetBarFitAppsPreference = findPreference(Keys.WIDGET_BAR_FIT_APPS);
         widgetBarLargeTextPreference = findPreference(Keys.WIDGET_BAR_LARGE_TEXT);
         widgetBarLineModePreference = findPreference(Keys.WIDGET_BAR_LINE_MODE);
         widgetBarButtonsOneLinePreference = findPreference(Keys.WIDGET_BAR_BUTTONS_ONE_LINE);
@@ -726,6 +734,12 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (widgetBarNoDatePreference != null) {
             widgetBarNoDatePreference.setOnPreferenceClickListener(this);
         }
+        if (widgetBarNoAppsPreference != null) {
+            widgetBarNoAppsPreference.setOnPreferenceClickListener(this);
+        }
+        if (widgetBarFitAppsPreference != null) {
+            widgetBarFitAppsPreference.setOnPreferenceClickListener(this);
+        }
         if (widgetBarNoWeatherPreference != null) {
             widgetBarNoWeatherPreference.setOnPreferenceClickListener(this);
         }
@@ -960,8 +974,12 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             case Keys.WIDGET_BAR_NO_COVER:
             case Keys.WIDGET_BAR_NO_DATE:
             case Keys.WIDGET_BAR_NO_WEATHER:
-                // The layout row below appears (or goes) at once with the first hidden widget
+            case Keys.WIDGET_BAR_NO_APPS:
+            case Keys.WIDGET_BAR_FIT_APPS:
+                // The layout row below appears (or goes) at once with the first hidden widget; with the apps
+                // hidden, their fitting and their number of icons go too
                 updateWidgetBarRows();
+                updateBarIconSliders();
                 if (barOrderDialog != null) {
                     barOrderDialog.updateSummary();
                 }
@@ -1324,6 +1342,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         verticalEveryPagePreference = null;
         widgetBarNoCoverPreference = null;
         widgetBarNoDatePreference = null;
+        widgetBarNoAppsPreference = null;
+        widgetBarFitAppsPreference = null;
         widgetBarNoWeatherPreference = null;
         widgetBarLargeTextPreference = null;
         widgetBarLineModePreference = null;
@@ -1380,6 +1400,14 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }
         if (widgetBarNoWeatherPreference != null) {
             widgetBarNoWeatherPreference.setVisible(widgetBar);
+        }
+        boolean appsHidden = WidgetBarPlan.appsHidden(true, widgetBar,
+                sharedPrefs.getBoolean(Keys.WIDGET_BAR_NO_APPS, false));
+        if (widgetBarNoAppsPreference != null) {
+            widgetBarNoAppsPreference.setVisible(widgetBar);
+        }
+        if (widgetBarFitAppsPreference != null) {
+            widgetBarFitAppsPreference.setVisible(widgetBar && !appsHidden);
         }
         boolean dateHidden = WidgetBarPlan.dateHidden(
                 sharedPrefs.getBoolean(Keys.WIDGET_BAR_NO_DATE, false), portrait);

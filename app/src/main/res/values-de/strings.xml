@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">Datum ausblenden</string>
     <string name="widget_bar_no_weather">Wetter ausblenden</string>
     <string name="widget_bar_hidden_on">Das Musik-Widget nimmt seinen Platz ein</string>
+    <string name="widget_bar_no_apps">Apps ausblenden</string>
+    <string name="widget_bar_no_apps_on">Die Leiste zeigt keine Apps; ihr Platz geht an die Widgets</string>
+    <string name="widget_bar_no_apps_off">Die Leiste zeigt die Apps</string>
+    <string name="widget_bar_fit_apps">Apps an ihre Symbole anpassen</string>
+    <string name="widget_bar_fit_apps_on">Die Apps nehmen nur den Platz ihrer Symbole ein; der Rest geht an die Widgets</string>
+    <string name="widget_bar_fit_apps_off">Die Apps behalten ihre übliche Breite</string>
     <string name="widget_bar_large_text">Große Schrift</string>
     <string name="widget_bar_large_text_on">So groß, wie die Leiste Platz bietet</string>
     <string name="widget_bar_large_text_off">Übliche Schriftgröße</string>

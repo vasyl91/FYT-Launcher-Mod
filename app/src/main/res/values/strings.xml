@@ -517,6 +517,12 @@
     <string name="widget_bar_no_date">Hide the date</string>
     <string name="widget_bar_no_weather">Hide the weather</string>
     <string name="widget_bar_hidden_on">The music widget takes its place</string>
+    <string name="widget_bar_no_apps">Hide the apps</string>
+    <string name="widget_bar_no_apps_on">The bar shows no apps; their room goes to the widgets</string>
+    <string name="widget_bar_no_apps_off">The bar shows the apps</string>
+    <string name="widget_bar_fit_apps">Fit the apps to their icons</string>
+    <string name="widget_bar_fit_apps_on">The apps take only the room of their icons; the rest goes to the widgets</string>
+    <string name="widget_bar_fit_apps_off">The apps keep their usual width</string>
     <string name="widget_bar_large_text">Large text</string>
     <string name="widget_bar_large_text_on">As large as the bar has room for</string>
     <string name="widget_bar_large_text_off">Usual text size</string>

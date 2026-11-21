@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">隐藏日期</string>
     <string name="widget_bar_no_weather">隐藏天气</string>
     <string name="widget_bar_hidden_on">由音乐小部件占用其位置</string>
+    <string name="widget_bar_no_apps">隐藏应用</string>
+    <string name="widget_bar_no_apps_on">栏中不显示应用；其空间留给小部件</string>
+    <string name="widget_bar_no_apps_off">栏中显示应用</string>
+    <string name="widget_bar_fit_apps">让应用适应其图标</string>
+    <string name="widget_bar_fit_apps_on">应用只占用其图标的空间；其余留给小部件</string>
+    <string name="widget_bar_fit_apps_off">应用保持通常的宽度</string>
     <string name="widget_bar_large_text">大字体</string>
     <string name="widget_bar_large_text_on">尽可能大，以栏内空间为限</string>
     <string name="widget_bar_large_text_off">常规字号</string>

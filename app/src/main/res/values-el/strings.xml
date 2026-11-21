@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">Απόκρυψη ημερομηνίας</string>
     <string name="widget_bar_no_weather">Απόκρυψη καιρού</string>
     <string name="widget_bar_hidden_on">Τη θέση του παίρνει το γραφικό στοιχείο μουσικής</string>
+    <string name="widget_bar_no_apps">Απόκρυψη εφαρμογών</string>
+    <string name="widget_bar_no_apps_on">Η γραμμή δεν δείχνει εφαρμογές· ο χώρος τους πηγαίνει στα γραφικά στοιχεία</string>
+    <string name="widget_bar_no_apps_off">Η γραμμή δείχνει τις εφαρμογές</string>
+    <string name="widget_bar_fit_apps">Προσαρμογή εφαρμογών στα εικονίδιά τους</string>
+    <string name="widget_bar_fit_apps_on">Οι εφαρμογές πιάνουν μόνο τον χώρο των εικονιδίων τους· ο υπόλοιπος πηγαίνει στα γραφικά στοιχεία</string>
+    <string name="widget_bar_fit_apps_off">Οι εφαρμογές κρατούν το συνηθισμένο πλάτος τους</string>
     <string name="widget_bar_large_text">Μεγάλο κείμενο</string>
     <string name="widget_bar_large_text_on">Όσο μεγάλο επιτρέπει ο χώρος της γραμμής</string>
     <string name="widget_bar_large_text_off">Συνηθισμένο μέγεθος κειμένου</string>

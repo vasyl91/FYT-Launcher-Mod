@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">Slėpti datą</string>
     <string name="widget_bar_no_weather">Slėpti orus</string>
     <string name="widget_bar_hidden_on">Jo vietą užima muzikos valdiklis</string>
+    <string name="widget_bar_no_apps">Slėpti programas</string>
+    <string name="widget_bar_no_apps_on">Juosta nerodo programų; jų vieta atitenka valdikliams</string>
+    <string name="widget_bar_no_apps_off">Juosta rodo programas</string>
+    <string name="widget_bar_fit_apps">Pritaikyti programas prie jų piktogramų</string>
+    <string name="widget_bar_fit_apps_on">Programos užima tik savo piktogramų vietą; likusi atitenka valdikliams</string>
+    <string name="widget_bar_fit_apps_off">Programos išlaiko įprastą plotį</string>
     <string name="widget_bar_large_text">Didelis tekstas</string>
     <string name="widget_bar_large_text_on">Toks didelis, kiek leidžia juostos vieta</string>
     <string name="widget_bar_large_text_off">Įprastas teksto dydis</string>

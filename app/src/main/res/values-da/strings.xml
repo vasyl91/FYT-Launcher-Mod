@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">Skjul datoen</string>
     <string name="widget_bar_no_weather">Skjul vejret</string>
     <string name="widget_bar_hidden_on">Musikwidgetten tager dens plads</string>
+    <string name="widget_bar_no_apps">Skjul apps</string>
+    <string name="widget_bar_no_apps_on">Bjælken viser ingen apps; deres plads går til widgets</string>
+    <string name="widget_bar_no_apps_off">Bjælken viser apps</string>
+    <string name="widget_bar_fit_apps">Tilpas apps til deres ikoner</string>
+    <string name="widget_bar_fit_apps_on">Apps fylder kun deres ikoners plads; resten går til widgets</string>
+    <string name="widget_bar_fit_apps_off">Apps beholder deres normale bredde</string>
     <string name="widget_bar_large_text">Stor tekst</string>
     <string name="widget_bar_large_text_on">Så stor som der er plads til på bjælken</string>
     <string name="widget_bar_large_text_off">Almindelig tekststørrelse</string>

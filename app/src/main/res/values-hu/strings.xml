@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">Dátum elrejtése</string>
     <string name="widget_bar_no_weather">Időjárás elrejtése</string>
     <string name="widget_bar_hidden_on">A helyét a zenei widget foglalja el</string>
+    <string name="widget_bar_no_apps">Alkalmazások elrejtése</string>
+    <string name="widget_bar_no_apps_on">A sáv nem mutat alkalmazásokat; a helyük a widgeteké</string>
+    <string name="widget_bar_no_apps_off">A sáv mutatja az alkalmazásokat</string>
+    <string name="widget_bar_fit_apps">Alkalmazások igazítása az ikonjaikhoz</string>
+    <string name="widget_bar_fit_apps_on">Az alkalmazások csak az ikonjaik helyét foglalják el; a többi a widgeteké</string>
+    <string name="widget_bar_fit_apps_off">Az alkalmazások megtartják szokásos szélességüket</string>
     <string name="widget_bar_large_text">Nagy szöveg</string>
     <string name="widget_bar_large_text_on">Akkora, amekkorának a sávban van hely</string>
     <string name="widget_bar_large_text_off">Szokásos szövegméret</string>

@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">Versteek die datum</string>
     <string name="widget_bar_no_weather">Versteek die weer</string>
     <string name="widget_bar_hidden_on">Die musiekwidget neem sy plek in</string>
+    <string name="widget_bar_no_apps">Versteek die programme</string>
+    <string name="widget_bar_no_apps_on">Die balk wys geen programme nie; hul plek gaan na die widgets</string>
+    <string name="widget_bar_no_apps_off">Die balk wys die programme</string>
+    <string name="widget_bar_fit_apps">Pas die programme by hul ikone aan</string>
+    <string name="widget_bar_fit_apps_on">Die programme neem net die plek van hul ikone in; die res gaan na die widgets</string>
+    <string name="widget_bar_fit_apps_off">Die programme behou hul gewone breedte</string>
     <string name="widget_bar_large_text">Groot teks</string>
     <string name="widget_bar_large_text_on">So groot as wat die balk ruimte voor het</string>
     <string name="widget_bar_large_text_off">Gewone teksgrootte</string>

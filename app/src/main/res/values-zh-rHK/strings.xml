@@ -42,6 +42,12 @@
     <string name="widget_bar_no_date">隱藏日期</string>
     <string name="widget_bar_no_weather">隱藏天氣</string>
     <string name="widget_bar_hidden_on">由音樂小工具佔用其位置</string>
+    <string name="widget_bar_no_apps">隱藏應用程式</string>
+    <string name="widget_bar_no_apps_on">列中不顯示應用程式；其空間留給小工具</string>
+    <string name="widget_bar_no_apps_off">列中顯示應用程式</string>
+    <string name="widget_bar_fit_apps">讓應用程式配合其圖示</string>
+    <string name="widget_bar_fit_apps_on">應用程式只佔用其圖示的空間；其餘留給小工具</string>
+    <string name="widget_bar_fit_apps_off">應用程式保持一般的寬度</string>
     <string name="widget_bar_large_text">大字體</string>
     <string name="widget_bar_large_text_on">盡可能大，以欄內空間為限</string>
     <string name="widget_bar_large_text_off">一般字級</string>

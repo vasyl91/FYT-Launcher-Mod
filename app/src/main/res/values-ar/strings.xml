@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">إخفاء التاريخ</string>
     <string name="widget_bar_no_weather">إخفاء الطقس</string>
     <string name="widget_bar_hidden_on">تشغل أداة الموسيقى مكانه</string>
+    <string name="widget_bar_no_apps">إخفاء التطبيقات</string>
+    <string name="widget_bar_no_apps_on">لا يعرض الشريط أي تطبيقات؛ تذهب مساحتها إلى الأدوات</string>
+    <string name="widget_bar_no_apps_off">يعرض الشريط التطبيقات</string>
+    <string name="widget_bar_fit_apps">ملاءمة التطبيقات مع أيقوناتها</string>
+    <string name="widget_bar_fit_apps_on">تشغل التطبيقات مساحة أيقوناتها فقط؛ ويذهب الباقي إلى الأدوات</string>
+    <string name="widget_bar_fit_apps_off">تحتفظ التطبيقات بعرضها المعتاد</string>
     <string name="widget_bar_large_text">نص كبير</string>
     <string name="widget_bar_large_text_on">بأكبر حجم يتسع له الشريط</string>
     <string name="widget_bar_large_text_off">حجم النص المعتاد</string>

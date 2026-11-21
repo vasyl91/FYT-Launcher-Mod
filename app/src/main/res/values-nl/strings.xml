@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">Datum verbergen</string>
     <string name="widget_bar_no_weather">Weer verbergen</string>
     <string name="widget_bar_hidden_on">De muziekwidget neemt zijn plaats in</string>
+    <string name="widget_bar_no_apps">Apps verbergen</string>
+    <string name="widget_bar_no_apps_on">De balk toont geen apps; hun ruimte gaat naar de widgets</string>
+    <string name="widget_bar_no_apps_off">De balk toont de apps</string>
+    <string name="widget_bar_fit_apps">Apps aanpassen aan hun pictogrammen</string>
+    <string name="widget_bar_fit_apps_on">De apps nemen alleen de ruimte van hun pictogrammen in; de rest gaat naar de widgets</string>
+    <string name="widget_bar_fit_apps_off">De apps houden hun gewone breedte</string>
     <string name="widget_bar_large_text">Grote tekst</string>
     <string name="widget_bar_large_text_on">Zo groot als de balk ruimte biedt</string>
     <string name="widget_bar_large_text_off">Gebruikelijke tekstgrootte</string>

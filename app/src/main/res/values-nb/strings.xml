@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">Skjul datoen</string>
     <string name="widget_bar_no_weather">Skjul været</string>
     <string name="widget_bar_hidden_on">Musikkwidgeten tar plassen</string>
+    <string name="widget_bar_no_apps">Skjul appene</string>
+    <string name="widget_bar_no_apps_on">Linjen viser ingen apper; plassen deres går til modulene</string>
+    <string name="widget_bar_no_apps_off">Linjen viser appene</string>
+    <string name="widget_bar_fit_apps">Tilpass appene til ikonene</string>
+    <string name="widget_bar_fit_apps_on">Appene tar bare plassen til ikonene; resten går til modulene</string>
+    <string name="widget_bar_fit_apps_off">Appene beholder sin vanlige bredde</string>
     <string name="widget_bar_large_text">Stor tekst</string>
     <string name="widget_bar_large_text_on">Så stor som det er plass til i feltet</string>
     <string name="widget_bar_large_text_off">Vanlig tekststørrelse</string>

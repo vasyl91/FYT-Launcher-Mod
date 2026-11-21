@@ -258,6 +258,22 @@
             android:title="@string/widget_bar_no_weather"
             android:summaryOn="@string/widget_bar_hidden_on"
             app:layout="@layout/nested_preference_category_switch" />
+        <!-- The apps list hidden or fitted to its icons, its room to the widgets; only with the widget bar
+             (WidgetBarPlan, the owner, 2026-11-21) -->
+        <com.android.launcher66.settings.CustomSwitchPreference
+            android:key="widget_bar_no_apps"
+            android:defaultValue="false"
+            android:title="@string/widget_bar_no_apps"
+            android:summaryOn="@string/widget_bar_no_apps_on"
+            android:summaryOff="@string/widget_bar_no_apps_off"
+            app:layout="@layout/nested_preference_category_switch" />
+        <com.android.launcher66.settings.CustomSwitchPreference
+            android:key="widget_bar_fit_apps"
+            android:defaultValue="false"
+            android:title="@string/widget_bar_fit_apps"
+            android:summaryOn="@string/widget_bar_fit_apps_on"
+            android:summaryOff="@string/widget_bar_fit_apps_off"
+            app:layout="@layout/nested_preference_category_switch" />
         <com.android.launcher66.settings.CustomSwitchPreference
             android:key="widget_bar_buttons_beside"
             android:defaultValue="true"

@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">ເຊື່ອງວັນທີ</string>
     <string name="widget_bar_no_weather">ເຊື່ອງສະພາບອາກາດ</string>
     <string name="widget_bar_hidden_on">ວິດເຈັດເພງຈະມາແທນບ່ອນຂອງມັນ</string>
+    <string name="widget_bar_no_apps">ເຊື່ອງແອັບ</string>
+    <string name="widget_bar_no_apps_on">ແຖບບໍ່ສະແດງແອັບ; ບ່ອນຂອງມັນໃຫ້ວິດເຈັດ</string>
+    <string name="widget_bar_no_apps_off">ແຖບສະແດງແອັບ</string>
+    <string name="widget_bar_fit_apps">ປັບແອັບໃຫ້ພໍດີກັບໄອຄອນຂອງມັນ</string>
+    <string name="widget_bar_fit_apps_on">ແອັບໃຊ້ພຽງແຕ່ບ່ອນຂອງໄອຄອນຂອງມັນ; ສ່ວນທີ່ເຫຼືອໃຫ້ວິດເຈັດ</string>
+    <string name="widget_bar_fit_apps_off">ແອັບຮັກສາຄວາມກວ້າງປົກກະຕິຂອງມັນ</string>
     <string name="widget_bar_large_text">ຕົວອັກສອນໃຫຍ່</string>
     <string name="widget_bar_large_text_on">ໃຫຍ່ເທົ່າທີ່ແຖບມີບ່ອນ</string>
     <string name="widget_bar_large_text_off">ຂະໜາດຕົວອັກສອນປົກກະຕິ</string>

@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">თარიღის დამალვა</string>
     <string name="widget_bar_no_weather">ამინდის დამალვა</string>
     <string name="widget_bar_hidden_on">მის ადგილს მუსიკის ვიჯეტი იკავებს</string>
+    <string name="widget_bar_no_apps">აპების დამალვა</string>
+    <string name="widget_bar_no_apps_on">ზოლი არ აჩვენებს აპებს; მათი ადგილი ვიჯეტებს ეძლევა</string>
+    <string name="widget_bar_no_apps_off">ზოლი აჩვენებს აპებს</string>
+    <string name="widget_bar_fit_apps">აპების მორგება მათ ხატულებზე</string>
+    <string name="widget_bar_fit_apps_on">აპები მხოლოდ თავიანთი ხატულების ადგილს იკავებს; დანარჩენი ვიჯეტებს ეძლევა</string>
+    <string name="widget_bar_fit_apps_off">აპები ინარჩუნებს ჩვეულ სიგანეს</string>
     <string name="widget_bar_large_text">დიდი ტექსტი</string>
     <string name="widget_bar_large_text_on">იმდენად დიდი, რამდენსაც ზოლი იტევს</string>
     <string name="widget_bar_large_text_off">ჩვეულებრივი ტექსტის ზომა</string>

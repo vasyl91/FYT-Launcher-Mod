@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">Skryť dátum</string>
     <string name="widget_bar_no_weather">Skryť počasie</string>
     <string name="widget_bar_hidden_on">Jeho miesto zaujme widget hudby</string>
+    <string name="widget_bar_no_apps">Skryť aplikácie</string>
+    <string name="widget_bar_no_apps_on">Lišta nezobrazuje žiadne aplikácie; ich miesto pripadne miniaplikáciám</string>
+    <string name="widget_bar_no_apps_off">Lišta zobrazuje aplikácie</string>
+    <string name="widget_bar_fit_apps">Prispôsobiť aplikácie ich ikonám</string>
+    <string name="widget_bar_fit_apps_on">Aplikácie zaberajú len miesto svojich ikon; zvyšok pripadne miniaplikáciám</string>
+    <string name="widget_bar_fit_apps_off">Aplikácie si ponechajú obvyklú šírku</string>
     <string name="widget_bar_large_text">Veľký text</string>
     <string name="widget_bar_large_text_on">Taký veľký, aký dovolí miesto na paneli</string>
     <string name="widget_bar_large_text_off">Obvyklá veľkosť textu</string>

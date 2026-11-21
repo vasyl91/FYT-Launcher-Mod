@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">Ẩn ngày</string>
     <string name="widget_bar_no_weather">Ẩn thời tiết</string>
     <string name="widget_bar_hidden_on">Tiện ích nhạc sẽ chiếm chỗ của nó</string>
+    <string name="widget_bar_no_apps">Ẩn ứng dụng</string>
+    <string name="widget_bar_no_apps_on">Thanh không hiển thị ứng dụng; chỗ của chúng dành cho tiện ích</string>
+    <string name="widget_bar_no_apps_off">Thanh hiển thị ứng dụng</string>
+    <string name="widget_bar_fit_apps">Vừa ứng dụng với biểu tượng của chúng</string>
+    <string name="widget_bar_fit_apps_on">Ứng dụng chỉ chiếm chỗ của biểu tượng; phần còn lại dành cho tiện ích</string>
+    <string name="widget_bar_fit_apps_off">Ứng dụng giữ chiều rộng thông thường</string>
     <string name="widget_bar_large_text">Chữ lớn</string>
     <string name="widget_bar_large_text_on">Lớn tối đa theo chỗ trống trên thanh</string>
     <string name="widget_bar_large_text_off">Cỡ chữ thông thường</string>

@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">Огноог нуух</string>
     <string name="widget_bar_no_weather">Цаг агаарыг нуух</string>
     <string name="widget_bar_hidden_on">Түүний оронд хөгжмийн виджет байрлана</string>
+    <string name="widget_bar_no_apps">Аппуудыг нуух</string>
+    <string name="widget_bar_no_apps_on">Самбар апп харуулахгүй; тэдний зай виджетүүдэд очно</string>
+    <string name="widget_bar_no_apps_off">Самбар аппуудыг харуулна</string>
+    <string name="widget_bar_fit_apps">Аппуудыг дүрс тэмдэгтэй нь тааруулах</string>
+    <string name="widget_bar_fit_apps_on">Аппууд зөвхөн дүрс тэмдгийнхээ зайг эзэлнэ; үлдсэн нь виджетүүдэд очно</string>
+    <string name="widget_bar_fit_apps_off">Аппууд ердийн өргөнөө хадгална</string>
     <string name="widget_bar_large_text">Том текст</string>
     <string name="widget_bar_large_text_on">Самбарт багтах хэмжээгээрээ том</string>
     <string name="widget_bar_large_text_off">Энгийн текстийн хэмжээ</string>

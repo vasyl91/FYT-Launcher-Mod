@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">پنهان کردن تاریخ</string>
     <string name="widget_bar_no_weather">پنهان کردن آب‌وهوا</string>
     <string name="widget_bar_hidden_on">ابزارک موسیقی جای آن را می‌گیرد</string>
+    <string name="widget_bar_no_apps">پنهان کردن برنامه‌ها</string>
+    <string name="widget_bar_no_apps_on">نوار هیچ برنامه‌ای نشان نمی‌دهد؛ جای آن‌ها به ابزارک‌ها می‌رسد</string>
+    <string name="widget_bar_no_apps_off">نوار برنامه‌ها را نشان می‌دهد</string>
+    <string name="widget_bar_fit_apps">هماهنگ کردن برنامه‌ها با نمادهایشان</string>
+    <string name="widget_bar_fit_apps_on">برنامه‌ها فقط جای نمادهایشان را می‌گیرند؛ بقیه به ابزارک‌ها می‌رسد</string>
+    <string name="widget_bar_fit_apps_off">برنامه‌ها پهنای معمول خود را نگه می‌دارند</string>
     <string name="widget_bar_large_text">متن بزرگ</string>
     <string name="widget_bar_large_text_on">تا جایی که نوار جا دارد بزرگ</string>
     <string name="widget_bar_large_text_off">اندازه معمول متن</string>

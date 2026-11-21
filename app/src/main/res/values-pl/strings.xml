@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">Ukryj datę</string>
     <string name="widget_bar_no_weather">Ukryj pogodę</string>
     <string name="widget_bar_hidden_on">Jego miejsce zajmuje widżet muzyki</string>
+    <string name="widget_bar_no_apps">Ukryj aplikacje</string>
+    <string name="widget_bar_no_apps_on">Pasek nie pokazuje aplikacji; ich miejsce zajmują widżety</string>
+    <string name="widget_bar_no_apps_off">Pasek pokazuje aplikacje</string>
+    <string name="widget_bar_fit_apps">Dopasuj aplikacje do ich ikon</string>
+    <string name="widget_bar_fit_apps_on">Aplikacje zajmują tylko miejsce swoich ikon; reszta przypada widżetom</string>
+    <string name="widget_bar_fit_apps_off">Aplikacje zachowują zwykłą szerokość</string>
     <string name="widget_bar_large_text">Duży tekst</string>
     <string name="widget_bar_large_text_on">Tak duży, jak pozwala miejsce na pasku</string>
     <string name="widget_bar_large_text_off">Zwykły rozmiar tekstu</string>

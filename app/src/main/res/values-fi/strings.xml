@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">Piilota päivämäärä</string>
     <string name="widget_bar_no_weather">Piilota sää</string>
     <string name="widget_bar_hidden_on">Musiikkiwidget ottaa sen paikan</string>
+    <string name="widget_bar_no_apps">Piilota sovellukset</string>
+    <string name="widget_bar_no_apps_on">Palkki ei näytä sovelluksia; niiden tila menee widgeteille</string>
+    <string name="widget_bar_no_apps_off">Palkki näyttää sovellukset</string>
+    <string name="widget_bar_fit_apps">Sovita sovellukset kuvakkeisiinsa</string>
+    <string name="widget_bar_fit_apps_on">Sovellukset vievät vain kuvakkeidensa tilan; loput menee widgeteille</string>
+    <string name="widget_bar_fit_apps_off">Sovellukset säilyttävät tavallisen leveytensä</string>
     <string name="widget_bar_large_text">Suuri teksti</string>
     <string name="widget_bar_large_text_on">Niin suuri kuin palkissa on tilaa</string>
     <string name="widget_bar_large_text_off">Tavallinen tekstikoko</string>

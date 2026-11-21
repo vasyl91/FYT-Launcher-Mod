@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">Amaga la data</string>
     <string name="widget_bar_no_weather">Amaga el temps</string>
     <string name="widget_bar_hidden_on">El giny de música ocupa el seu lloc</string>
+    <string name="widget_bar_no_apps">Amaga les aplicacions</string>
+    <string name="widget_bar_no_apps_on">La barra no mostra aplicacions; el seu espai és per als ginys</string>
+    <string name="widget_bar_no_apps_off">La barra mostra les aplicacions</string>
+    <string name="widget_bar_fit_apps">Ajusta les aplicacions a les seves icones</string>
+    <string name="widget_bar_fit_apps_on">Les aplicacions només ocupen l\'espai de les seves icones; la resta és per als ginys</string>
+    <string name="widget_bar_fit_apps_off">Les aplicacions mantenen la seva amplada habitual</string>
     <string name="widget_bar_large_text">Text gran</string>
     <string name="widget_bar_large_text_on">Tan gran com permeti l\'espai de la barra</string>
     <string name="widget_bar_large_text_off">Mida de text habitual</string>

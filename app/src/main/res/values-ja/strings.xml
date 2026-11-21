@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">日付を非表示</string>
     <string name="widget_bar_no_weather">天気を非表示</string>
     <string name="widget_bar_hidden_on">その場所をミュージックウィジェットが使います</string>
+    <string name="widget_bar_no_apps">アプリを非表示</string>
+    <string name="widget_bar_no_apps_on">バーにアプリを表示しません。その場所はウィジェットに使われます</string>
+    <string name="widget_bar_no_apps_off">バーにアプリを表示します</string>
+    <string name="widget_bar_fit_apps">アプリをアイコンに合わせる</string>
+    <string name="widget_bar_fit_apps_on">アプリはアイコンの分だけの場所を使い、残りはウィジェットに使われます</string>
+    <string name="widget_bar_fit_apps_off">アプリは通常の幅のままです</string>
     <string name="widget_bar_large_text">大きな文字</string>
     <string name="widget_bar_large_text_on">バーに収まる最大の大きさ</string>
     <string name="widget_bar_large_text_off">通常の文字サイズ</string>

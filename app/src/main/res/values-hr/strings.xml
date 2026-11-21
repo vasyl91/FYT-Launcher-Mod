@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">Sakrij datum</string>
     <string name="widget_bar_no_weather">Sakrij vrijeme</string>
     <string name="widget_bar_hidden_on">Njegovo mjesto zauzima glazbeni widget</string>
+    <string name="widget_bar_no_apps">Sakrij aplikacije</string>
+    <string name="widget_bar_no_apps_on">Traka ne prikazuje aplikacije; njihov prostor ide widgetima</string>
+    <string name="widget_bar_no_apps_off">Traka prikazuje aplikacije</string>
+    <string name="widget_bar_fit_apps">Prilagodi aplikacije njihovim ikonama</string>
+    <string name="widget_bar_fit_apps_on">Aplikacije zauzimaju samo prostor svojih ikona; ostatak ide widgetima</string>
+    <string name="widget_bar_fit_apps_off">Aplikacije zadržavaju uobičajenu širinu</string>
     <string name="widget_bar_large_text">Veliki tekst</string>
     <string name="widget_bar_large_text_on">Onoliko velik koliko traka ima mjesta</string>
     <string name="widget_bar_large_text_off">Uobičajena veličina teksta</string>

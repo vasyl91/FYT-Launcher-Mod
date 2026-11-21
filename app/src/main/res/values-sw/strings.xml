@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">Ficha tarehe</string>
     <string name="widget_bar_no_weather">Ficha hali ya hewa</string>
     <string name="widget_bar_hidden_on">Wijeti ya muziki huchukua nafasi yake</string>
+    <string name="widget_bar_no_apps">Ficha programu</string>
+    <string name="widget_bar_no_apps_on">Upau hauonyeshi programu; nafasi yake inaenda kwa wijeti</string>
+    <string name="widget_bar_no_apps_off">Upau unaonyesha programu</string>
+    <string name="widget_bar_fit_apps">Linganisha programu na aikoni zake</string>
+    <string name="widget_bar_fit_apps_on">Programu zinachukua nafasi ya aikoni zake tu; iliyobaki inaenda kwa wijeti</string>
+    <string name="widget_bar_fit_apps_off">Programu zinabaki na upana wake wa kawaida</string>
     <string name="widget_bar_large_text">Maandishi makubwa</string>
     <string name="widget_bar_large_text_on">Makubwa kadiri upau unavyoruhusu</string>
     <string name="widget_bar_large_text_off">Ukubwa wa kawaida wa maandishi</string>

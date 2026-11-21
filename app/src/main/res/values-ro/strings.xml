@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">Ascunde data</string>
     <string name="widget_bar_no_weather">Ascunde vremea</string>
     <string name="widget_bar_hidden_on">Locul lui este luat de widgetul de muzică</string>
+    <string name="widget_bar_no_apps">Ascunde aplicațiile</string>
+    <string name="widget_bar_no_apps_on">Bara nu afișează aplicații; locul lor revine widgeturilor</string>
+    <string name="widget_bar_no_apps_off">Bara afișează aplicațiile</string>
+    <string name="widget_bar_fit_apps">Potrivește aplicațiile la pictogramele lor</string>
+    <string name="widget_bar_fit_apps_on">Aplicațiile ocupă doar locul pictogramelor lor; restul revine widgeturilor</string>
+    <string name="widget_bar_fit_apps_off">Aplicațiile își păstrează lățimea obișnuită</string>
     <string name="widget_bar_large_text">Text mare</string>
     <string name="widget_bar_large_text_on">Cât de mare permite spațiul din bară</string>
     <string name="widget_bar_large_text_off">Dimensiune obișnuită a textului</string>

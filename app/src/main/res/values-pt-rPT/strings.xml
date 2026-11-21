@@ -148,6 +148,12 @@
     <string name="widget_bar_no_date">Ocultar a data</string>
     <string name="widget_bar_no_weather">Ocultar a meteorologia</string>
     <string name="widget_bar_hidden_on">O widget de música ocupa o lugar</string>
+    <string name="widget_bar_no_apps">Ocultar os apps</string>
+    <string name="widget_bar_no_apps_on">A barra não mostra apps; o espaço deles vai para os widgets</string>
+    <string name="widget_bar_no_apps_off">A barra mostra os apps</string>
+    <string name="widget_bar_fit_apps">Ajustar os apps aos seus ícones</string>
+    <string name="widget_bar_fit_apps_on">Os apps ocupam apenas o espaço dos seus ícones; o resto vai para os widgets</string>
+    <string name="widget_bar_fit_apps_off">Os apps mantêm a largura habitual</string>
     <string name="widget_bar_large_text">Texto grande</string>
     <string name="widget_bar_large_text_on">O maior que o espaço da barra permitir</string>
     <string name="widget_bar_large_text_off">Tamanho de texto normal</string>

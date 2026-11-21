@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">Скриване на датата</string>
     <string name="widget_bar_no_weather">Скриване на времето</string>
     <string name="widget_bar_hidden_on">Мястото му се заема от музикалния уиджет</string>
+    <string name="widget_bar_no_apps">Скриване на приложенията</string>
+    <string name="widget_bar_no_apps_on">Лентата не показва приложения; мястото им отива за уиджетите</string>
+    <string name="widget_bar_no_apps_off">Лентата показва приложенията</string>
+    <string name="widget_bar_fit_apps">Нагласяне на приложенията към иконите им</string>
+    <string name="widget_bar_fit_apps_on">Приложенията заемат само мястото на иконите си; останалото отива за уиджетите</string>
+    <string name="widget_bar_fit_apps_off">Приложенията запазват обичайната си ширина</string>
     <string name="widget_bar_large_text">Едър текст</string>
     <string name="widget_bar_large_text_on">Толкова голям, колкото позволява лентата</string>
     <string name="widget_bar_large_text_off">Обичаен размер на текста</string>

@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">ซ่อนวันที่</string>
     <string name="widget_bar_no_weather">ซ่อนสภาพอากาศ</string>
     <string name="widget_bar_hidden_on">วิดเจ็ตเพลงจะใช้พื้นที่ของส่วนนั้นแทน</string>
+    <string name="widget_bar_no_apps">ซ่อนแอป</string>
+    <string name="widget_bar_no_apps_on">แถบไม่แสดงแอป พื้นที่ของแอปจะเป็นของวิดเจ็ต</string>
+    <string name="widget_bar_no_apps_off">แถบแสดงแอป</string>
+    <string name="widget_bar_fit_apps">ปรับแอปให้พอดีกับไอคอน</string>
+    <string name="widget_bar_fit_apps_on">แอปใช้พื้นที่เท่ากับไอคอนเท่านั้น ส่วนที่เหลือเป็นของวิดเจ็ต</string>
+    <string name="widget_bar_fit_apps_off">แอปคงความกว้างปกติไว้</string>
     <string name="widget_bar_large_text">ข้อความขนาดใหญ่</string>
     <string name="widget_bar_large_text_on">ใหญ่เท่าที่แถบมีที่ว่าง</string>
     <string name="widget_bar_large_text_off">ขนาดข้อความปกติ</string>

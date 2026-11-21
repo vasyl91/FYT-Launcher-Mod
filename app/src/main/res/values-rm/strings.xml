@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">Zuppar la data</string>
     <string name="widget_bar_no_weather">Zuppar il temp</string>
     <string name="widget_bar_hidden_on">Il widget da musica prenda il lieu</string>
+    <string name="widget_bar_no_apps">Zuppentar las apps</string>
+    <string name="widget_bar_no_apps_on">La trav na mussa nagina app; lur plaz va als widgets</string>
+    <string name="widget_bar_no_apps_off">La trav mussa las apps</string>
+    <string name="widget_bar_fit_apps">Adattar las apps a lur icons</string>
+    <string name="widget_bar_fit_apps_on">Las apps occupan mo il plaz da lur icons; il rest va als widgets</string>
+    <string name="widget_bar_fit_apps_off">Las apps mantegnan lur ladezza usitada</string>
     <string name="widget_bar_large_text">Text grond</string>
     <string name="widget_bar_large_text_on">Uschè grond sco che la bara lubescha</string>
     <string name="widget_bar_large_text_off">Grondezza da text usitada</string>

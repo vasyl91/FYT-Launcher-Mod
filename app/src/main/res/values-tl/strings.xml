@@ -507,6 +507,12 @@
     <string name="widget_bar_no_date">Itago ang petsa</string>
     <string name="widget_bar_no_weather">Itago ang panahon</string>
     <string name="widget_bar_hidden_on">Ang music widget ang pumapalit sa puwesto nito</string>
+    <string name="widget_bar_no_apps">Itago ang mga app</string>
+    <string name="widget_bar_no_apps_on">Walang app na ipinapakita ang bar; ang puwang nila ay napupunta sa mga widget</string>
+    <string name="widget_bar_no_apps_off">Ipinapakita ng bar ang mga app</string>
+    <string name="widget_bar_fit_apps">Iakma ang mga app sa kanilang mga icon</string>
+    <string name="widget_bar_fit_apps_on">Ang mga app ay kumukuha lamang ng puwang ng kanilang mga icon; ang natitira ay napupunta sa mga widget</string>
+    <string name="widget_bar_fit_apps_off">Pinapanatili ng mga app ang karaniwang lapad nila</string>
     <string name="widget_bar_large_text">Malaking teksto</string>
     <string name="widget_bar_large_text_on">Kasing laki ng kasya sa bar</string>
     <string name="widget_bar_large_text_off">Karaniwang laki ng teksto</string>
