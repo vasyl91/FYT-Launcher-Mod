@@ -31,7 +31,8 @@ import java.util.concurrent.Executors;
  * The cover is a file the Bluetooth app (blink) writes, /data/blink/Id3_CoverArt.JPEG, a little after the
  * song changes, and one file for every song: it is read at once when the path is reported, again 1.5 s
  * after the title changed (the time BluetoothObserver of com.syu.media waits) and, if it is still the
- * previous song's, after 3 and 6 s (StockBtCover). A file older than the change of the song is not taken.
+ * previous song's, after 3 and 6 s (StockBtCover). A file older than the change of the song is not taken; the
+ * first song after a start, and a title that comes back after a moment without one, are no change (StockBtCover).
  * Nothing in strs means the field was cleared (BluetoothObserver posts an empty text then).
  * Launcher.refreshBtInfo reads the same codes for the BT page of the home screen and is left as
  * it is.
@@ -56,8 +57,9 @@ final class StockBtSource {
     /** The path code 51 reported ("" = none) and the cover read from it for the song shown. */
     private String coverPath = "";
     private byte[] cover;
-    /** When the title last changed (wall clock, the clock of the file's modification time). */
-    private long songChangedAtMs;
+    /** The title of the song shown (null: none since the start) and when it changed (elapsed time; 0: unknown). */
+    private String lastSongTitle;
+    private long songChangedElapsedMs;
     private int coverGeneration;
     private int coverHash;
     private final ExecutorService coverWorker = Executors.newSingleThreadExecutor(r -> {
@@ -115,9 +117,7 @@ final class StockBtSource {
         switch (code) {
             case 0:
                 String newTitle = firstString(strs);
-                if (!newTitle.equals(title)) {
-                    onTitleChanged();
-                }
+                onTitle(newTitle);
                 title = newTitle;
                 break;
             case 51:
@@ -156,9 +156,31 @@ final class StockBtSource {
         }
     }
 
+    /** A title from code 0: a new song, the first since the start, the same one back, or a cleared field. */
+    private void onTitle(String newTitle) {
+        switch (StockBtCover.titleChange(lastSongTitle, newTitle)) {
+            case CLEARED:
+                return; // for a moment: the song and its cover stay
+            case SAME:
+                if (title.trim().isEmpty() && cover == null && StockSources.isSyuMediaUnit()) {
+                    // The same song back after a moment without a title: its file, at its own time
+                    readCover(coverGeneration);
+                }
+                return;
+            case FIRST:
+                // Begun before the launcher started: its file may be of any age
+                songChangedElapsedMs = 0;
+                break;
+            default:
+                songChangedElapsedMs = SystemClock.elapsedRealtime();
+                break;
+        }
+        lastSongTitle = newTitle.trim();
+        onTitleChanged();
+    }
+
     /** A new song: the cover of the one before is gone, the new one is looked for at the times of StockBtCover. */
     private void onTitleChanged() {
-        songChangedAtMs = System.currentTimeMillis();
         coverHashBeforeChange = coverHash;
         cover = null;
         final int generation = ++coverGeneration;
@@ -192,11 +214,14 @@ final class StockBtSource {
         if (path.isEmpty() || generation != coverGeneration) {
             return;
         }
-        final long changedAt = songChangedAtMs;
+        // On the wall clock of the file's time as it is now (a jump since the change moves it along)
+        final long changedAt = StockBtCover.changedAtNow(System.currentTimeMillis(), SystemClock.elapsedRealtime(),
+                songChangedElapsedMs);
+        final String changedText = changedAt == StockBtCover.UNKNOWN ? "before the start" : String.valueOf(changedAt);
         coverWorker.execute(() -> {
             SyuMediaFiles.Data data = SyuMediaFiles.read(SyuMediaFiles.FAMILY_BT_COVER, path);
             if (data == null) {
-                Log.i(TAG, "bt cover " + path + ": modified - song changed " + changedAt + " -> missing");
+                Log.i(TAG, "bt cover " + path + ": modified - song changed " + changedText + " -> missing");
                 return;
             }
             int hash = Arrays.hashCode(data.bytes);
@@ -205,7 +230,7 @@ final class StockBtSource {
                     ? StockBtCover.isFresh(data.lastModifiedMs, changedAt)
                     : hash != coverHashBeforeChange;
             byte[] png = fresh ? StockCoverLoader.toPng(data.bytes) : null;
-            Log.i(TAG, "bt cover " + path + ": modified " + data.lastModifiedMs + " song changed " + changedAt
+            Log.i(TAG, "bt cover " + path + ": modified " + data.lastModifiedMs + " song changed " + changedText
                     + " -> " + (!fresh ? "stale" : png == null ? "unreadable" : "fresh"));
             if (png == null) {
                 return;
