@@ -271,6 +271,7 @@ final class LauncherMusicWidget {
 
             if ("true".equals(mLauncher.state)) {
                 saveLastPlayer(currentPlayerPackage());
+                mPausedCoverKey = null;
                 boolean coverPending = !isId3Read(path);
                 byte[] dataPic = coverPending ? null : mId3Pic;
                 if (dataPic == null) {
@@ -469,6 +470,12 @@ final class LauncherMusicWidget {
             if (mPlayPauseButtonTwo != null) {
                 mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
             }*/
+            StockKindArbiter.Kind shownKind = StockSources.shownKind();
+            if (PausedCover.applies(StockSources.isSyuMediaUnit(), shownKind != null && shownKind.isSyuMediaKind(),
+                    false)) {
+                // The 7870's player or BT in a pause: its cover stays drawn (PausedCover)
+                drawPausedCover(path, byts);
+            }
             // Only what the player still holds replaces a line: a missing one keeps what was shown
             String idleTitle = mTitle;
             String idleSecond = mSecond;
@@ -659,6 +666,51 @@ final class LauncherMusicWidget {
                 setBarButtonsTint(mPlayPauseButtonTwo);
             }
         }         
+    }
+
+    /** What drawPausedCover() drew last (the track and the picture's kind); null: draw again. */
+    private String mPausedCoverKey;
+
+    /**
+     * The 7870's player or BT while it does not play: the file's cover, the published one or the one saved for this
+     * track; with none of them the picture shown stays (PausedCover). Drawn once per track and picture.
+     */
+    private void drawPausedCover(String path, byte[] published) {
+        boolean pending = !isId3Read(path);
+        byte[] file = pending ? null : mId3Pic;
+        boolean saved = path != null && path.equals(mLauncher.mPrefs.getString(PREF_LAST_ALBUM_PATH, ""));
+        PausedCover.Pick pick = PausedCover.pick(file != null && file.length > 0,
+                published != null && published.length > 0, saved);
+        if (pick == PausedCover.Pick.KEEP) {
+            return;
+        }
+        String key = path + "|" + pick;
+        if (key.equals(mPausedCoverKey)) {
+            return;
+        }
+        Bitmap bp;
+        if (pick == PausedCover.Pick.SAVED) {
+            // Saved as it was drawn, corners included
+            bp = getBitmapFromPreferences();
+        } else {
+            byte[] picture = pick == PausedCover.Pick.FILE ? file : published;
+            bp = BitmapFactory.decodeByteArray(picture, 0, picture.length);
+            if (bp != null && LauncherApplication.sApp.getResources().getBoolean(R.bool.music_bitmap_circular)) {
+                bp = Utils.getNameToBool("isRoundedCorner") ? Launcher.GetRoundedCornerBitmap(bp)
+                        : Launcher.makeRoundCorner(bp);
+            }
+        }
+        if (bp == null) {
+            return;
+        }
+        mPausedCoverKey = key;
+        Drawable drawable = new BitmapDrawable(mLauncher.getApplicationContext().getResources(), bp);
+        if (ivALbumBg != null) {
+            ivALbumBg.setImageDrawable(drawable);
+        }
+        if (ivALbumBgTwo != null) {
+            ivALbumBgTwo.setImageDrawable(drawable);
+        }
     }
 
     /** The last onRefresh() arguments, to draw them again once a file's cover has been read. */
@@ -941,6 +993,14 @@ final class LauncherMusicWidget {
         // and the audioserver say): this one used to go by the stock player's last value alone,
         // and it is what a wake from sleep shows.
         setPlayPauseIcon();
+
+        StockKindArbiter.Kind kind = StockSources.shownKind();
+        if (StockSources.isSyuMediaUnit() && kind != null && kind.isSyuMediaKind() && mLastRefresh != null) {
+            // 7870: a widget built again gets the last state of what plays or pauses at once, its cover with it;
+            // a paused player sends nothing more by itself (PausedCover)
+            mPausedCoverKey = null;
+            mLauncher.mHandler.post(this::redrawLastRefresh);
+        }
     }
 
     /**

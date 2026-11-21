@@ -51,6 +51,11 @@ public final class StockKindArbiter {
         public boolean isMediaPlayer() {
             return this == MEDIA_MUSIC || this == MEDIA_ONLINE;
         }
+
+        /** A source of the 7870's media: com.syu.media's player or internet radio, or BT. */
+        public boolean isSyuMediaKind() {
+            return this == MEDIA_MUSIC || this == MEDIA_ONLINE || this == MEDIA_BT;
+        }
     }
 
     private boolean syuMediaUnit;
