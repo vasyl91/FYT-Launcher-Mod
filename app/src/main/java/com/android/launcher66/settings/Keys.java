@@ -163,6 +163,8 @@ public final class Keys {
     public static final String WIDGET_BAR_NO_DATE = "widget_bar_no_date";
     /** The weather is not shown in the widget bar and the music widget takes its room. */
     public static final String WIDGET_BAR_NO_WEATHER = "widget_bar_no_weather";
+    /** The widget bar shows no apps list, its room to the widgets; only with the widget bar (WidgetBarPlan). */
+    public static final String WIDGET_BAR_NO_APPS = "widget_bar_no_apps";
     /** The widget bar's apps list as wide as its icons, its room to the widgets (WidgetBarPlan). */
     public static final String WIDGET_BAR_FIT_APPS = "widget_bar_fit_apps";
     /**

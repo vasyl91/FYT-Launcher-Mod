@@ -14,8 +14,8 @@ import java.util.List;
  *   <li>The stored order holds every element once; one the settings hide keeps its place in it, so it comes back
  *       where it was ({@link #merge}).</li>
  *   <li>The bar shows the elements its settings and orientation leave ({@link #shown}): without the widget bar
- *       only the app drawer button and the apps, in portrait no date (its layout has none), no date or weather
- *       where they are hidden.</li>
+ *       only the app drawer button and the apps, in portrait no date (its layout has none), no date, weather or
+ *       apps where they are hidden (the apps only with the widget bar).</li>
  *   <li>The first element shown lies at the bar's left edge; each next one is chained between the one before it
  *       and the one after it, the last to the bar's right edge ({@link #anchors}). That is exactly how the bar's
  *       window laid out the old order (Workspace.forceOriginalSizesLayoutTwo), so the default order lies where it
@@ -112,12 +112,13 @@ public final class BarOrder {
      * @param portrait  the portrait bar, which has no date
      * @param noDate    "hide the date"
      * @param noWeather "hide the weather"
+     * @param noApps    "hide the apps", which counts only with the widget bar
      */
     public static List<Element> shown(List<Element> order, boolean widgetBar, boolean portrait, boolean noDate,
-                                      boolean noWeather) {
+                                      boolean noWeather, boolean noApps) {
         List<Element> shown = new ArrayList<>();
         for (Element e : order) {
-            if (e == Element.DRAWER || e == Element.APPS
+            if (e == Element.DRAWER || e == Element.APPS && !(widgetBar && noApps)
                     || widgetBar && (e == Element.MUSIC
                     || e == Element.DATE && !portrait && !noDate
                     || e == Element.WEATHER && !noWeather)) {

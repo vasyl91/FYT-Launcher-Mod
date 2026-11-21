@@ -13,6 +13,10 @@ package com.android.launcher66;
  * weather) gets nothing, and its 10% goes to the music too ({@link #shares}). Only with the widget bar: without it
  * the list keeps its usual width. The total of the shares does not change. An element whose height comes from its
  * own width (the portrait list and weather) keeps the height of its usual width ({@link #keptRatio}).
+ *
+ * <p>The apps list hidden (the owner, 2026-11-21, "Hide the apps"): the bar shows no list, and all of its room is
+ * shared the same way; the app drawer button stays. <b>Only with the widget bar</b> ({@link #appsHidden}): with the
+ * widget bar off the list is always shown, at its usual width, whatever is stored under the key.
  */
 public final class WidgetBarPlan {
 
@@ -92,12 +96,21 @@ public final class WidgetBarPlan {
         return portrait ? WEATHER_PORT : WEATHER_LAND;
     }
 
+    /** Whether the bar shows no apps list: "Hide the apps", in the user layout's widget bar only. */
+    public static boolean appsHidden(boolean userLayout, boolean widgetBar, boolean noApps) {
+        return userLayout && widgetBar && noApps;
+    }
+
     /**
-     * The apps list's share: its usual one, or, fitted, the share of the {@code shown} tiles at the width a tile has
-     * with {@code room} of them (the most the list has room for). Fitted only when it shows fewer than it has room for.
+     * The apps list's share: nothing when it is hidden; its usual one; or, fitted, the share of the {@code shown}
+     * tiles at the width a tile has with {@code room} of them (the most the list has room for). Fitted only when it
+     * shows fewer than it has room for.
      */
-    public static float appsShare(boolean portrait, boolean fit, int shown, int room) {
+    public static float appsShare(boolean portrait, boolean hidden, boolean fit, int shown, int room) {
         float usual = usualApps(portrait);
+        if (hidden) {
+            return 0f;
+        }
         if (fit && room > 0 && shown > 0 && shown < room) {
             return usual * shown / room;
         }

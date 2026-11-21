@@ -289,7 +289,9 @@ final class HomeLayoutRecovery {
         s.hotseat = size(mLauncher.mHotseat);
         boolean autoHide = mLauncher.mPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false);
         RecyclerView bottom = (RecyclerView) workspace.findViewById(R.id.recycler_view);
-        bar(s.horizontalBar, bottom, bottom != null && !autoHide, false);
+        // A bar whose apps list is hidden (WidgetBarPlan.appsHidden) has no list to judge: not a missing one
+        bar(s.horizontalBar, bottom, bottom != null && !autoHide && !WidgetBarLayout.appsHidden(mLauncher.mPrefs),
+                false);
         RecyclerView left = (RecyclerView) workspace.findViewById(R.id.vertical_recycler_view);
         bar(s.verticalBar, left, left != null && mLauncher.mAppBars.shouldUseLeftRecycler(), true);
         s.chromeMatches = chromeMatches();
@@ -438,7 +440,8 @@ final class HomeLayoutRecovery {
             mLauncher.mAppBars.installBottomRecyclerDecorations(recycler);
             recycler.clearAnimation();
             if (!autoHideHorizontalBar) {
-                recycler.setVisibility(View.VISIBLE);
+                // A list the widget bar hides stays hidden (WidgetBarLayout)
+                recycler.setVisibility(WidgetBarLayout.appsListVisibility(mLauncher.mPrefs));
             }
             recycler.setEnabled(true);
             recycler.setClickable(true);

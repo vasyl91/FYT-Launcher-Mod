@@ -35,12 +35,12 @@ class BarOrderTest {
     void theBarShowsWhatItsSettingsAndOrientationLeave() {
         List<BarOrder.Element> order = Arrays.asList(WEATHER, DATE, MUSIC, APPS, DRAWER);
         assertEquals(Arrays.asList(WEATHER, DATE, MUSIC, APPS, DRAWER),
-                BarOrder.shown(order, true, false, false, false));
-        assertEquals(Arrays.asList(WEATHER, MUSIC, APPS, DRAWER), BarOrder.shown(order, true, true, false, false),
+                BarOrder.shown(order, true, false, false, false, false));
+        assertEquals(Arrays.asList(WEATHER, MUSIC, APPS, DRAWER), BarOrder.shown(order, true, true, false, false, false),
                 "portrait has no date");
-        assertEquals(Arrays.asList(DATE, MUSIC, APPS, DRAWER), BarOrder.shown(order, true, false, false, true));
-        assertEquals(Arrays.asList(WEATHER, MUSIC, APPS, DRAWER), BarOrder.shown(order, true, false, true, false));
-        assertEquals(Arrays.asList(APPS, DRAWER), BarOrder.shown(order, false, false, false, false),
+        assertEquals(Arrays.asList(DATE, MUSIC, APPS, DRAWER), BarOrder.shown(order, true, false, false, true, false));
+        assertEquals(Arrays.asList(WEATHER, MUSIC, APPS, DRAWER), BarOrder.shown(order, true, false, true, false, false));
+        assertEquals(Arrays.asList(APPS, DRAWER), BarOrder.shown(order, false, false, false, false, false),
                 "without the widget bar");
     }
 
@@ -51,12 +51,12 @@ class BarOrderTest {
         List<BarOrder.Element> reordered = Arrays.asList(WEATHER, MUSIC, APPS, DRAWER);
         assertEquals(Arrays.asList(WEATHER, MUSIC, APPS, DATE, DRAWER), BarOrder.merge(full, reordered));
         // Nothing moved: nothing changes
-        assertEquals(full, BarOrder.merge(full, BarOrder.shown(full, true, false, true, false)));
+        assertEquals(full, BarOrder.merge(full, BarOrder.shown(full, true, false, true, false, false)));
     }
 
     @Test
     void theFirstLiesAtTheLeftEdgeTheOthersAreChainedToTheRightEdge() {
-        List<BarOrder.Anchor> anchors = BarOrder.anchors(BarOrder.shown(BarOrder.DEFAULT, true, false, false, false));
+        List<BarOrder.Anchor> anchors = BarOrder.anchors(BarOrder.shown(BarOrder.DEFAULT, true, false, false, false, false));
         assertEquals(5, anchors.size());
         BarOrder.Anchor drawer = anchors.get(0);
         assertEquals(DRAWER, drawer.element);
@@ -80,5 +80,19 @@ class BarOrderTest {
         assertEquals(APPS, anchors.get(1).start);
         assertTrue(anchors.get(1).endTied);
         assertNull(anchors.get(1).end);
+    }
+
+    @Test
+    void theHiddenAppsListIsNotShownAndOnlyWithTheWidgetBar() {
+        // "Hide the apps": the elements without the list, in their order; the drawer button stays
+        assertEquals(Arrays.asList(DRAWER, MUSIC, DATE, WEATHER), BarOrder.shown(BarOrder.DEFAULT, true, false,
+                false, false, true));
+        assertEquals(Arrays.asList(DRAWER, MUSIC, WEATHER), BarOrder.shown(BarOrder.DEFAULT, true, true,
+                false, false, true));
+        // Without the widget bar the list is always there
+        assertEquals(Arrays.asList(DRAWER, APPS), BarOrder.shown(BarOrder.DEFAULT, false, false, false, false, true));
+        // The order dialog moves what it shows; the hidden list keeps its place
+        assertEquals(Arrays.asList(WEATHER, APPS, MUSIC, DATE, DRAWER),
+                BarOrder.merge(BarOrder.DEFAULT, Arrays.asList(WEATHER, MUSIC, DATE, DRAWER)));
     }
 }

@@ -1885,7 +1885,8 @@ public class Workspace extends SmoothPagedView
         horizontalBarRecycler.animate()
                 .alpha(0f)
                 .setDuration(0)
-                .withEndAction(() -> horizontalBarRecycler.setVisibility(View.INVISIBLE))
+                .withEndAction(() -> horizontalBarRecycler.setVisibility(
+                        WidgetBarLayout.appsHidden(mPrefs) ? View.GONE : View.INVISIBLE))
                 .start();
 
         if (mEdgeHandleMode && !mCollapsedButton) {
@@ -2394,6 +2395,8 @@ public class Workspace extends SmoothPagedView
         if (WidgetBarPlan.widensMusic(noDate, noWeather) || shares.appsChanged) {
             musicWidgetWidth = (int) (screenWidth * shares.music);
         }
+        // The list hidden: not shown in the window either, its room to the widgets (the shares)
+        final boolean noApps = WidgetBarLayout.appsHidden(mPrefs);
         if (shares.appsChanged) {
             recyclerWidth = (int) (screenWidth * shares.apps);
             dateWidgetWidth = (int) (screenWidth * shares.date);
@@ -2433,7 +2436,9 @@ public class Workspace extends SmoothPagedView
         
         // Force recycler view size
         ViewGroup.LayoutParams recyclerParams = overlayRecycler.getLayoutParams();
-        if (recyclerParams instanceof ConstraintLayout.LayoutParams constraintParams) {
+        if (noApps) {
+            overlayRecycler.setVisibility(View.GONE);
+        } else if (recyclerParams instanceof ConstraintLayout.LayoutParams constraintParams) {
             constraintParams.width = recyclerWidth;
             constraintParams.height = recyclerHeight;
             constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;

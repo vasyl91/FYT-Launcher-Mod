@@ -655,8 +655,8 @@ final class LauncherAppBars {
     void setupRecyclerView(RecyclerView recyclerView) {
         Log.d(Launcher.TAG, "setupRecyclerView started");
 
-        // Force visibility
-        recyclerView.setVisibility(View.VISIBLE);
+        // Force visibility (a list the widget bar hides stays hidden: WidgetBarLayout)
+        recyclerView.setVisibility(WidgetBarLayout.appsListVisibility(mLauncher.mPrefs));
 
         // Do not recreate the LayoutManager if the correct one is already attached —
         // setLayoutManager() detaches all children and causes a visible flicker.
@@ -2170,7 +2170,7 @@ final class LauncherAppBars {
             mRecyclerView.setEnabled(true);
             mRecyclerView.setClickable(true);
             mRecyclerView.setLongClickable(true);
-            mRecyclerView.setVisibility(View.VISIBLE);
+            mRecyclerView.setVisibility(WidgetBarLayout.appsListVisibility(mLauncher.mPrefs));
             Log.i(Launcher.TAG, "Recycler enabled");
         }
     }

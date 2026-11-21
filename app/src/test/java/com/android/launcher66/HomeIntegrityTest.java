@@ -243,4 +243,15 @@ class HomeIntegrityTest {
             assertTrue(HomeIntegrity.ladder(fault).length > 0, fault.name());
         }
     }
+
+    @Test
+    void aBarWhoseAppsListIsHiddenIsWhole() {
+        // "Hide the apps" (WidgetBarPlan.appsHidden): the snapshot has no horizontal list to judge, as with the
+        // auto-hide bar, and the home screen is whole, with the vertical bar and without it
+        Snapshot s = whole();
+        s.horizontalBar.used = false;
+        assertTrue(HomeIntegrity.judge(s, true).whole());
+        s.verticalBar.used = false;
+        assertTrue(HomeIntegrity.judge(s, true).whole());
+    }
 }

@@ -40,6 +40,21 @@ final class WidgetBarLayout {
         return prefs.getBoolean(Keys.WIDGET_BAR_NO_COVER, false);
     }
 
+    /** "Hide the apps": the bar shows no apps list (WidgetBarPlan.appsHidden: only in the user layout's widget bar). */
+    static boolean appsHidden(SharedPreferences prefs) {
+        return prefs != null && WidgetBarPlan.appsHidden(prefs.getBoolean(Keys.USER_LAYOUT, false),
+                prefs.getBoolean(Keys.WIDGET_BAR, false), prefs.getBoolean(Keys.WIDGET_BAR_NO_APPS, false));
+    }
+
+    /**
+     * What the bar's apps list is when it is shown: VISIBLE, or GONE while it is hidden. Every place that shows the
+     * list again (its setup, the end of the auto-hide, the return to the home screen) asks this, so a hidden list
+     * stays hidden.
+     */
+    static int appsListVisibility(SharedPreferences prefs) {
+        return appsHidden(prefs) ? View.GONE : View.VISIBLE;
+    }
+
     /** "Fit the apps to their icons" (only with the widget bar, where this class is used). */
     static boolean fitApps(SharedPreferences prefs) {
         return prefs.getBoolean(Keys.WIDGET_BAR_FIT_APPS, false);
@@ -56,7 +71,7 @@ final class WidgetBarLayout {
     /** The widths of the bar's elements with these settings, for the page's bar and for the window. */
     static WidgetBarPlan.Shares shares(SharedPreferences prefs, boolean portrait) {
         int[] icons = appIcons(prefs, portrait);
-        float apps = WidgetBarPlan.appsShare(portrait, fitApps(prefs), icons[0], icons[1]);
+        float apps = WidgetBarPlan.appsShare(portrait, appsHidden(prefs), fitApps(prefs), icons[0], icons[1]);
         return WidgetBarPlan.shares(portrait, dateHidden(prefs, portrait), weatherHidden(prefs), apps);
     }
 
@@ -128,6 +143,11 @@ final class WidgetBarLayout {
         if (noWeather && weather != null) {
             weather.setVisibility(View.GONE);
         }
+        View apps = root.findViewById(R.id.recycler_view);
+        boolean noApps = appsHidden(prefs);
+        if (noApps && apps != null) {
+            apps.setVisibility(View.GONE);
+        }
 
         // With the buttons beside the text the wide variant of the music widget replaces the
         // usual one. Otherwise the usual layout stays and has the whole width the widget has.
@@ -152,7 +172,9 @@ final class WidgetBarLayout {
         set.clone(root);
         set.constrainPercentWidth(R.id.rl_music_two, shares.music);
         if (shares.appsChanged) {
-            set.constrainPercentWidth(R.id.recycler_view, shares.apps);
+            if (!noApps) {
+                set.constrainPercentWidth(R.id.recycler_view, shares.apps);
+            }
             if (date != null && !noDate) {
                 set.constrainPercentWidth(R.id.bar_widget_date, shares.date);
             }
@@ -162,8 +184,10 @@ final class WidgetBarLayout {
             if (portrait) {
                 // The list and the weather are as high as their own width says ("H,"): the height of their usual
                 // width, so the bar and the icons keep their height (HorizontalBarDimensions reads the ratio)
-                set.setDimensionRatio(R.id.recycler_view, "H," + WidgetBarPlan.keptRatio(
-                        WidgetBarPlan.APPS_RATIO_PORT, WidgetBarPlan.usualApps(true), shares.apps));
+                if (!noApps) {
+                    set.setDimensionRatio(R.id.recycler_view, "H," + WidgetBarPlan.keptRatio(
+                            WidgetBarPlan.APPS_RATIO_PORT, WidgetBarPlan.usualApps(true), shares.apps));
+                }
                 if (weather != null && !noWeather) {
                     set.setDimensionRatio(R.id.bar_widget_weather, "H," + WidgetBarPlan.keptRatio(
                             WidgetBarPlan.WEATHER_RATIO_PORT, WidgetBarPlan.usualWeather(true), shares.weather));
