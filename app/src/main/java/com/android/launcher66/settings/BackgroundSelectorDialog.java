@@ -1,5 +1,6 @@
 package com.android.launcher66.settings;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.WallpaperColors;
 import android.app.WallpaperManager;
@@ -9,6 +10,7 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Outline;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -16,6 +18,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -41,7 +44,6 @@ import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.BackgroundChoice;
 import com.android.launcher66.BarBackground;
-import com.android.launcher66.Launcher;
 import com.android.launcher66.colorpicker.ColorPicker;
 import com.android.launcher66.R;
 
@@ -51,6 +53,14 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * "Choose background for …": the backgrounds of a part of the home screen as tiles over the wallpaper.
+ *
+ * <p>The rule for its size and its backdrop (the owner, 2026-11-21): <b>the dialog is sized for the orientation it is
+ * shown in, and the wallpaper behind the tiles is never stretched.</b> Its width is 0.7 of the settings' window in
+ * landscape and 0.8 in portrait, its height 0.8, from the window as it is now (a turn on a phone creates the dialog
+ * again); the wallpaper is drawn center-crop at the size the dialog has at each draw (CenterCropDrawable).
+ */
 public class BackgroundSelectorDialog extends DialogFragment {
     private static final String TAG = "BgWidgetsSelector";
     private static final String ARG_BACKGROUNDS = "backgrounds";
@@ -89,6 +99,26 @@ public class BackgroundSelectorDialog extends DialogFragment {
     private static final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     public static void showWithLoadedBackground(@NonNull FragmentManager fm, @NonNull Context ctx, @NonNull String tag, @NonNull String bgs) {
+        loaderExecutor.submit(() -> {
+            // The home screen's wallpaper, by the best way this device has (HomeWallpaperSource); null
+            // where it cannot be read, and the dialog then shows its colours and the "Pick wallpaper" button
+            Bitmap bmp = HomeWallpaperSource.read(ctx);
+
+            final Bitmap finalBmp = bmp;
+            mainHandler.post(() -> {
+                try {
+                    BackgroundSelectorDialog dlg = create(tag, bgs);
+                    if (finalBmp != null) dlg.setPreloadedBackground(finalBmp);
+                    fm.beginTransaction().add(dlg, tag).commitAllowingStateLoss();
+                } catch (Throwable t) {
+                    Log.w(TAG, "Failed to show dialog after load: " + t.getMessage(), t);
+                }
+            });
+        });
+    }
+
+    /** The selector for one of the settings' backgrounds ("widgets", "stats", "bar", "vertical_bar"). */
+    static BackgroundSelectorDialog create(@NonNull String tag, @NonNull String bgs) {
         final String choiceKey;
         final String choiceDefault;
         if (tag.equals("widgets")) {
@@ -106,28 +136,14 @@ public class BackgroundSelectorDialog extends DialogFragment {
             choiceKey = Keys.BAR_SELECTED_BACKGROUND;
             choiceDefault = null;
         }
-        loaderExecutor.submit(() -> {
-            // The home screen's wallpaper, by the best way this device has (HomeWallpaperSource); null
-            // where it cannot be read, and the dialog then shows its colours and the "Pick wallpaper" button
-            Bitmap bmp = HomeWallpaperSource.read(ctx);
-
-            final Bitmap finalBmp = bmp;
-            mainHandler.post(() -> {
-                try {
-                    BackgroundSelectorDialog dlg = new BackgroundSelectorDialog();
-                    Bundle args = new Bundle();
-                    args.putString(ARG_BACKGROUNDS, bgs);
-                    args.putString(ARG_NAME, tag);
-                    args.putString(ARG_KEY, choiceKey);
-                    args.putString(ARG_DEFAULT, choiceDefault);
-                    dlg.setArguments(args);
-                    if (finalBmp != null) dlg.setPreloadedBackground(finalBmp);
-                    fm.beginTransaction().add(dlg, tag).commitAllowingStateLoss();
-                } catch (Throwable t) {
-                    Log.w(TAG, "Failed to show dialog after load: " + t.getMessage(), t);
-                }
-            });
-        });
+        BackgroundSelectorDialog dlg = new BackgroundSelectorDialog();
+        Bundle args = new Bundle();
+        args.putString(ARG_BACKGROUNDS, bgs);
+        args.putString(ARG_NAME, tag);
+        args.putString(ARG_KEY, choiceKey);
+        args.putString(ARG_DEFAULT, choiceDefault);
+        dlg.setArguments(args);
+        return dlg;
     }
 
     public void setPreloadedBackground(@NonNull Bitmap bmp) {
@@ -151,7 +167,8 @@ public class BackgroundSelectorDialog extends DialogFragment {
 
         if (hasPreloadedBackground && preloadedBackgroundBitmap != null) {
             try {
-                rootView.setBackground(new BitmapDrawable(getResources(), preloadedBackgroundBitmap));
+                // The middle of the wallpaper at the view's proportions, never stretched (CenterCrop)
+                rootView.setBackground(new CenterCropDrawable(preloadedBackgroundBitmap));
             } catch (Throwable t) {
                 Log.w(TAG, "Failed to set preloaded background: " + t.getMessage());
             }
@@ -217,15 +234,16 @@ public class BackgroundSelectorDialog extends DialogFragment {
         super.onStart();
 
         orientation = requireContext().getResources().getConfiguration().orientation;
+        int[] window = windowSize(requireActivity());
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            dialogWidthPx = (int) (Launcher.screenWidth * 0.8);
+            dialogWidthPx = (int) (window[0] * 0.8);
         } else {
-            dialogWidthPx = (int) (Launcher.screenWidth * 0.7);
+            dialogWidthPx = (int) (window[0] * 0.7);
         }
-        dialogHeightPx = (int) (Launcher.screenHeight * 0.8);
+        dialogHeightPx = (int) (window[1] * 0.8);
 
-        Window window = getDialog() != null ? getDialog().getWindow() : null;
-        if (window != null) window.setLayout(dialogWidthPx, dialogHeightPx);
+        Window dialogWindow = getDialog() != null ? getDialog().getWindow() : null;
+        if (dialogWindow != null) dialogWindow.setLayout(dialogWidthPx, dialogHeightPx);
 
         // An image picked for this dialog alone by an older version is no longer used: the backdrop is the wallpaper
         SharedPreferences stored = PreferenceManager.getDefaultSharedPreferences(requireContext());
@@ -250,6 +268,21 @@ public class BackgroundSelectorDialog extends DialogFragment {
         }
     }
 
+    /**
+     * The size in pixels of the settings' window, in the orientation it has now. The dialog was sized from
+     * Launcher.screenWidth/Height, the launcher's, which never turns (nosensor): on a phone in landscape that was
+     * 0.7 of the short side, a narrow dialog.
+     */
+    private static int[] windowSize(@NonNull Activity activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Rect bounds = activity.getWindowManager().getCurrentWindowMetrics().getBounds();
+            return new int[] {bounds.width(), bounds.height()};
+        }
+        DisplayMetrics metrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        return new int[] {metrics.widthPixels, metrics.heightPixels};
+    }
+
     private void showPickButton(boolean show) {
         if (pickButton == null) return;
         pickButton.setVisibility(show ? View.VISIBLE : View.GONE);
@@ -260,8 +293,7 @@ public class BackgroundSelectorDialog extends DialogFragment {
         if (rootView == null) {
             return;
         }
-        loadWallpaperAsync(rootView.getWidth() > 0 ? rootView.getWidth() : dialogWidthPx,
-                rootView.getHeight() > 0 ? rootView.getHeight() : dialogHeightPx);
+        loadWallpaperAsync();
     }
 
     /** Back from the wallpaper picker the button opened: the wallpaper may be another one now. */
@@ -274,7 +306,7 @@ public class BackgroundSelectorDialog extends DialogFragment {
         }
     }
 
-    private void loadWallpaperAsync(int targetW, int targetH) {
+    private void loadWallpaperAsync() {
         loaderExecutor.submit(() -> {
             final Context context = getContext();
             if (context == null) return;
@@ -284,8 +316,9 @@ public class BackgroundSelectorDialog extends DialogFragment {
             mainHandler.post(() -> {
                 if (!isAdded() || rootView == null) return;
                 if (finalBmp != null) {
-                    Bitmap cropped = getCenterCroppedBitmap(finalBmp, targetW, targetH);
-                    rootView.setBackground(new BitmapDrawable(getResources(), cropped));
+                    // The whole wallpaper, drawn at the size the view has at each draw (CenterCrop): it was cut to
+                    // the size the view had before its layout and then stretched to the final one
+                    rootView.setBackground(new CenterCropDrawable(finalBmp));
                     showPickButton(false);
                     return;
                 }
@@ -576,23 +609,6 @@ public class BackgroundSelectorDialog extends DialogFragment {
         // Bound again after a turn of the screen by the settings' second screen (ColorPickerTargets)
         ColorPickerTargets.bindBackground(picker, app, colorKey, choiceKey);
         picker.show(fragments, ColorPickerTargets.TAG_BACKGROUND);
-    }
-
-    private Bitmap getCenterCroppedBitmap(Bitmap src, int targetW, int targetH) {
-        if (src == null || targetW <= 0 || targetH <= 0) return src;
-        int srcW = src.getWidth();
-        int srcH = src.getHeight();
-        float scale = Math.max((float) targetW / srcW, (float) targetH / srcH);
-        int scaledW = Math.round(srcW * scale);
-        int scaledH = Math.round(srcH * scale);
-        Bitmap scaled = Bitmap.createScaledBitmap(src, scaledW, scaledH, true);
-        int x = Math.max(0, (scaledW - targetW) / 2);
-        int y = Math.max(0, (scaledH - targetH) / 2);
-        Bitmap result = Bitmap.createBitmap(scaled, x, y, targetW, targetH);
-        if (result != scaled && !scaled.isRecycled()) {
-            try { scaled.recycle(); } catch (Exception ignored) {}
-        }
-        return result;
     }
 
     private int dpToPx(int dp) {
