@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceManager;
 
+import com.android.launcher66.BarCapacity;
 import com.android.launcher66.BarIconCount;
 import com.android.launcher66.TestLauncherApplication;
 
@@ -22,9 +23,9 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 /**
- * The sliders of the number of app icons in the second screen of the settings: shown with "Resizable vertical
- * bar", their end the most the bar has room for now; a chosen number above a newly smaller most is lowered and
- * stored lowered, one below it stays (BarIconCount, BarIconLimits).
+ * The sliders of the number of app icons in the second screen of the settings: shown with or without their
+ * bar's "Resizable" switch (the owner, 2026-11-21), their end the most the bar has room for now; a chosen number
+ * above a newly smaller most is lowered and stored lowered, one below it stays (BarIconCount, BarIconLimits).
  */
 @RunWith(RobolectricTestRunner.class)
 @Config(application = TestLauncherApplication.class, qualifiers = "w1080dp-h2340dp-port-mdpi")
@@ -84,13 +85,37 @@ public class BarIconsSliderViewTest {
     }
 
     @Test
-    public void withoutTheSwitchTheSliderIsNotShown() {
+    public void withoutTheResizableSwitchesTheSlidersAreShownAndTheNumberCounts() {
         prefs().edit().putBoolean(Keys.USER_LAYOUT, true).putBoolean(Keys.VERTICAL_BAR, true)
-                .putBoolean(Keys.RESIZABLE_VERTICAL_BAR, false).commit();
+                .putBoolean(Keys.RESIZABLE_VERTICAL_BAR, false).putBoolean(Keys.RESIZABLE_HORIZONTAL_BAR, false)
+                .putInt(Keys.VERTICAL_BAR_ICONS_PORT, 3).putInt(Keys.HORIZONTAL_BAR_ICONS_PORT, 2).commit();
+        ActivityController<SettingsActivity> controller = Robolectric.buildActivity(SettingsActivity.class).setup();
+        SettingsFragmentSecond screen = open(controller);
+        BarIconsSeekBarPreference vertical = screen.findPreference(Keys.VERTICAL_BAR_ICONS);
+        BarIconsSeekBarPreference horizontal = screen.findPreference(Keys.HORIZONTAL_BAR_ICONS);
+        assertTrue(vertical.isVisible());
+        assertTrue(screen.findPreference("vertical_bar_icons_title").isVisible());
+        assertTrue(horizontal.isVisible());
+        assertEquals(3, vertical.getValue());
+        assertEquals(2, horizontal.getValue());
+        assertFalse("the width stays with its switch", screen.findPreference(Keys.VERTICAL_BAR_WIDTH).isVisible());
+
+        // The launcher counts the chosen number without the switch too
+        assertEquals(3, BarCapacity.chosen(prefs(), false, true));
+        assertEquals(2, BarCapacity.chosen(prefs(), true, true));
+        // Only the user layout has the bars' numbers
+        prefs().edit().putBoolean(Keys.USER_LAYOUT, false).commit();
+        assertEquals(BarIconCount.UNSET, BarCapacity.chosen(prefs(), true, true));
+        controller.pause().stop().destroy();
+    }
+
+    @Test
+    public void withoutTheVerticalBarItsSliderIsNotShown() {
+        prefs().edit().putBoolean(Keys.USER_LAYOUT, true).putBoolean(Keys.VERTICAL_BAR, false).commit();
         ActivityController<SettingsActivity> controller = Robolectric.buildActivity(SettingsActivity.class).setup();
         SettingsFragmentSecond screen = open(controller);
         assertFalse(((BarIconsSeekBarPreference) screen.findPreference(Keys.VERTICAL_BAR_ICONS)).isVisible());
-        assertFalse(screen.findPreference(Keys.VERTICAL_BAR_WIDTH).isVisible());
+        assertTrue(((BarIconsSeekBarPreference) screen.findPreference(Keys.HORIZONTAL_BAR_ICONS)).isVisible());
         controller.pause().stop().destroy();
     }
 }

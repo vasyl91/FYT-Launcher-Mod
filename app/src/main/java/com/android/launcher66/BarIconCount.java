@@ -3,8 +3,8 @@ package com.android.launcher66;
 import com.android.launcher66.settings.Keys;
 
 /**
- * How many app icons a bar shows when the user has chosen a number (the sliders under "Resizable horizontal
- * bar" and "Resizable vertical bar").
+ * How many app icons a bar shows when the user has chosen a number (the sliders "App icons" of the horizontal
+ * and the vertical bar).
  *
  * <p><b>Rule.</b> The most a bar can show is what the launcher works out for its room (BarCapacity: the
  * horizontal bar from its width and icon, the vertical bar from its height and icon). A bar shows the number
@@ -13,8 +13,9 @@ import com.android.launcher66.settings.Keys;
  * stays as chosen and is shown again in full when the bar has room for it. The icons keep their size: fewer
  * of them are spread over the same bar.
  *
- * <p>The number is stored per bar and per orientation; it counts only while the bar's "Resizable" switch is on
- * in the user layout. Plain Java, tested on the JVM.
+ * <p>The number is stored per bar and per orientation, and counts in the user layout whether the bar's
+ * "Resizable" switch is on or off (the owner, 2026-11-21; it counted only with the switch on before). Plain Java,
+ * tested on the JVM.
  */
 public final class BarIconCount {
 
@@ -44,10 +45,5 @@ public final class BarIconCount {
             return portrait ? Keys.HORIZONTAL_BAR_ICONS_PORT : Keys.HORIZONTAL_BAR_ICONS_LAND;
         }
         return portrait ? Keys.VERTICAL_BAR_ICONS_PORT : Keys.VERTICAL_BAR_ICONS_LAND;
-    }
-
-    /** The switch under which the number is chosen: it counts only while that switch is on. */
-    public static String switchKey(boolean horizontal) {
-        return horizontal ? Keys.RESIZABLE_HORIZONTAL_BAR : Keys.RESIZABLE_VERTICAL_BAR;
     }
 }

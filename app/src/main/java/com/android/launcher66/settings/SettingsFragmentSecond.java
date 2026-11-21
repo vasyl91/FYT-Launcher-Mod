@@ -247,17 +247,16 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     };
 
     /**
-     * The sliders of the number of icons: shown with their bar's "Resizable" switch (the vertical one with the
-     * vertical bar too), their end the most the bar has room for now, a chosen number above it lowered
-     * (BarIconLimits, BarIconCount).
+     * The sliders of the number of icons: the horizontal one always, the vertical one with the vertical bar, with
+     * or without their bar's "Resizable" switch (the owner, 2026-11-21); their end the most the bar has room for
+     * now, a chosen number above it lowered (BarIconLimits, BarIconCount).
      */
     private void updateBarIconSliders() {
         if (!isAdded() || sharedPrefs == null) {
             return;
         }
-        boolean horizontal = sharedPrefs.getBoolean(Keys.RESIZABLE_HORIZONTAL_BAR, false);
-        boolean vertical = sharedPrefs.getBoolean(Keys.VERTICAL_BAR, false)
-                && sharedPrefs.getBoolean(Keys.RESIZABLE_VERTICAL_BAR, false);
+        boolean horizontal = true;
+        boolean vertical = sharedPrefs.getBoolean(Keys.VERTICAL_BAR, false);
         bindBarIcons(horizontalIconsSlider, horizontalIconsTitle, true, horizontal);
         bindBarIcons(verticalIconsSlider, verticalIconsTitle, false, vertical);
     }

@@ -222,16 +222,16 @@ public final class BarCapacity {
     // ---------------------------------------------------------------------------------------
 
     /**
-     * The number of icons the user chose for a bar in this orientation, or BarIconCount.UNSET: nothing chosen,
-     * the bar's "Resizable" switch off, or not the user layout.
+     * The number of icons the user chose for a bar in this orientation, or BarIconCount.UNSET: nothing chosen, or
+     * not the user layout. The bar's "Resizable" switch does not matter (the owner, 2026-11-21): "App icons" is
+     * chosen and counts with the switch on or off.
      */
     public static int chosen(SharedPreferences prefs, boolean horizontal, boolean portrait) {
         if (prefs == null) {
             return BarIconCount.UNSET;
         }
         try {
-            if (!prefs.getBoolean(Keys.USER_LAYOUT, false)
-                    || !prefs.getBoolean(BarIconCount.switchKey(horizontal), false)) {
+            if (!prefs.getBoolean(Keys.USER_LAYOUT, false)) {
                 return BarIconCount.UNSET;
             }
             return prefs.getInt(BarIconCount.key(horizontal, portrait), BarIconCount.UNSET);
