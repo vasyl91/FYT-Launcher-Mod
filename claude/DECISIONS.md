@@ -116,6 +116,7 @@ entry that replaces it.
 | D-80 | The apps list may be fitted to its icons or hidden, its room to the widgets | ACTIVE | Owner |
 | D-81 | A position slider on the 7870's home music widget | ACTIVE | Owner (tester's request) / Assistant |
 | D-82 | An open dialog and work in progress come back after a turn of the screen | ACTIVE | Owner |
+| D-83 | "Start on wake", a list of its own; "Start on boot" only at a cold start | ACTIVE | Owner |
 
 ---
 
@@ -1026,13 +1027,19 @@ The round had no brief; its result is in `reports/implementation_report_2026-11-
 - **Where:** `WidgetBarPlan`, `WidgetBarLayout`, `BarCapacity.bottomTiles`, keys `widget_bar_fit_apps`,
   `widget_bar_no_apps`, `d1a5118b0`, `c97c6423d`, `08453d95d`.
 
-### D-81 A position slider on the 7870's home music widget
+### D-81 A position slider on the home music widget
 - **Status:** ACTIVE. **By:** the 7870 tester's request through the owner, 2026-11-21 ("track position slider on big
-  widget … for file and bt players"); the mechanism by the assistant, in the approved plan.
-- **Decision:** on the 7870 the home music widget shows a slider of the position in place of the thin bar, playing
-  or paused. It moves com.syu.media's own files (IPlayer.seekTo, a second short of the end); for BT (no seek command
-  in com.syu.ms) and internet radio it only shows, without a knob. The other units keep the thin bar.
-- **Where:** `PositionSlider`, `SyuMediaClient.seekTo`, `MusicWidgetPlan.HOME_*_SLIDER`, `6c525ff3e`.
+  widget … for file and bt players"); extended by the owner, 2026-11-22, to the other players (the 7862, the apps
+  with a media session); the mechanism by the assistant, in the approved plans.
+- **Decision:** the home music widget shows a slider of the position in place of the thin bar, playing or paused, on
+  every unit (since 2026-11-22; before that only the 7870). Where the player can move to a position it has a knob
+  and moves the track (com.syu.media's own files through IPlayer.seekTo; an app whose own session has a length and
+  allows ACTION_SEEK_TO), a second short of the end. Where it cannot (BT, internet radio, a player without seeking)
+  it only shows the position, without a knob. Where there is no position (no length, a live stream) it is empty, in
+  the colour of the part not played yet (the owner, 2026-11-22: "grey" means that colour).
+- **Where:** `PositionSlider` (`Mode` SEEK / SHOW / GREY), `SyuMediaClient.seekTo`,
+  `MediaTransportController.canSeek` / `seekToPosition`, `MusicWidgetPlan.HOME_*_SLIDER`, `6c525ff3e`,
+  `7ec71e8dc`, `8f2259db1`.
 
 ### D-82 An open dialog and work in progress come back after a turn of the screen
 - **Status:** ACTIVE. **By:** owner, 2026-11-21 (the colour picker as the example: "the other dialogs disappear after
@@ -1043,3 +1050,16 @@ The round had no brief; its result is in `reports/implementation_report_2026-11-
   dialogs are left out (they ask about the layout of the orientation it was drawn in).
 - **Where:** `SettingsDialogMemory`, `DialogTurn`, `HandedWork`, `ColorPickerTargets`, `CenterCropDrawable`,
   `edcee91a9`, `5c109b2e7`, `6361e8b5e`, `362fa1375`.
+
+### D-83 "Start on wake", a list of its own; "Start on boot" only at a cold start
+- **Status:** ACTIVE. **By:** owner, 2026-11-22 ("'Start on wake' as a separate list that opens apps when the device
+  wakes; 'Start on boot' stays for the cold start only").
+- **Decision:** under "Start on boot" (and its BOOT_COMPLETED switch) a row "Start on wake" opens the same app grid
+  for a second list. Its apps are opened one by one, the first 3 s after each real wake and then 3 s apart, never at
+  a process or device start (that is "Start on boot"). BOOT_COMPLETED is not sent at a wake. After the last one the
+  launcher comes back with "Launcher home on wake" or when the home screen was in front before the sleep, else the
+  app from before the sleep; nothing comes back when the user did something meanwhile or none of the started apps
+  is in front (D-28). A new sleep cancels what is left. "Start on boot" is unchanged.
+- **Where:** `WakeAutostartPlan`, `ColdStart.startForWake`, `WakeDetection.onWake`,
+  `AppListAutostartDialogFragment` (`KEY_WAKE_AUTOSTART_APPS`, `newInstance(listKey)`), key `wake_autostart_apps`,
+  `65a43ebc4`, `58b5c3365`.

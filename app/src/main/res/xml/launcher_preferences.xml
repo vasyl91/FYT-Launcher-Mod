@@ -185,6 +185,10 @@
             android:key="autostart_apps_by_boot_completed"
             android:defaultValue="true"
             android:title="@string/autostart_apps_by_boot_completed" />
+        <Preference
+            android:key="wake_autostart_apps"
+            android:title="@string/wake_autostart_apps"
+            android:summary="@string/wake_autostart_apps_summary" />
 
     </PreferenceCategory>
 

@@ -153,6 +153,8 @@
     <string name="autostart_apps">Anza kifaa kinapowashwa</string>
     <string name="autostart_apps_summary">Programu zinazozinduliwa na kipengele cha kuanza kiotomatiki cha mfumo zinaweza kupunguza kasi ya kuanza kwa kizinduzi. Chaguo lililojengewa ndani la kizinduzi huzizindua tu baada ya kizinduzi kukamilisha kuanza kwa baridi. Unapotumia orodha hii, kumbuka kuzima programu hizi kwenye mipangilio ya FYT; vinginevyo zitazinduliwa mara mbili.</string>
     <string name="autostart_apps_by_boot_completed">Jaribu kutumia tangazo la BOOT_COMPLETED ikiwa programu iliyochaguliwa imeisajili</string>
+    <string name="wake_autostart_apps">Anza kifaa kinapoamka</string>
+    <string name="wake_autostart_apps_summary">Hufunguliwa moja baada ya nyingine sekunde chache baada ya kila kuamka kutoka usingizini; kisha kizindua, au programu ya kabla ya usingizi, hurudi mbele. \"Anza kifaa kinapowashwa\" huanzisha programu zake tu baada ya kifaa kuwashwa upya.</string>
 
     <string name="music_widget_category">Wijeti ya muziki</string>
     <string name="youtube_category">YouTube</string>

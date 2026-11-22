@@ -153,6 +153,8 @@
     <string name="autostart_apps">Mula semasa but</string>
     <string name="autostart_apps_summary">Apl yang dilancarkan oleh ciri mula automatik sistem boleh memperlahankan permulaan pelancar. Pilihan terbina dalam pelancar melancarkannya hanya selepas pelancar menyelesaikan permulaan sejuknya. Apabila menggunakan senarai ini, ingat untuk melumpuhkan apl ini dalam tetapan FYT; jika tidak, ia akan dilancarkan dua kali.</string>
     <string name="autostart_apps_by_boot_completed">Cuba gunakan siaran BOOT_COMPLETED jika apl yang dipilih telah mendaftarkannya</string>
+    <string name="wake_autostart_apps">Mula semasa bangun</string>
+    <string name="wake_autostart_apps_summary">Dibuka satu demi satu beberapa saat selepas setiap kali bangun daripada tidur; kemudian pelancar, atau apl dari sebelum tidur, kembali ke hadapan. \"Mula semasa but\" hanya memulakan aplnya selepas peranti dimulakan semula.</string>
 
     <string name="music_widget_category">Widget muzik</string>
     <string name="youtube_category">YouTube</string>

@@ -99,10 +99,17 @@ final class LauncherMusicWidget {
 
     SeekBar musicSeekBar;
 
-    /** The 7870's position slider in place of musicProgress (PositionSlider); null elsewhere. */
+    /** The position slider in place of musicProgress (PositionSlider). */
     SeekBar musicPosition;
     private boolean mPositionDragging;
     private long mPositionTotalMs;
+    /** The slider's state as last drawn; null: draw it again. */
+    private PositionSlider.Mode mPositionMode;
+    /** The track the session's seeking was last asked for (player, title, play state), and the answer. */
+    private String mSeekAskedFor;
+    private boolean mSeekAnswer;
+    /** The session the slider moves now; null: com.syu.media's file, or nothing. */
+    private String mSeekPackage;
 
     Button mPlayPauseButton;
 
@@ -263,7 +270,7 @@ final class LauncherMusicWidget {
                     if (musicProgress != null) {
                         musicProgress.setProgress(0);
                     }
-                    showPosition(0, 0);
+                    showPosition(0, 0, false);
                     if (musicSeekBar != null) {
                         musicSeekBar.setOnSeekBarChangeListener(mLauncher.new OnSeekBarChangeListenerImp(mLauncher, null));
                     }
@@ -382,7 +389,7 @@ final class LauncherMusicWidget {
                     tvAlbum.setText(album);
                 }
                 if (lngs != null && lngs.length > 1) {
-                    showPosition(curProgress, totalProgress);
+                    showPosition(curProgress, totalProgress, live);
                     if (totalProgress > 0) {
                         if (curProgress < 0) {
                             curProgress = 0;
@@ -478,8 +485,8 @@ final class LauncherMusicWidget {
                 mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
             }*/
             if (lngs != null && lngs.length > 1) {
-                // The 7870's slider follows a pause too: where the track stopped
-                showPosition(lngs[1], lngs[0]);
+                // The slider follows a pause too: where the track stopped
+                showPosition(lngs[1], lngs[0], false);
             }
             StockKindArbiter.Kind shownKind = StockSources.shownKind();
             if (PausedCover.applies(StockSources.isSyuMediaUnit(), shownKind != null && shownKind.isSyuMediaKind(),
@@ -679,11 +686,12 @@ final class LauncherMusicWidget {
         }         
     }
 
-    /** The slider's scale and what a move of it does: com.syu.media's file goes to that position. */
+    /** The slider's scale and what a move of it does: the player goes to that position (PositionSlider.SEEK). */
     private void bindPositionSlider() {
         if (musicPosition == null) {
             return;
         }
+        mPositionMode = null;
         musicPosition.setMax(PositionSlider.MAX);
         musicPosition.setEnabled(false);
         musicPosition.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -699,41 +707,77 @@ final class LauncherMusicWidget {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 mPositionDragging = false;
-                if (positionSeekable()) {
-                    MusicService.seekSyuMedia(PositionSlider.position(seekBar.getProgress(), mPositionTotalMs));
+                if (mPositionMode == PositionSlider.Mode.SEEK) {
+                    seekTo(PositionSlider.position(seekBar.getProgress(), mPositionTotalMs));
                 }
             }
         });
     }
 
-    /** com.syu.media's own file is shown (not a session's app, BT or a station): the slider moves it. */
-    private boolean positionSeekable() {
+    /**
+     * Whether the player shown can be told to go to a position (PositionSlider.SEEK): com.syu.media's own file on the
+     * 7870, or the media session of the app shown, or com.syu.music's session if it keeps one that seeks. The session
+     * is asked once per track and play state, not at every update; one log line per answer that changes.
+     */
+    private boolean canSeekNow() {
         StockKindArbiter.Kind kind = StockSources.shownKind();
-        return PositionSlider.seekable(StockSources.isSyuMediaUnit(),
-                kind == StockKindArbiter.Kind.MEDIA_MUSIC && !"mediaController".equals(mediaSource), mPositionTotalMs);
+        boolean session = "mediaController".equals(mediaSource);
+        if (PositionSlider.syuMediaFileSeekable(StockSources.isSyuMediaUnit(),
+                kind == StockKindArbiter.Kind.MEDIA_MUSIC && !session)) {
+            mSeekPackage = null;
+            return true;
+        }
+        String pkg = session ? getPreferredMediaControllerPackage()
+                : LauncherApplication.isFytDevice() && !StockSources.isSyuMediaUnit()
+                        && StockSources.shownOverlay() == null ? MediaTransportController.STOCK_MUSIC_PACKAGE : null;
+        if (pkg == null) {
+            mSeekPackage = null;
+            return false;
+        }
+        String key = pkg + "\n" + musictitle + "\n" + mLauncher.state;
+        if (!key.equals(mSeekAskedFor)) {
+            boolean answer = MediaTransportController.canSeek(mLauncher, pkg);
+            if (mSeekAskedFor == null || answer != mSeekAnswer || !mSeekAskedFor.startsWith(pkg + "\n")) {
+                Log.i(TAG_ICON, "slider " + pkg + " " + (answer ? "seek" : "show") + " (its session)");
+            }
+            mSeekAskedFor = key;
+            mSeekAnswer = answer;
+        }
+        mSeekPackage = mSeekAnswer ? pkg : null;
+        return mSeekAnswer;
+    }
+
+    /** The slider was let go at {@code ms}: the player shown goes there. */
+    private void seekTo(long ms) {
+        if (mSeekPackage != null) {
+            MediaTransportController.seekToPosition(mLauncher, mSeekPackage, ms);
+        } else {
+            MusicService.seekSyuMedia(ms);
+        }
     }
 
     /**
-     * The 7870's slider: the position of what plays or pauses, with a knob where it can be moved (PositionSlider).
-     * Not while the user drags it.
+     * The slider: the position of what plays or pauses, with a knob where it can be moved, grey where there is no
+     * position (PositionSlider). Not while the user drags it.
      */
-    private void showPosition(long curMs, long totalMs) {
+    private void showPosition(long curMs, long totalMs, boolean live) {
         if (musicPosition == null) {
             return;
         }
         mPositionTotalMs = totalMs;
-        boolean seekable = positionSeekable();
-        if (musicPosition.isEnabled() != seekable) {
-            musicPosition.setEnabled(seekable);
-        }
-        Drawable knob = musicPosition.getThumb();
-        int alpha = seekable ? 255 : 0;
-        if (knob != null && knob.getAlpha() != alpha) {
-            knob.setAlpha(alpha);
+        PositionSlider.Mode mode = PositionSlider.mode(totalMs, live, totalMs > 0 && !live && canSeekNow());
+        if (mode != mPositionMode) {
+            mPositionMode = mode;
+            boolean seek = mode == PositionSlider.Mode.SEEK;
+            musicPosition.setEnabled(seek);
+            Drawable knob = musicPosition.getThumb();
+            if (knob != null) {
+                knob.setAlpha(seek ? 255 : 0);
+            }
             musicPosition.invalidate();
         }
         if (!mPositionDragging) {
-            musicPosition.setProgress(PositionSlider.value(curMs, totalMs));
+            musicPosition.setProgress(mode == PositionSlider.Mode.GREY ? 0 : PositionSlider.value(curMs, totalMs));
         }
     }
 

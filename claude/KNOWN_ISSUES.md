@@ -1,6 +1,6 @@
 # Known issues
 
-As of 2026-11-22 (`testBranch` after round 26; round 25 waits for the 7862's log). One list of what is open today,
+As of 2026-11-22 (`testBranch` after round 27; rounds 25 and 26 wait for the 7862's log and the 7870 tester). One list of what is open today,
 rewritten on 2026-11-18 at the owner's request. What was fixed or closed has been taken out; it stays in git
 and in the reports (`reports/`, `chat_archive/`). Sources: the code, git, CI, the briefs, the chat reports and
 the owner's results.
@@ -44,9 +44,9 @@ file and named in the round's report.
 | KI-37 | A widget lay over icons after a change of the grid | unverified | watching | a log with `Item out of place` |
 | KI-44 | The GPS of the fuel statistics only while something needs it | unverified | partial | a unit whose code check waits for a drive |
 | KI-46 | StrictMode reports in the 7862's log of 2026-11-20 18:21 | problem | watching | the owner's log of the 7862 (`6670ecf8b`, `d61011f34`) |
-| KI-47 | The settings' dialogs and work after a turn of the screen (phones) | problem | watching | the owner's test on the A55 (round 26) |
 | KI-48 | The 7870's covers and the position slider | unverified | watching | the tester's result and log (round 26) |
-| KI-49 | The canbus script's `--launcher .` needs the decompiled folders, now zips | problem | open | the owner's call |
+| KI-49 | The canbus script's `--launcher .` needs the decompiled folders, now zips | limit | accepted (the owner, 2026-11-22) | — |
+| KI-50 | The position slider for every player, and "Start on wake" | unverified | watching | the owner's test on the A55 and the 7862's log (round 27) |
 
 ## Problems
 
@@ -244,21 +244,6 @@ To look at in the 7862's log: opening the widgets tab gives no report from `Widg
 changes and minutes of use there is no `LeakedClosableViolation` from `ActivityView.initVirtualDisplay`. Not tested on a
 device.
 
-### KI-47 The settings' dialogs and work after a turn of the screen (phones)
-On a phone the settings are created again for each orientation (`SettingsActivity.onConfigurationChanged` →
-`recreate()`). The owner, A55, round 25 [H]: only the colour picker came back after a turn; the background selector
-came back too narrow and with a stretched wallpaper; every other dialog had to be opened again. Round 26 [V]:
-- the plain dialogs of both screens come back with their fields' texts (`SettingsDialogMemory`, `DialogTurn`,
-  `edcee91a9`); the creators' dialogs are left out;
-- a download of an update, a wallpaper save and a canbus import go on with their progress dialogs (`HandedWork`,
-  `5c109b2e7`);
-- the colour picker stores its colour after a turn, the app lists of the statistics and of PiP come back (they were
-  dismissed in `onPause` before the state was saved), and leaving the second screen with a picker open no longer
-  throws "FragmentManager is already executing transactions" (`6361e8b5e`; the test showed it on the old code);
-- the background selector is sized from the settings' window and draws the wallpaper center-crop (`362fa1375`).
-Robolectric tests turn the screen with `controller.recreate()`. Not tested on a device. A FYT unit turns without a new
-activity, so there only the exception above goes.
-
 ### KI-48 The 7870's covers and the position slider
 The tester [H]: "sometimes media widget shows default picture until cover or track changes", and a position slider on
 the big widget for files and BT. No log of it yet; three causes were found in the code and fixed in round 26 [V]:
@@ -276,10 +261,23 @@ start -> fresh`, `MusicCover: file cover …`, `SyuMediaClient: seek MEDIA_MUSIC
 ### KI-49 The canbus script's `--launcher .` needs the decompiled folders, now zips
 The owner's `22490c9e0` (2026-11-21) replaced `archive/decompiled/decompiled_*` by zip files whose top folders have no
 `decompiled_` prefix (`carinfo/`, `com.syu.canbus/`, …) [V]. `canbus_library/build_canbus_library.py --launcher .`
-reads `archive/decompiled/decompiled_com.syu.canbus/classes.dex.new/sources`, `…/classes.dex/sources`,
-`…/classes.dex.7870/sources` and `archive/decompiled/decompiled_carinfo` (`LAUNCHER_SOURCE_ROOT`, line 1844), so it finds
-nothing in the tree as it is. Until the owner decides (unpack the zips under those names outside git, or teach the
-script to read the zips), a rebuild needs the folders unpacked by hand, e.g.
-`unzip archive/decompiled/com.syu.canbus.zip -d /tmp/d && mv /tmp/d/com.syu.canbus /tmp/d/decompiled_com.syu.canbus`
-and the same for `carinfo`, then `--launcher` pointed at a copy of the repository whose `archive/decompiled/` holds them.
-The built-in assets are not affected: nothing rebuilds them by itself.
+reads `archive/decompiled/decompiled_com.syu.canbus/{classes.dex.new,classes.dex,classes.dex.7870}/sources` and
+`archive/decompiled/decompiled_carinfo` (`LAUNCHER_SOURCE_ROOT`), names that also go into the library's header.
+**Accepted (the owner, 2026-11-22):** the zips stay and the script is not changed; `canbus_library/README.md` (the
+owner's `2d222c6ac`, and section 5 since round 27) tells how to unpack them under those names and not to commit them.
+Checked on 2026-11-22 [V]: unpacked that way, `--launcher .` and `--launcher . --platform 7870` give both assets byte
+for byte. The built-in assets are not affected: nothing rebuilds them by itself.
+
+### KI-50 The position slider for every player, and "Start on wake"
+Round 27 [V in the code, not on a device]:
+- the slider is on every unit (`7ec71e8dc`); it moves a session's own app where its session has a length and allows
+  `ACTION_SEEK_TO` (`8f2259db1`), shows the position where it does not, and is empty without a length or for a live
+  stream. Whether com.syu.music on the 7862 can be moved is unknown [U]: the launcher controls it by intents only
+  and its decompiled app is not in the archive; it seeks only if it has a session that allows it. The log line
+  `MusicWidget: slider com.syu.music seek|show (its session)` says which; a `show` there means the 7862 keeps a slider
+  without a knob for FYT's music;
+- on the 7862 the widget's position row is higher (0.09 of the height instead of 0.04), the cover, text and buttons a
+  little lower;
+- "Start on wake" (`65a43ebc4`, `58b5c3365`): its apps compete for the front with the app from before the sleep, so
+  they start 3 s after the wake and the launcher or that app comes back only when the user did nothing. To look at:
+  `ColdStart: Wake autostart …` lines after a wake, nothing of it after a restart of the device.

@@ -57,6 +57,12 @@ import java.util.concurrent.Executors;
  * manager in one go, and apps that left the list get their previous settings back (see
  * UnisocPowerWhitelist and {@link #syncPowerSettingsAsync}). Without that the system denies their
  * background starts after every boot.
+ *
+ * The same dialog edits "Start on wake" (the owner, 2026-11-22): the list named in its arguments
+ * ({@link #newInstance(String)}), stored under {@link #KEY_WAKE_AUTOSTART_APPS} and started after
+ * each wake from sleep (WakeAutostartPlan). The two lists are separate: "Start on boot" starts its
+ * apps only at a cold start. The list's key is in the arguments, so a dialog that the FragmentManager
+ * creates again after a turn of the screen edits the same list.
  */
 public class AppListAutostartDialogFragment extends DialogFragment
         implements AdapterView.OnItemClickListener {
@@ -65,8 +71,12 @@ public class AppListAutostartDialogFragment extends DialogFragment
 
     /** The store ColdStart reads at every cold boot; see {@link #getSelectedPackages}. */
     public static final String PREFS_NAME = "AppAutostartPrefs";
-    /** Comma-separated package names, in start order. */
+    /** Comma-separated package names, in start order: "Start on boot". */
     public static final String KEY_AUTOSTART_APPS = "boot_autostart_packages";
+    /** The same for "Start on wake" (WakeAutostartPlan, ColdStart.startForWake). */
+    public static final String KEY_WAKE_AUTOSTART_APPS = "wake_autostart_packages";
+    /** The argument that names the list the dialog edits: one of the two keys above. */
+    private static final String ARG_LIST = "list";
 
     /** #FC6B03 with alpha 90 baked in, as in the other lists. */
     private static final int COLOR_SELECTED = Color.argb(90, 0xFC, 0x6B, 0x03);
@@ -108,7 +118,23 @@ public class AppListAutostartDialogFragment extends DialogFragment
 
     /** Always a fresh instance; see AppListStatsDialogFragment.newInstance for why. */
     public static AppListAutostartDialogFragment newInstance() {
-        return new AppListAutostartDialogFragment();
+        return newInstance(KEY_AUTOSTART_APPS);
+    }
+
+    /** A dialog for the list stored under {@code listKey} (KEY_AUTOSTART_APPS or KEY_WAKE_AUTOSTART_APPS). */
+    public static AppListAutostartDialogFragment newInstance(String listKey) {
+        AppListAutostartDialogFragment dialog = new AppListAutostartDialogFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_LIST, listKey);
+        dialog.setArguments(args);
+        return dialog;
+    }
+
+    /** The key of the list this dialog edits; "Start on boot" when none was given. */
+    String listKey() {
+        Bundle args = getArguments();
+        String key = args != null ? args.getString(ARG_LIST) : null;
+        return KEY_WAKE_AUTOSTART_APPS.equals(key) ? KEY_WAKE_AUTOSTART_APPS : KEY_AUTOSTART_APPS;
     }
 
     // =====================================================================================
@@ -120,8 +146,13 @@ public class AppListAutostartDialogFragment extends DialogFragment
      * Makes no PackageManager calls, so it is cheap on the main thread.
      */
     public static List<String> getSelectedPackages(@Nullable Context context) {
+        return getSelectedPackages(context, KEY_AUTOSTART_APPS);
+    }
+
+    /** The same for the list stored under {@code key} (KEY_AUTOSTART_APPS or KEY_WAKE_AUTOSTART_APPS). */
+    public static List<String> getSelectedPackages(@Nullable Context context, String key) {
         SharedPreferences prefs = prefs(context);
-        return prefs == null ? new ArrayList<String>() : parse(prefs.getString(KEY_AUTOSTART_APPS, ""));
+        return prefs == null ? new ArrayList<String>() : parse(prefs.getString(key, ""));
     }
 
     /**
@@ -131,12 +162,17 @@ public class AppListAutostartDialogFragment extends DialogFragment
      * thread, not from the main thread during the boot-time stall.
      */
     public static List<String> getInstalledSelectedPackages(@Nullable Context context) {
+        return getInstalledSelectedPackages(context, KEY_AUTOSTART_APPS);
+    }
+
+    /** The same for the list stored under {@code key} (KEY_AUTOSTART_APPS or KEY_WAKE_AUTOSTART_APPS). */
+    public static List<String> getInstalledSelectedPackages(@Nullable Context context, String key) {
         Context base = context != null ? context : LauncherApplication.sApp;
         SharedPreferences prefs = prefs(base);
         if (base == null || prefs == null) {
             return new ArrayList<>();
         }
-        String raw = prefs.getString(KEY_AUTOSTART_APPS, "");
+        String raw = prefs.getString(key, "");
         List<String> stored = parse(raw);
         // Outside the lock: these are binder calls, and the main thread writes under it.
         List<String> installed = installedOnly(base.getPackageManager(), stored);
@@ -144,10 +180,10 @@ public class AppListAutostartDialogFragment extends DialogFragment
             synchronized (STORE_LOCK) {
                 // Only if the list is still the one checked here: a tick the user made meanwhile
                 // must not be overwritten by this older list. The next call prunes it then.
-                if (raw.equals(prefs.getString(KEY_AUTOSTART_APPS, ""))) {
+                if (raw.equals(prefs.getString(key, ""))) {
                     List<String> removed = new ArrayList<>(stored);
                     removed.removeAll(installed);
-                    prefs.edit().putString(KEY_AUTOSTART_APPS, join(installed)).apply();
+                    prefs.edit().putString(key, join(installed)).apply();
                     Log.i(TAG, "Removed uninstalled apps from the autostart list: " + removed);
                 }
             }
@@ -207,8 +243,15 @@ public class AppListAutostartDialogFragment extends DialogFragment
                 if (power == null || prefs == null) {
                     return;
                 }
-                // Here as well, so the PackageManager calls stay off the main thread.
-                power.sync(prefs, getInstalledSelectedPackages(app));
+                // Here as well, so the PackageManager calls stay off the main thread. The apps of both lists,
+                // "Start on boot" and "Start on wake": either one is started by the launcher
+                List<String> both = new ArrayList<>(getInstalledSelectedPackages(app, KEY_AUTOSTART_APPS));
+                for (String pkg : getInstalledSelectedPackages(app, KEY_WAKE_AUTOSTART_APPS)) {
+                    if (!both.contains(pkg)) {
+                        both.add(pkg);
+                    }
+                }
+                power.sync(prefs, both);
             } catch (RuntimeException e) {
                 Log.w(TAG, "Power manager sync failed", e);
             }
@@ -315,7 +358,7 @@ public class AppListAutostartDialogFragment extends DialogFragment
             return;
         }
         // An app uninstalled meanwhile leaves the start order as well, so the numbers stay 1..n.
-        List<String> installed = getInstalledSelectedPackages(getContext());
+        List<String> installed = getInstalledSelectedPackages(getContext(), listKey());
         apps.clear();
         apps.addAll(installed);
         ArrayList<AppInfo> visible = buildVisibleApps(ownPackage());
@@ -342,11 +385,17 @@ public class AppListAutostartDialogFragment extends DialogFragment
         mViewDestroyed = false;
 
         apps.clear();
-        apps.addAll(getInstalledSelectedPackages(inflater.getContext()));
+        apps.addAll(getInstalledSelectedPackages(inflater.getContext(), listKey()));
 
         // attachToRoot false: DialogFragment adds the returned view itself.
         View view = inflater.inflate(R.layout.dialog_bootlist, container, false);
         mRootView = view;
+        if (KEY_WAKE_AUTOSTART_APPS.equals(listKey())) {
+            TextView title = view.findViewById(R.id.bootlist_title);
+            if (title != null) {
+                title.setText(R.string.wake_autostart_apps);
+            }
+        }
 
         mData = buildVisibleApps(inflater.getContext().getPackageName());
 
@@ -473,7 +522,7 @@ public class AppListAutostartDialogFragment extends DialogFragment
         }
         synchronized (STORE_LOCK) {
             prefs.edit()
-                    .putString(KEY_AUTOSTART_APPS, join(apps))
+                    .putString(listKey(), join(apps))
                     .apply();
         }
     }

@@ -25,7 +25,7 @@ public final class MediaTransportController {
     public static final String ACTION_OPEN_PLAYER = "com.android.launcher66.action.MEDIA_OPEN_PLAYER";
 
     private static final String TAG = "MediaTransport";
-    private static final String STOCK_MUSIC_PACKAGE = "com.syu.music";
+    static final String STOCK_MUSIC_PACKAGE = "com.syu.music";
     private static final String STOCK_MUSIC_ACTIVITY = "com.syu.music.MAct";
     /** The radio app of a 7862, the target of the widget's buttons while the radio is shown. */
     private static final String STOCK_RADIO_PACKAGE = "com.syu.radio";
@@ -108,6 +108,67 @@ public final class MediaTransportController {
             Log.w(TAG, "Failed to seek " + controller.getPackageName(), e);
             return false;
         }
+    }
+
+    /**
+     * Whether the session of {@code pkg} itself (no other app's) has a track with a length and offers
+     * ACTION_SEEK_TO: the large widget's slider then moves it (PositionSlider). Also for com.syu.music, if it keeps a
+     * session that seeks. A binder call: the widget asks once per track, not every second.
+     */
+    public static boolean canSeek(Context context, String pkg) {
+        MediaController controller = controllerOf(context, pkg);
+        if (controller == null) {
+            return false;
+        }
+        MediaMetadata metadata;
+        try {
+            metadata = controller.getMetadata();
+        } catch (RuntimeException e) {
+            return false;
+        }
+        long duration = metadata == null ? 0L : metadata.getLong(MediaMetadata.METADATA_KEY_DURATION);
+        PlaybackState state = safePlaybackState(controller);
+        return PositionSlider.sessionSeekable(duration,
+                state != null && (state.getActions() & PlaybackState.ACTION_SEEK_TO) != 0);
+    }
+
+    /** Tells the session of {@code pkg} itself to go to {@code positionMs}; false when it cannot be told. */
+    public static boolean seekToPosition(Context context, String pkg, long positionMs) {
+        MediaController controller = controllerOf(context, pkg);
+        if (controller == null) {
+            return false;
+        }
+        try {
+            controller.getTransportControls().seekTo(Math.max(0L, positionMs));
+            Log.d(TAG, "Sent seek to " + positionMs + " for " + pkg);
+            return true;
+        } catch (RuntimeException e) {
+            Log.w(TAG, "Failed to seek " + pkg, e);
+            return false;
+        }
+    }
+
+    /** The active session of exactly this package; null when it has none (or no access to the sessions). */
+    private static MediaController controllerOf(Context context, String pkg) {
+        if (context == null || pkg == null || pkg.isEmpty()) {
+            return null;
+        }
+        MediaSessionManager sessionManager =
+                (MediaSessionManager) context.getSystemService(Context.MEDIA_SESSION_SERVICE);
+        if (sessionManager == null) {
+            return null;
+        }
+        try {
+            for (MediaController controller : sessionManager.getActiveSessions(
+                    new ComponentName(context, NotificationListener.class))) {
+                if (controller != null && pkg.equals(controller.getPackageName())) {
+                    return controller;
+                }
+            }
+        } catch (RuntimeException e) {
+            Log.w(TAG, "The sessions could not be read", e);
+        }
+        return null;
     }
 
     public static Intent getActivePlayerLaunchIntent(Context context, String preferredPackage) {

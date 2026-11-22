@@ -153,6 +153,8 @@
     <string name="autostart_apps">Pornește la boot</string>
     <string name="autostart_apps_summary">Aplicațiile lansate de funcția de pornire automată a sistemului pot încetini pornirea launcherului. Opțiunea încorporată a launcherului le lansează abia după ce launcherul și-a încheiat pornirea la rece. Când folosiți această listă, nu uitați să dezactivați aceste aplicații în setările FYT; altfel vor fi lansate de două ori.</string>
     <string name="autostart_apps_by_boot_completed">Încearcă folosirea broadcastului BOOT_COMPLETED dacă aplicația selectată l-a înregistrat</string>
+    <string name="wake_autostart_apps">Pornește la trezire</string>
+    <string name="wake_autostart_apps_summary">Deschise pe rând la câteva secunde după fiecare trezire din repaus; apoi launcherul, sau aplicația de dinainte de repaus, revine în față. \"Pornește la boot\" își pornește aplicațiile doar după o repornire a dispozitivului.</string>
 
     <string name="music_widget_category">Widget muzică</string>
     <string name="youtube_category">YouTube</string>

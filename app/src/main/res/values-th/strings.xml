@@ -153,6 +153,8 @@
     <string name="autostart_apps">เริ่มเมื่อเปิดเครื่อง</string>
     <string name="autostart_apps_summary">แอปที่เปิดโดยฟีเจอร์เริ่มอัตโนมัติของระบบอาจทำให้ตัวเรียกใช้งานเริ่มช้าลง ตัวเลือกในตัวของตัวเรียกใช้งานจะเปิดแอปเหล่านั้นหลังจากตัวเรียกใช้งานเริ่มต้นแบบเย็นเสร็จแล้วเท่านั้น เมื่อใช้รายการนี้ อย่าลืมปิดใช้งานแอปเหล่านี้ในการตั้งค่า FYT ไม่เช่นนั้นจะถูกเปิดสองครั้ง</string>
     <string name="autostart_apps_by_boot_completed">พยายามใช้บรอดแคสต์ BOOT_COMPLETED หากแอปที่เลือกลงทะเบียนไว้</string>
+    <string name="wake_autostart_apps">เริ่มเมื่อตื่น</string>
+    <string name="wake_autostart_apps_summary">เปิดทีละแอปไม่กี่วินาทีหลังการตื่นจากโหมดสลีปทุกครั้ง จากนั้นตัวเรียกใช้ หรือแอปก่อนสลีป จะกลับมาอยู่ด้านหน้า \"เริ่มเมื่อเปิดเครื่อง\" เริ่มแอปของตัวเองหลังการรีสตาร์ทอุปกรณ์เท่านั้น</string>
 
     <string name="music_widget_category">วิดเจ็ตเพลง</string>
     <string name="youtube_category">YouTube</string>

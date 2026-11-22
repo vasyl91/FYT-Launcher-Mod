@@ -162,9 +162,8 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
                 applyBar(plan, w);
             }
         } else {
-            // The 7870: the position slider's higher row (PositionSlider)
-            plan = MusicWidgetPlan.planHome(w, h, density, maxText,
-                    PositionSlider.shown(com.fyt.car.StockSources.isSyuMediaUnit()));
+            // The position slider's higher row, on every unit (PositionSlider)
+            plan = MusicWidgetPlan.planHome(w, h, density, maxText, true);
             applyHome(plan, w);
         }
 
@@ -192,7 +191,8 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
         View progress = mRoot.findViewById(R.id.music_progress);
         View position = mRoot.findViewById(R.id.music_position);
         View buttons = mRoot.findViewById(R.id.music_buttons);
-        boolean slider = PositionSlider.shown(com.fyt.car.StockSources.isSyuMediaUnit());
+        // The slider in place of the thin bar on every unit (PositionSlider); the bar stays for the skins
+        boolean slider = position instanceof android.widget.SeekBar;
 
         if (cover != null) {
             setVisibility(cover, plan.cover ? View.VISIBLE : View.GONE);
@@ -201,7 +201,7 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
         applyText(title, plan);
         applyText(artist, plan);
         if (progress != null) {
-            setVisibility(progress, slider && position != null ? View.GONE : View.VISIBLE);
+            setVisibility(progress, slider ? View.GONE : View.VISIBLE);
             setBox(progress, ViewGroup.LayoutParams.MATCH_PARENT, plan.progressPx, plan.gapPx,
                     (int) (w * PROGRESS_MARGIN));
         }

@@ -153,6 +153,8 @@
     <string name="autostart_apps">Partir cun l\'enviar</string>
     <string name="autostart_apps_summary">Apps che vegnan lantschadas da la funcziun d\'autostart dal sistem pon retardar l\'enviar dal launcher. L\'opziun integrada dal launcher las lantscha mo suenter che il launcher ha terminà ses enviar a fraid. Cura che ti utiliseschas questa glista, regorda da deactivar questas apps en ils parameters da FYT; uschiglio vegnan ellas lantschadas dus giadas.</string>
     <string name="autostart_apps_by_boot_completed">Empruvar da duvrar il broadcast BOOT_COMPLETED sch\'ina app tschernida al ha registrà</string>
+    <string name="wake_autostart_apps">Partir cun sveglias</string>
+    <string name="wake_autostart_apps_summary">Avertas ina suenter l\'autra intgins secundas suenter mintga sveglia dal sien; lura returna il launcher u l\'applicaziun d\'avant il sien davant. \"Partir cun l\'enviar\" avra sias applicaziuns mo suenter ina reaviaziun da l\'apparat.</string>
 
     <string name="music_widget_category">Widget da musica</string>
     <string name="youtube_category">YouTube</string>

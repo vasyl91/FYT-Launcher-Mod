@@ -153,6 +153,8 @@
     <string name="autostart_apps">Khởi chạy khi khởi động máy</string>
     <string name="autostart_apps_summary">Các ứng dụng được tính năng tự khởi chạy của hệ thống mở có thể làm chậm việc khởi động trình khởi chạy. Tùy chọn tích hợp của trình khởi chạy chỉ mở chúng sau khi trình khởi chạy hoàn tất khởi động nguội. Khi dùng danh sách này, hãy nhớ tắt các ứng dụng đó trong cài đặt FYT; nếu không, chúng sẽ bị mở hai lần.</string>
     <string name="autostart_apps_by_boot_completed">Thử dùng broadcast BOOT_COMPLETED nếu ứng dụng đã chọn có đăng ký nó</string>
+    <string name="wake_autostart_apps">Khởi chạy khi thức dậy</string>
+    <string name="wake_autostart_apps_summary">Được mở lần lượt vài giây sau mỗi lần thức dậy từ chế độ ngủ; sau đó trình khởi chạy, hoặc ứng dụng trước khi ngủ, trở lại phía trước. \"Khởi chạy khi khởi động máy\" chỉ khởi chạy ứng dụng của nó sau khi khởi động lại thiết bị.</string>
 
     <string name="music_widget_category">Widget nhạc</string>
     <string name="youtube_category">YouTube</string>

@@ -339,6 +339,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         Preference baselineProfileReset = findPreference(KEY_BASELINE_PROFILE_RESET);
         Preference appListAutostart = findPreference(Keys.AUTOSTART_APPS);
         Preference bootCompletedAutostart = findPreference(Keys.AUTOSTART_APPS_BY_BOOT_COMPLETED);
+        Preference wakeAutostart = findPreference(Keys.WAKE_AUTOSTART_APPS);
 
         nightMode = findPreference(Keys.NIGHT_MODE);
         nightModeLights = findPreference(Keys.NIGHT_MODE_LIGHTS);
@@ -470,6 +471,9 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         }
         if (appListAutostart != null) {
             appListAutostart.setOnPreferenceClickListener(this);
+        }
+        if (wakeAutostart != null) {
+            wakeAutostart.setOnPreferenceClickListener(this);
         }
         if (bootCompletedAutostart != null) {
             bootCompletedAutostart.setOnPreferenceClickListener(this);
@@ -875,12 +879,17 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 onClickWallpaperPicker(rootView);
                 break;
             case Keys.AUTOSTART_APPS:
+            case Keys.WAKE_AUTOSTART_APPS:
+                // One dialog for both lists, one at a time; its argument names the list it edits.
                 AppListAutostartDialogFragment autostartPrevious =
                         (appListAutostartDialog != null) ? appListAutostartDialog.get() : null;
                 if (autostartPrevious != null && autostartPrevious.isShowing()) {
                     autostartPrevious.dismiss();
                 }
-                AppListAutostartDialogFragment autostartDialog = new AppListAutostartDialogFragment();
+                AppListAutostartDialogFragment autostartDialog = AppListAutostartDialogFragment.newInstance(
+                        Keys.WAKE_AUTOSTART_APPS.equals(preference.getKey())
+                                ? AppListAutostartDialogFragment.KEY_WAKE_AUTOSTART_APPS
+                                : AppListAutostartDialogFragment.KEY_AUTOSTART_APPS);
                 appListAutostartDialog = new WeakReference<>(autostartDialog);
                 autostartDialog.show(requireActivity().getSupportFragmentManager(),
                         AppListAutostartDialogFragment.TAG);

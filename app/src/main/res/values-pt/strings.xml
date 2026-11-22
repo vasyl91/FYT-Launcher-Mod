@@ -153,6 +153,8 @@
     <string name="autostart_apps">Iniciar na inicialização</string>
     <string name="autostart_apps_summary">Apps iniciados pelo recurso de inicialização automática do sistema podem deixar a inicialização do launcher mais lenta. A opção integrada do launcher só os inicia depois que o launcher conclui a inicialização a frio. Ao usar esta lista, lembre-se de desativar esses apps nas configurações do FYT; caso contrário, eles serão iniciados duas vezes.</string>
     <string name="autostart_apps_by_boot_completed">Tentar usar o broadcast BOOT_COMPLETED se o app selecionado o tiver registrado</string>
+    <string name="wake_autostart_apps">Iniciar ao despertar</string>
+    <string name="wake_autostart_apps_summary">Abertas uma a uma alguns segundos após cada despertar do modo de suspensão; depois o launcher, ou o app de antes da suspensão, volta para a frente. \"Iniciar na inicialização\" inicia seus apps somente após reiniciar o dispositivo.</string>
 
     <string name="music_widget_category">Widget de música</string>
     <string name="youtube_category">YouTube</string>

@@ -153,6 +153,8 @@
     <string name="autostart_apps">Begin by opstart</string>
     <string name="autostart_apps_summary">Programme wat deur die stelsel se outomatiese begin-funksie geloods word, kan die lanseerder se opstart vertraag. Die lanseerder se ingeboude opsie begin hulle eers nadat die lanseerder sy koue begin voltooi het. Onthou om hierdie programme in die FYT-instellings te deaktiveer wanneer jy hierdie lys gebruik; anders word hulle twee keer begin.</string>
     <string name="autostart_apps_by_boot_completed">Probeer om die BOOT_COMPLETED-uitsending te gebruik as die gekose program dit geregistreer het</string>
+    <string name="wake_autostart_apps">Begin by ontwaking</string>
+    <string name="wake_autostart_apps_summary">Een vir een oopgemaak \'n paar sekondes na elke ontwaking uit slaap; dan kom die lanseerder, of die program van voor die slaap, terug na voor. \"Begin by opstart\" begin sy programme net ná \'n herbegin van die toestel.</string>
 
     <string name="music_widget_category">Musieklegstuk</string>
     <string name="youtube_category">YouTube</string>

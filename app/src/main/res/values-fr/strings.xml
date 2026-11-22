@@ -153,6 +153,8 @@
     <string name="autostart_apps">Lancer au démarrage</string>
     <string name="autostart_apps_summary">Les applications lancées par la fonction de démarrage automatique du système peuvent ralentir le démarrage du lanceur. L\'option intégrée du lanceur ne les lance qu\'une fois le démarrage à froid du lanceur terminé. Si vous utilisez cette liste, pensez à désactiver ces applications dans les réglages FYT ; sinon, elles seront lancées deux fois.</string>
     <string name="autostart_apps_by_boot_completed">Essayer d\'utiliser la diffusion BOOT_COMPLETED si l\'application sélectionnée l\'a enregistrée</string>
+    <string name="wake_autostart_apps">Lancer au réveil</string>
+    <string name="wake_autostart_apps_summary">Ouvertes une par une quelques secondes après chaque sortie de veille ; ensuite le lanceur, ou l\'application d\'avant la veille, revient au premier plan. « Lancer au démarrage » ne lance ses applications qu\'après un redémarrage de l\'appareil.</string>
 
     <string name="music_widget_category">Widget musique</string>
     <string name="youtube_category">YouTube</string>

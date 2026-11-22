@@ -153,6 +153,8 @@
     <string name="autostart_apps">Асахад эхлүүлэх</string>
     <string name="autostart_apps_summary">Системийн автоматаар эхлүүлэх функцээр нээгдсэн аппууд Launcher-ийн эхлэлтийг удаашруулж болно. Launcher-ийн суурилуулсан сонголт тэднийг зөвхөн Launcher хүйтнээр эхлэж дууссаны дараа нээнэ. Энэ жагсаалтыг ашиглахдаа эдгээр аппыг FYT-ийн тохиргоонд унтраахаа мартуузай; үгүй бол тэд хоёр удаа нээгдэнэ.</string>
     <string name="autostart_apps_by_boot_completed">Сонгосон апп BOOT_COMPLETED нэвтрүүлгийг бүртгүүлсэн бол түүнийг ашиглахыг оролдох</string>
+    <string name="wake_autostart_apps">Сэрэхэд эхлүүлэх</string>
+    <string name="wake_autostart_apps_summary">Унтах горимоос сэрэх бүрийн дараа хэдэн секундын дотор нэг нэгээр нээгдэнэ; дараа нь лаунчер эсвэл унтахаас өмнөх апп урд гарч ирнэ. \"Асахад эхлүүлэх\" аппуудаа зөвхөн төхөөрөмжийг дахин асаасны дараа эхлүүлнэ.</string>
 
     <string name="music_widget_category">Хөгжмийн виджет</string>
     <string name="youtube_category">YouTube</string>

@@ -616,3 +616,41 @@ owner added (`22490c9e0`).
 - Found on the way, not changed: the canbus script's `--launcher .` needs the decompiled folders (KI-49).
 - Not tested on a device.
 
+## Round 27 (2026-11-22): the position slider for every player, "Start on wake"
+
+The owner, 2026-11-22 [H]: the A55 works (round 26); KI-49 stays as it is, with the steps the owner wrote in
+`canbus_library/README.md` (fill in what is missing); the position slider of the big widget for the other players
+(the 7862, the apps followed through MediaController): where a source cannot move to a position the bar shows the
+playback as before, and where there is nothing to show (a live YouTube stream, no information) it stays "grey" -
+the colour of the part not played yet; "Start on wake" under "Start on boot" as a separate list started at each wake,
+"Start on boot" only at the cold start.
+
+| Commit | Subject |
+|---|---|
+| `7ec71e8dc` | Music widget: the position slider on every unit, empty without a position |
+| `8f2259db1` | Music widget: the slider moves a session's track where the player allows it |
+| `65a43ebc4` | Wake: the apps of "Start on wake" are started after each wake |
+| `58b5c3365` | Settings: "Start on wake", a list of its own under "Start on boot" |
+| `29ed543b3` | Docs: README for round 27 |
+
+- **The slider [V]:** `PositionSlider.mode` (pure, tested) gives SEEK, SHOW or GREY from the length, a live stream and
+  whether the player seeks. `MusicWidgetSizer` gives every unit the slider's row; `music_progress` stays hidden.
+  `MediaTransportController.canSeek` / `seekToPosition` act only on the package's own session (a length and
+  `ACTION_SEEK_TO`, `PositionSlider.sessionSeekable`, tested); the widget asks once per player, title and state.
+- **"Start on wake" [V]:** `WakeAutostartPlan` (pure, 5 tests) says when it runs (not at a process start) and what
+  comes back to the front; `WakeDetection.onWake` plans `ColdStart.startForWake` 3 s after the wake through
+  `postForGeneration` (`wakeGeneration` is volatile now: the worker thread reads it). The dialog takes the list's key
+  in its arguments, so it comes back after a turn with the same list (`WakeAutostartRowViewTest`); the Unisoc power
+  sync releases the apps of both lists. Two strings in the 51 language files that have the autostart rows.
+- **KI-49 [V]:** `canbus_library/README.md` now says how to unpack the zips for `--launcher`; with them unpacked that
+  way both assets rebuild byte for byte.
+
+**Deviations from the plan:**
+- Commit 1: "grey" is the empty bar in the colour of the part not played yet (the owner's word during the round), not
+  a grey tint of the bar's background as the plan had it.
+- Commit 2: the log line is `MusicWidget: slider <pkg> seek|show (its session)`, written when the answer is asked
+  for (a player, title or state), not "grey", which needs no question to the player.
+- Commit 4: the two strings went into the 51 full language files only; the regional files have no autostart rows.
+  One dialog serves both lists with its old tag (one at a time).
+- The decision is D-83, not D-84 as the plan said: D-83 was the next free number.
+- Not tested on a device.

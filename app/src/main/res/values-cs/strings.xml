@@ -153,6 +153,8 @@
     <string name="autostart_apps">Spustit při startu</string>
     <string name="autostart_apps_summary">Aplikace spouštěné funkcí automatického spouštění systému mohou zpomalit start launcheru. Vestavěná volba launcheru je spouští až poté, co launcher dokončí studený start. Při použití tohoto seznamu nezapomeňte tyto aplikace v nastavení FYT zakázat, jinak se spustí dvakrát.</string>
     <string name="autostart_apps_by_boot_completed">Zkusit použít broadcast BOOT_COMPLETED, pokud jej vybraná aplikace zaregistrovala</string>
+    <string name="wake_autostart_apps">Spustit při probuzení</string>
+    <string name="wake_autostart_apps_summary">Otevírají se jedna po druhé několik sekund po každém probuzení z režimu spánku; pak se dopředu vrátí launcher, nebo aplikace z doby před spánkem. \"Spustit při startu\" spouští své aplikace jen po restartu zařízení.</string>
 
     <string name="music_widget_category">Widget hudby</string>
     <string name="youtube_category">YouTube</string>

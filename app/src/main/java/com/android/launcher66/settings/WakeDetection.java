@@ -224,7 +224,7 @@ public final class WakeDetection implements WakeSignals.Listener {
      * nothing queued by one wake runs after the device has gone back to sleep. Kept separate
      * from pipEnsureGeneration, which restartPip() bumps again within the same wake.
      */
-    private int wakeGeneration = 0;
+    private volatile int wakeGeneration = 0;
     private static final long WIDGET_BAR_WAKE_FIRST_MS = 2000L;
     /** A long sleep ends in a cold PiP reset, and the layout settles well after the first pass. */
     private static final long WIDGET_BAR_WAKE_SECOND_MS = 6000L;
@@ -384,6 +384,13 @@ public final class WakeDetection implements WakeSignals.Listener {
             // PiP disabled in settings -- make sure nothing from an earlier wake reopens it.
             pipEnsureGeneration++;
             cancelPipHostWait();
+        }
+
+        // "Start on wake": its apps once the wake's own work is done; a sleep in between stops them (WakeAutostartPlan)
+        if (WakeAutostartPlan.runs(WakeSignals.RESTART.equals(source))) {
+            final String frontBefore = frontAtSleep != null ? frontAtSleep : appBeforeSleep;
+            postForGeneration(wakeGen, () -> ColdStart.startForWake(LauncherApplication.sApp, homeOnWake,
+                    frontBefore, () -> wakeGen == wakeGeneration), WakeAutostartPlan.FIRST_MS);
         }
 
         boolean widgetBar = prefs.getBoolean(Keys.WIDGET_BAR, false);

@@ -153,6 +153,8 @@
     <string name="autostart_apps">Zaženi ob zagonu</string>
     <string name="autostart_apps_summary">Aplikacije, ki jih zažene funkcija samodejnega zagona sistema, lahko upočasnijo zagon zaganjalnika. Vgrajena možnost zaganjalnika jih zažene šele, ko zaganjalnik konča hladni zagon. Ko uporabljate ta seznam, ne pozabite teh aplikacij onemogočiti v nastavitvah FYT, sicer se bodo zagnale dvakrat.</string>
     <string name="autostart_apps_by_boot_completed">Poskusi uporabiti oddajo BOOT_COMPLETED, če jo je izbrana aplikacija registrirala</string>
+    <string name="wake_autostart_apps">Zaženi ob prebujanju</string>
+    <string name="wake_autostart_apps_summary">Odprejo se ena za drugo nekaj sekund po vsakem prebujanju iz stanja spanja; nato se v ospredje vrne zaganjalnik ali aplikacija izpred spanja. \"Zaženi ob zagonu\" zažene svoje aplikacije samo po ponovnem zagonu naprave.</string>
 
     <string name="music_widget_category">Gradnik glasbe</string>
     <string name="youtube_category">YouTube</string>

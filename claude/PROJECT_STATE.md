@@ -1,7 +1,10 @@
 # Project state
 
-**Snapshot: 2026-11-22, `testBranch` after round 26 (`edcee91a9` … `6c525ff3e`, then the documentation commits).
-Round 26: the settings' dialogs, their work in progress and the colour picker after a turn of a phone's screen, the
+**Snapshot: 2026-11-22, `testBranch` after round 27 (`7ec71e8dc` … `58b5c3365`, then the documentation commits).
+Round 27: the home music widget's position slider on every unit, moving the track where the player's session allows
+it, showing the position where it does not, empty without one (D-81, KI-50); "Start on wake", a list of its own
+under "Start on boot", which stays for the cold start (D-83, KI-50); the canbus script's zips accepted and described
+(KI-49). The A55 confirms round 26 (KI-47 closed). Round 26: the settings' dialogs, their work in progress and the colour picker after a turn of a phone's screen, the
 background selector sized for its orientation (D-82, KI-47); "App icons" with or without "Resizable" (D-71); the apps
 list fitted to its icons or hidden under the widget bar, its room 10/10/80 to the date, the weather and the music
 (D-80); on the 7870 the covers of BT and files, in a pause and on a rebuilt widget, and a position slider (D-81,
@@ -42,6 +45,7 @@ What the owner wants from it, as the briefs and chat reports show [H]:
 | Development phase | Short feature and fix rounds on `testBranch`, driven by device logs (Opus brief → Sonnet commits → owner test). 33 briefs since 2026-10-27, all implemented [V]. |
 | Active brief | **None.** `prompts/active/` is empty [V]. |
 | Last code change | **Round 22, 2026-11-18/19:** Robolectric for tests of views (D-68); the bar's music buttons, title and artist bound while its window stays (KI-35); the bar's title and artist sized the same with "Resizable horizontal bar" off; the guides below the app bar and the settings list keeping its place (D-73); "Transparent status bar" moved (D-72); the statistics window in landscape where the creator puts it, and on the home screen under the bars and over the panes (D-69); the vertical bar's width (D-70) and the number of icons on each bar (D-71) may be set; 10 code commits `62fc51126` … `5a6272396` [V]. **The owner, 2026-11-19 on the 7862 [H]: all work**, except a jump of the second settings screen scrolled up after a return; `16f256ee8` sizes the settings rows when they are bound. **The owner confirmed that fix too (2026-11-19).** Then `660b032e6`: a widget's configuration opened by the system (KI-41), waiting for the owner's test. Report: `reports/implementation_report_2026-11-15.md`, section "Round 22". |
+| Round 27 | **2026-11-22:** after the owner's A55 test of round 26 ("everything works"). The position slider on every unit (`PositionSlider.Mode` SEEK / SHOW / GREY), a session's own app moved where its session allows it (`MediaTransportController.canSeek`, `seekToPosition`); "Start on wake" (`WakeAutostartPlan`, `ColdStart.startForWake`, the dialog's list argument); `canbus_library/README.md` on unpacking the zips for `--launcher`. 4 code commits `7ec71e8dc` … `58b5c3365` [V]. **Waiting for the owner's test (A55, 7862).** Report: `reports/implementation_report_2026-11-15.md`, section "Round 27". |
 | Round 26 | **2026-11-21/22:** after the owner's A55 test of round 25 ("everything works but the dialogs after a turn") and the 7870 tester's report. A turn on a phone: the plain dialogs come back with their texts (`SettingsDialogMemory`, `DialogTurn`), a download, a wallpaper save and a canbus import go on with their dialogs (`HandedWork`), the colour picker stores its colour and the app lists come back (`ColorPickerTargets`), the background selector is sized from its window and draws the wallpaper center-crop (`CenterCropDrawable`); "App icons" without "Resizable" (D-71 changed); "Fit the apps to their icons" and "Hide the apps" under the widget bar (`WidgetBarPlan.shares`, D-80); the 7870's BT cover after a start or a title that comes back (`StockBtCover`), file covers read as com.syu.media reads them (`FileCover`), the cover in a pause and on a rebuilt widget (`PausedCover`), the position slider (`PositionSlider`, D-81). 12 code commits `edcee91a9` … `6c525ff3e` [V]. **Waiting for the owner's test (A55, 7862) and the tester's (7870).** Report: `reports/implementation_report_2026-11-15.md`, section "Round 26". |
 | Round 25 | **2026-11-20:** the widget previews of the page shown first read off the main thread, and a released `ActivityView` giving back its root surface (KI-46); a nested settings row keeps its space under the title, blank summaries gone, three sections with dividers in "Bars" (D-79); every settings dialog dark like the settings (`SettingsDialogs`, D-78); the order of the horizontal bar's elements, per orientation, in a dialog of "Bars" (`BarOrder`, `BarOrderDialog`, D-77); 7 code commits `6670ecf8b` … `8118d0af9` [V]. **The owner, A55 (2026-11-21) [H]: everything works as it should, except the dialogs after a turn of the screen (round 26).** The 7862's log (KI-46) is awaited. Report: `reports/implementation_report_2026-11-15.md`, section "Round 25". |
 | Round 24 | **2026-11-20:** CI only for pushes that change more than the documentation (`46b59b2a7`, the rule in `CLAUDE.md`); the screens' ids kept in memory for a launcher created again in the process (`ScreenIdsMemory`); one window thread for the status bar strip; the home check waits for the binding before it judges the bars (KI-45); 3 code commits `85f35583d` … `32adc8b50` [V]. **The owner's log of 2026-11-20 18:21 [V]: the three fixes work (KI-45 closed); the status bar swipe works [H].** Report: `reports/implementation_report_2026-11-15.md`, section "Round 24". |
@@ -138,12 +142,13 @@ JUnit 5 JVM tests: 110 files, 1011 tests, no instrumented tests. CI runs on GitH
 
 ## Active tasks
 
-**Round 26 (2026-11-21/22), waiting for the owner's test:** on the A55 every settings dialog through a turn (with a
-text typed in), the colour picker's "Select" after a turn, the background selector in landscape, a download and a
-wallpaper save through a turn, "App icons" with "Resizable" off, the fitted and the hidden apps list in both
-orientations (KI-47, D-80); on the 7870 (the tester) the BT cover after a start in the middle of a song, FLAC/M4A
-covers, the cover in a pause and after the settings, and the position slider (KI-48). The owner's call on KI-49 (the
-canbus script and the zips). **Round 25 on the 7862:** the order of the bar's elements (D-77), the dark dialogs
+**Round 27 (2026-11-22), waiting for the owner's test (KI-50):** on the A55 the slider with a streaming app (a knob,
+a move goes there), with an app that cannot seek (no knob) and with a live YouTube stream (empty); "Start on wake"
+with one or two apps, a sleep and a wake (they open one by one, then the launcher or the app from before the sleep),
+and "Start on boot" unchanged after a restart. On the 7862 the log line `MusicWidget: slider com.syu.music …` and the
+widget's look. **Round 26:** the A55 works (2026-11-22); on the 7870 (the tester) the BT cover after a start in the
+middle of a song, FLAC/M4A covers, the cover in a pause and after the settings, and the position slider (KI-48).
+**Round 25 on the 7862:** the order of the bar's elements (D-77), the dark dialogs
 (D-78), the rows and dividers (D-79), and the two StrictMode fixes of KI-46 in its log. KI-44 waits for a unit whose code check waits for a drive. KI-37 waits for a log of a next
 widget over icons, if one happens. CI runs only for a change of the code (`CLAUDE.md`).
 

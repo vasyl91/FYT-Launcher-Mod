@@ -153,6 +153,8 @@
     <string name="autostart_apps">Simulan sa boot</string>
     <string name="autostart_apps_summary">Maaaring pabagalin ng mga app na inilulunsad ng autostart feature ng system ang pagsisimula ng launcher. Ilulunsad lang sila ng built-in na opsyon ng launcher pagkatapos nitong makumpleto ang cold start. Kapag ginagamit ang listahang ito, tandaang i-disable ang mga app na ito sa mga setting ng FYT; kung hindi, dalawang beses silang ilulunsad.</string>
     <string name="autostart_apps_by_boot_completed">Subukang gamitin ang BOOT_COMPLETED broadcast kung nairehistro ito ng napiling app</string>
+    <string name="wake_autostart_apps">Simulan sa paggising</string>
+    <string name="wake_autostart_apps_summary">Isa-isang binubuksan ilang segundo pagkatapos ng bawat paggising mula sa sleep; pagkatapos ay babalik sa harap ang launcher, o ang app bago ang sleep. Ang \"Simulan sa boot\" ay nagsisimula lang ng mga app nito pagkatapos i-restart ang device.</string>
 
     <string name="music_widget_category">Widget ng musika</string>
     <string name="youtube_category">YouTube</string>

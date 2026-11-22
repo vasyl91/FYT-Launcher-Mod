@@ -153,6 +153,8 @@
     <string name="autostart_apps">Avvia all\'accensione</string>
     <string name="autostart_apps_summary">Le app avviate dalla funzione di avvio automatico del sistema possono rallentare l\'avvio del launcher. L\'opzione integrata del launcher le avvia solo dopo che il launcher ha completato l\'avvio a freddo. Se usi questo elenco, ricorda di disattivare queste app nelle impostazioni FYT; altrimenti verranno avviate due volte.</string>
     <string name="autostart_apps_by_boot_completed">Prova a usare il broadcast BOOT_COMPLETED se l\'app selezionata lo ha registrato</string>
+    <string name="wake_autostart_apps">Avvia al risveglio</string>
+    <string name="wake_autostart_apps_summary">Aperte una alla volta pochi secondi dopo ogni risveglio dallo standby; poi torna in primo piano il launcher, o l\'app di prima dello standby. \"Avvia all\'accensione\" avvia le sue app solo dopo un riavvio del dispositivo.</string>
 
     <string name="music_widget_category">Widget musica</string>
     <string name="youtube_category">YouTube</string>

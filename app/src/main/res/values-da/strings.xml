@@ -153,6 +153,8 @@
     <string name="autostart_apps">Start ved opstart</string>
     <string name="autostart_apps_summary">Apps, der startes af systemets autostart-funktion, kan gøre launcherens opstart langsommere. Launcherens indbyggede indstilling starter dem først, når launcheren har gennemført sin koldstart. Når du bruger denne liste, skal du huske at deaktivere disse apps i FYT-indstillingerne, ellers startes de to gange.</string>
     <string name="autostart_apps_by_boot_completed">Prøv at bruge BOOT_COMPLETED-broadcastet, hvis den valgte app har registreret det</string>
+    <string name="wake_autostart_apps">Start ved opvågning</string>
+    <string name="wake_autostart_apps_summary">Åbnes én ad gangen et par sekunder efter hver opvågning fra dvale; derefter kommer launcheren, eller appen fra før dvalen, tilbage i forgrunden. \"Start ved opstart\" starter kun sine apps efter en genstart af enheden.</string>
 
     <string name="music_widget_category">Musikwidget</string>
     <string name="youtube_category">YouTube</string>

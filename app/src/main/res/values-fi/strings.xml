@@ -153,6 +153,8 @@
     <string name="autostart_apps">Käynnistä käynnistyksen yhteydessä</string>
     <string name="autostart_apps_summary">Järjestelmän automaattisella käynnistyksellä käynnistettävät sovellukset voivat hidastaa launcherin käynnistystä. Launcherin sisäänrakennettu vaihtoehto käynnistää ne vasta, kun launcherin kylmäkäynnistys on valmis. Kun käytät tätä luetteloa, muista poistaa nämä sovellukset käytöstä FYT-asetuksissa, muuten ne käynnistetään kahdesti.</string>
     <string name="autostart_apps_by_boot_completed">Yritä käyttää BOOT_COMPLETED-lähetystä, jos valittu sovellus on rekisteröinyt sen</string>
+    <string name="wake_autostart_apps">Käynnistä herätessä</string>
+    <string name="wake_autostart_apps_summary">Avataan yksi kerrallaan muutama sekunti jokaisen lepotilasta heräämisen jälkeen; sitten etualalle palaa käynnistin tai ennen lepotilaa ollut sovellus. \"Käynnistä käynnistyksen yhteydessä\" käynnistää sovelluksensa vain laitteen uudelleenkäynnistyksen jälkeen.</string>
 
     <string name="music_widget_category">Musiikki-widget</string>
     <string name="youtube_category">YouTube</string>

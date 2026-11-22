@@ -153,6 +153,8 @@
     <string name="autostart_apps">बूट पर शुरू करें</string>
     <string name="autostart_apps_summary">सिस्टम की ऑटोस्टार्ट सुविधा से शुरू होने वाले ऐप लॉन्चर की शुरुआत धीमी कर सकते हैं। लॉन्चर का अंतर्निहित विकल्प उन्हें लॉन्चर का कोल्ड स्टार्ट पूरा होने के बाद ही शुरू करता है। यह सूची इस्तेमाल करते समय इन ऐप को FYT सेटिंग में बंद करना न भूलें; वरना वे दो बार शुरू होंगे।</string>
     <string name="autostart_apps_by_boot_completed">यदि चुने गए ऐप ने BOOT_COMPLETED ब्रॉडकास्ट रजिस्टर किया है तो उसका उपयोग करने का प्रयास करें</string>
+    <string name="wake_autostart_apps">जागने पर शुरू करें</string>
+    <string name="wake_autostart_apps_summary">स्लीप से हर बार जागने के कुछ सेकंड बाद एक-एक करके खुलते हैं; फिर लॉन्चर, या स्लीप से पहले वाला ऐप, सामने लौट आता है। \"बूट पर शुरू करें\" अपने ऐप्स केवल डिवाइस के रीस्टार्ट के बाद शुरू करता है।</string>
 
     <string name="music_widget_category">संगीत विजेट</string>
     <string name="youtube_category">YouTube</string>

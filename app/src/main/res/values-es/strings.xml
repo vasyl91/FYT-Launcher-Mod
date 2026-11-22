@@ -153,6 +153,8 @@
     <string name="autostart_apps">Iniciar al arrancar</string>
     <string name="autostart_apps_summary">Las aplicaciones que inicia la función de inicio automático del sistema pueden ralentizar el arranque del launcher. La opción integrada del launcher las inicia solo después de que este termine su arranque en frío. Si usas esta lista, recuerda desactivar estas aplicaciones en los ajustes de FYT; de lo contrario, se iniciarán dos veces.</string>
     <string name="autostart_apps_by_boot_completed">Intentar usar el broadcast BOOT_COMPLETED si la aplicación seleccionada lo tiene registrado</string>
+    <string name="wake_autostart_apps">Iniciar al despertar</string>
+    <string name="wake_autostart_apps_summary">Se abren una a una unos segundos después de cada despertar del reposo; luego vuelve al frente el launcher, o la aplicación de antes del reposo. \"Iniciar al arrancar\" solo inicia sus aplicaciones tras reiniciar el dispositivo.</string>
 
     <string name="music_widget_category">Widget de música</string>
     <string name="youtube_category">YouTube</string>

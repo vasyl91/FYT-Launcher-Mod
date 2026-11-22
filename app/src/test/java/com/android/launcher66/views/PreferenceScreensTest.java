@@ -8,7 +8,9 @@ import android.app.Application;
 import android.content.Context;
 import android.view.ContextThemeWrapper;
 
+import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
+import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
 
@@ -128,5 +130,21 @@ public class PreferenceScreensTest {
         assertEquals("widget_bar_fit_apps", keys.get(weather + 2));
         assertEquals(true, keys.indexOf("widget_bar") < weather);
         assertEquals(true, weather + 2 < keys.indexOf("left_bar"));
+    }
+
+    @Test
+    public void startOnWakeStandsUnderStartOnBoot() {
+        // The owner, 2026-11-22: "Start on wake" as a list of its own, below "Start on boot" and its switch
+        PreferenceScreen screen = inflate(R.xml.launcher_preferences);
+        Preference boot = screen.findPreference("autostart_apps");
+        assertNotNull(boot);
+        PreferenceGroup group = boot.getParent();
+        java.util.List<String> keys = new java.util.ArrayList<>();
+        for (int i = 0; i < group.getPreferenceCount(); i++) {
+            keys.add(group.getPreference(i).getKey());
+        }
+        int at = keys.indexOf("autostart_apps");
+        assertEquals("autostart_apps_by_boot_completed", keys.get(at + 1));
+        assertEquals("wake_autostart_apps", keys.get(at + 2));
     }
 }
