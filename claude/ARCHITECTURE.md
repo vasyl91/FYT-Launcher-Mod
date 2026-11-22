@@ -164,7 +164,8 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   - `S/PipEdgeTrim` and `S/StatsBarFit` handle the bars.
   - `L/CustomLayoutDb` and `S/WorkspaceOccupancy` know which grid cells hold icons and widgets.
 - **Startup:** `L/StartupSteps`, `L/WorkspaceScreensPreload`, and `L/ColdStart` (the about 10 s boot stall,
-  the launcher kept in front, the autostart apps). The screens' ids are read off the main thread at the start
+  the launcher kept in front, the "Start on boot" apps; `ColdStart.startForWake` starts the "Start on wake" apps,
+  see section 11). The screens' ids are read off the main thread at the start
   and kept in memory for every Workspace of the process, a launcher created again too; a write of their table
   (always through `L/LauncherProvider`) drops them and has them read again (`L/ScreenIdsMemory`, pure, tested).
 - **A whole home screen** (2026-11-20, KI-43): `L/HomeIntegrity` (pure, tested) judges a snapshot of the views
@@ -337,8 +338,13 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
     first song after a start takes any file, a cleared title is the same song, the change kept on the elapsed
     clock); `L/FileCover` reads a file's picture with `MediaMetadataRetriever` and `L/FileCoverRetry` reads once more
     a file that could not be opened; `L/PausedCover` keeps the cover drawn in a pause and on a widget built again.
-    `L/PositionSlider` (D-81): the home widget's `music_position` slider on the 7870; com.syu.media's files move
-    through `SyuMediaClient.seekTo` (IPlayer transaction 12), BT and stations only show.
+    `L/PositionSlider` (D-81): the home widget's `music_position` slider, on every unit since 2026-11-22, in one
+    of three modes: SEEK (a knob; com.syu.media's files move through `SyuMediaClient.seekTo`, IPlayer transaction
+    12, and a session's own app through `MediaTransportController.seekToPosition` where its session has a length
+    and `ACTION_SEEK_TO`, `canSeek`), SHOW (the position without a knob: BT, stations, a player that cannot seek)
+    and GREY (empty: no length, or a live stream). `L/LauncherMusicWidget.canSeekNow` asks once per player, title
+    and state, and logs `MusicWidget: slider <pkg> seek|show`; the thin `music_progress` stays in the layout,
+    hidden.
 - **Favorites (the heart):** `L/MediaFavoriteController`.
   - `com.syu.media` favorites are written to its library; FM favorites are read-only
     (`C/SyuMediaRadioFavorites`).
@@ -416,6 +422,14 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   (`U_BLACK_SCREEN`) is neither a sleep nor a wake. It raises `onMcuOff()` when the MCU goes off.
 - `S/WakeDetection` acts on that state for the whole process: logcat, home in front, panes, the last app.
   `S/WakeDetectionService` only keeps the process alive.
+- "Start on wake" (2026-11-22, D-83): after a real wake (not a process start, `WakeSignals.RESTART`)
+  `WakeDetection.onWake` plans `L/ColdStart.startForWake` 3 s later (`postForGeneration`, so a new sleep cancels
+  it). Its thread starts the apps of `S/AppListAutostartDialogFragment`'s list `wake_autostart_packages` 3 s apart
+  (Display Media Titles and JamesDSP by their broadcasts without BOOT_COMPLETED, the others by their launch
+  activity), checking before each that the unit is still awake. `S/WakeAutostartPlan` (pure, tested) says what
+  comes back to the front after the last one: the launcher (home on wake, or home in front before the sleep), the
+  app from before the sleep, or nothing when the user did something or none of the started apps is in front. The
+  same dialog edits both lists (its argument names the list); the Unisoc power sync releases the apps of both.
 - At sleep the launcher comes to the top 300 ms after ACC off, so that `com.syu.ms` finds the launcher on top
   when it notes its "top app" at MCU off (D-28).
 - `L/LauncherWake` and `L/UnisocPowerWhitelist` are the other pieces. `L/SysCalls` keeps calls into

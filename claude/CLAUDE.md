@@ -50,7 +50,7 @@ present [A] as [V]. A report that says something was implemented is [H] until a 
   those classes only; it is not a build.
 - To regenerate the CAN bus library, run `build_canbus_library.py --launcher .` (see
   `canbus_library/README.md`). Since 2026-11-21 the decompiled sources are zip files in `archive/decompiled/`;
-  the script needs them unpacked as `decompiled_*` folders first (`KNOWN_ISSUES.md` KI-49). A rebuild must give
+  the script needs them unpacked as `decompiled_*` folders first (`canbus_library/README.md` section 5, `KNOWN_ISSUES.md` KI-49). A rebuild must give
   the committed assets byte for byte unless the sources changed. The Baseline Profile procedure is in `baselineProfile/README.md` and needs a device.
 
 ## Branch and commits
