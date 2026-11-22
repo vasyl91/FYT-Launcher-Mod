@@ -1,17 +1,27 @@
 package com.android.launcher66;
 
 /**
- * The position slider of the home music widget on the 7870, free of android.* so that it has a test.
+ * The position slider of the home music widget, free of android.* so that it has a test.
  *
- * <p>The rule (2026-11-21, the 7870 tester asked for a slider of the track's position on the big widget, for the
- * files and for BT): on the 7870 ({@link #shown}) the widget's thin progress bar is a slider that shows the
- * position of what plays or pauses, 0 to {@link #MAX} of the track's length. It moves the track only where the player
- * can be told to ({@link #seekable}): com.syu.media's own files, through its IPlayer.seekTo (transaction 12). BT has
- * no command for it in com.syu.ms, an internet station has no position to go to, so there the slider only shows. A
- * position at or past the length makes com.syu.media go to the next track, so the position asked for is kept a second
- * short of the end ({@link #position}). The other units keep the thin bar.
+ * <p>The rule (2026-11-21 for the 7870, the tester's request; 2026-11-22 for every unit and every player, the
+ * owner's): the large music widget shows the position of what plays or pauses as a slider, 0 to {@link #MAX} of the
+ * track's length, in one of three states ({@link #mode}):
+ * <ul>
+ *   <li>{@link Mode#SEEK}: the player can be told to go to a position (com.syu.media's own files on the 7870, through
+ *       its IPlayer.seekTo; a session whose player offers ACTION_SEEK_TO): a knob, and a move goes to that position;</li>
+ *   <li>{@link Mode#SHOW}: the position is known but the player cannot be moved from here (BT, an internet station,
+ *       com.syu.music without a session that seeks, a session without ACTION_SEEK_TO): the progress as the thin bar
+ *       showed it, without a knob;</li>
+ *   <li>{@link Mode#GREY}: nothing to show (no length: a live stream, a radio station, a player that says nothing):
+ *       the bar stays empty: all of it in the colour of the part of a track not played yet (the owner, 2026-11-22).</li>
+ * </ul>
+ * A position at or past the length makes com.syu.media go to the next track, so the position asked for is kept a
+ * second short of the end ({@link #position}), for every player alike.
  */
 public final class PositionSlider {
+
+    /** What the slider is for the track shown. */
+    public enum Mode { SEEK, SHOW, GREY }
 
     /** The slider's scale, the same as the progress bar's. */
     public static final int MAX = 1000;
@@ -21,14 +31,17 @@ public final class PositionSlider {
     private PositionSlider() {
     }
 
-    /** Whether the widget has the slider: the 7870. */
-    public static boolean shown(boolean syuMediaUnit) {
-        return syuMediaUnit;
+    /** The state of the slider for a track of {@code totalMs} (0 or less: unknown), a live stream or not. */
+    public static Mode mode(long totalMs, boolean live, boolean canSeek) {
+        if (totalMs <= 0 || live) {
+            return Mode.GREY;
+        }
+        return canSeek ? Mode.SEEK : Mode.SHOW;
     }
 
-    /** Whether the user can move the track with it: com.syu.media's own files, with a known length. */
-    public static boolean seekable(boolean syuMediaUnit, boolean syuMediaFile, long totalMs) {
-        return syuMediaUnit && syuMediaFile && totalMs > 0;
+    /** com.syu.media's own file on the 7870 (not BT, not a station, not a session's app). */
+    public static boolean syuMediaFileSeekable(boolean syuMediaUnit, boolean syuMediaFile) {
+        return syuMediaUnit && syuMediaFile;
     }
 
     /** The slider's value for a position: 0 .. MAX of the length; 0 without a length. */

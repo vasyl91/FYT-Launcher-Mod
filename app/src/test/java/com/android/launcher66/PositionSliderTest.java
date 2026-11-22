@@ -28,12 +28,23 @@ class PositionSliderTest {
     }
 
     @Test
-    void onlyCom_syu_mediasFilesOnThe7870CanBeMoved() {
-        assertTrue(PositionSlider.shown(true));
-        assertFalse(PositionSlider.shown(false), "the other units keep the thin bar");
-        assertTrue(PositionSlider.seekable(true, true, 180_000));
-        assertFalse(PositionSlider.seekable(true, false, 180_000), "BT and stations: shown only");
-        assertFalse(PositionSlider.seekable(true, true, 0), "no length");
-        assertFalse(PositionSlider.seekable(false, true, 180_000));
+    void aTrackThatCanBeMovedHasAKnobOneThatCannotShowsWhereItIs() {
+        assertEquals(PositionSlider.Mode.SEEK, PositionSlider.mode(180_000, false, true));
+        assertEquals(PositionSlider.Mode.SHOW, PositionSlider.mode(180_000, false, false),
+                "the position as the thin bar showed it");
+    }
+
+    @Test
+    void withoutALengthOrForALiveStreamTheBarIsGrey() {
+        assertEquals(PositionSlider.Mode.GREY, PositionSlider.mode(0, false, true));
+        assertEquals(PositionSlider.Mode.GREY, PositionSlider.mode(-1, false, false));
+        assertEquals(PositionSlider.Mode.GREY, PositionSlider.mode(180_000, true, true), "a live stream");
+    }
+
+    @Test
+    void onlyCom_syu_mediasOwnFilesOnThe7870AreMovedThroughIt() {
+        assertTrue(PositionSlider.syuMediaFileSeekable(true, true));
+        assertFalse(PositionSlider.syuMediaFileSeekable(true, false), "BT and stations");
+        assertFalse(PositionSlider.syuMediaFileSeekable(false, true));
     }
 }
