@@ -39,6 +39,11 @@ public final class PositionSlider {
         return canSeek ? Mode.SEEK : Mode.SHOW;
     }
 
+    /** A media session that seeks: a track with a length, and ACTION_SEEK_TO among its actions. */
+    public static boolean sessionSeekable(long durationMs, boolean seekAction) {
+        return durationMs > 0 && seekAction;
+    }
+
     /** com.syu.media's own file on the 7870 (not BT, not a station, not a session's app). */
     public static boolean syuMediaFileSeekable(boolean syuMediaUnit, boolean syuMediaFile) {
         return syuMediaUnit && syuMediaFile;

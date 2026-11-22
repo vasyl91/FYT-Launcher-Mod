@@ -105,6 +105,11 @@ final class LauncherMusicWidget {
     private long mPositionTotalMs;
     /** The slider's state as last drawn; null: draw it again. */
     private PositionSlider.Mode mPositionMode;
+    /** The track the session's seeking was last asked for (player, title, play state), and the answer. */
+    private String mSeekAskedFor;
+    private boolean mSeekAnswer;
+    /** The session the slider moves now; null: com.syu.media's file, or nothing. */
+    private String mSeekPackage;
 
     Button mPlayPauseButton;
 
@@ -709,16 +714,46 @@ final class LauncherMusicWidget {
         });
     }
 
-    /** Whether the player shown can be told to go to a position (PositionSlider.SEEK). */
+    /**
+     * Whether the player shown can be told to go to a position (PositionSlider.SEEK): com.syu.media's own file on the
+     * 7870, or the media session of the app shown, or com.syu.music's session if it keeps one that seeks. The session
+     * is asked once per track and play state, not at every update; one log line per answer that changes.
+     */
     private boolean canSeekNow() {
         StockKindArbiter.Kind kind = StockSources.shownKind();
-        return PositionSlider.syuMediaFileSeekable(StockSources.isSyuMediaUnit(),
-                kind == StockKindArbiter.Kind.MEDIA_MUSIC && !"mediaController".equals(mediaSource));
+        boolean session = "mediaController".equals(mediaSource);
+        if (PositionSlider.syuMediaFileSeekable(StockSources.isSyuMediaUnit(),
+                kind == StockKindArbiter.Kind.MEDIA_MUSIC && !session)) {
+            mSeekPackage = null;
+            return true;
+        }
+        String pkg = session ? getPreferredMediaControllerPackage()
+                : LauncherApplication.isFytDevice() && !StockSources.isSyuMediaUnit()
+                        && StockSources.shownOverlay() == null ? MediaTransportController.STOCK_MUSIC_PACKAGE : null;
+        if (pkg == null) {
+            mSeekPackage = null;
+            return false;
+        }
+        String key = pkg + "\n" + musictitle + "\n" + mLauncher.state;
+        if (!key.equals(mSeekAskedFor)) {
+            boolean answer = MediaTransportController.canSeek(mLauncher, pkg);
+            if (mSeekAskedFor == null || answer != mSeekAnswer || !mSeekAskedFor.startsWith(pkg + "\n")) {
+                Log.i(TAG_ICON, "slider " + pkg + " " + (answer ? "seek" : "show") + " (its session)");
+            }
+            mSeekAskedFor = key;
+            mSeekAnswer = answer;
+        }
+        mSeekPackage = mSeekAnswer ? pkg : null;
+        return mSeekAnswer;
     }
 
     /** The slider was let go at {@code ms}: the player shown goes there. */
     private void seekTo(long ms) {
-        MusicService.seekSyuMedia(ms);
+        if (mSeekPackage != null) {
+            MediaTransportController.seekToPosition(mLauncher, mSeekPackage, ms);
+        } else {
+            MusicService.seekSyuMedia(ms);
+        }
     }
 
     /**

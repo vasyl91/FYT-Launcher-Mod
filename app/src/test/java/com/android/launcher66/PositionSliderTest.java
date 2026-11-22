@@ -47,4 +47,11 @@ class PositionSliderTest {
         assertFalse(PositionSlider.syuMediaFileSeekable(true, false), "BT and stations");
         assertFalse(PositionSlider.syuMediaFileSeekable(false, true));
     }
+
+    @Test
+    void aSessionSeeksWithALengthAndTheSeekAction() {
+        assertTrue(PositionSlider.sessionSeekable(180_000, true));
+        assertFalse(PositionSlider.sessionSeekable(180_000, false), "a player without ACTION_SEEK_TO: shown only");
+        assertFalse(PositionSlider.sessionSeekable(0, true), "no length (a live stream): nothing to go to");
+    }
 }
