@@ -22,8 +22,8 @@ as duplicates, and for the same car id **your file wins**.
 * Windows 10 or 11 (any system with Python 3 works; the `.bat` is for Windows).
 * Python 3.8 or newer from <https://www.python.org/downloads/>. Tick **Add python.exe to PATH** in the installer
   (the `py` launcher is installed with it).
-* A decompiled `com.syu.canbus`: the folder `...\javaCode\classes.dex\sources`. How to get it is described in steps 10-12
-  of the main [README](../README.MD) (export the APK, unpack it with APKRepatcher).
+* A decompiled `com.syu.canbus`: the folder `...\javaCode\classes.dex\sources`. How to get it is described in steps 2-4
+  of section 3 (export the APK, unpack it with APKRepatcher).
 
 ## 3. Step by step
 
@@ -108,6 +108,32 @@ py build_canbus_library.py --merge BASE FILE [--out OUT]         BASE merged wit
 ```
 
 Exit code: 0 success, 1 bad input, 2 an invalid file in `--check`, `--diff` or `--merge`, 3 differences found by `--diff`.
+
+**`--launcher` needs the decompiled sources unpacked first.** The repository keeps them as zip files in `archive/decompiled/`
+(`com.syu.canbus.zip`, `carinfo.zip`), while the script reads folders named `decompiled_com.syu.canbus` and `decompiled_carinfo`
+next to them. Use exactly these names: they are written into the header of the library, so other names give a different file.
+In the root of the repository, in PowerShell:
+
+```
+Expand-Archive archive\decompiled\com.syu.canbus.zip -DestinationPath archive\decompiled
+Rename-Item archive\decompiled\com.syu.canbus decompiled_com.syu.canbus
+Expand-Archive archive\decompiled\carinfo.zip -DestinationPath archive\decompiled
+Rename-Item archive\decompiled\carinfo decompiled_carinfo
+py canbus_library\build_canbus_library.py --launcher .
+```
+
+On Linux or macOS:
+
+```
+cd archive/decompiled
+unzip -q com.syu.canbus.zip && mv com.syu.canbus decompiled_com.syu.canbus
+unzip -q carinfo.zip && mv carinfo decompiled_carinfo
+cd ../..
+python3 canbus_library/build_canbus_library.py --launcher .
+```
+
+Add `--platform 7870` for the 7870's file. Do not commit the unpacked folders; delete them when you are done. Built from
+unchanged sources, the result is the library in the launcher's assets byte for byte (checked on 2026-11-22 for both files).
 
 * **`--diff A B`** checks both files like `--check`, then lists per car id what is only in A, only in B and different (A to B): `C` per car id,
   `R` per car id and page, `N` and `S` per car id, and the ids whose first page or order of pages differs. It prints the numbers, then
@@ -212,7 +238,8 @@ end 8 1a2b3c4d
 
 * **The launcher's own library (`--launcher`).** It is built from three sources, the newest first (the folders are constants in the script):
   `decompiled_com.syu.canbus/classes.dex.new/sources`, `decompiled_com.syu.canbus/classes.dex/sources` and `decompiled_carinfo/`,
-  all under `archive/decompiled/` of the repository (`LAUNCHER_SOURCE_ROOT` in the script).
+  all under `archive/decompiled/` of the repository (`LAUNCHER_SOURCE_ROOT` in the script), unpacked from the zip files there
+  first (section 5).
   * **`C`, `R` and `N` of a car come from the newest source that knows its id**: the `switch` of that source's `ActivityLauncher` gives the class, and the pages and
     requests are searched in the same source. A car that only the older source knows keeps the older source's record. A car that none of the canbus sources knows
     keeps its class and its `N` from the current asset (its pages are then searched in `decompiled_carinfo/`). The `N` records of the asset are always kept.
