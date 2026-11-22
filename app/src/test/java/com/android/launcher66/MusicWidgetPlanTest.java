@@ -617,4 +617,28 @@ class MusicWidgetPlanTest {
         assertTrue(plan.cover);
         assertTrue(plan.coverPx > 0);
     }
+
+    @Test
+    void theSliderSharesAddUpToOneAndItsRowIsHigher() {
+        for (float[] set : new float[][] {MusicWidgetPlan.HOME_STANDARD_SLIDER, MusicWidgetPlan.HOME_COMPACT_SLIDER,
+                MusicWidgetPlan.HOME_NO_COVER_SLIDER}) {
+            float sum = 0f;
+            for (float share : set) {
+                sum += share;
+            }
+            assertEquals(1f, sum, 0.0001f);
+        }
+        MusicWidgetPlan.Plan bar = MusicWidgetPlan.planHome(338, 333, 1f, 22f);
+        MusicWidgetPlan.Plan slider = MusicWidgetPlan.planHome(338, 333, 1f, 22f, true);
+        assertTrue(slider.progressPx > bar.progressPx, slider.progressPx + " > " + bar.progressPx);
+        for (int h = 20; h < 700; h += 3) {
+            for (int w : new int[] {120, 338, 800}) {
+                MusicWidgetPlan.Plan home = MusicWidgetPlan.planHome(w, h, 1f, 22f, true);
+                int homeSum = (home.cover ? home.coverPx : 0) + home.rows() * home.rowPx
+                        + home.progressPx + home.buttonRowPx
+                        + home.gapPx * ((home.cover ? 1 : 0) + home.rows() + 2);
+                assertTrue(homeSum <= h, "slider " + w + "x" + h + " " + home + " sum " + homeSum);
+            }
+        }
+    }
 }

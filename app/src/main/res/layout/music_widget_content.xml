@@ -50,6 +50,19 @@
         android:progressDrawable="@drawable/progressbar_bg"
         style="?android:attr/progressBarStyleHorizontal" />
 
+    <!-- The 7870: the track's position as a slider in place of the bar above (PositionSlider); its knob and
+         its size come from MusicWidgetSizer -->
+    <SeekBar
+        android:id="@+id/music_position"
+        android:tag="@string/skin_ruleless"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="1000"
+        android:progress="0"
+        android:visibility="gone"
+        android:splitTrack="false"
+        android:progressDrawable="@drawable/progressbar_bg" />
+
     <LinearLayout
         android:id="@+id/music_buttons"
         android:orientation="horizontal"

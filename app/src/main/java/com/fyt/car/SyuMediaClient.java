@@ -73,6 +73,8 @@ final class SyuMediaClient implements ServiceConnection {
     private static final int TX_IS_PLAYING = 8;
     private static final int TX_GET_PROGRESS = 9;
     private static final int TX_GET_PLAYING_SONG = 10;
+    /** IPlayer.seekTo(int ms), returning a boolean (com.syu.media's IPlayer.Stub, case 12). */
+    private static final int TX_SEEK_TO = 12;
     private static final int TX_REGISTER_CALLBACK = 15;
     private static final int CB_SONG_CHANGED = 1;
     private static final int CB_PLAY_STATUS_CHANGED = 2;
@@ -375,6 +377,39 @@ final class SyuMediaClient implements ServiceConnection {
                 reply.recycle();
             }
             // Its callbacks follow too; this one does not wait for them
+            refresh(false);
+        });
+        return true;
+    }
+
+    /**
+     * Moves the track to {@code ms} (the home widget's position slider, PositionSlider: the caller keeps it short
+     * of the end, where the player would go to the next track). Any thread; the call is on the worker.
+     */
+    boolean seekTo(long ms) {
+        if (!connected) {
+            return false;
+        }
+        worker.post(() -> {
+            IBinder p = player;
+            if (p == null) {
+                return;
+            }
+            Parcel data = Parcel.obtain();
+            Parcel reply = Parcel.obtain();
+            try {
+                data.writeInterfaceToken(IPLAYER);
+                data.writeInt((int) Math.max(0, Math.min(Integer.MAX_VALUE, ms)));
+                p.transact(TX_SEEK_TO, data, reply, 0);
+                reply.readException();
+                Log.d(TAG, "seek " + kind + " to " + ms + " ms -> " + (reply.readInt() != 0));
+            } catch (RemoteException | RuntimeException e) {
+                Log.w(TAG, kind + " seek failed: " + e);
+            } finally {
+                reply.recycle();
+                data.recycle();
+            }
+            // The new position at once, not at the next second
             refresh(false);
         });
         return true;

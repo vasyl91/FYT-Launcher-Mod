@@ -37,6 +37,12 @@ final class MusicWidgetPlan {
     /** One text row, progress, buttons, gaps. */
     static final float[] HOME_NO_COVER = {0.30f, 0.06f, 0.52f, 0.12f};
 
+    // The same with the position slider of the 7870 (PositionSlider): its row is higher than the thin
+    // bar's, for the slider's knob, and the others give up a little of theirs (each set adds up to 1).
+    static final float[] HOME_STANDARD_SLIDER = {0.36f, 0.12f, 0.12f, 0.09f, 0.24f, 0.07f};
+    static final float[] HOME_COMPACT_SLIDER = {0.42f, 0.16f, 0.09f, 0.26f, 0.07f};
+    static final float[] HOME_NO_COVER_SLIDER = {0.28f, 0.11f, 0.50f, 0.11f};
+
     // Bar, the column right of the cover, shares of the height:
     /** Two text rows, buttons, gaps. */
     static final float[] BAR_STANDARD = {0.25f, 0.25f, 0.45f, 0.05f};
@@ -237,25 +243,33 @@ final class MusicWidgetPlan {
      * reaches (the artist gets the size of the title).
      */
     static Plan planHome(int w, int h, float density, float maxTextPx) {
+        return planHome(w, h, density, maxTextPx, false);
+    }
+
+    /** The home widget, with the position slider's higher row where {@code slider} (the 7870, PositionSlider). */
+    static Plan planHome(int w, int h, float density, float maxTextPx, boolean slider) {
+        float[] standard = slider ? HOME_STANDARD_SLIDER : HOME_STANDARD;
+        float[] compact = slider ? HOME_COMPACT_SLIDER : HOME_COMPACT;
+        float[] noCover = slider ? HOME_NO_COVER_SLIDER : HOME_NO_COVER;
         float minText = MIN_TEXT_SP * density;
         Plan plan = new Plan();
         plan.compact = false;
         plan.cover = true;
-        plan.rowPx = part(h, HOME_STANDARD[1]);
+        plan.rowPx = part(h, standard[1]);
         plan.textPx = Math.min(plan.rowPx / LINE_FACTOR, maxTextPx);
-        float[] shares = HOME_STANDARD;
+        float[] shares = standard;
         int elements = 5;
         if (plan.textPx < minText) {
             plan.compact = true;
-            plan.rowPx = part(h, HOME_COMPACT[1]);
+            plan.rowPx = part(h, compact[1]);
             plan.textPx = Math.min(plan.rowPx / LINE_FACTOR, maxTextPx);
-            shares = HOME_COMPACT;
+            shares = compact;
             elements = 4;
             if (plan.textPx < minText) {
                 plan.cover = false;
-                plan.rowPx = part(h, HOME_NO_COVER[0]);
+                plan.rowPx = part(h, noCover[0]);
                 plan.textPx = Math.min(plan.rowPx / LINE_FACTOR, maxTextPx);
-                shares = HOME_NO_COVER;
+                shares = noCover;
                 elements = 3;
             }
         }

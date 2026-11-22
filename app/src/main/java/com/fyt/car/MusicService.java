@@ -226,6 +226,12 @@ public class MusicService extends Service {
         return client != null && client.control(command);
     }
 
+    /** The 7870: moves com.syu.media's file to {@code ms} (the home widget's position slider). */
+    public static boolean seekSyuMedia(long ms) {
+        SyuMediaClient client = SyuMediaClient.of(StockKindArbiter.Kind.MEDIA_MUSIC);
+        return client != null && client.seekTo(ms);
+    }
+
     /** Asks com.syu.media again, at most once a second; for a flag changed in its own screen. */
     public static void requestSyuMediaRefresh() {
         SyuMediaClient client = SyuMediaClient.of(shownPlayerKind());

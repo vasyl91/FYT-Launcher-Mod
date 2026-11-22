@@ -99,6 +99,11 @@ final class LauncherMusicWidget {
 
     SeekBar musicSeekBar;
 
+    /** The 7870's position slider in place of musicProgress (PositionSlider); null elsewhere. */
+    SeekBar musicPosition;
+    private boolean mPositionDragging;
+    private long mPositionTotalMs;
+
     Button mPlayPauseButton;
 
     Button mPlayPauseButtonTwo;
@@ -258,6 +263,7 @@ final class LauncherMusicWidget {
                     if (musicProgress != null) {
                         musicProgress.setProgress(0);
                     }
+                    showPosition(0, 0);
                     if (musicSeekBar != null) {
                         musicSeekBar.setOnSeekBarChangeListener(mLauncher.new OnSeekBarChangeListenerImp(mLauncher, null));
                     }
@@ -376,6 +382,7 @@ final class LauncherMusicWidget {
                     tvAlbum.setText(album);
                 }
                 if (lngs != null && lngs.length > 1) {
+                    showPosition(curProgress, totalProgress);
                     if (totalProgress > 0) {
                         if (curProgress < 0) {
                             curProgress = 0;
@@ -470,6 +477,10 @@ final class LauncherMusicWidget {
             if (mPlayPauseButtonTwo != null) {
                 mPlayPauseButtonTwo.setBackground(SkinUtils.getDrawable(ResValue.getInstance().music_pause_icon));
             }*/
+            if (lngs != null && lngs.length > 1) {
+                // The 7870's slider follows a pause too: where the track stopped
+                showPosition(lngs[1], lngs[0]);
+            }
             StockKindArbiter.Kind shownKind = StockSources.shownKind();
             if (PausedCover.applies(StockSources.isSyuMediaUnit(), shownKind != null && shownKind.isSyuMediaKind(),
                     false)) {
@@ -666,6 +677,64 @@ final class LauncherMusicWidget {
                 setBarButtonsTint(mPlayPauseButtonTwo);
             }
         }         
+    }
+
+    /** The slider's scale and what a move of it does: com.syu.media's file goes to that position. */
+    private void bindPositionSlider() {
+        if (musicPosition == null) {
+            return;
+        }
+        musicPosition.setMax(PositionSlider.MAX);
+        musicPosition.setEnabled(false);
+        musicPosition.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                mPositionDragging = true;
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                mPositionDragging = false;
+                if (positionSeekable()) {
+                    MusicService.seekSyuMedia(PositionSlider.position(seekBar.getProgress(), mPositionTotalMs));
+                }
+            }
+        });
+    }
+
+    /** com.syu.media's own file is shown (not a session's app, BT or a station): the slider moves it. */
+    private boolean positionSeekable() {
+        StockKindArbiter.Kind kind = StockSources.shownKind();
+        return PositionSlider.seekable(StockSources.isSyuMediaUnit(),
+                kind == StockKindArbiter.Kind.MEDIA_MUSIC && !"mediaController".equals(mediaSource), mPositionTotalMs);
+    }
+
+    /**
+     * The 7870's slider: the position of what plays or pauses, with a knob where it can be moved (PositionSlider).
+     * Not while the user drags it.
+     */
+    private void showPosition(long curMs, long totalMs) {
+        if (musicPosition == null) {
+            return;
+        }
+        mPositionTotalMs = totalMs;
+        boolean seekable = positionSeekable();
+        if (musicPosition.isEnabled() != seekable) {
+            musicPosition.setEnabled(seekable);
+        }
+        Drawable knob = musicPosition.getThumb();
+        int alpha = seekable ? 255 : 0;
+        if (knob != null && knob.getAlpha() != alpha) {
+            knob.setAlpha(alpha);
+            musicPosition.invalidate();
+        }
+        if (!mPositionDragging) {
+            musicPosition.setProgress(PositionSlider.value(curMs, totalMs));
+        }
     }
 
     /** What drawPausedCover() drew last (the track and the picture's kind); null: draw again. */
@@ -1295,8 +1364,11 @@ final class LauncherMusicWidget {
             mLauncher.mTvMusic = musicWidgetView.findViewById(ResValue.getInstance().tv_music);
             musicSeekBar = musicWidgetView.findViewById(ResValue.getInstance().music_seekbar);
             musicProgress = musicWidgetView.findViewById(ResValue.getInstance().music_progress);
+            musicPosition = musicWidgetView.findViewById(R.id.music_position);
+            bindPositionSlider();
             widgetTint = WidgetStyler.widgetsTint(mLauncher.mPrefs);
             ViewTint.tintProgress(musicProgress, widgetTint);
+            ViewTint.tintProgress(musicPosition, widgetTint);
             ViewTint.tintText(musicWidgetView.findViewById(ResValue.getInstance().tv_musicName), widgetTint);
             ViewTint.tintText(musicWidgetView.findViewById(ResValue.getInstance().tv_artist), widgetTint);
             mLauncher.putCustomView(Config.WS_Music, musicWidgetView.findViewById(ResValue.getInstance().rl_music));
