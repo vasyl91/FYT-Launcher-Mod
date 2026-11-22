@@ -9,11 +9,10 @@
 .externalNativeBuild
 .cxx
 local.properties
-/decompiled_FYT_framework/framework.jar
 
 # --- Build ---
 app/build/
-/app/fyt/
+/app/system/
 /app/standard/
 /hiddenapi-stubs/build/
 /vdhost/server/build/
