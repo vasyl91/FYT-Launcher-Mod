@@ -153,6 +153,8 @@
     <string name="autostart_apps">ເລີ່ມເມື່ອເປີດເຄື່ອງ</string>
     <string name="autostart_apps_summary">ແອັບທີ່ເປີດໂດຍຟັງຊັນເລີ່ມອັດຕະໂນມັດຂອງລະບົບອາດເຮັດໃຫ້ Launcher ເລີ່ມຊ້າລົງ. ຕົວເລືອກໃນຕົວຂອງ Launcher ຈະເປີດພວກມັນຫຼັງຈາກ Launcher ເລີ່ມຕົ້ນແບບເຢັນສຳເລັດແລ້ວເທົ່ານັ້ນ. ເມື່ອໃຊ້ລາຍການນີ້ ຢ່າລືມປິດແອັບເຫຼົ່ານີ້ໃນການຕັ້ງຄ່າ FYT; ບໍ່ດັ່ງນັ້ນ ພວກມັນຈະຖືກເປີດສອງຄັ້ງ.</string>
     <string name="autostart_apps_by_boot_completed">ພະຍາຍາມໃຊ້ບຣອດແຄສ BOOT_COMPLETED ຖ້າແອັບທີ່ເລືອກໄດ້ລົງທະບຽນມັນໄວ້</string>
+    <string name="wake_autostart_apps">ເລີ່ມເມື່ອຕື່ນ</string>
+    <string name="wake_autostart_apps_summary">ເປີດເທື່ອລະອັນ ສອງສາມວິນາທີຫຼັງຈາກຕື່ນຈາກການນອນແຕ່ລະເທື່ອ; ຈາກນັ້ນລັອນເຊີ ຫຼື ແອັບກ່ອນການນອນ ກັບມາຢູ່ທາງໜ້າ. \"ເລີ່ມເມື່ອເປີດເຄື່ອງ\" ເລີ່ມແອັບຂອງມັນພຽງແຕ່ຫຼັງຈາກເລີ່ມອຸປະກອນໃໝ່ເທົ່ານັ້ນ.</string>
 
     <string name="music_widget_category">ວິດເຈັດເພງ</string>
     <string name="youtube_category">YouTube</string>

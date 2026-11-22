@@ -153,6 +153,8 @@
     <string name="autostart_apps">부팅 시 시작</string>
     <string name="autostart_apps_summary">시스템의 자동 시작 기능으로 실행되는 앱은 런처 시작을 느리게 할 수 있습니다. 런처의 내장 옵션은 런처의 콜드 스타트가 끝난 뒤에만 앱을 실행합니다. 이 목록을 사용할 때는 FYT 설정에서 해당 앱을 비활성화하세요. 그렇지 않으면 두 번 실행됩니다.</string>
     <string name="autostart_apps_by_boot_completed">선택한 앱이 BOOT_COMPLETED 브로드캐스트를 등록한 경우 이를 사용 시도</string>
+    <string name="wake_autostart_apps">깨어날 때 시작</string>
+    <string name="wake_autostart_apps_summary">절전 모드에서 깨어날 때마다 몇 초 뒤 하나씩 열립니다. 그 다음 런처 또는 절전 전의 앱이 앞으로 돌아옵니다. \"부팅 시 시작\"는 기기를 다시 시작한 뒤에만 앱을 시작합니다.</string>
 
     <string name="music_widget_category">음악 위젯</string>
     <string name="youtube_category">YouTube</string>

@@ -153,6 +153,8 @@
     <string name="autostart_apps">Beim Start öffnen</string>
     <string name="autostart_apps_summary">Apps, die über die Autostart-Funktion des Systems gestartet werden, können den Start des Launchers verlangsamen. Die integrierte Option des Launchers startet sie erst, nachdem der Launcher seinen Kaltstart abgeschlossen hat. Wenn Sie diese Liste verwenden, deaktivieren Sie diese Apps in den FYT-Einstellungen, sonst werden sie doppelt gestartet.</string>
     <string name="autostart_apps_by_boot_completed">Den BOOT_COMPLETED-Broadcast verwenden, falls die ausgewählte App ihn registriert hat</string>
+    <string name="wake_autostart_apps">Beim Aufwachen öffnen</string>
+    <string name="wake_autostart_apps_summary">Nacheinander einige Sekunden nach jedem Aufwachen aus dem Ruhezustand geöffnet; danach kommt der Launcher oder die App von vor dem Ruhezustand wieder nach vorn. \"Beim Start öffnen\" startet seine Apps nur nach einem Neustart des Geräts.</string>
 
     <string name="music_widget_category">Musik-Widget</string>
     <string name="youtube_category">YouTube</string>

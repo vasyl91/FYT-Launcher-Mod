@@ -153,6 +153,8 @@
     <string name="autostart_apps">Paleisti įjungiant</string>
     <string name="autostart_apps_summary">Programos, paleidžiamos sistemos automatinio paleidimo funkcija, gali sulėtinti paleidyklės paleidimą. Integruota paleidyklės parinktis jas paleidžia tik tada, kai paleidyklė baigia šaltąjį paleidimą. Naudodami šį sąrašą nepamirškite išjungti šių programų FYT nustatymuose, kitaip jos bus paleistos du kartus.</string>
     <string name="autostart_apps_by_boot_completed">Bandyti naudoti BOOT_COMPLETED transliaciją, jei pasirinkta programa ją užregistravo</string>
+    <string name="wake_autostart_apps">Paleisti pabudus</string>
+    <string name="wake_autostart_apps_summary">Atidaromos po vieną praėjus kelioms sekundėms po kiekvieno pabudimo iš miego; tada į priekį grįžta paleidimo programa arba programa, buvusi prieš miegą. \"Paleisti įjungiant\" paleidžia savo programas tik iš naujo paleidus įrenginį.</string>
 
     <string name="music_widget_category">Muzikos valdiklis</string>
     <string name="youtube_category">YouTube</string>

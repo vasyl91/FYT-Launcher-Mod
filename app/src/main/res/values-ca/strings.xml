@@ -153,6 +153,8 @@
     <string name="autostart_apps">Inicia en arrencar</string>
     <string name="autostart_apps_summary">Les aplicacions que inicia la funció d\'inici automàtic del sistema poden alentir l\'inici del llançador. L\'opció integrada del llançador les inicia només després que el llançador hagi acabat el seu inici en fred. Quan utilitzis aquesta llista, recorda desactivar aquestes aplicacions a la configuració de FYT; si no, s\'iniciaran dues vegades.</string>
     <string name="autostart_apps_by_boot_completed">Intenta utilitzar la difusió BOOT_COMPLETED si l\'aplicació seleccionada l\'ha registrat</string>
+    <string name="wake_autostart_apps">Inicia en despertar</string>
+    <string name="wake_autostart_apps_summary">S\'obren una per una uns segons després de cada despertar del repòs; després torna al davant el llançador, o l\'aplicació d\'abans del repòs. \"Inicia en arrencar\" només inicia les seves aplicacions després de reiniciar el dispositiu.</string>
 
     <string name="music_widget_category">Widget de música</string>
     <string name="youtube_category">YouTube</string>

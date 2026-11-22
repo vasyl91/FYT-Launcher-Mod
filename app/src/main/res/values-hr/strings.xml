@@ -153,6 +153,8 @@
     <string name="autostart_apps">Pokreni pri uključivanju</string>
     <string name="autostart_apps_summary">Aplikacije koje pokreće značajka automatskog pokretanja sustava mogu usporiti pokretanje launchera. Ugrađena opcija launchera pokreće ih tek nakon što launcher završi hladno pokretanje. Kad koristite ovaj popis, ne zaboravite onemogućiti te aplikacije u FYT postavkama; inače će se pokrenuti dvaput.</string>
     <string name="autostart_apps_by_boot_completed">Pokušaj koristiti broadcast BOOT_COMPLETED ako ga je odabrana aplikacija registrirala</string>
+    <string name="wake_autostart_apps">Pokreni pri buđenju</string>
+    <string name="wake_autostart_apps_summary">Otvaraju se jedna po jedna nekoliko sekundi nakon svakog buđenja iz mirovanja; zatim se naprijed vraća pokretač ili aplikacija od prije mirovanja. \"Pokreni pri uključivanju\" pokreće svoje aplikacije samo nakon ponovnog pokretanja uređaja.</string>
 
     <string name="music_widget_category">Widget glazbe</string>
     <string name="youtube_category">YouTube</string>

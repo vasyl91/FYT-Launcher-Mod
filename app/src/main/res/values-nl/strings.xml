@@ -153,6 +153,8 @@
     <string name="autostart_apps">Starten bij opstarten</string>
     <string name="autostart_apps_summary">Apps die worden gestart door de autostartfunctie van het systeem kunnen het opstarten van de launcher vertragen. De ingebouwde optie van de launcher start ze pas nadat de launcher zijn koude start heeft voltooid. Vergeet bij gebruik van deze lijst niet deze apps uit te schakelen in de FYT-instellingen; anders worden ze twee keer gestart.</string>
     <string name="autostart_apps_by_boot_completed">Probeer de BOOT_COMPLETED-broadcast te gebruiken als de geselecteerde app die heeft geregistreerd</string>
+    <string name="wake_autostart_apps">Starten bij ontwaken</string>
+    <string name="wake_autostart_apps_summary">Een voor een geopend enkele seconden na elk ontwaken uit de slaapstand; daarna komt de launcher, of de app van vóór de slaapstand, weer naar voren. \"Starten bij opstarten\" start zijn apps alleen na een herstart van het apparaat.</string>
 
     <string name="music_widget_category">Muziekwidget</string>
     <string name="youtube_category">YouTube</string>

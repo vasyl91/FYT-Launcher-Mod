@@ -153,6 +153,8 @@
     <string name="autostart_apps">Indítás rendszerindításkor</string>
     <string name="autostart_apps_summary">A rendszer automatikus indítási funkciójával indított alkalmazások lassíthatják a launcher indulását. A launcher beépített lehetősége csak azután indítja el őket, hogy a launcher befejezte a hidegindítást. A lista használatakor ne felejtse el letiltani ezeket az alkalmazásokat az FYT beállításaiban, különben kétszer indulnak el.</string>
     <string name="autostart_apps_by_boot_completed">A BOOT_COMPLETED üzenet használatának megkísérlése, ha a kiválasztott alkalmazás regisztrálta</string>
+    <string name="wake_autostart_apps">Indítás ébredéskor</string>
+    <string name="wake_autostart_apps_summary">Minden alvó állapotból való ébredés után néhány másodperccel egyenként nyílnak meg; utána az indító vagy az alvás előtti alkalmazás kerül vissza előtérbe. A(z) \"Indítás rendszerindításkor\" csak az eszköz újraindítása után indítja el az alkalmazásait.</string>
 
     <string name="music_widget_category">Zenewidget</string>
     <string name="youtube_category">YouTube</string>

@@ -153,6 +153,8 @@
     <string name="autostart_apps">البدء عند التشغيل</string>
     <string name="autostart_apps_summary">قد تؤدي التطبيقات التي تُشغَّل بميزة البدء التلقائي في النظام إلى إبطاء بدء تشغيل المشغّل. لا يشغّلها الخيار المدمج في المشغّل إلا بعد أن ينهي المشغّل بدءه البارد. عند استخدام هذه القائمة، تذكّر تعطيل هذه التطبيقات في إعدادات FYT، وإلا فسيتم تشغيلها مرتين.</string>
     <string name="autostart_apps_by_boot_completed">محاولة استخدام بث BOOT_COMPLETED إذا كان التطبيق المحدد قد سجّله</string>
+    <string name="wake_autostart_apps">البدء عند الاستيقاظ</string>
+    <string name="wake_autostart_apps_summary">تُفتح واحدًا تلو الآخر بعد ثوانٍ من كل استيقاظ من السكون؛ ثم يعود المشغّل، أو التطبيق الذي كان قبل السكون، إلى الواجهة. \"البدء عند التشغيل\" يشغّل تطبيقاته فقط بعد إعادة تشغيل الجهاز.</string>
 
     <string name="music_widget_category">عنصر واجهة الموسيقى</string>
     <string name="youtube_category">YouTube</string>

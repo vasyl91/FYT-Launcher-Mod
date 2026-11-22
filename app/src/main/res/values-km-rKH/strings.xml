@@ -153,6 +153,8 @@
     <string name="autostart_apps">ចាប់ផ្តើមពេលបើកម៉ាស៊ីន</string>
     <string name="autostart_apps_summary">កម្មវិធីដែលបើកដោយមុខងារចាប់ផ្តើមស្វ័យប្រវត្តិរបស់ប្រព័ន្ធអាចធ្វើឱ្យ Launcher ចាប់ផ្តើមយឺត។ ជម្រើសដែលភ្ជាប់មកជាមួយ Launcher នឹងបើកពួកវាបន្ទាប់ពី Launcher បញ្ចប់ការចាប់ផ្តើមត្រជាក់ប៉ុណ្ណោះ។ នៅពេលប្រើបញ្ជីនេះ សូមចាំបិទកម្មវិធីទាំងនេះនៅក្នុងការកំណត់ FYT បើមិនដូច្នេះទេ ពួកវានឹងត្រូវបានបើកពីរដង។</string>
     <string name="autostart_apps_by_boot_completed">ព្យាយាមប្រើការផ្សាយ BOOT_COMPLETED ប្រសិនបើកម្មវិធីដែលបានជ្រើសរើសបានចុះឈ្មោះវា</string>
+    <string name="wake_autostart_apps">ចាប់ផ្តើមពេលភ្ញាក់</string>
+    <string name="wake_autostart_apps_summary">បើកម្តងមួយៗ ពីរបីវិនាទីបន្ទាប់ពីភ្ញាក់ពីការដេកម្តងៗ បន្ទាប់មកកម្មវិធីចាប់ផ្តើម ឬកម្មវិធីមុនពេលដេក ត្រឡប់មកខាងមុខវិញ។ \"ចាប់ផ្តើមពេលបើកម៉ាស៊ីន\" ចាប់ផ្តើមកម្មវិធីរបស់វាតែបន្ទាប់ពីចាប់ផ្តើមឧបករណ៍ឡើងវិញប៉ុណ្ណោះ។</string>
 
     <string name="music_widget_category">ធាតុក្រាហ្វិកតន្ត្រី</string>
     <string name="youtube_category">YouTube</string>

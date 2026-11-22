@@ -153,6 +153,8 @@
     <string name="autostart_apps">شروع هنگام روشن شدن</string>
     <string name="autostart_apps_summary">برنامه‌هایی که با قابلیت شروع خودکار سیستم اجرا می‌شوند ممکن است راه‌اندازی لانچر را کند کنند. گزینه داخلی لانچر آن‌ها را فقط پس از پایان راه‌اندازی سرد لانچر اجرا می‌کند. هنگام استفاده از این فهرست، فراموش نکنید این برنامه‌ها را در تنظیمات FYT غیرفعال کنید؛ وگرنه دو بار اجرا می‌شوند.</string>
     <string name="autostart_apps_by_boot_completed">در صورتی که برنامه انتخاب‌شده پخش BOOT_COMPLETED را ثبت کرده باشد، از آن استفاده شود</string>
+    <string name="wake_autostart_apps">شروع هنگام بیدار شدن</string>
+    <string name="wake_autostart_apps_summary">چند ثانیه پس از هر بیدار شدن از خواب، یکی‌یکی باز می‌شوند؛ سپس لانچر، یا برنامه‌ی پیش از خواب، به جلو برمی‌گردد. \"شروع هنگام روشن شدن\" برنامه‌هایش را فقط پس از راه‌اندازی دوباره‌ی دستگاه شروع می‌کند.</string>
 
     <string name="music_widget_category">ویجت موسیقی</string>
     <string name="youtube_category">YouTube</string>

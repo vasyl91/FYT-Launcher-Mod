@@ -54,6 +54,7 @@
             android:gravity="center_horizontal"
             android:visibility="visible"
             android:layout_width="fill_parent"
+            android:id="@+id/bootlist_title"
             android:layout_height="wrap_content"
             android:text="@string/autostart_apps" />
 

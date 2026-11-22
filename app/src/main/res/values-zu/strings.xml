@@ -153,6 +153,8 @@
     <string name="autostart_apps">Qala ekuqaleni</string>
     <string name="autostart_apps_summary">Izinhlelo zokusebenza ezethulwa isici sokuqalisa ngokuzenzakalelayo sesistimu zingase zehlise ukuqala kwesiqalisi. Inketho eyakhelwe-ngaphakathi yesiqalisi izethula kuphela ngemuva kokuba isiqalisi siqede ukuqala kwaso okubandayo. Uma usebenzisa lolu hlu, khumbula ukukhubaza lezi zinhlelo zokusebenza ezilungiselelweni ze-FYT; ngaphandle kwalokho zizethulwa kabili.</string>
     <string name="autostart_apps_by_boot_completed">Zama ukusebenzisa ukusakaza kwe-BOOT_COMPLETED uma uhlelo lokusebenza olukhethiwe seluyibhalisile</string>
+    <string name="wake_autostart_apps">Qala ekuvukeni</string>
+    <string name="wake_autostart_apps_summary">Kuvulwa ngamunye imizuzwana embalwa ngemuva kokuvuka ngakunye ekulaleni; bese isiqalisi, noma uhlelo lokusebenza olwangaphambi kokulala, lubuyela phambili. I-\"Qala ekuqaleni\" iqala izinhlelo zayo kuphela ngemuva kokuqala kabusha idivayisi.</string>
 
     <string name="music_widget_category">Iwijethi yomculo</string>
     <string name="youtube_category">YouTube</string>

@@ -153,6 +153,8 @@
     <string name="autostart_apps">Mulai saat boot</string>
     <string name="autostart_apps_summary">Aplikasi yang dijalankan oleh fitur mulai otomatis sistem dapat memperlambat startup peluncur. Opsi bawaan peluncur menjalankannya hanya setelah peluncur menyelesaikan cold start. Saat menggunakan daftar ini, ingat untuk menonaktifkan aplikasi tersebut di setelan FYT; jika tidak, aplikasi akan dijalankan dua kali.</string>
     <string name="autostart_apps_by_boot_completed">Coba gunakan siaran BOOT_COMPLETED jika aplikasi yang dipilih telah mendaftarkannya</string>
+    <string name="wake_autostart_apps">Mulai saat bangun</string>
+    <string name="wake_autostart_apps_summary">Dibuka satu per satu beberapa detik setelah setiap bangun dari tidur; lalu peluncur, atau aplikasi dari sebelum tidur, kembali ke depan. \"Mulai saat boot\" hanya memulai aplikasinya setelah perangkat dimulai ulang.</string>
 
     <string name="music_widget_category">Widget musik</string>
     <string name="youtube_category">YouTube</string>

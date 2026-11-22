@@ -153,6 +153,8 @@
     <string name="autostart_apps">Starta vid uppstart</string>
     <string name="autostart_apps_summary">Appar som startas av systemets autostartfunktion kan göra launcherns start långsammare. Launcherns inbyggda alternativ startar dem först när launchern har slutfört sin kallstart. När du använder den här listan, kom ihåg att inaktivera de här apparna i FYT-inställningarna, annars startas de två gånger.</string>
     <string name="autostart_apps_by_boot_completed">Försök använda BOOT_COMPLETED-sändningen om den valda appen har registrerat den</string>
+    <string name="wake_autostart_apps">Starta vid uppvaknande</string>
+    <string name="wake_autostart_apps_summary">Öppnas en i taget några sekunder efter varje uppvaknande ur viloläge; sedan kommer startprogrammet, eller appen från före viloläget, tillbaka i förgrunden. \"Starta vid uppstart\" startar sina appar bara efter en omstart av enheten.</string>
 
     <string name="music_widget_category">Musikwidget</string>
     <string name="youtube_category">YouTube</string>

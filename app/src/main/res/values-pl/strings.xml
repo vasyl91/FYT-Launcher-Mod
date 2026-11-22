@@ -153,6 +153,8 @@
     <string name="autostart_apps">Uruchamiaj przy starcie systemu</string>
     <string name="autostart_apps_summary">Aplikacje uruchamiane przez systemowy autostart mogą spowalniać uruchamianie launchera. Opcja wbudowana w launcher uruchomi je dopiero po zakończeniu jego zimnego startu. Korzystając z tej listy, pamiętaj, aby odznaczyć te aplikacje w ustawieniach FYT — w przeciwnym razie uruchomią się dwukrotnie.</string>
     <string name="autostart_apps_by_boot_completed">Spróbuj uruchomić wybraną aplikację za pomocą broadcastu BOOT_COMPLETED, jeśli jest zarejestrowany</string>
+    <string name="wake_autostart_apps">Uruchamiaj po wybudzeniu</string>
+    <string name="wake_autostart_apps_summary">Otwierane po kolei kilka sekund po każdym wybudzeniu ze snu; potem na wierzch wraca launcher albo aplikacja sprzed snu. „Uruchamiaj przy starcie systemu” uruchamia swoje aplikacje tylko po ponownym uruchomieniu urządzenia.</string>
 
     <string name="music_widget_category">Music Widget</string>
     <string name="youtube_category">YouTube</string>

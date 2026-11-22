@@ -153,6 +153,8 @@
     <string name="autostart_apps">開機自動啟動</string>
     <string name="autostart_apps_summary">透過系統自動啟動功能啟動的應用程式可能會減慢啟動器的啟動速度。啟動器內建的選項會在啟動器完成冷啟動後再啟動這些應用程式。使用此列表時，請記得在 FYT 設定中取消這些應用程式的自動啟動，否則它們將被啟動兩次。</string>
     <string name="autostart_apps_by_boot_completed">如果已註冊 BOOT_COMPLETED 廣播，則嘗試透過該廣播啟動所選應用程式</string>
+    <string name="wake_autostart_apps">喚醒時啟動</string>
+    <string name="wake_autostart_apps_summary">每次從休眠喚醒後幾秒逐一開啟；隨後啟動器或休眠前的應用程式回到前景。「開機自動啟動」只在裝置重新啟動後啟動其應用程式。</string>
 
     <string name="music_widget_category">音樂小工具</string>
     <string name="youtube_category">YouTube</string>

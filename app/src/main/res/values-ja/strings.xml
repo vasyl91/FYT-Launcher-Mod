@@ -153,6 +153,8 @@
     <string name="autostart_apps">起動時に開始</string>
     <string name="autostart_apps_summary">システムの自動起動機能で起動するアプリは、ランチャーの起動を遅くすることがあります。ランチャー内蔵のオプションは、ランチャーのコールドスタートが完了してからアプリを起動します。このリストを使う場合は、FYT設定でこれらのアプリを無効にしてください。そうしないと2回起動されます。</string>
     <string name="autostart_apps_by_boot_completed">選択したアプリがBOOT_COMPLETEDブロードキャストを登録している場合は、それを使用してみる</string>
+    <string name="wake_autostart_apps">スリープ解除時に開始</string>
+    <string name="wake_autostart_apps_summary">スリープから復帰するたびに数秒後に1つずつ開きます。その後、ランチャーまたはスリープ前のアプリが前面に戻ります。「起動時に開始」はデバイスの再起動後にだけアプリを開始します。</string>
 
     <string name="music_widget_category">ミュージックウィジェット</string>
     <string name="youtube_category">YouTube</string>

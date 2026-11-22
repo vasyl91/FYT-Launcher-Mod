@@ -153,6 +153,8 @@
     <string name="autostart_apps">Açılışta başlat</string>
     <string name="autostart_apps_summary">Sistemin otomatik başlatma özelliğiyle başlatılan uygulamalar başlatıcının açılışını yavaşlatabilir. Başlatıcının yerleşik seçeneği bunları yalnızca başlatıcının soğuk başlangıcı tamamlandıktan sonra başlatır. Bu listeyi kullanırken bu uygulamaları FYT ayarlarında devre dışı bırakmayı unutmayın; aksi halde iki kez başlatılırlar.</string>
     <string name="autostart_apps_by_boot_completed">Seçilen uygulama kaydettiyse BOOT_COMPLETED yayınını kullanmayı dene</string>
+    <string name="wake_autostart_apps">Uyanınca başlat</string>
+    <string name="wake_autostart_apps_summary">Uykudan her uyanıştan birkaç saniye sonra tek tek açılır; ardından başlatıcı ya da uykudan önceki uygulama öne döner. \"Açılışta başlat\" uygulamalarını yalnızca cihaz yeniden başlatıldıktan sonra başlatır.</string>
 
     <string name="music_widget_category">Müzik widget\'ı</string>
     <string name="youtube_category">YouTube</string>
