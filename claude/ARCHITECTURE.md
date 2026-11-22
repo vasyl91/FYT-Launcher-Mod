@@ -27,16 +27,16 @@ The class Javadoc is the detailed reference; this file is the map.
 | `vdhost/` | The FYT VDHost: `shared/` (protocol and core), `server/` (the uid-1000 daemon and the Magisk zip task), `magisk/` (module template), `tools/` (pane leak scripts). See `vdhost/README.md`. |
 | `canbus_library/` | `build_canbus_library.py` (+ a `.bat`): builds the CAN bus library from a decompiled `com.syu.canbus`. With `--launcher .` it rebuilds the two built-in assets from `archive/decompiled/`. |
 | `android_jar/android-36.jar` | The Android 36 class library. **`:hiddenapi-stubs` and `:vdhost-shared` compile against it** (`compileOnly`), so it must stay at this path. |
-| `archive/decompiled/` | Decompiled FYT apps: `decompiled_carinfo`, `decompiled_com.syu.canbus` (three versions: `classes.dex`, `classes.dex.new`, `classes.dex.7870`), `decompiled_com.syu.media`, `decompiled_com.syu.radio`. **Reference only, not in the build** (about 300 MB). `canbus_library/build_canbus_library.py --launcher .` reads the first two. |
+| `archive/decompiled/` | Decompiled FYT apps and frameworks as zip files since the owner's `22490c9e0` (2026-11-21): `carinfo.zip`, `com.syu.canbus.zip` (three versions inside: `classes.dex`, `classes.dex.new`, `classes.dex.7870`), `com.syu.media.zip`, `com.syu.radio.zip`, and the frameworks `7862/system.zip`, `7870/system.zip`, `7870/system_ext.zip`. **Reference only, not in the build.** Read a file with `unzip -p <zip> <path>`. The folders `decompiled_*` are gone, so `canbus_library/build_canbus_library.py --launcher .`, which reads `decompiled_carinfo` and `decompiled_com.syu.canbus`, needs them unpacked first (KI-49). |
 | `archive/fuel_stats_example/` | Four decompiled example classes that `README.MD` links to. |
 | `archive/android_jar/` | The two `.rar` archives of the modified-`android.jar` workflow, obsolete since 1.1.7 (README). |
 | `images/` | README screenshots and videos. |
 | `.github/workflows/` | `build.yml` (CI), `release-assets.yml` (legacy updater asset names). |
 | `claude/` | Documentation for Claude sessions (this folder, lower case). |
 
-The decompiled FYT framework (`decompiled_FYT_jars/`, three zips) was removed from the tree in `8bfc5a8d`. It
-is still in git history, e.g. `git show 8bfc5a8d^:decompiled_FYT_jars/7862/system.zip`. Several briefs and
-chat reports cite files inside it.
+The decompiled FYT framework (`decompiled_FYT_jars/`, three zips) was removed from the tree in `8bfc5a8d` and is
+back since `22490c9e0` as `archive/decompiled/7862/system.zip`, `7870/system.zip` and `7870/system_ext.zip`. Several
+briefs and chat reports cite files inside it under their older paths.
 
 ## 2. Build
 
@@ -203,8 +203,8 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   the settings, and when the settings change it. The bar's icons follow its width (`BarCapacity.leftIconSize`).
 - **Content:** `L/LauncherAppBars` holds the apps of both bars. The lists are stored with LitePal:
   `com/android/recycler/AppMultiple` for the horizontal bar, `LeftAppMultiple` for the vertical bar. `L/BarCapacity` and `L/BarRows` handle slots and
-  preloading. `L/BarIconCount` (2026-11-18, pure): with a bar's "Resizable" switch on, the user may choose how
-  many icons it shows (1 .. what `BarCapacity` gives it room for, per bar and orientation; nothing chosen = as
+  preloading. `L/BarIconCount` (2026-11-18, pure): with or without a bar's "Resizable" switch (2026-11-21), the
+  user may choose how many icons it shows (1 .. what `BarCapacity` gives it room for, per bar and orientation; nothing chosen = as
   many as fit; a number above a newly smaller room is lowered and stored lowered). The settings work the room
   out live (`S/BarIconLimits`, `BarCapacity.leftCapacityFor`); the launcher counts with the room it measures.
 - **Bar on every page:**
@@ -257,6 +257,14 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   orientation, what is shown and how each element is tied; `L/BarOrderLayout` ties the elements of the page's bar
   (`Workspace.createUserPage`, after `WidgetBarLayout`) and of the bar's window (`Workspace.forceOriginalSizes`,
   after the sizes) from that one source. `WidgetBarLayout` only widens the music widget.
+- **The apps list fitted or hidden** (2026-11-21, D-80): `L/WidgetBarPlan.shares` (pure, tested) gives every
+  element's width share: the list fitted to its icons (`appsShare`: usual × shown / room) or hidden (`appsHidden`:
+  only in the user layout's widget bar), its freed room 10% to the date, 10% to the weather, the rest to the music.
+  `L/WidgetBarLayout.shares` counts the icons as the launcher does and feeds the page's bar, the window
+  (`forceOriginalSizesLayoutTwo`) and the music cover (`MusicWidgetSizer`). The portrait list and weather keep the
+  height of their usual width (`keptRatio`). A fitted tile keeps its width at the maximum (`BarCapacity.bottomTiles`,
+  `AppListAdapter`). A hidden list is GONE; every place that shows the list again asks
+  `WidgetBarLayout.appsListVisibility`, and `HomeLayoutRecovery.snapshot` does not judge it.
 
 ## 6. Layout creator
 
@@ -325,6 +333,12 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
     online radio and BT on 7870; the radio on both.
   - The other pieces are `C/MusicService`, `C/StockRadioSource`, `C/StockBtSource`, `C/SyuMediaClient` and
     `C/SyuMediaFiles` (covers read directly or through the host).
+  - The 7870's covers and position (2026-11-21): `C/StockBtCover` says when BT's cover file is this song's (the
+    first song after a start takes any file, a cleared title is the same song, the change kept on the elapsed
+    clock); `L/FileCover` reads a file's picture with `MediaMetadataRetriever` and `L/FileCoverRetry` reads once more
+    a file that could not be opened; `L/PausedCover` keeps the cover drawn in a pause and on a widget built again.
+    `L/PositionSlider` (D-81): the home widget's `music_position` slider on the 7870; com.syu.media's files move
+    through `SyuMediaClient.seekTo` (IPlayer transaction 12), BT and stations only show.
 - **Favorites (the heart):** `L/MediaFavoriteController`.
   - `com.syu.media` favorites are written to its library; FM favorites are read-only
     (`C/SyuMediaRadioFavorites`).
@@ -439,6 +453,12 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   - The dialogs (2026-11-20, D-78): `S/SettingsDialogs` gives every one of them the theme `SettingsDialog`, the
     settings' dark colours, and the fields their colours. The order of the horizontal bar's elements is
     `S/BarOrderDialog` (a row in "Bars", a list dragged with `ItemTouchHelper`).
+  - A turn of the screen (2026-11-21, D-82): on a phone `SettingsActivity` is created again for each orientation.
+    `S/SettingsDialogMemory` (pure) and `S/DialogTurn` bring an open plain dialog back on the new screen with its
+    fields' texts (each screen's `TURN_DIALOGS`); `S/HandedWork` (pure) hands a download, a wallpaper save or a
+    canbus import to the new screen with its progress dialog; `S/ColorPickerTargets` binds a colour picker that came
+    back; `S/CenterCrop` / `S/CenterCropDrawable` draw the background selector's wallpaper without stretching, and
+    the selector is sized from the settings' window.
   - The rows (2026-11-20, D-79): a nested row keeps its 16dp under the text on the row itself, with or without a
     summary, so a divider below never sits under its title; "Bars" has three sections with a divider between.
 - **Updater:** `S/VersionChecker` reads `github.com/vasyl91/FYT-Launcher-Mod/releases/latest`, downloads
@@ -473,7 +493,7 @@ There is no server and there are no user accounts.
 | github.com releases | `VersionChecker`, `FytRating` (the bridge's release page), Shizuku Next link | |
 | fYT Rating app (`vasyl.fytrating`) | `FytRating` | intents; owns the Google account |
 | Shizuku | VD host path | `rikka.shizuku` provider |
-| FYT system apps: `com.syu.ms`, `com.syu.canbus`, `com.syu.media`, `com.syu.music`, `com.syu.radio` | IPC, widgets, fuel statistics | decompiled copies under `decompiled_*` |
+| FYT system apps: `com.syu.ms`, `com.syu.canbus`, `com.syu.media`, `com.syu.music`, `com.syu.radio` | IPC, widgets, fuel statistics | decompiled copies in the zips of `archive/decompiled/` |
 
 ## 16. Cross-cutting rules
 

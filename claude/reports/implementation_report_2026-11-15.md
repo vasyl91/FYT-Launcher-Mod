@@ -554,3 +554,65 @@ the same theme for the other dialogs.
   the same.
 - Not tested on a device.
 
+**The owner's result (A55, 2026-11-21) [H]:** everything works as it should, except the dialogs after a turn of the
+screen: the colour picker comes back, the background selector comes back too narrow in landscape with a stretched
+wallpaper, the others are gone. The 7862 is not tested yet. Fixed in round 26.
+
+## Round 26 (2026-11-21/22): the settings through a turn, the apps list fitted or hidden, the 7870's media
+
+The owner, 2026-11-21 [H]: the dialogs after a turn (the colour picker as the example); "App icons" visible and
+changeable without "Resizable … bar", for both bars; a switch under the widget bar that fits the apps list to its
+icons, and one that hides it, only with the widget bar ("date and weather 10% each, the rest to the music"); the
+7870 tester's "default picture until the cover or the track changes" and a position slider on the big widget for
+files and BT; whether the 7862's pinned PiP could move with the pages, checked in the decompiled FYT framework the
+owner added (`22490c9e0`).
+
+| Commit | Subject |
+|---|---|
+| `edcee91a9` | Settings: an open dialog comes back after a turn of the screen |
+| `5c109b2e7` | Settings: a download, a wallpaper save or an import goes on through a turn, with its dialog |
+| `6361e8b5e` | Colour picker: its choice is stored after a turn of the screen |
+| `362fa1375` | Settings: the background selector is sized for the orientation it is shown in |
+| `ef8f97bc8` | Bars: the number of app icons is chosen with or without "Resizable ... bar" |
+| `d1a5118b0` | Bars: the apps list fitted to its icons, its room to the widgets |
+| `c97c6423d` | Bars: the apps list may be hidden, its room to the widgets |
+| `08453d95d` | Settings: the apps list fitted to its icons or hidden, under the widget bar |
+| `8ac8400a7` | Media (7870): a BT cover already on disk is taken after a start or a title that comes back |
+| `1026d6b69` | Media (7870): the cover of a file is read as com.syu.media reads it |
+| `18cc6e3f6` | Media (7870): a widget built again shows the cover of what plays or pauses |
+| `6c525ff3e` | Media (7870): a position slider on the big widget |
+
+- **A turn of the screen [V]:** on a phone `SettingsActivity` calls `recreate()` for the other orientation's density;
+  round 25's fix for the order's dialog worked only where the settings stay (FYT). `SettingsDialogMemory` (pure, 4
+  tests) and `DialogTurn` reopen a plain dialog the way a tap on its row does and put the fields' texts back
+  (`SettingsDialogTurnViewTest`, `BarOrderDialogViewTest` with `controller.recreate()`). `HandedWork` (pure, 6 tests)
+  hands a download, a wallpaper save or a canbus import to the new screen (`SettingsWorkTurnViewTest`, 5 tests).
+  `ColorPickerTurnViewTest` failed on the old code in all four cases - "Select" and "Default" stored nothing after a
+  turn, and replacing the second screen with a picker open threw "FragmentManager is already executing
+  transactions" - and passes now. The lists of the statistics and of PiP were dismissed in `onPause` before the state
+  was saved. The background selector took the launcher's size, which never turns (`BackgroundSelectorSizeViewTest`).
+- **"App icons" [V]:** `BarCapacity.chosen` read the number only with the switch on; the slider's end needed no change
+  (the room is a ratio of shares of the same width).
+- **The apps list [V]:** `WidgetBarPlan.shares` (pure, 6 more tests) and `WidgetBarLayout.shares` feed the page's
+  bar, the window, the tiles and the music cover from one source; `WidgetBarFitViewTest` (5 tests) checks 1 and 3
+  icons and the hidden list in both orientations, nothing overlapping, the portrait list and weather at their height.
+  Four places showed the list again (its setup, `enableRecycler`, the return to the home screen, the auto-hide's
+  collapse); they ask `WidgetBarLayout.appsListVisibility`. Six strings in 59 language files.
+- **The 7870 [V in the code, A as the tester's cause]:** three causes of the default picture: BT's cover file refused
+  as old after a start, a cleared title or a clock jump (`StockBtCover`, 3 more tests); a file's cover read by an mp3
+  and JPEG reader and a failed read kept (`FileCover`, `FileCoverRetry`); the cover drawn only while playing
+  (`PausedCover`). The slider's IPlayer call was checked in the decompiled `com.syu.media` (`IPlayer.Stub`, case 12:
+  `boolean seekTo(int)`).
+- **Pinned PiP [V in the 7862's framework]:** it cannot follow the pages (KI-15, D-34).
+
+**Deviations from the plan:**
+- Commit 3 also leaves the app lists of the statistics and of PiP open through a turn (`SettingsActivity.onPause`)
+  and drops `executePendingTransactions()` after a dismissal, which the test showed throwing.
+- Commit 7: a hidden list keeps its adapter (a GONE RecyclerView makes no item views); the binding code is unchanged.
+- Commit 8: the six strings went into the 8 regional files that already have the widget bar's rows too, with the text
+  of their language.
+- Commit 12: the slider is on every source of the 7870 (it only shows the position where it cannot move it), so the
+  home widget's rows do not change with the source; a session's app gains no seeking from it.
+- Found on the way, not changed: the canbus script's `--launcher .` needs the decompiled folders (KI-49).
+- Not tested on a device.
+

@@ -1,6 +1,6 @@
 # Known issues
 
-As of 2026-11-20 (`testBranch` after round 25 and the owner's log of 18:21 that day). One list of what is open today,
+As of 2026-11-22 (`testBranch` after round 26; round 25 waits for the 7862's log). One list of what is open today,
 rewritten on 2026-11-18 at the owner's request. What was fixed or closed has been taken out; it stays in git
 and in the reports (`reports/`, `chat_archive/`). Sources: the code, git, CI, the briefs, the chat reports and
 the owner's results.
@@ -44,6 +44,9 @@ file and named in the round's report.
 | KI-37 | A widget lay over icons after a change of the grid | unverified | watching | a log with `Item out of place` |
 | KI-44 | The GPS of the fuel statistics only while something needs it | unverified | partial | a unit whose code check waits for a drive |
 | KI-46 | StrictMode reports in the 7862's log of 2026-11-20 18:21 | problem | watching | the owner's log of the 7862 (`6670ecf8b`, `d61011f34`) |
+| KI-47 | The settings' dialogs and work after a turn of the screen (phones) | problem | watching | the owner's test on the A55 (round 26) |
+| KI-48 | The 7870's covers and the position slider | unverified | watching | the tester's result and log (round 26) |
+| KI-49 | The canbus script's `--launcher .` needs the decompiled folders, now zips | problem | open | the owner's call |
 
 ## Problems
 
@@ -129,6 +132,15 @@ make it reload, checked 2026-11-15); FM favorites are read-only; the Bluetooth h
 Google Maps switches to its minimal UI in FYT's pinned PiP unless the LSPosed module is used (D-23). Where pinned
 PiP does not work, Maps pops up on the home page; since 2026-11-15 the log says so after three times in a row
 (`PinnedPipHealth`), and nothing is stopped.
+
+**The pinned PiP cannot move with the pages (checked 2026-11-21 in the 7862's framework,
+`archive/decompiled/7862/system.zip`) [V].** The owner asked whether it could follow a swipe like the windowed PiPs.
+FYT's mode-6 stack (`ActivityStack`) takes its rectangle from `sys.lsec.pip_rect` when it is created, and its
+`setBounds()` replaces any rectangle with that one for mode 6; `resizeStack` ends in `setBounds()`, `resizeTask`
+throws for anything but freeform (`canResizeTask()`), and `setPinnedStackVisible` → `TaskStack.lsecSetVisble` only
+shows or hides the surface. A new rectangle is taken only by a new stack, so moving it with the pages would need a
+change of the framework (an LSPosed hook on `ActivityStack.setBounds`, say), outside the launcher. Hiding it while
+the pages move stays (D-34).
 
 ### KI-16 A standard ("phone") 1.2.1 cannot update itself
 Its updater downloads the system build. One update by hand; documented in `README.MD`.
@@ -231,3 +243,43 @@ Both are older than round 24: they are in the logs since 2026-11-15 and 2026-11-
 To look at in the 7862's log: opening the widgets tab gives no report from `WidgetPreviewLoader`; after some pane
 changes and minutes of use there is no `LeakedClosableViolation` from `ActivityView.initVirtualDisplay`. Not tested on a
 device.
+
+### KI-47 The settings' dialogs and work after a turn of the screen (phones)
+On a phone the settings are created again for each orientation (`SettingsActivity.onConfigurationChanged` →
+`recreate()`). The owner, A55, round 25 [H]: only the colour picker came back after a turn; the background selector
+came back too narrow and with a stretched wallpaper; every other dialog had to be opened again. Round 26 [V]:
+- the plain dialogs of both screens come back with their fields' texts (`SettingsDialogMemory`, `DialogTurn`,
+  `edcee91a9`); the creators' dialogs are left out;
+- a download of an update, a wallpaper save and a canbus import go on with their progress dialogs (`HandedWork`,
+  `5c109b2e7`);
+- the colour picker stores its colour after a turn, the app lists of the statistics and of PiP come back (they were
+  dismissed in `onPause` before the state was saved), and leaving the second screen with a picker open no longer
+  throws "FragmentManager is already executing transactions" (`6361e8b5e`; the test showed it on the old code);
+- the background selector is sized from the settings' window and draws the wallpaper center-crop (`362fa1375`).
+Robolectric tests turn the screen with `controller.recreate()`. Not tested on a device. A FYT unit turns without a new
+activity, so there only the exception above goes.
+
+### KI-48 The 7870's covers and the position slider
+The tester [H]: "sometimes media widget shows default picture until cover or track changes", and a position slider on
+the big widget for files and BT. No log of it yet; three causes were found in the code and fixed in round 26 [V]:
+- BT's cover file was refused as old after a start in the middle of a song, after a title cleared for a moment, and
+  after the clock jumped back (`StockBtCover`, `8ac8400a7`);
+- a file's cover was read by the launcher's ID3 reader (mp3 with a JPEG only) and a failed read was kept; it is now
+  read with `MediaMetadataRetriever` as com.syu.media reads it, once more if the file could not be opened
+  (`FileCover`, `1026d6b69`);
+- the cover was drawn only while playing; in a pause and on a widget built again it is drawn too (`PausedCover`,
+  `18cc6e3f6`).
+The slider (`PositionSlider`, `6c525ff3e`) moves com.syu.media's files through IPlayer transaction 12 and only shows
+the position for BT and stations. To look at in the tester's log: `StockSources: bt cover … song changed before the
+start -> fresh`, `MusicCover: file cover …`, `SyuMediaClient: seek MEDIA_MUSIC to …`. Not tested on a device.
+
+### KI-49 The canbus script's `--launcher .` needs the decompiled folders, now zips
+The owner's `22490c9e0` (2026-11-21) replaced `archive/decompiled/decompiled_*` by zip files whose top folders have no
+`decompiled_` prefix (`carinfo/`, `com.syu.canbus/`, …) [V]. `canbus_library/build_canbus_library.py --launcher .`
+reads `archive/decompiled/decompiled_com.syu.canbus/classes.dex.new/sources`, `…/classes.dex/sources`,
+`…/classes.dex.7870/sources` and `archive/decompiled/decompiled_carinfo` (`LAUNCHER_SOURCE_ROOT`, line 1844), so it finds
+nothing in the tree as it is. Until the owner decides (unpack the zips under those names outside git, or teach the
+script to read the zips), a rebuild needs the folders unpacked by hand, e.g.
+`unzip archive/decompiled/com.syu.canbus.zip -d /tmp/d && mv /tmp/d/com.syu.canbus /tmp/d/decompiled_com.syu.canbus`
+and the same for `carinfo`, then `--launcher` pointed at a copy of the repository whose `archive/decompiled/` holds them.
+The built-in assets are not affected: nothing rebuilds them by itself.

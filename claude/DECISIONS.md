@@ -110,6 +110,12 @@ entry that replaces it.
 | D-74 | Choices the assistant made in round 22 (table) | UNDER_REVIEW | Assistant |
 | D-75 | The home screen is checked when it changes, without timers | ACTIVE | Owner |
 | D-76 | The fuel statistics ask for the GPS only while something needs it | ACTIVE | Owner (approved plan) |
+| D-77 | The order of the horizontal bar's elements may be chosen, per orientation | ACTIVE | Owner |
+| D-78 | The dialogs of the settings have the settings' colours | ACTIVE | Owner |
+| D-79 | "Bars" has three sections; no blank summaries above dividers | ACTIVE | Owner |
+| D-80 | The apps list may be fitted to its icons or hidden, its room to the widgets | ACTIVE | Owner |
+| D-81 | A position slider on the 7870's home music widget | ACTIVE | Owner (tester's request) / Assistant |
+| D-82 | An open dialog and work in progress come back after a turn of the screen | ACTIVE | Owner |
 
 ---
 
@@ -269,7 +275,11 @@ entry that replaces it.
     restarted it (owner: "Tak, wyłącz ten przeskok").
   - A swipe closes the pinned PiP at once; it opens as soon as the pages stop.
   - The 250 ms wait in `onPageEndMoving` and the 100 ms wait in `startPinnedPip` stay (owner: "to zostaw").
-- **Source:** CHAT_10; briefs 2026-10-27 [H][V].
+  - **It is hidden while the pages move, not moved with them (2026-11-21).** The owner asked whether it could
+    follow a swipe like the windowed PiPs. FYT's framework pins the mode-6 stack to `sys.lsec.pip_rect`
+    (`ActivityStack.setBounds` replaces every rectangle for mode 6), and no API of the stack moves it; checked in
+    `archive/decompiled/7862/system.zip` (KI-15). Moving it would need a change of the framework, outside the launcher.
+- **Source:** CHAT_10; briefs 2026-10-27 [H][V]; round 26 plan, 2026-11-21 [V].
 
 ## Panes, bars and layout
 
@@ -916,12 +926,16 @@ The round had no brief; its result is in `reports/implementation_report_2026-11-
 - **Where:** `fa3e84d9e`.
 
 ### D-71 The number of app icons on each bar may be set
-- **Status:** ACTIVE. **By:** owner, 2026-11-16 and 2026-11-18.
-- **Decision:** with a bar's "Resizable" switch on, a slider (like the grid's) chooses 1 … as many icons as the
-  bar has room for, worked out as the launcher does and following every option that changes it. Nothing chosen =
-  as many as fit. A newly worked-out most lowers a chosen number only where the number is above it (the owner,
-  2026-11-18), and the lowered number is stored. The icons keep their size and are spread evenly.
-- **Where:** `BarIconCount`, `BarIconLimits`, `5a6272396`.
+- **Status:** ACTIVE. **By:** owner, 2026-11-16 and 2026-11-18; **changed 2026-11-21** ("App icons" visible and
+  changeable with "Resizable … bar" off too, for both bars).
+- **Decision:** a slider (like the grid's), "App icons", chooses 1 … as many icons as the bar has room for, worked
+  out as the launcher does and following every option that changes it; with or without the bar's "Resizable"
+  switch (until 2026-11-21 only with it on; a number chosen then counts now with the switch off too). The horizontal
+  one is shown unless its apps list is hidden (D-80), the vertical one with the vertical bar. Nothing chosen = as many
+  as fit. A newly worked-out most lowers a chosen number only where the number is above it (the owner, 2026-11-18),
+  and the lowered number is stored. The icons keep their size and are spread evenly, or, with the list fitted to its
+  icons, keep the width of a tile at the maximum (D-80).
+- **Where:** `BarIconCount`, `BarIconLimits`, `BarCapacity.chosen`, `5a6272396`, `ef8f97bc8`.
 
 ### D-72 "Transparent status bar" in "Home screen layout"
 - **Status:** ACTIVE. **By:** owner, 2026-11-18.
@@ -999,3 +1013,33 @@ The round had no brief; its result is in `reports/implementation_report_2026-11-
   their space under the text themselves, so it looks the same on any device.
 - **Where:** `3dfae9e7d`, `129fc7fc3`, `SeparatorSpacingViewTest`.
 
+### D-80 The apps list may be fitted to its icons or hidden, its room to the widgets
+- **Status:** ACTIVE. **By:** owner, 2026-11-21 (the request; "date and weather 10% each, the rest to the music";
+  "a switch that hides the RecyclerView entirely, with the same split"; "the hiding switch under 'Widget horizontal
+  bar' and working only with the widget bar on: with it off the RecyclerView must always be visible").
+- **Decision:** under the widget bar, "Hide the apps" and "Fit the apps to their icons" (shown with the widget bar
+  only; "Fit" and the horizontal "App icons" not while the list is hidden). Fitted, the list is as wide as the tiles
+  it shows, each as wide as with the most icons it has room for (the same margins as at the maximum). Hidden, it is
+  not shown; the app drawer button stays. The room it gives up: 10% to the date, 10% to the weather, the rest to the
+  music; a widget not shown gets nothing and its 10% goes to the music. The order of the elements is kept; a hidden
+  list keeps its place in it. Without the widget bar the list is always shown at its usual width.
+- **Where:** `WidgetBarPlan`, `WidgetBarLayout`, `BarCapacity.bottomTiles`, keys `widget_bar_fit_apps`,
+  `widget_bar_no_apps`, `d1a5118b0`, `c97c6423d`, `08453d95d`.
+
+### D-81 A position slider on the 7870's home music widget
+- **Status:** ACTIVE. **By:** the 7870 tester's request through the owner, 2026-11-21 ("track position slider on big
+  widget … for file and bt players"); the mechanism by the assistant, in the approved plan.
+- **Decision:** on the 7870 the home music widget shows a slider of the position in place of the thin bar, playing
+  or paused. It moves com.syu.media's own files (IPlayer.seekTo, a second short of the end); for BT (no seek command
+  in com.syu.ms) and internet radio it only shows, without a knob. The other units keep the thin bar.
+- **Where:** `PositionSlider`, `SyuMediaClient.seekTo`, `MusicWidgetPlan.HOME_*_SLIDER`, `6c525ff3e`.
+
+### D-82 An open dialog and work in progress come back after a turn of the screen
+- **Status:** ACTIVE. **By:** owner, 2026-11-21 (the colour picker as the example: "the other dialogs disappear after
+  a turn and have to be opened again").
+- **Decision:** a dialog of the settings open at a turn is open again after it with what was typed into it; a
+  download, a wallpaper save or a canbus import goes on with its progress dialog; a colour picker stores its colour;
+  the background selector is sized for the orientation it is shown in, its wallpaper not stretched. The creators'
+  dialogs are left out (they ask about the layout of the orientation it was drawn in).
+- **Where:** `SettingsDialogMemory`, `DialogTurn`, `HandedWork`, `ColorPickerTargets`, `CenterCropDrawable`,
+  `edcee91a9`, `5c109b2e7`, `6361e8b5e`, `362fa1375`.

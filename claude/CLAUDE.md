@@ -49,8 +49,9 @@ present [A] as [V]. A report that says something was implemented is [H] until a 
 - Without an SDK you can still test plain-Java classes with `javac` and the JUnit console jar. That checks
   those classes only; it is not a build.
 - To regenerate the CAN bus library, run `build_canbus_library.py --launcher .` (see
-  `canbus_library/README.md`). A rebuild must give the committed assets byte for byte unless the sources
-  changed. The Baseline Profile procedure is in `baselineProfile/README.md` and needs a device.
+  `canbus_library/README.md`). Since 2026-11-21 the decompiled sources are zip files in `archive/decompiled/`;
+  the script needs them unpacked as `decompiled_*` folders first (`KNOWN_ISSUES.md` KI-49). A rebuild must give
+  the committed assets byte for byte unless the sources changed. The Baseline Profile procedure is in `baselineProfile/README.md` and needs a device.
 
 ## Branch and commits
 
@@ -100,8 +101,9 @@ present [A] as [V]. A report that says something was implemented is [H] until a 
 - Large files (`Launcher.java`, `Workspace.java`, `SettingsFragment*`, `LogcatWorker`, `CanbusService`)
   get targeted edits only. No drive-by refactors.
 - Do not touch:
-  - `archive/` (the decompiled FYT apps, `fuel_stats_example/`, old `android.jar` material): reference
-    only, read it, never edit it. Run rename or replace scripts with `archive/` excluded;
+  - `archive/` (the decompiled FYT apps and frameworks as zip files, read with `unzip -p`;
+    `fuel_stats_example/`, old `android.jar` material): reference only, read it, never edit it. Run rename or
+    replace scripts with `archive/` excluded;
   - `android_jar/android-36.jar`: two modules compile against it (`KNOWN_ISSUES.md` KI-19);
   - `app/src/main/generated/baselineProfiles/`, except removing lines for classes you delete. The owner
     regenerates it on a device;
