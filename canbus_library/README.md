@@ -28,14 +28,17 @@ as duplicates, and for the same car id **your file wins**.
 ## 3. Step by step
 
 1. Download the `canbus_library` folder (keep `build_canbus_library.bat` and `build_canbus_library.py` together).
-2. **Drag your `sources` folder onto `build_canbus_library.bat`**, or open `cmd` in the folder with the files and run:
+2. Extract the `.apk` file of `com.syu.canbus` from your head unit. To do this, you can use [Apk Analyzer](https://play.google.com/store/apps/details?id=sk.styk.martin.apkanalyzer&hl=en&pli=1).
+3. Download the latest version of [APKRepatcher](https://github.com/vasyl91/APKRepatcher/releases/latest).
+4. Run `APKRepatcher.jar`, go to **File → Open APK**, and select the extracted `com.syu.canbus.apk` file. Wait for the process to finish.
+5. **Drag your `sources` folder onto `build_canbus_library.bat`**, or open `cmd` in the folder with the files and run:
 
    ```
    build_canbus_library.bat "C:\APKRepatcher\Projects\com.syu.canbus.apk\javaCode\classes.dex\sources"
    ```
 
    (Without an argument the file asks for the path.)
-3. Read the summary:
+6. Read the summary:
 
    | line | meaning |
    |---|---|
@@ -48,7 +51,7 @@ as duplicates, and for the same car id **your file wins**.
    | `main page changed by the fuel rule` | groups of cars whose first page is another one because of the fuel and electric-car rules (section 7) |
    | `Warnings` | conditions it did not understand (treated as false) and labels it could not resolve |
 
-4. The result is `canbus_library_<date>_<time>.txt` in the folder you ran the file from; the last line printed
+7. The result is `canbus_library_<date>_<time>.txt` in the folder you ran the file from; the last line printed
    (`Written: ...`) is its full path. Use `--out FILE` to choose another name.
 
 ## 4. Moving the file to the radio and importing it
