@@ -65,8 +65,10 @@ public class AppListAutostartDialogFragment extends DialogFragment
 
     /** The store ColdStart reads at every cold boot; see {@link #getSelectedPackages}. */
     public static final String PREFS_NAME = "AppAutostartPrefs";
-    /** Comma-separated package names, in start order. */
+    /** Comma-separated package names, in start order: "Start on boot". */
     public static final String KEY_AUTOSTART_APPS = "boot_autostart_packages";
+    /** The same for "Start on wake" (WakeAutostartPlan, ColdStart.startForWake). */
+    public static final String KEY_WAKE_AUTOSTART_APPS = "wake_autostart_packages";
 
     /** #FC6B03 with alpha 90 baked in, as in the other lists. */
     private static final int COLOR_SELECTED = Color.argb(90, 0xFC, 0x6B, 0x03);
@@ -120,8 +122,13 @@ public class AppListAutostartDialogFragment extends DialogFragment
      * Makes no PackageManager calls, so it is cheap on the main thread.
      */
     public static List<String> getSelectedPackages(@Nullable Context context) {
+        return getSelectedPackages(context, KEY_AUTOSTART_APPS);
+    }
+
+    /** The same for the list stored under {@code key} (KEY_AUTOSTART_APPS or KEY_WAKE_AUTOSTART_APPS). */
+    public static List<String> getSelectedPackages(@Nullable Context context, String key) {
         SharedPreferences prefs = prefs(context);
-        return prefs == null ? new ArrayList<String>() : parse(prefs.getString(KEY_AUTOSTART_APPS, ""));
+        return prefs == null ? new ArrayList<String>() : parse(prefs.getString(key, ""));
     }
 
     /**
@@ -131,12 +138,17 @@ public class AppListAutostartDialogFragment extends DialogFragment
      * thread, not from the main thread during the boot-time stall.
      */
     public static List<String> getInstalledSelectedPackages(@Nullable Context context) {
+        return getInstalledSelectedPackages(context, KEY_AUTOSTART_APPS);
+    }
+
+    /** The same for the list stored under {@code key} (KEY_AUTOSTART_APPS or KEY_WAKE_AUTOSTART_APPS). */
+    public static List<String> getInstalledSelectedPackages(@Nullable Context context, String key) {
         Context base = context != null ? context : LauncherApplication.sApp;
         SharedPreferences prefs = prefs(base);
         if (base == null || prefs == null) {
             return new ArrayList<>();
         }
-        String raw = prefs.getString(KEY_AUTOSTART_APPS, "");
+        String raw = prefs.getString(key, "");
         List<String> stored = parse(raw);
         // Outside the lock: these are binder calls, and the main thread writes under it.
         List<String> installed = installedOnly(base.getPackageManager(), stored);
@@ -144,10 +156,10 @@ public class AppListAutostartDialogFragment extends DialogFragment
             synchronized (STORE_LOCK) {
                 // Only if the list is still the one checked here: a tick the user made meanwhile
                 // must not be overwritten by this older list. The next call prunes it then.
-                if (raw.equals(prefs.getString(KEY_AUTOSTART_APPS, ""))) {
+                if (raw.equals(prefs.getString(key, ""))) {
                     List<String> removed = new ArrayList<>(stored);
                     removed.removeAll(installed);
-                    prefs.edit().putString(KEY_AUTOSTART_APPS, join(installed)).apply();
+                    prefs.edit().putString(key, join(installed)).apply();
                     Log.i(TAG, "Removed uninstalled apps from the autostart list: " + removed);
                 }
             }
@@ -207,8 +219,15 @@ public class AppListAutostartDialogFragment extends DialogFragment
                 if (power == null || prefs == null) {
                     return;
                 }
-                // Here as well, so the PackageManager calls stay off the main thread.
-                power.sync(prefs, getInstalledSelectedPackages(app));
+                // Here as well, so the PackageManager calls stay off the main thread. The apps of both lists,
+                // "Start on boot" and "Start on wake": either one is started by the launcher
+                List<String> both = new ArrayList<>(getInstalledSelectedPackages(app, KEY_AUTOSTART_APPS));
+                for (String pkg : getInstalledSelectedPackages(app, KEY_WAKE_AUTOSTART_APPS)) {
+                    if (!both.contains(pkg)) {
+                        both.add(pkg);
+                    }
+                }
+                power.sync(prefs, both);
             } catch (RuntimeException e) {
                 Log.w(TAG, "Power manager sync failed", e);
             }

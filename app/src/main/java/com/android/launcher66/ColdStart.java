@@ -22,6 +22,7 @@ import com.android.launcher66.settings.AppListAutostartDialogFragment;
 import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.LogcatDefaults;
 import com.android.launcher66.settings.LogcatWorker;
+import com.android.launcher66.settings.WakeAutostartPlan;
 import com.android.launcher66.settings.WakeDetection;
 import com.syu.util.WindowHostVdClient;
 
@@ -301,9 +302,9 @@ public final class ColdStart {
                 // instead, and the log said "by BOOT_COMPLETED" all the same.
                 boolean bootSent = false;
                 if (titles) {
-                    wakeDisplayMediaTitles(pkg);
+                    wakeDisplayMediaTitles(pkg, true);
                 } else if (james) {
-                    wakeJamesDSP(pkg);
+                    wakeJamesDSP(pkg, true);
                 } else if (!(bootSent = boot && bootCompletedAutostart && sendBootCompleted(pkg))) {
                     if (launch == null) {
                         Log.w(TAG, "Boot autostart: " + pkg + " could not be woken and has no launch activity");
@@ -332,6 +333,104 @@ public final class ColdStart {
         }
     }
 
+    // =============================================================================================
+    // "Start on wake" (WakeDetection, WakeAutostartPlan has the rule)
+    //
+    // The apps of the second list, opened after a wake from sleep one by one, as those of the boot
+    // list are: Display Media Titles and JamesDSP by their own broadcasts, the others by their launch
+    // activity. Not by BOOT_COMPLETED: that is the broadcast of a boot, and the apps usually run
+    // already. Then what the wake itself would show comes back to the front.
+    // =============================================================================================
+
+    /**
+     * Opens the apps of "Start on wake" on a thread of its own and puts the front back after them
+     * (WakeAutostartPlan). {@code awake} says whether the wake still holds: a sleep in between stops it.
+     * Main thread, from WakeDetection, WakeAutostartPlan.FIRST_MS after the wake.
+     *
+     * @param frontBefore what was in front at the sleep: a package, "" for the home screen, null if not known
+     */
+    public static void startForWake(Application app, boolean homeOnWake, String frontBefore,
+                                    java.util.function.BooleanSupplier awake) {
+        new Thread(() -> {
+            // An exception escaping this thread would end the whole launcher (CrashLogger).
+            try {
+                new ColdStart(app).runWakeAutostart(homeOnWake, frontBefore, awake);
+            } catch (RuntimeException e) {
+                Log.w(TAG, "Wake autostart failed", e);
+            }
+        }, "WakeAutostart").start();
+    }
+
+    private void runWakeAutostart(boolean homeOnWake, String frontBefore, java.util.function.BooleanSupplier awake) {
+        final long began = SystemClock.elapsedRealtime();
+        List<String> packages = AppListAutostartDialogFragment.getInstalledSelectedPackages(app,
+                AppListAutostartDialogFragment.KEY_WAKE_AUTOSTART_APPS);
+        if (packages.isEmpty()) {
+            return;
+        }
+        Log.i(TAG, "Wake autostart of " + packages + ", " + WakeAutostartPlan.GAP_MS + " ms apart");
+        PackageManager pm = app.getPackageManager();
+        List<String> started = new ArrayList<>();
+        for (String pkg : packages) {
+            if (!awake.getAsBoolean()) {
+                Log.i(TAG, "Wake autostart stopped: the device went to sleep");
+                return;
+            }
+            try {
+                boolean titles = isDisplayMediaTitles(pm, pkg);
+                boolean james = pkg.equals("james.dsp");
+                Intent launch = titles || james ? null : pm.getLaunchIntentForPackage(pkg);
+                if (!titles && !james && launch == null) {
+                    Log.w(TAG, "Wake autostart: " + pkg + " has no launch activity");
+                    continue;
+                }
+                if (!started.isEmpty()) {
+                    SystemClock.sleep(WakeAutostartPlan.GAP_MS);
+                    if (!awake.getAsBoolean()) {
+                        Log.i(TAG, "Wake autostart stopped: the device went to sleep");
+                        return;
+                    }
+                }
+                if (titles) {
+                    wakeDisplayMediaTitles(pkg, false);
+                } else if (james) {
+                    wakeJamesDSP(pkg, false);
+                } else {
+                    app.startActivity(launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                }
+                started.add(pkg);
+                Log.i(TAG, "Wake autostart: " + (titles || james ? "woke " : "opened ") + pkg
+                        + " (" + started.size() + "/" + packages.size() + ")");
+            } catch (RuntimeException e) {
+                Log.w(TAG, "Wake autostart of " + pkg + " failed", e);
+            }
+        }
+        if (started.isEmpty()) {
+            return;
+        }
+        SystemClock.sleep(WakeAutostartPlan.GAP_MS);
+        if (!awake.getAsBoolean()) {
+            return;
+        }
+        ComponentName top = HomeFrontGuard.topActivity(app);
+        boolean topIsOurs = top != null && started.contains(top.getPackageName());
+        WakeAutostartPlan.ReturnTo back = WakeAutostartPlan.returnTo(homeOnWake, frontBefore, topIsOurs,
+                HomeFrontGuard.userActedSince(began));
+        if (back == WakeAutostartPlan.ReturnTo.LAUNCHER) {
+            Log.i(TAG, "Wake autostart done, bringing the launcher back over " + top.flattenToShortString());
+            HomeFrontGuard.bringLauncherToFront(app);
+        } else if (back == WakeAutostartPlan.ReturnTo.APP_BEFORE_SLEEP) {
+            Intent before = pm.getLaunchIntentForPackage(frontBefore);
+            if (before != null) {
+                Log.i(TAG, "Wake autostart done, bringing back " + frontBefore + " over " + top.flattenToShortString());
+                app.startActivity(before.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            }
+        } else {
+            Log.i(TAG, "Wake autostart done, the front left as it is ("
+                    + (top != null ? top.flattenToShortString() : "unknown") + ")");
+        }
+    }
+
     /**
      * Whether pkg is Display Media Titles: one of DISPLAY_MEDIA_TITLES_PACKAGES, installed with
      * DISPLAY_MEDIA_TITLES_LABEL as its name. The name is read only for those package names, as
@@ -356,8 +455,8 @@ public final class ColdStart {
      * was installed, or force-stopped), which broadcasts skip by default, and
      * FLAG_RECEIVER_FOREGROUND lets the receiver run at foreground priority.
      */
-    private void wakeDisplayMediaTitles(String pkg) {
-        if (canSendBootCompleted() && sendBootCompleted(pkg)) {
+    private void wakeDisplayMediaTitles(String pkg, boolean bootCompleted) {
+        if (bootCompleted && canSendBootCompleted() && sendBootCompleted(pkg)) {
             Log.i(TAG, "Display Media Titles by 'BOOT_COMPLETED' broadcast");
             return;
         }
@@ -367,8 +466,8 @@ public final class ColdStart {
                 .addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES | Intent.FLAG_RECEIVER_FOREGROUND));
     }
 
-    private void wakeJamesDSP(String pkg) {
-        if (canSendBootCompleted() && sendBootCompleted(pkg)) {
+    private void wakeJamesDSP(String pkg, boolean bootCompleted) {
+        if (bootCompleted && canSendBootCompleted() && sendBootCompleted(pkg)) {
             Log.i(TAG, "JamesDSP by 'BOOT_COMPLETED' broadcast");
             return;
         }
