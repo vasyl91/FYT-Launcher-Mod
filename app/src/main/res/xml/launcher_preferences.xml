@@ -80,12 +80,10 @@
             <com.android.launcher66.settings.CustomPreference
                 android:key="spotify_copy_uri"
                 android:title="@string/spotify_copy_uri"
-                android:summary=" "
                 app:layout="@layout/nested_preference_category_content" />
             <com.android.launcher66.settings.CustomPreference
                 android:key="spotify_instruction"
                 android:title="@string/spotify_instruction"
-                android:summary=" "
                 app:layout="@layout/nested_preference_category_content" />
             
         </com.android.launcher66.settings.CustomPreferenceCategory>
@@ -151,8 +149,7 @@
             app:singleLineTitle="false"
             android:key="launcher_home_wake"
             android:defaultValue="true"
-            android:title="@string/launcher_home_wake"
-            android:summary=" " />
+            android:title="@string/launcher_home_wake" />
         <SwitchPreferenceCompat
             app:singleLineTitle="false"
             android:key="launcher_home_cold_start"
@@ -180,15 +177,15 @@
             android:key="autostart_apps"
             android:title="@string/autostart_apps"
             android:summary="@string/autostart_apps_summary" />
+        <Preference
+            android:key="wake_autostart_apps"
+            android:title="@string/wake_autostart_apps"
+            android:summary="@string/wake_autostart_apps_summary" />
         <SwitchPreferenceCompat
             app:singleLineTitle="false"
             android:key="autostart_apps_by_boot_completed"
             android:defaultValue="true"
             android:title="@string/autostart_apps_by_boot_completed" />
-        <Preference
-            android:key="wake_autostart_apps"
-            android:title="@string/wake_autostart_apps"
-            android:summary="@string/wake_autostart_apps_summary" />
 
     </PreferenceCategory>
 
@@ -370,11 +367,6 @@
             android:key="shizuku_download"
             android:title="@string/shizuku_download_button"
             app:isPreferenceVisible="false" />
-
-        <Preference
-            android:key="empty1"
-            android:focusable="false"
-            android:clickable="false" />
             
     </com.android.launcher66.settings.VersionPreferenceCategory>
 

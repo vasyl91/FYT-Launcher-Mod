@@ -117,7 +117,6 @@
             android:key="extended_divider"
             android:defaultValue="true"
             android:title="@string/extended_divider"
-            android:summary=" "
             app:layout="@layout/nested_preference_category_switch" />
         <com.android.launcher66.settings.CustomNestedThreePreference
             android:key="cover_splash_mode"
@@ -231,7 +230,6 @@
             android:key="horizontal_bar_order"
             android:persistent="false"
             android:title="@string/horizontal_bar_order" />
-        <!-- Divider between the bars' sections (the owner, 2026-11-20) -->
         <Preference
             android:layout="@layout/preference_separator"
             android:selectable="false" />
@@ -259,7 +257,7 @@
             android:summaryOn="@string/widget_bar_hidden_on"
             app:layout="@layout/nested_preference_category_switch" />
         <!-- The apps list hidden or fitted to its icons, its room to the widgets; only with the widget bar
-             (WidgetBarPlan, the owner, 2026-11-21) -->
+             (WidgetBarPlan) -->
         <com.android.launcher66.settings.CustomSwitchPreference
             android:key="widget_bar_no_apps"
             android:defaultValue="false"
@@ -302,7 +300,6 @@
             android:summaryOn="@string/widget_bar_large_text_on"
             android:summaryOff="@string/widget_bar_large_text_off"
             app:layout="@layout/nested_preference_category_switch" />
-        <!-- Divider between the bars' sections (the owner, 2026-11-20) -->
         <Preference
             android:layout="@layout/preference_separator"
             android:selectable="false" />
@@ -437,32 +434,24 @@
             android:title="@string/canbus_library_reset"
             android:maxLines="5" />
 
-        <com.android.launcher66.settings.CustomPreferenceCategory
+        <PreferenceCategory
             app:key="inspector_category"
-            app:title="@string/inspector_category"
-            style="@style/PreferenceCategoryStyle" >
+            app:title="@string/inspector_category" >
 
-            <com.android.launcher66.settings.CustomPreference
+            <Preference
                 android:key="code_inspector"
-                android:title="@string/code_inspector_string"
-                app:layout="@layout/nested_preference_category_content"  />        
-            <com.android.launcher66.settings.CustomPreference
+                android:title="@string/code_inspector_string" />        
+            <Preference
                 android:key="code_inspector_data"
                 android:title="@string/code_inspector_data"
-                android:maxLines="5"
-                app:layout="@layout/nested_preference_category_content" />
-            <com.android.launcher66.settings.CustomSwitchPreference
+                android:maxLines="5" />
+            <SwitchPreferenceCompat
                 android:key="skip_zero_codes"
                 android:defaultValue="true"
                 android:title="@string/skip_zero_codes"
-                app:summary="@string/skip_zero_codes_summary"
-                app:layout="@layout/nested_preference_category_switch" />
+                app:summary="@string/skip_zero_codes_summary" />
             
-        </com.android.launcher66.settings.CustomPreferenceCategory>
-        <Preference
-            android:key="empty"
-            android:focusable="false"
-            android:clickable="false" />
+        </PreferenceCategory>
 
     </PreferenceCategory>
 
