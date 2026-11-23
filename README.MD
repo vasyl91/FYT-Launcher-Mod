@@ -1,8 +1,6 @@
-# Reverse-engineered launcher for FYT 7862/8581 with a launcher creator, night mode and fuel statistics.
+# Enhanced Car Launcher (for FYT 7870/7862/8581 and other Android devices)
 
-**Launcher Mod has been tested on Android 10 with a 2000x1200 resolution, as this is the only FYT device I own.**
-
-It should work with all resolutions on Android 8 through 16 (see [Supported devices](#supported-devices)), as the system version (a system app) on a device whose firmware has its platform key (FYT units and some custom ROMs), or as the standard version (a user app) on any device.
+It should work with all resolutions on Android 8 through 17 (see [Supported devices](#supported-devices)), as the system version (a system app) on a device whose firmware has its platform key (FYT 7862/8581 units and some custom ROMs), or as the standard version (a user app) on any device.
 
 The system version declares `android:sharedUserId="android.uid.system"`, so it runs as the system itself (uid 1000). Android accepts that only from an APK signed with the same platform key as the firmware, and this one is signed with the public AOSP test key, which FYT firmware is built with. A firmware signed with its own platform key refuses it (`INSTALL_FAILED_SHARED_USER_INCOMPATIBLE`), whatever its Android version and whether it is rooted or not: the check is the signature, not a permission root could grant. On such a unit, and on any other device, use the standard version (see [Versions and updates](#versions-and-updates)): it gets the privileges it needs from root through the [FYT VDHost](vdhost/README.md) Magisk module, or from Shizuku without root. The PiPs work in it as windows, and pinned PiP works on the FYT units except the 7870 (recognised by the chipset) as in the system version. It is not offered on the 7870.
 
@@ -10,41 +8,38 @@ The check is the key, not the brand: some custom ROMs (unofficial builds in part
 
 Both versions are the same app (`com.android.launcher66`), but Android does not let an update change the shared user id: the system version has to be uninstalled before installing the standard one, and the other way round (this wipes the launcher's data).
 
-IMPORTANT: Note that some FYT devices do not support pinned PiP on the main screen. On the 7870 (recognised by the chipset) the launcher does not offer it at all: every PiP is a window there. You can still use the launcher, but you'll have to turn off PiP in the launcher's settings (otherwise Google Maps will pop up every time you try to open the home page — if this happens, wipe the launcher's data or reinstall it).
+IMPORTANT: Note that some FYT devices do not support pinned PiP on the main screen. On the 7870 (recognised by the chipset) the launcher does not offer it at all: every PiP is a window there. You can still use the launcher, but you'll have to turn off PiP in the launcher's settings (otherwise Google Maps will pop up every time you try to open the home page - if this happens, wipe the launcher's data or reinstall it).
 
 [XDA Forums thread](https://xdaforums.com/t/reverse-engineered-launcher-for-fyt-7862-8581.4702542/)
 
-List of modifications:
+Features:
 - Up to four PiPs on a single screen or across multiple screens, depending on user preference.
 - ConstraintLayout that adapts the launcher to any given resolution and orientation.
 - Universal music widget with a favorite button (requires Notification Listener permission) that works with most music players (including the stock one).
-- Enabled widgets (upscaled for better interaction), shortcuts, and folders on the main screen. Icons and widgets can lie under the fuel stats window. A widget whose content cannot be shown (an app that has not let the launcher read its image) shows its preview, and a tap opens its app; where the launcher may (the system version, or root through the module), the widget's app is told to update it. Reworked screen grid: the rows and columns of the home screen can be set (Settings > Home screen layout), and a bar that stays on a page takes its strip out of the grid, so nothing lies under it. No icon, widget or element of the creator lies outside the visible part of a page (under the status or the navigation bar); one that would is moved back, and the log says so. Where a denser grid leaves a cell too small for an icon with its label, the icons are made smaller to fit; they are never made larger. Extra screens as well.
-- Launcher creator allowing the launcher's layout to be adjusted to user preferences. All layout elements except the horizontal bar can be turned off. Users can also specify which screen should be the main screen.
-- Horizontal bar with optional widgets: the music widget, and optionally the album cover, the date and the weather. What is hidden gives its room to the music widget. The layout of the buttons, the size of the text and the arrangement of title and artist (two lines either way round, or one line) are set under "Widget horizontal bar". There too, "Fit the apps to their icons" makes the apps list only as wide as the icons it shows (each with the margins it has when the bar is full), and "Hide the apps" leaves the list out; the room the list gives up goes to the widgets, 10% of it to the date, 10% to the weather and the rest to the music. Both work only with the widget bar: without it the apps list is always shown at its usual width. While no weather is shown, the launcher does not fetch the weather and does not use the GPS for it. The weather can use an OpenWeather key of your own (optional, in the settings); without one the built-in key is used.
-- Auto-hide horizontal bar option. A swipe inwards on a thin handle at the left or the right edge opens the bar; a tap on the handle also does where the system allows it (not in the system version on Android 10 and later). Where the vertical bar is on the handle's side, a button in its corner opens the bar instead.
-- Horizontal bar on every page of the home screen (optional). Without auto-hide the bar stands still on every page, the first one too, and the pages move under it: one bar is seen, it never moves with the pages, and it stays when an app is opened and when you come back. With auto-hide every page has the handle. The bar steps aside in apps and in folders; in the overview and while dragging every page shows it, small with the page.
-- Bars on either side (Settings > Bars): the horizontal bar at the bottom or the top, the vertical bar on the left or the right, each with its own background. The vertical bar can stay on every page too, in the same way as the horizontal one; with the horizontal bar on the first page only, the vertical bar grows smoothly into the corner as soon as the first page's horizontal bar has moved off it. Both bars touch the edge of the screen, and the widgets and PiPs lie at the margin from them that the creator shows. The bars on every page are part of the launcher's own window: floating buttons (the launcher's and other apps') are always above them, the PiPs move under them, and they need no permission to draw over other apps.
-- Resizable bars (Settings > Bars): the height of the horizontal bar, and the width of the vertical bar (4–10 % of the screen's longer edge; the grid, the PiPs, the widgets and the creator follow it). Under "App icons" you choose how many app icons each bar shows, with its "Resizable" switch on or off, from one to as many as fit; the icons keep their size and are spread evenly (or, with "Fit the apps to their icons", the list is as wide as its icons), and a number above what fits after another change is lowered to it.
-- The order of the horizontal bar's elements (Settings > Bars > Order of the bar's elements): drag the app drawer button, the apps, the music, the date and the weather into the order you want. The row opens the list of the orientation the screen is in, so portrait and landscape each keep their own order. The top of the list is the left of the bar. Only the elements your settings leave are listed, and one you hide keeps its place for when it comes back.
+- Launcher creator allowing the launcher's layout to be adjusted to user preferences. All layout elements except the horizontal bar (optional auto-hide) can be turned off. Users can also specify which screen should be the main screen.
+- Enabled widgets, shortcuts and folders on the home screen, with customizable grid and extra pages.
+- Horizontal bar with optional music, album cover, date, weather and app list.
+- Optional auto-hide horizontal bar, opened by swipe or handle tap.
+- Horizontal and vertical bars can be positioned on any screen edge and displayed on every page.
+- Adjustable bar size and number of app icons.
+- Customizable order of horizontal bar elements, separately for portrait and landscape mode.
 - Skins for widgets, the bars and the fuel stats window: a picture or a color of your own with its transparency, and a text and button color from a color picker.
 - Optional floating buttons for quickly switching apps between PiPs.
-- Optional transparent overlay square on the status bar that detects swipes and allows scrolling between pages. This can be useful when the PiP view occupies most of the visible screen (privileged/system app only).
-- Live fuel stats (requires Accessibility Service permission), with the option to display them on the main screen and in chosen apps, at a screen position specified by the user. On the home screen the window lies under the bars and over the PiPs, and moves under the vertical bar like them.
-- Night Mode that determines sunrise and sunset based on location (also allows the user to manually adjust sunrise/sunset times, and set the wallpaper and brightness for day/night mode). Without the default wallpapers, a mode with no saved picture leaves the wallpaper as it is. "Pick wallpaper" opens the same wallpaper picker as the row in Miscellaneous.
-- Settings fragment with useful tweaks. The list keeps its place when you come back from a window one of its rows opened (the creator, a guide, the Spotify sign-in, the wallpaper picker, the device settings) and starts at the top when the settings are opened again. "Transparent status bar" is under Home screen layout. When the screen turns (phones and tablets), an open dialog comes back with what you typed in it, the colour picker still stores its colour, and a download of an update, the save of a wallpaper or an import of a canbus library goes on with its progress window.
+- Optional transparent overlay square on the status bar that detects swipes and allows scrolling between pages. This can be useful when the PiP view occupies most of the visible screen (system app only).
+- Live fuel stats (requires Accessibility Service permission), with the option to display them on the main screen and in chosen apps, at a screen position specified by the user.
+- Night Mode that determines sunrise and sunset based on location (also allows the user to manually adjust sunrise/sunset times, and set the wallpaper and brightness for day/night mode). 
+- Settings fragment with useful tweaks.
 - Improved cold start (on some devices this [Magisk module](https://github.com/vasyl91/FYT-improved-cold-start/releases/latest) might make it even faster).
-- "Start on boot" and "Start on wake" (Settings > Miscellaneous): two separate lists of apps the launcher opens by itself, one by one in the order you tick them. "Start on boot" starts its apps only after a restart of the device, once the launcher's cold start is over. "Start on wake" starts its apps a few seconds after every wake from sleep; then the launcher (with "Launcher home on wake", or when the home screen was in front before the sleep) or the app from before the sleep comes back to the front, unless you have done something in the meantime.
 - Baseline profile implementation.
-- Versatile logcat (best performance on privileged/system apps).
+- Versatile logcat (best performance with system apps, root access or Shizuku).
 - New icon for the launcher and its settings, with a settings icon in the app drawer.
 - "Update" feature allowing users to easily update the launcher from its settings.
-- Replaced some deprecated code with newer implementations.
 
 ---
 
 **Installation:**
 
-For the first installation, download `installer.zip`, unpack it onto a FAT32-formatted USB flash drive, then connect the drive to your unit's USB port and wait — installation should start after a few seconds. Once installed, you can dirty-install updates (also via the built-in updater) or debug versions without using the USB drive again.
+For the first installation, download `installer.zip`, unpack it onto a FAT32-formatted USB flash drive, then connect the drive to your unit's USB port and wait - installation should start after a few seconds. Once installed, you can dirty-install updates (also via the built-in updater) or debug versions without using the USB drive again.
 
 If installation doesn't start automatically, please try other USB ports. If it still doesn't start regardless of the USB port, it means either your device is not an FYT device, or it is an FYT device but runs Android 12 or higher (some brands don't allow installing apps via scripts from a USB drive).
 
@@ -52,16 +47,18 @@ This method installs the system version as a privileged system app, in place of 
 
 <a id="supported-devices"></a>**Supported devices:**
 
-| Android | Installed as | Privileges from | Multiple PiPs | Pinned PiP | Tested |
-|---|---|---|---|---|---|
-| 8–9 | system version | the system (uid 1000) | ✅ Android's ActivityView | ✅ | ➖ |
-| 10 | system version | the system (uid 1000) | ✅ Android's ActivityView | ✅ | ✅ FYT unit, 2000x1200 |
-| 11–16 | system version | the system (uid 1000) | ✅ the launcher's own virtual displays | ✅ | ➖ |
-| 8–10 | standard version | root ([FYT VDHost](vdhost/README.md) module) or Shizuku | ✅ virtual displays through the module or Shizuku | ✅ on FYT units except the 7870 | ➖ |
-| 11–16 | standard version | root ([FYT VDHost](vdhost/README.md) module) | ✅ virtual displays through the module | ✅ on FYT units except the 7870 | ✅ Android 14, Xiaomi Redmi Note 8T |
-| 11–16 | standard version | Shizuku | ✅ virtual displays through Shizuku ¹ | ✅ on FYT units except the 7870 | ✅ Android 16, Samsung Galaxy A55 |
-| 8–16 | standard version | none | ❌ | ✅ on FYT units except the 7870 | ➖ |
-| 8–16 | system version on a non-FYT ROM made with the AOSP test key | the system (uid 1000) | ✅ as the system version on the same Android | ❌ FYT units only (not the 7870) | ➖ |
+| Android | Installed as | Privileges from | Multiple PiPs | Tested |
+|---|---|---|---|---|
+| 8–9 | system version | the system (uid 1000) | ✅ Android's ActivityView | ➖ |
+| 10 | system version | the system (uid 1000) | ✅ Android's ActivityView | ✅ FYT unit 7862, 2000x1200 |
+| 11–17 | system version | the system (uid 1000) | ✅ the launcher's own virtual displays | ➖ |
+| 8–10 | standard version | root ([FYT VDHost](vdhost/README.md) module) or Shizuku | ✅ virtual displays through the module or Shizuku | ➖ |
+| 11–17 | standard version | root ([FYT VDHost](vdhost/README.md) module) | ✅ virtual displays through the module | ✅ Android 14, Xiaomi Redmi Note 8T |
+| 11–17 | standard version | Shizuku | ✅ virtual displays through Shizuku ¹ | ✅ Android 13, FYT unit 7870<br>✅ Android 16 and Android 17, Samsung Galaxy A55 |
+| 8–17 | standard version | none | ❌ | ➖ |
+| 8–17 | system version on a non-FYT ROM made with the AOSP test key | the system (uid 1000) | ✅ as the system version on the same Android | ➖ |
+
+Pinned PiP works only on FYT units, with the 7870 being the only known exception.
 
 ¹ Apps that protect their content (`FLAG_SECURE`: video streaming, banking) may show black in a PiP. The PiPs are available once Shizuku has started. If you need Shizuku, [Shizuku Next](https://github.com/rushiranpise/Shizuku-Next/releases/latest) is recommended: on most devices its server starts right after a boot when its "Start without Wi-Fi" option is available and enabled.
 
@@ -73,11 +70,11 @@ Without system privileges, root or Shizuku the launcher itself works everywhere;
 
 **Google Maps bug**
 
-Most FYT ROMs offer two ways of displaying apps on the launcher's screen. The most common one is "pinned Picture-in-Picture mode," with all its consequences for the app's UI behavior — in Google Maps' case, this switches the layout to minimal. This method doesn't provide the entry points needed to maintain a "full screen UI" for apps that support PiP mode.
+Most FYT ROMs offer two ways of displaying apps on the launcher's screen. The most common one is "pinned Picture-in-Picture mode," with all its consequences for the app's UI behavior - in Google Maps' case, this switches the layout to minimal. This method doesn't provide the entry points needed to maintain a "full screen UI" for apps that support PiP mode.
 The only reliable way I've found to prevent Google Maps from switching to its minimal UI requires root, LSPosed, and this [LSPosed module](https://github.com/vasyl91/Full-Interface-PiP/releases/latest). It successfully forces the app to keep its full UI inside FYT's Picture-in-Picture mode (remember to select Google Maps in the LSPosed "Enable module" section).
 Check out this [XDA thread](https://xdaforums.com/t/kernel-fyt-7862-s-8581-optimized-root-prepared-magisk-edition.4610985/) if you want to root your device. Always make a full backup (AllAppUpdate.bin, config.txt, etc.) before flashing anything!
 
-The second method displays apps in windowed mode as they normally appear: through Android's hidden ActivityView class (system version on Android 8–10; FYT did not modify it), otherwise through the launcher's own virtual displays. This doesn't affect the layout and needs no root in the system version. The multiple-PiP feature uses this method.
+The second method displays apps in windowed mode as they normally appear: through Android's hidden ActivityView class (system version on Android 8–10), otherwise through the launcher's own virtual displays (requires root access or Shizuku). This doesn't affect the layout and needs no root in the system version. The multiple-PiP feature uses this method.
 
 
 ![](https://github.com/vasyl91/FYT-Launcher-Mod/blob/main/images/example_creator.gif)
@@ -166,11 +163,11 @@ Its state and two resets (the refresh schedule only, or everything back to the p
 
 | Installed as | Android | After installing | Usage refreshes | Reset | Compiled by |
 |---|---|---|---|---|---|
-| system version (system app) | 8–16 | ✅ | ✅ | ✅ | Android's package manager, asked by the launcher itself (uid 1000) |
-| Standard version + [FYT VDHost](vdhost/README.md) module (root) | 8–16 | ✅ | ✅ | ✅ | the module's daemon (uid 1000) |
-| Standard version + Shizuku | 8–16 | ✅ | ✅ | ✅ ¹ | Shizuku's service, as `adb shell cmd package compile -m speed-profile -f` would |
-| Standard version, no root, no Shizuku | 8–16 | ❌ ² | ❌ ² | ❌ | – |
-| Debug build (any version) | 8–16 | ❌ ³ | ❌ ³ | ❌ | – |
+| system version (system app) | 8–17 | ✅ | ✅ | ✅ | Android's package manager, asked by the launcher itself (uid 1000) |
+| Standard version + [FYT VDHost](vdhost/README.md) module (root) | 8–17 | ✅ | ✅ | ✅ | the module's daemon (uid 1000) |
+| Standard version + Shizuku | 8–17 | ✅ | ✅ | ✅ ¹ | Shizuku's service, as `adb shell cmd package compile -m speed-profile -f` would |
+| Standard version, no root, no Shizuku | 8–17 | ❌ ² | ❌ ² | ❌ | – |
+| Debug build (any version) | 8–17 | ❌ ³ | ❌ ³ | ❌ | – |
 
 ¹ On Android 8–13 Shizuku may not clear the recorded data: the profile from the APK is applied again on top of it.<br>
 ² Android's own idle maintenance applies the profile one day.<br>
@@ -182,7 +179,7 @@ Its state and two resets (the refresh schedule only, or everything back to the p
 |---|---|
 | 8 | ❌ Macrobenchmark needs Android 9+ |
 | 9–12 | ✅ with root (Magisk, root allowed for Shell) |
-| 13–16 | ✅ without root |
+| 13–17 | ✅ without root |
 
 ---
 
@@ -221,13 +218,13 @@ Most CAN boxes send the fuel consumption and the range on their own. Only some w
 
 [<img src="./images/s4.png" width="50%">](./images/s4.png)
 
-2. It should contain the name of the class that the CAN bus runs by default — in my case, it's [`com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi.java`](archive/fuel_stats_example/RZC_BZ408IndexActi.java). Start with that class and inspect its subclasses if needed.
+2. It should contain the name of the class that the CAN bus runs by default - in my case, it's [`com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi.java`](archive/fuel_stats_example/RZC_BZ408IndexActi.java). Start with that class and inspect its subclasses if needed.
 
-3. Keep in mind that the following instructions are just an example based on my case, meant as a hint of how to do it. Also, some units or CAN buses don't provide this functionality — if your CAN bus app doesn't display current fuel consumption and/or cruising range, then you can't use this widget.
+3. Keep in mind that the following instructions are just an example based on my case, meant as a hint of how to do it. Also, some units or CAN buses don't provide this functionality - if your CAN bus app doesn't display current fuel consumption and/or cruising range, then you can't use this widget.
 
 4. In general, the codes you're looking for should be in the Java file located in the same folder as the class from step 1 (in my case, biaozhi408). Open that folder in, for example, Sublime, and search for `L/100KM`. If you find it, proceed to step 7. If not, follow the next steps.
 
-5. Open the class from step 2 and look for the method that opens the next activity, which eventually contains what you need — there might be a few to check. `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi.java` contains an `onClickListener` with an intent:
+5. Open the class from step 2 and look for the method that opens the next activity, which eventually contains what you need - there might be a few to check. `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408IndexActi.java` contains an `onClickListener` with an intent:
 
 ```
                     Intent intent = new Intent();
@@ -306,7 +303,7 @@ That leads to the class `com.syu.carinfo.rzc.biaozhi408.RZC_BZ408OilMileIndexAct
 
 10. To extract the APK file, install [Apk Analyzer](https://play.google.com/store/apps/details?id=sk.styk.martin.apkanalyzer&hl=en&pli=1) on your device. Open it and type `com.syu.canbus` in the search bar. Open the result, and in the next window press the three dots in the bottom-right corner, then press `Export APK`. Move the exported `com.syu.canbus.apk` to your PC.
 
-11. To unpack the extracted APK, use the [APKRepatcher](https://github.com/vasyl91/APKRepatcher/releases/tag/Update2024) tool. Download it, then inside the APKRepatcher folder hold Shift, right-click an empty area, and open Command Prompt from the context menu. In Command Prompt, paste `java -jar APKRepatcher.jar` and press Enter. (Install Java on your PC if needed — just google it.)
+11. To unpack the extracted APK, use the [APKRepatcher](https://github.com/vasyl91/APKRepatcher/releases/tag/Update2024) tool. Download it, then inside the APKRepatcher folder hold Shift, right-click an empty area, and open Command Prompt from the context menu. In Command Prompt, paste `java -jar APKRepatcher.jar` and press Enter. (Install Java on your PC if needed - just google it.)
 
 12. In APKRepatcher, go to File > Open APK, select your `com.syu.canbus.apk`, and wait until it finishes. Then go to the directory `APKRepatcher\Projects\com.syu.canbus.apk\javaCode\classes.dex\sources\com\syu` and repeat step 2.
 
@@ -339,9 +336,9 @@ Skip this part for builds 1.1.8 and above.
 
 Tampering with `android.jar` has been deprecated since build 1.1.7.
 
-for builds up to 1.1.6 — replace `android.jar` in `C:\Users\<UserName>\AppData\Local\Android\Sdk\platforms\android-36` with the file from this [release](https://github.com/vasyl91/FYT-Launcher-Mod/releases/download/Android-36-modded-jar/android.jar).
+for builds up to 1.1.6 - replace `android.jar` in `C:\Users\<UserName>\AppData\Local\Android\Sdk\platforms\android-36` with the file from this [release](https://github.com/vasyl91/FYT-Launcher-Mod/releases/download/Android-36-modded-jar/android.jar).
 
-for build 1.1.7 — use `android.jar` from this [repository](https://github.com/Reginer/aosp-android-jar); check `targetSdk` inside `app/build.gradle.kts` and choose the Android version you want to work with.
+for build 1.1.7 - use `android.jar` from this [repository](https://github.com/Reginer/aosp-android-jar); check `targetSdk` inside `app/build.gradle.kts` and choose the Android version you want to work with.
 
 </details>
 
@@ -354,7 +351,7 @@ USB configuration:
 
 <details>
 
-If you don't have much choice, try a 4-pin USB cable — in my case, this one works fine. 
+If you don't have much choice, try a 4-pin USB cable - in my case, this one works fine. 
 If you need drivers, use [this one](https://github.com/vasyl91/FYT-Launcher-Mod/releases/download/android-34-modded-jar/Unisoc+SPD+Driver.rar). 
 Go to Developer options, click the three dots in the top-right corner, and select the second option from the popup (both are in Chinese).
 Remember to enable USB debugging.
