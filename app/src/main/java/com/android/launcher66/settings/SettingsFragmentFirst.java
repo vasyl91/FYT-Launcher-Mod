@@ -240,6 +240,9 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         handler.post(this::reopenAfterTurn);
         handler.post(this::takeOverWork);
 
+        setDivider(null);
+        setDividerHeight(0);
+
         if (!LauncherApplication.isFytDevice()) {
             // Only the system bar insets: the proportions come from SettingsActivity's
             // reference density, before anything is inflated.

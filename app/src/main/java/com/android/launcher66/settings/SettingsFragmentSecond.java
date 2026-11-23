@@ -336,6 +336,9 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         // A colour picker the settings brought back stores its colour as before (ColorPickerTargets)
         handler.post(this::rebindColorPickers);
 
+        setDivider(null);
+        setDividerHeight(0);
+
         if (!LauncherApplication.isFytDevice()) {
             // Only the system bar insets: the proportions come from SettingsActivity's
             // reference density, before anything is inflated.
