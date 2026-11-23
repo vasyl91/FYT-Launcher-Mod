@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.os.Looper;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -113,7 +114,7 @@ public class SeparatorSpacingViewTest {
         for (int position = 1; position < adapter.getItemCount(); position++) {
             Preference divider = adapter.getItem(position);
             Preference above = adapter.getItem(position - 1);
-            if (divider == null || above == null || divider.getLayoutResource() != R.layout.preference_separator
+            if (divider == null || above == null || !isDivider(divider)
                     || above instanceof PreferenceCategory || !TEXT_ROWS.contains(above.getLayoutResource())) {
                 continue;
             }
@@ -130,7 +131,7 @@ public class SeparatorSpacingViewTest {
             }
             checked.add(above.getKey());
             float least = 16 * row.getResources().getDisplayMetrics().density - 1;
-            int space = spaceBelow(text, row);
+            int space = spaceBelow(text, row) + dividerTopMargin(divider, list);
             if (space < least) {
                 close.add(above.getKey() + ": " + space + " px under its text, at least " + least);
             }
@@ -167,5 +168,20 @@ public class SeparatorSpacingViewTest {
     @Config(qualifiers = "w2000dp-h1200dp-land-mdpi")
     public void onAnFytUnitEveryTextRowKeepsItsSpaceAboveADivider() {
         check();
+    }
+
+    private static boolean isDivider(Preference p) {
+        int layout = p.getLayoutResource();
+        return layout == R.layout.preference_separator
+                || layout == R.layout.preference_separator_within;
+    }
+
+    /** The margin above a divider, read from its layout. */
+    private static int dividerTopMargin(Preference divider, ViewGroup parent) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(divider.getLayoutResource(), parent, false);
+        ViewGroup.LayoutParams params = view.getLayoutParams();
+        return params instanceof ViewGroup.MarginLayoutParams
+                ? ((ViewGroup.MarginLayoutParams) params).topMargin : 0;
     }
 }
