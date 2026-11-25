@@ -7,7 +7,7 @@ catalogue is in English.
 
 | Folder | Holds |
 |---|---|
-| `active/` | The brief being implemented or waiting for its device review, and the analyses it uses. Empty now. |
+| `active/` | The brief being implemented or waiting for its device review, and the analyses it uses. Now: the round 28 brief. |
 | `archive/` | Finished briefs. **Read-only history: never edit them.** |
 | `archive/analysis/` | Log analyses and comparisons written as input for a brief. |
 
@@ -153,6 +153,7 @@ Work that was done from a written brief which is not in this folder.
 | 2026-11-20 | **Round 25:** two older StrictMode reports (KI-46), the order of the horizontal bar's elements (D-77), the settings' dark dialogs (D-78), three sections in "Bars" (D-79) | The owner's request was given in the conversation. The session's plan, in Polish: `archive/plan-2026-11-20-round-25.md` (archived 2026-11-22) | `6670ecf8b` … `8118d0af9`, `2098a8037`. One session planned and implemented | `../reports/implementation_report_2026-11-15.md`, section "Round 25"; the A55 works but for the dialogs after a turn (round 26); the 7862's log awaited |
 | 2026-11-21 → 11-22 | **Round 26:** the settings' dialogs and work after a turn (D-82, KI-47), "App icons" without "Resizable" (D-71), the apps list fitted or hidden (D-80), the 7870's covers and position slider (D-81, KI-48); the pinned PiP checked in the 7862's framework (D-34, KI-15) | The owner's request was given in the conversation. The session's plan, in Polish: `archive/plan-2026-11-21-round-26.md` (archived 2026-11-22) | `edcee91a9` … `6c525ff3e`, then the documentation commits. One session planned and implemented | `../reports/implementation_report_2026-11-15.md`, section "Round 26"; the A55 works (2026-11-22), the 7870 tester's result awaited |
 | 2026-11-22 | **Round 27:** the position slider for every player (D-81, KI-50), "Start on wake" (D-83, KI-50), the canbus script's zips described (KI-49) | The owner's request was given in the conversation. The session's plan, in Polish: `archive/plan-2026-11-22-round-27.md` (archived 2026-11-25) | `7ec71e8dc` … `58b5c3365`, then the documentation commits. One session planned and implemented | `../reports/implementation_report_2026-11-15.md`, section "Round 27" |
+| 2026-11-25 | **Round 28:** crashes, the vertical bar's window, the stats window, the logcat stop, direct boot, the four app widgets removed; the music slider; the theme colour, switches and the stock layout gate; home gestures, double tap, folders, free and overlapping widgets; bars without elements; the app drawer (vertical, search, tabs); the widget list; notification badges | `active/sonnet-prompt-2026-11-25-round-28.md` (Polish; planned in one session, implemented in another) | **Active**: not started | the report it asks for (section "Round 28") |
 
 Before 2026-10-27 the work was directed in conversation, without brief files. Those conversations are
 covered by the reports CHAT_01 … CHAT_06.
