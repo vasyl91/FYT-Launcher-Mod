@@ -1,6 +1,10 @@
 # Project state
 
-**Snapshot: 2026-11-22, `testBranch` after round 27 (`7ec71e8dc` … `58b5c3365`, then the documentation commits).
+**Snapshot: 2026-11-25, `testBranch` after round 27 (`7ec71e8dc` … `58b5c3365`, then the documentation commits);
+round 28 is briefed for implementation (`prompts/active/sonnet-prompt-2026-11-25-round-28.md`). On 2026-11-25 the 7862's
+log of round 25 closed KI-46 (no StrictMode report, no leaked `ActivityView` surface); the owner confirmed the panes,
+the order of the bar's elements (D-77) and the dark dialogs (D-78) on the 7862, and the A55 runs the launcher as before on
+Android 17. com.syu.music cannot be moved to a position from another app (KI-50, D-81).
 Round 27: the home music widget's position slider on every unit, moving the track where the player's session allows
 it, showing the position where it does not, empty without one (D-81, KI-50); "Start on wake", a list of its own
 under "Start on boot", which stays for the cold start (D-83, KI-50); the canbus script's zips accepted and described
@@ -148,8 +152,8 @@ with one or two apps, a sleep and a wake (they open one by one, then the launche
 and "Start on boot" unchanged after a restart. On the 7862 the log line `MusicWidget: slider com.syu.music …` and the
 widget's look. **Round 26:** the A55 works (2026-11-22); on the 7870 (the tester) the BT cover after a start in the
 middle of a song, FLAC/M4A covers, the cover in a pause and after the settings, and the position slider (KI-48).
-**Round 25 on the 7862:** the order of the bar's elements (D-77), the dark dialogs
-(D-78), the rows and dividers (D-79), and the two StrictMode fixes of KI-46 in its log. KI-44 waits for a unit whose code check waits for a drive. KI-37 waits for a log of a next
+**Round 25 on the 7862:** confirmed 2026-11-25 (KI-46 closed; D-77, D-78 work). Checks that only the 7870 can give
+are listed in `checks/7870.md`. KI-44 waits for a unit whose code check waits for a drive. KI-37 waits for a log of a next
 widget over icons, if one happens. CI runs only for a change of the code (`CLAUDE.md`).
 
 ## Blocked or waiting

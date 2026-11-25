@@ -1,6 +1,6 @@
 # Known issues
 
-As of 2026-11-22 (`testBranch` after round 27; rounds 25 and 26 wait for the 7862's log and the 7870 tester). One list of what is open today,
+As of 2026-11-25 (`testBranch` after round 27; round 28 briefed; the 7870 tester's results are awaited, see `checks/7870.md`). KI-46 closed 2026-11-25 by the 7862's log. One list of what is open today,
 rewritten on 2026-11-18 at the owner's request. What was fixed or closed has been taken out; it stays in git
 and in the reports (`reports/`, `chat_archive/`). Sources: the code, git, CI, the briefs, the chat reports and
 the owner's results.
@@ -43,7 +43,6 @@ file and named in the round's report.
 | KI-33 | Some settings of the home screen only with the user layout on | problem | open | the owner's choice |
 | KI-37 | A widget lay over icons after a change of the grid | unverified | watching | a log with `Item out of place` |
 | KI-44 | The GPS of the fuel statistics only while something needs it | unverified | partial | a unit whose code check waits for a drive |
-| KI-46 | StrictMode reports in the 7862's log of 2026-11-20 18:21 | problem | watching | the owner's log of the 7862 (`6670ecf8b`, `d61011f34`) |
 | KI-48 | The 7870's covers and the position slider | unverified | watching | the tester's result and log (round 26) |
 | KI-49 | The canbus script's `--launcher .` needs the decompiled folders, now zips | limit | accepted (the owner, 2026-11-22) | — |
 | KI-50 | The position slider for every player, and "Start on wake" | unverified | watching | the owner's test on the A55 and the 7862's log (round 27) |
@@ -227,23 +226,6 @@ no `GPS:` line either: the service logs a change of the rate, and "none" from th
 every 500 ms as before, for the estimate's altitude (it has no barometer; its speed comes from the code). Not seen yet
 on a device: a unit whose code check waits for a drive (every 5 s without a speed code, nothing with one).
 
-### KI-46 StrictMode reports in the 7862's log of 2026-11-20 18:21
-Both are older than round 24: they are in the logs since 2026-11-15 and 2026-11-19 [V].
-- **The widget previews of the page shown first were read on the main thread.** Opening the widgets tab of the list of
-  apps, `AppsCustomizePagedView.syncWidgetPageItems(page, immediate)` loaded that page's previews synchronously in
-  its layout listener: 4 `DiskReadViolation`s of 48–102 ms in `WidgetPreviewLoader.readFromDb`. `6670ecf8b`: every
-  page loads them in a background task; the page shown first starts at once (`PreviewLoadStart`). Not changed:
-  `generateWidgetPreview` when a widget is dragged out of the list may read resources on the main thread too; no log
-  has shown it [A].
-- **Android 10's `ActivityView` left its root surface to the finalizer.** 13 `LeakedClosableViolation`s for a
-  `SurfaceControl` built in `ActivityView.initVirtualDisplay` (`mRootSurfaceControl`, never released in
-  `performRelease`). `d61011f34`: `WindowHostActivityView.release` releases it once the view is released; the layer
-  lives on with its parent as before, only the time changes.
-
-To look at in the 7862's log: opening the widgets tab gives no report from `WidgetPreviewLoader`; after some pane
-changes and minutes of use there is no `LeakedClosableViolation` from `ActivityView.initVirtualDisplay`. Not tested on a
-device.
-
 ### KI-48 The 7870's covers and the position slider
 The tester [H]: "sometimes media widget shows default picture until cover or track changes", and a position slider on
 the big widget for files and BT. No log of it yet; three causes were found in the code and fixed in round 26 [V]:
@@ -272,10 +254,11 @@ for byte. The built-in assets are not affected: nothing rebuilds them by itself.
 Round 27 [V in the code, not on a device]:
 - the slider is on every unit (`7ec71e8dc`); it moves a session's own app where its session has a length and allows
   `ACTION_SEEK_TO` (`8f2259db1`), shows the position where it does not, and is empty without a length or for a live
-  stream. Whether com.syu.music on the 7862 can be moved is unknown [U]: the launcher controls it by intents only
-  and its decompiled app is not in the archive; it seeks only if it has a session that allows it. The log line
-  `MusicWidget: slider com.syu.music seek|show (its session)` says which; a `show` there means the 7862 keeps a slider
-  without a knob for FYT's music;
+  stream. **com.syu.music on the 7862 cannot be moved from outside** [V, 2026-11-25, in the owner's
+  `archive/decompiled/com.syu.music.zip`]: its exported `MService` takes only playpause, stop, next, prev, path and
+  widget actions; its `MediaSession` (`MediaManager`) only handles media buttons, with no playback state, no length
+  and no `onSeekTo`; it seeks only from its own screens (`Page_Player`, `Page_Id3`, `Page_Player_HalfScreen` →
+  `App_Music.seekTo`). The slider therefore shows its position without a knob (SHOW);
 - on the 7862 the widget's position row is higher (0.09 of the height instead of 0.04), the cover, text and buttons a
   little lower;
 - "Start on wake" (`65a43ebc4`, `58b5c3365`): its apps compete for the front with the app from before the sleep, so

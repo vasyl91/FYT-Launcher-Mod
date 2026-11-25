@@ -654,3 +654,9 @@ the colour of the part not played yet; "Start on wake" under "Start on boot" as 
   One dialog serves both lists with its old tag (one at a time).
 - The decision is D-83, not D-84 as the plan said: D-83 was the next free number.
 - Not tested on a device.
+
+**Owner's results (2026-11-25):** the A55 runs the launcher as before on Android 17 [H]. The 7862's log of round 25
+(2024-12-07 on its clock) has no StrictMode report and no `LeakedClosableViolation` after pane changes and two openings of
+the widgets tab, so KI-46 is closed [V]; the owner confirmed the panes, the order of the bar's elements and the dark
+dialogs. Round 27 on a device: no result yet. com.syu.music (7862) cannot be moved to a position from another app,
+checked in its decompiled code (`archive/decompiled/com.syu.music.zip`, KI-50).

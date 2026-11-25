@@ -989,7 +989,7 @@ The round had no brief; its result is in `reports/implementation_report_2026-11-
 ### D-77 The order of the horizontal bar's elements may be chosen, per orientation
 - **Status:** ACTIVE. **By:** owner, 2026-11-20 (the request and the answer "one order for portrait and one for
   landscape", made precise the same day: "the launcher is mostly seen in one orientation, so one row, opening the
-  list of the orientation the screen is in").
+  list of the orientation the screen is in"). Confirmed on the 7862 (the owner, 2026-11-25).
 - **Decision:** a row in "Bars" opens a dialog in which the app drawer button, the apps, the music, the date and the
   weather are dragged into an order (a tile with three lines on each); the top of the list is the left of the bar.
   It lists what the settings and the orientation leave; a hidden element keeps its place in the stored order.
@@ -1000,7 +1000,7 @@ The round had no brief; its result is in `reports/implementation_report_2026-11-
 
 ### D-78 The dialogs of the settings have the settings' colours
 - **Status:** ACTIVE. **By:** owner, 2026-11-20 ("dark as the settings screen, and the same theme for the other
-  dialogs").
+  dialogs"). Confirmed on the 7862 (the owner, 2026-11-25).
 - **Decision:** every dialog of the settings is dark like the settings (`dark_surface`, white text, the settings'
   blue for the buttons and the active field, a frame in the dividers' grey): the text and field dialogs, the
   progress and loading dialogs, the colour picker, the background selector's frame. The background selectors keep
@@ -1036,7 +1036,9 @@ The round had no brief; its result is in `reports/implementation_report_2026-11-
   and moves the track (com.syu.media's own files through IPlayer.seekTo; an app whose own session has a length and
   allows ACTION_SEEK_TO), a second short of the end. Where it cannot (BT, internet radio, a player without seeking)
   it only shows the position, without a knob. Where there is no position (no length, a live stream) it is empty, in
-  the colour of the part not played yet (the owner, 2026-11-22: "grey" means that colour).
+  the colour of the part not played yet (the owner, 2026-11-22: "grey" means that colour). com.syu.music (7862)
+  offers no way to set the position from another app (KI-50, checked in its decompiled code on 2026-11-25), so its
+  slider only shows the position.
 - **Where:** `PositionSlider` (`Mode` SEEK / SHOW / GREY), `SyuMediaClient.seekTo`,
   `MediaTransportController.canSeek` / `seekToPosition`, `MusicWidgetPlan.HOME_*_SLIDER`, `6c525ff3e`,
   `7ec71e8dc`, `8f2259db1`.
