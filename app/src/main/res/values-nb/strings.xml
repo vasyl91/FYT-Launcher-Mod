@@ -590,4 +590,9 @@
     <string name="widget_freeform">Fri plassering av widgeter</string>
     <string name="widget_freeform_on">Widgeter blir der du plasserer dem og får den størrelsen du gir dem</string>
     <string name="widget_freeform_off">Widgeter plasseres i startskjermens ruter</string>
+    <string name="widget_overlap">Tillat at widgeter overlapper</string>
+    <string name="widget_overlap_on">Widgeter tar ingen ruter og ligger over ikoner og andre widgeter</string>
+    <string name="widget_overlap_off">Widgeter holder seg til sine egne ruter</string>
+    <string name="widget_overlap_off_title">Slå av overlapping?</string>
+    <string name="widget_overlap_off_message">Widgeter som ligger over andre elementer flyttes til nærmeste ledige plass i samme størrelse; en widget uten plass fjernes.</string>
 </resources>

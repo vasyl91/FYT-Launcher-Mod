@@ -602,4 +602,9 @@
     <string name="widget_freeform">Free widget placement</string>
     <string name="widget_freeform_on">Widgets stay where you put them and take the size you give them</string>
     <string name="widget_freeform_off">Widgets are placed in the cells of the home screen</string>
+    <string name="widget_overlap">Allow widgets to overlap</string>
+    <string name="widget_overlap_on">Widgets take no cells and lie over icons and other widgets</string>
+    <string name="widget_overlap_off">Widgets keep to their own cells</string>
+    <string name="widget_overlap_off_title">Turn off overlapping?</string>
+    <string name="widget_overlap_off_message">Widgets that lie over other items move to the nearest free place of their size; a widget with no room is removed.</string>
 </resources>

@@ -590,4 +590,9 @@
     <string name="widget_freeform">Widget\'ların serbest yerleşimi</string>
     <string name="widget_freeform_on">Widget\'lar bıraktığınız yerde kalır ve verdiğiniz boyutu alır</string>
     <string name="widget_freeform_off">Widget\'lar ana ekranın hücrelerine yerleştirilir</string>
+    <string name="widget_overlap">Widget\'ların çakışmasına izin ver</string>
+    <string name="widget_overlap_on">Widget\'lar hücre kaplamaz, simgelerin ve diğer widget\'ların üstünde durur</string>
+    <string name="widget_overlap_off">Widget\'lar kendi hücrelerinde kalır</string>
+    <string name="widget_overlap_off_title">Çakışma kapatılsın mı?</string>
+    <string name="widget_overlap_off_message">Diğer öğelerin üzerindeki widget\'lar boyutlarına uygun en yakın boş yere taşınır; yeri olmayan widget kaldırılır.</string>
 </resources>

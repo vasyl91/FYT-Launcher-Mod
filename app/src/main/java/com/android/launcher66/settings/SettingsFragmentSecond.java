@@ -460,6 +460,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         Preference accentRow = findPreference(ThemeAccent.KEY);
         Preference iconTextRow = findPreference(Keys.WORKSPACE_TEXT_COLOR);
         bindDoubleTap();
+        bindWidgetOverlap();
         // On an FYT unit the framework shows its panel of quick settings for this swipe, not the notifications
         androidx.preference.SwitchPreferenceCompat swipeDown = findPreference(Keys.SWIPE_DOWN_NOTIFICATIONS);
         if (swipeDown != null && LauncherApplication.isFytDevice()) {
@@ -1235,6 +1236,30 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         picker.enableAutoClose();
         ColorPickerTargets.bindTint(picker, sharedPrefs, Keys.WORKSPACE_TEXT_COLOR);
         picker.show(getParentFragmentManager(), ColorPickerTargets.TAG_ICON_TEXT);
+    }
+
+    /**
+     * "Allow widgets to overlap": turning it on is as any switch; turning it off asks first, because the widgets that
+     * overlap other items are put on the grid again and the ones with no room are removed (Workspace.refitWidgetsToGrid,
+     * done by the launcher when the setting changes). Cancel leaves the switch on.
+     */
+    private void bindWidgetOverlap() {
+        final SwitchPreferenceCompat row = findPreference(Keys.WIDGET_OVERLAP);
+        if (row == null) {
+            return;
+        }
+        row.setOnPreferenceChangeListener((preference, value) -> {
+            if (Boolean.TRUE.equals(value) || !row.isChecked()) {
+                return true;
+            }
+            SettingsDialogs.builder(requireContext())
+                    .setTitle(R.string.widget_overlap_off_title)
+                    .setMessage(R.string.widget_overlap_off_message)
+                    .setNegativeButton(R.string.cancel_btn, null)
+                    .setPositiveButton(android.R.string.ok, (dialog, which) -> row.setChecked(false))
+                    .show();
+            return false;
+        });
     }
 
     /**

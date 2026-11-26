@@ -590,4 +590,9 @@
     <string name="widget_freeform">ვიჯეტების თავისუფალი განლაგება</string>
     <string name="widget_freeform_on">ვიჯეტები რჩება იქ, სადაც დადებთ, და იღებს თქვენს მიერ მითითებულ ზომას</string>
     <string name="widget_freeform_off">ვიჯეტები თავსდება მთავარი ეკრანის უჯრედებში</string>
+    <string name="widget_overlap">ვიჯეტების გადაფარვის დაშვება</string>
+    <string name="widget_overlap_on">ვიჯეტები არ იკავებს უჯრედებს და ხატულებისა და სხვა ვიჯეტების ზემოთ დევს</string>
+    <string name="widget_overlap_off">ვიჯეტები რჩება საკუთარ უჯრედებში</string>
+    <string name="widget_overlap_off_title">გამოვრთოთ გადაფარვა?</string>
+    <string name="widget_overlap_off_message">სხვა ელემენტებზე მდებარე ვიჯეტები გადადის ზომის შესაბამის უახლოეს თავისუფალ ადგილზე; ადგილის გარეშე დარჩენილი ვიჯეტი ამოიშლება.</string>
 </resources>

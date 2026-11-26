@@ -590,4 +590,9 @@
     <string name="widget_freeform">Prosta razporeditev pripomočkov</string>
     <string name="widget_freeform_on">Pripomočki ostanejo, kamor jih postavite, in imajo velikost, ki jo določite</string>
     <string name="widget_freeform_off">Pripomočki so postavljeni v celice domačega zaslona</string>
+    <string name="widget_overlap">Dovoli prekrivanje pripomočkov</string>
+    <string name="widget_overlap_on">Pripomočki ne zasedejo celic in ležijo nad ikonami in drugimi pripomočki</string>
+    <string name="widget_overlap_off">Pripomočki ostanejo v svojih celicah</string>
+    <string name="widget_overlap_off_title">Izklopim prekrivanje?</string>
+    <string name="widget_overlap_off_message">Pripomočki nad drugimi elementi se premaknejo na najbližje prosto mesto svoje velikosti; pripomoček brez prostora se odstrani.</string>
 </resources>

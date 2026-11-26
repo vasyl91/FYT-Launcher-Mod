@@ -590,4 +590,9 @@
     <string name="widget_freeform">قرار دادن آزاد ویجت‌ها</string>
     <string name="widget_freeform_on">ویجت‌ها همان‌جا که می‌گذارید می‌مانند و اندازهٔ دلخواه را می‌گیرند</string>
     <string name="widget_freeform_off">ویجت‌ها در خانه‌های صفحهٔ اصلی قرار می‌گیرند</string>
+    <string name="widget_overlap">اجازهٔ هم‌پوشانی ویجت‌ها</string>
+    <string name="widget_overlap_on">ویجت‌ها خانه‌ای نمی‌گیرند و روی نمادها و ویجت‌های دیگر قرار می‌گیرند</string>
+    <string name="widget_overlap_off">ویجت‌ها در خانه‌های خود می‌مانند</string>
+    <string name="widget_overlap_off_title">خاموش کردن هم‌پوشانی؟</string>
+    <string name="widget_overlap_off_message">ویجت‌هایی که روی موارد دیگر قرار دارند به نزدیک‌ترین جای خالی هم‌اندازه می‌روند؛ ویجتی که جا نداشته باشد حذف می‌شود.</string>
 </resources>

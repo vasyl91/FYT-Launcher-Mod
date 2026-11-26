@@ -590,4 +590,9 @@
     <string name="widget_freeform">Свободно поставяне на джаджите</string>
     <string name="widget_freeform_on">Джаджите остават където ги поставите и приемат зададения размер</string>
     <string name="widget_freeform_off">Джаджите се поставят в клетките на началния екран</string>
+    <string name="widget_overlap">Позволяване на джаджите да се застъпват</string>
+    <string name="widget_overlap_on">Джаджите не заемат клетки и лежат над иконите и другите джаджи</string>
+    <string name="widget_overlap_off">Джаджите остават в своите клетки</string>
+    <string name="widget_overlap_off_title">Изключване на застъпването?</string>
+    <string name="widget_overlap_off_message">Джаджите над други елементи се преместват на най-близкото свободно място за размера им; джаджа без място се премахва.</string>
 </resources>

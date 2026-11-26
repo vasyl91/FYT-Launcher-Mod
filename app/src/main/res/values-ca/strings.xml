@@ -590,4 +590,9 @@
     <string name="widget_freeform">Col·locació lliure dels ginys</string>
     <string name="widget_freeform_on">Els ginys es queden on els poses i prenen la mida que els dónes</string>
     <string name="widget_freeform_off">Els ginys es col·loquen a les cel·les de la pantalla d\'inici</string>
+    <string name="widget_overlap">Permet que els ginys se superposin</string>
+    <string name="widget_overlap_on">Els ginys no ocupen cel·les i queden damunt d\'icones i altres ginys</string>
+    <string name="widget_overlap_off">Els ginys es queden a les seves cel·les</string>
+    <string name="widget_overlap_off_title">Voleu desactivar la superposició?</string>
+    <string name="widget_overlap_off_message">Els ginys que són damunt d\'altres elements passen al lloc lliure més proper de la seva mida; un giny sense lloc s\'elimina.</string>
 </resources>

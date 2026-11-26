@@ -590,4 +590,9 @@
     <string name="widget_freeform">Colocación libre de widgets</string>
     <string name="widget_freeform_on">Los widgets se quedan donde los pones y toman el tamaño que les das</string>
     <string name="widget_freeform_off">Los widgets se colocan en las celdas de la pantalla de inicio</string>
+    <string name="widget_overlap">Permitir que los widgets se superpongan</string>
+    <string name="widget_overlap_on">Los widgets no ocupan celdas y quedan sobre iconos y otros widgets</string>
+    <string name="widget_overlap_off">Los widgets se quedan en sus propias celdas</string>
+    <string name="widget_overlap_off_title">¿Desactivar la superposición?</string>
+    <string name="widget_overlap_off_message">Los widgets sobre otros elementos pasan al hueco libre más cercano de su tamaño; un widget sin sitio se elimina.</string>
 </resources>

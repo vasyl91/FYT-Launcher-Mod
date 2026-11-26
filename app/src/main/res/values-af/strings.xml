@@ -590,4 +590,9 @@
     <string name="widget_freeform">Vrye plasing van legstukke</string>
     <string name="widget_freeform_on">Legstukke bly waar jy hulle sit en kry die grootte wat jy gee</string>
     <string name="widget_freeform_off">Legstukke word in die selle van die tuisskerm geplaas</string>
+    <string name="widget_overlap">Laat legstukke oorvleuel</string>
+    <string name="widget_overlap_on">Legstukke neem geen selle in en lê oor ikone en ander legstukke</string>
+    <string name="widget_overlap_off">Legstukke bly in hul eie selle</string>
+    <string name="widget_overlap_off_title">Skakel oorvleueling af?</string>
+    <string name="widget_overlap_off_message">Legstukke wat oor ander items lê, skuif na die naaste vrye plek van hul grootte; \'n legstuk sonder ruimte word verwyder.</string>
 </resources>

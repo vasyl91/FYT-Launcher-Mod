@@ -590,4 +590,9 @@
     <string name="widget_freeform">Uwekaji huru wa wijeti</string>
     <string name="widget_freeform_on">Wijeti hubaki mahali unapoziweka na huchukua ukubwa unaoupa</string>
     <string name="widget_freeform_off">Wijeti huwekwa kwenye seli za skrini ya kwanza</string>
+    <string name="widget_overlap">Ruhusu wijeti kupishana</string>
+    <string name="widget_overlap_on">Wijeti hazichukui seli na hukaa juu ya aikoni na wijeti nyingine</string>
+    <string name="widget_overlap_off">Wijeti hubaki katika seli zake</string>
+    <string name="widget_overlap_off_title">Zima kupishana?</string>
+    <string name="widget_overlap_off_message">Wijeti zilizo juu ya vipengee vingine huhamia nafasi huru iliyo karibu zaidi ya ukubwa wake; wijeti isiyo na nafasi huondolewa.</string>
 </resources>

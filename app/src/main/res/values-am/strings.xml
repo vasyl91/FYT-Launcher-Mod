@@ -590,4 +590,9 @@
     <string name="widget_freeform">የምግብር ነጻ አቀማመጥ</string>
     <string name="widget_freeform_on">ምግብሮች ባስቀመጡበት ይቆያሉ እና የሰጧቸውን መጠን ይይዛሉ</string>
     <string name="widget_freeform_off">ምግብሮች በመነሻ ማያ ገጹ ህዋሶች ውስጥ ይቀመጣሉ</string>
+    <string name="widget_overlap">ምግብሮች እንዲደራረቡ ፍቀድ</string>
+    <string name="widget_overlap_on">ምግብሮች ህዋሶችን አይይዙም እና በአዶዎች እና በሌሎች ምግብሮች ላይ ይቀመጣሉ</string>
+    <string name="widget_overlap_off">ምግብሮች በራሳቸው ህዋሶች ውስጥ ይቆያሉ</string>
+    <string name="widget_overlap_off_title">መደራረብን ማጥፋት?</string>
+    <string name="widget_overlap_off_message">በሌሎች ነገሮች ላይ የሚገኙ ምግብሮች ወደ ቅርብ ነጻ ቦታ ይሄዳሉ፤ ቦታ የሌለው ምግብ ይወገዳል።</string>
 </resources>

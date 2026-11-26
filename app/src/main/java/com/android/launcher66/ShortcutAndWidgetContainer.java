@@ -77,6 +77,61 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
         this.mTmpCellXY = new int[2];
         this.mInvertIfRtl = false;
         this.mWallpaperManager = WallpaperManager.getInstance(context);
+        setChildrenDrawingOrderEnabled(true);
+    }
+
+    /** The order the children are drawn and touched in, computed when asked for; null when it has to be (see getChildDrawingOrder). */
+    private int[] mDrawOrder;
+
+    /** The widgets came or went, or "Allow widgets to overlap" changed: the order is worked out again. */
+    void invalidateDrawOrder() {
+        mDrawOrder = null;
+        invalidate();
+    }
+
+    @Override
+    public void onViewAdded(View child) {
+        super.onViewAdded(child);
+        mDrawOrder = null;
+    }
+
+    @Override
+    public void onViewRemoved(View child) {
+        super.onViewRemoved(child);
+        mDrawOrder = null;
+    }
+
+    /**
+     * With "Allow widgets to overlap" the widgets are drawn over the icons and folders, and so take the touch first (a view's
+     * touch is offered to the child drawn last); in each kind the order of adding is kept. Without it, the order is the
+     * children's own.
+     */
+    @Override
+    protected int getChildDrawingOrder(int childCount, int drawingPosition) {
+        int[] order = mDrawOrder;
+        if (order == null || order.length != childCount) {
+            order = new int[childCount];
+            boolean widgetsOnTop = FreeformWidgets.overlapOn(getContext());
+            int next = 0;
+            if (widgetsOnTop) {
+                for (int i = 0; i < childCount; i++) {
+                    if (!(getChildAt(i) instanceof LauncherAppWidgetHostView)) {
+                        order[next++] = i;
+                    }
+                }
+                for (int i = 0; i < childCount; i++) {
+                    if (getChildAt(i) instanceof LauncherAppWidgetHostView) {
+                        order[next++] = i;
+                    }
+                }
+            } else {
+                for (int i = 0; i < childCount; i++) {
+                    order[i] = i;
+                }
+            }
+            mDrawOrder = order;
+        }
+        return order[drawingPosition];
     }
 
     public void setCellDimensions(int cellWidth, int cellHeight, int widthGap, int heightGap, int countX, int countY) {

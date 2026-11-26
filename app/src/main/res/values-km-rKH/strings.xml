@@ -590,4 +590,9 @@
     <string name="widget_freeform">ការដាក់ធាតុក្រាហ្វិកដោយសេរី</string>
     <string name="widget_freeform_on">ធាតុក្រាហ្វិកនៅកន្លែងដែលអ្នកដាក់ ហើយមានទំហំតាមដែលអ្នកកំណត់</string>
     <string name="widget_freeform_off">ធាតុក្រាហ្វិកត្រូវបានដាក់ក្នុងក្រឡានៃអេក្រង់ដើម</string>
+    <string name="widget_overlap">អនុញ្ញាតឱ្យធាតុក្រាហ្វិកត្រួតគ្នា</string>
+    <string name="widget_overlap_on">ធាតុក្រាហ្វិកមិនកាន់កាប់ក្រឡា ហើយនៅលើរូបតំណាង និងធាតុក្រាហ្វិកផ្សេងទៀត</string>
+    <string name="widget_overlap_off">ធាតុក្រាហ្វិកនៅក្នុងក្រឡារបស់ខ្លួន</string>
+    <string name="widget_overlap_off_title">បិទការត្រួតគ្នា?</string>
+    <string name="widget_overlap_off_message">ធាតុក្រាហ្វិកដែលនៅលើធាតុផ្សេងនឹងផ្លាស់ទៅកន្លែងទំនេរជិតបំផុតតាមទំហំរបស់វា ហើយធាតុក្រាហ្វិកដែលគ្មានកន្លែងនឹងត្រូវលុប។</string>
 </resources>

@@ -590,4 +590,9 @@
     <string name="widget_freeform">Penempatan widget bebas</string>
     <string name="widget_freeform_on">Widget tetap di tempat yang Anda tentukan dan berukuran sesuai pilihan Anda</string>
     <string name="widget_freeform_off">Widget ditempatkan di sel layar utama</string>
+    <string name="widget_overlap">Izinkan widget saling menumpuk</string>
+    <string name="widget_overlap_on">Widget tidak memakai sel dan berada di atas ikon dan widget lain</string>
+    <string name="widget_overlap_off">Widget tetap di selnya sendiri</string>
+    <string name="widget_overlap_off_title">Matikan penumpukan?</string>
+    <string name="widget_overlap_off_message">Widget yang menimpa item lain dipindah ke tempat kosong terdekat seukuran widget; widget yang tidak muat dihapus.</string>
 </resources>

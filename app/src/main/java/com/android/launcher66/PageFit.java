@@ -35,12 +35,24 @@ final class PageFit {
      * @return the positions in {@code items} of those that have to move, in that order
      */
     static java.util.List<Integer> toMove(java.util.List<CellOverlap.Box> items, int countX, int countY) {
+        return toMove(items, countX, countY, false);
+    }
+
+    /**
+     * As above; with {@code widgetsMayOverlap} ("Allow widgets to overlap") a widget that lies in the grid is never in the way
+     * of another item and is never moved for sharing a cell: only one outside the grid moves.
+     */
+    static java.util.List<Integer> toMove(java.util.List<CellOverlap.Box> items, int countX, int countY,
+                                          boolean widgetsMayOverlap) {
         java.util.List<Integer> outside = new java.util.ArrayList<>();
         java.util.List<Integer> insideAt = new java.util.ArrayList<>();
         java.util.List<CellOverlap.Box> inside = new java.util.ArrayList<>();
         for (int i = 0; i < items.size(); i++) {
             CellOverlap.Box box = items.get(i);
             if (inGrid(box.cellX, box.cellY, box.spanX, box.spanY, countX, countY)) {
+                if (widgetsMayOverlap && box.widget) {
+                    continue;
+                }
                 insideAt.add(i);
                 inside.add(box);
             } else {

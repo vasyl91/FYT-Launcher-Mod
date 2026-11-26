@@ -590,4 +590,9 @@
     <string name="widget_freeform">Widgets vrij plaatsen</string>
     <string name="widget_freeform_on">Widgets blijven waar u ze neerzet en krijgen de grootte die u opgeeft</string>
     <string name="widget_freeform_off">Widgets worden in de cellen van het startscherm geplaatst</string>
+    <string name="widget_overlap">Widgets mogen overlappen</string>
+    <string name="widget_overlap_on">Widgets nemen geen cellen in en liggen boven pictogrammen en andere widgets</string>
+    <string name="widget_overlap_off">Widgets blijven in hun eigen cellen</string>
+    <string name="widget_overlap_off_title">Overlappen uitschakelen?</string>
+    <string name="widget_overlap_off_message">Widgets boven andere items verschuiven naar de dichtstbijzijnde vrije plek van hun formaat; een widget zonder plek wordt verwijderd.</string>
 </resources>

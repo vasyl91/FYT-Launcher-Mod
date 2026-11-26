@@ -590,4 +590,9 @@
     <string name="widget_freeform">Fri placering av widgets</string>
     <string name="widget_freeform_on">Widgets stannar där du placerar dem och får den storlek du ger dem</string>
     <string name="widget_freeform_off">Widgets placeras i startskärmens rutor</string>
+    <string name="widget_overlap">Tillåt att widgets överlappar</string>
+    <string name="widget_overlap_on">Widgets tar inga rutor och ligger över ikoner och andra widgets</string>
+    <string name="widget_overlap_off">Widgets håller sig till sina egna rutor</string>
+    <string name="widget_overlap_off_title">Stänga av överlappning?</string>
+    <string name="widget_overlap_off_message">Widgets som ligger över andra objekt flyttas till närmaste lediga plats i sin storlek; en widget utan plats tas bort.</string>
 </resources>

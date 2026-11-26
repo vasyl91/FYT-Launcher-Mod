@@ -590,4 +590,9 @@
     <string name="widget_freeform">Слободан распоред виџета</string>
     <string name="widget_freeform_on">Виџети остају где их ставите и добијају величину коју задате</string>
     <string name="widget_freeform_off">Виџети се постављају у ћелије почетног екрана</string>
+    <string name="widget_overlap">Дозволи преклапање виџета</string>
+    <string name="widget_overlap_on">Виџети не заузимају ћелије и леже изнад икона и других виџета</string>
+    <string name="widget_overlap_off">Виџети остају у својим ћелијама</string>
+    <string name="widget_overlap_off_title">Искључити преклапање?</string>
+    <string name="widget_overlap_off_message">Виџети изнад других ставки померају се на најближе слободно место своје величине; виџет без места се уклања.</string>
 </resources>

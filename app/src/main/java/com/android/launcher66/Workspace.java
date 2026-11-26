@@ -4835,6 +4835,85 @@ public class Workspace extends SmoothPagedView
         return super.onTouchEvent(ev);
     }
 
+    /**
+     * "Allow widgets to overlap" or "Free widget placement" changed: the cells taken are counted anew on every page (a
+     * widget takes none with the first), and the widgets are drawn over or among the icons.
+     */
+    void onWidgetRulesChanged() {
+        for (int i = 0; i < getChildCount(); i++) {
+            if (getChildAt(i) instanceof CellLayout) {
+                ((CellLayout) getChildAt(i)).rebuildOccupied();
+            }
+        }
+    }
+
+    /**
+     * "Allow widgets to overlap" was turned off (D7, GridRefit): on each page the icons and folders stay, and the widgets,
+     * from the top left, stay if their cells are free, else go to the nearest free place of their size, else are removed.
+     * The database follows (asynchronously, as every move); every removal is logged.
+     */
+    void refitWidgetsToGrid() {
+        for (int p = 0; p < getChildCount(); p++) {
+            if (!(getChildAt(p) instanceof CellLayout)) {
+                continue;
+            }
+            CellLayout page = (CellLayout) getChildAt(p);
+            List<GridRefit.Item> items = new ArrayList<>();
+            Map<Long, View> views = new HashMap<>();
+            ShortcutAndWidgetContainer container = page.getShortcutsAndWidgets();
+            for (int i = 0; i < container.getChildCount(); i++) {
+                View child = container.getChildAt(i);
+                if (!page.isMovableLauncherItem(child)) {
+                    continue;
+                }
+                ItemInfo info = (ItemInfo) child.getTag();
+                CellLayout.LayoutParams lp = (CellLayout.LayoutParams) child.getLayoutParams();
+                items.add(new GridRefit.Item(info.id, lp.cellX, lp.cellY, lp.cellHSpan, lp.cellVSpan,
+                        child instanceof LauncherAppWidgetHostView));
+                views.put(info.id, child);
+            }
+            for (GridRefit.Move move : GridRefit.refit(items, page.getCountX(), page.getCountY())) {
+                View view = views.get(move.id);
+                if (view == null) {
+                    continue;
+                }
+                ItemInfo info = (ItemInfo) view.getTag();
+                CellLayout.LayoutParams lp = (CellLayout.LayoutParams) view.getLayoutParams();
+                if (move.removed) {
+                    Log.w(TAG, "Widgets no longer overlap: no room for " + info + " on page " + p + ", removed");
+                    container.removeView(view);
+                    LauncherModel.deleteItemFromDatabase(mLauncher, info);
+                    if (info instanceof LauncherAppWidgetInfo) {
+                        final LauncherAppWidgetInfo widgetInfo = (LauncherAppWidgetInfo) info;
+                        mLauncher.removeAppWidget(widgetInfo);
+                        final LauncherAppWidgetHost host = mLauncher.getAppWidgetHost();
+                        new Thread("deleteAppWidgetId") {
+                            @Override
+                            public void run() {
+                                if (host != null) {
+                                    host.deleteAppWidgetId(widgetInfo.appWidgetId);
+                                }
+                                WidgetFrames.remove(mLauncher, widgetInfo.appWidgetId);
+                            }
+                        }.start();
+                    }
+                } else if (move.moved) {
+                    Log.i(TAG, "Widgets no longer overlap: " + info + " moved from " + lp.cellX + "," + lp.cellY
+                            + " to " + move.cellX + "," + move.cellY + " on page " + p);
+                    lp.cellX = lp.tmpCellX = move.cellX;
+                    lp.cellY = lp.tmpCellY = move.cellY;
+                    if (view instanceof LauncherAppWidgetHostView) {
+                        // the frame it had was for the place it has left
+                        WidgetFrames.remove(mLauncher, ((LauncherAppWidgetHostView) view).getAppWidgetId());
+                    }
+                    LauncherModel.modifyItemInDatabase(mLauncher, info, info.container, info.screenId, move.cellX,
+                            move.cellY, info.spanX, info.spanY);
+                }
+            }
+            page.rebuildOccupied();
+        }
+    }
+
     /** A tap on empty space that no page took (PagedView): a candidate for the double tap (HomeGestures). */
     @Override
     protected void onUnhandledTap(MotionEvent ev) {
@@ -7213,9 +7292,19 @@ public class Workspace extends SmoothPagedView
                 int minSpanY = DropSpan.min(item.minSpanY, item.spanY);
 
                 int[] resultSpan = new int[2];
-                mTargetCell = dropTargetLayout.createArea((int) mDragViewVisualCenter[0],
-                        (int) mDragViewVisualCenter[1], minSpanX, minSpanY, spanX, spanY, cell,
-                        mTargetCell, resultSpan, CellLayout.MODE_ON_DROP);
+                if (cell instanceof LauncherAppWidgetHostView && !hasMovedIntoHotseat
+                        && FreeformWidgets.overlapOn(mLauncher)) {
+                    // "Allow widgets to overlap": a widget takes no cell, nothing is pushed aside, it goes to the cells
+                    // nearest to the drop whatever lies there
+                    mTargetCell = findNearestArea((int) mDragViewVisualCenter[0], (int) mDragViewVisualCenter[1],
+                            spanX, spanY, dropTargetLayout, mTargetCell);
+                    resultSpan[0] = spanX;
+                    resultSpan[1] = spanY;
+                } else {
+                    mTargetCell = dropTargetLayout.createArea((int) mDragViewVisualCenter[0],
+                            (int) mDragViewVisualCenter[1], minSpanX, minSpanY, spanX, spanY, cell,
+                            mTargetCell, resultSpan, CellLayout.MODE_ON_DROP);
+                }
 
                 boolean foundCell = mTargetCell[0] >= 0 && mTargetCell[1] >= 0;
                 // A place with no room at all (over the PiP panes, say) can come back as a
@@ -8087,9 +8176,19 @@ public class Workspace extends SmoothPagedView
                 int minSpanX = DropSpan.min(item.minSpanX, item.spanX);
                 int minSpanY = DropSpan.min(item.minSpanY, item.spanY);
                 int[] resultSpan = new int[2];
-                mTargetCell = cellLayout.createArea((int) mDragViewVisualCenter[0],
-                        (int) mDragViewVisualCenter[1], minSpanX, minSpanY, info.spanX, info.spanY,
-                        null, mTargetCell, resultSpan, CellLayout.MODE_ON_DROP_EXTERNAL);
+                if (pendingInfo.itemType == LauncherSettings.Favorites.ITEM_TYPE_APPWIDGET
+                        && container == LauncherSettings.Favorites.CONTAINER_DESKTOP
+                        && FreeformWidgets.overlapOn(mLauncher)) {
+                    // "Allow widgets to overlap": the widget goes to the cells nearest to the drop, nothing is pushed aside
+                    mTargetCell = findNearestArea((int) mDragViewVisualCenter[0], (int) mDragViewVisualCenter[1],
+                            info.spanX, info.spanY, cellLayout, mTargetCell);
+                    resultSpan[0] = info.spanX;
+                    resultSpan[1] = info.spanY;
+                } else {
+                    mTargetCell = cellLayout.createArea((int) mDragViewVisualCenter[0],
+                            (int) mDragViewVisualCenter[1], minSpanX, minSpanY, info.spanX, info.spanY,
+                            null, mTargetCell, resultSpan, CellLayout.MODE_ON_DROP_EXTERNAL);
+                }
 
                 if (resultSpan[0] != item.spanX || resultSpan[1] != item.spanY) {
                     updateWidgetSize = true;

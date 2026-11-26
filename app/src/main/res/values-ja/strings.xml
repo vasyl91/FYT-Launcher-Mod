@@ -590,4 +590,9 @@
     <string name="widget_freeform">ウィジェットの自由配置</string>
     <string name="widget_freeform_on">ウィジェットは置いた場所に留まり、指定した大きさになります</string>
     <string name="widget_freeform_off">ウィジェットはホーム画面のマスに配置されます</string>
+    <string name="widget_overlap">ウィジェットの重なりを許可</string>
+    <string name="widget_overlap_on">ウィジェットはマスを占有せず、アイコンや他のウィジェットの上に重なります</string>
+    <string name="widget_overlap_off">ウィジェットはそれぞれのマスに収まります</string>
+    <string name="widget_overlap_off_title">重なりをオフにしますか？</string>
+    <string name="widget_overlap_off_message">他の項目に重なっているウィジェットは、同じ大きさの最も近い空き位置に移動し、場所がないウィジェットは削除されます。</string>
 </resources>

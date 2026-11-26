@@ -590,4 +590,9 @@
     <string name="widget_freeform">Ukubeka amawijethi ngokukhululeka</string>
     <string name="widget_freeform_on">Amawijethi ahlala lapho uwabeka khona futhi athatha usayizi owunikezayo</string>
     <string name="widget_freeform_off">Amawijethi abekwa kumaseli esikrini sasekhaya</string>
+    <string name="widget_overlap">Vumela amawijethi ukugcwalisana</string>
+    <string name="widget_overlap_on">Amawijethi awathathi amaseli futhi alala phezu kwezithonjana namanye amawijethi</string>
+    <string name="widget_overlap_off">Amawijethi ahlala emaseli awo</string>
+    <string name="widget_overlap_off_title">Vala ukugcwalisana?</string>
+    <string name="widget_overlap_off_message">Amawijethi aphezu kwezinye izinto ashintshela endaweni ekhululekile eseduze ngosayizi wawo; iwijethi engenayo indawo iyasuswa.</string>
 </resources>

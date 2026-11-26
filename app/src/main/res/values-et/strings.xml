@@ -590,4 +590,9 @@
     <string name="widget_freeform">Vidinate vaba paigutus</string>
     <string name="widget_freeform_on">Vidinad jäävad sinna, kuhu need panete, ja saavad määratud suuruse</string>
     <string name="widget_freeform_off">Vidinad paigutatakse avakuva lahtritesse</string>
+    <string name="widget_overlap">Luba vidinatel kattuda</string>
+    <string name="widget_overlap_on">Vidinad ei võta lahtreid ja asuvad ikoonide ja teiste vidinate peal</string>
+    <string name="widget_overlap_off">Vidinad jäävad oma lahtritesse</string>
+    <string name="widget_overlap_off_title">Lülitada kattumine välja?</string>
+    <string name="widget_overlap_off_message">Teiste elementide peal olevad vidinad liiguvad lähimasse sama suurusega vabasse kohta; vidin, millele ruumi pole, eemaldatakse.</string>
 </resources>

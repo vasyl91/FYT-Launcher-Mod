@@ -590,4 +590,9 @@
     <string name="widget_freeform">Slobodan smještaj widgeta</string>
     <string name="widget_freeform_on">Widgeti ostaju gdje ih postavite i poprimaju zadanu veličinu</string>
     <string name="widget_freeform_off">Widgeti se postavljaju u ćelije početnog zaslona</string>
+    <string name="widget_overlap">Dopusti preklapanje widgeta</string>
+    <string name="widget_overlap_on">Widgeti ne zauzimaju ćelije i leže iznad ikona i drugih widgeta</string>
+    <string name="widget_overlap_off">Widgeti ostaju u svojim ćelijama</string>
+    <string name="widget_overlap_off_title">Isključiti preklapanje?</string>
+    <string name="widget_overlap_off_message">Widgeti iznad drugih stavki premještaju se na najbliže slobodno mjesto svoje veličine; widget bez mjesta uklanja se.</string>
 </resources>

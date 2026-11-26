@@ -590,4 +590,9 @@
     <string name="widget_freeform">Swobodne rozmieszczanie widżetów</string>
     <string name="widget_freeform_on">Widżety zostają tam, gdzie je położysz, i mają ustawiony rozmiar</string>
     <string name="widget_freeform_off">Widżety są umieszczane w komórkach ekranu głównego</string>
+    <string name="widget_overlap">Zezwalaj na nakładanie się widżetów</string>
+    <string name="widget_overlap_on">Widżety nie zajmują komórek i leżą nad ikonami i innymi widżetami</string>
+    <string name="widget_overlap_off">Widżety pozostają w swoich komórkach</string>
+    <string name="widget_overlap_off_title">Wyłączyć nakładanie?</string>
+    <string name="widget_overlap_off_message">Widżety leżące nad innymi elementami przesuną się na najbliższe wolne miejsce o swoim rozmiarze; widżet bez miejsca zostanie usunięty.</string>
 </resources>

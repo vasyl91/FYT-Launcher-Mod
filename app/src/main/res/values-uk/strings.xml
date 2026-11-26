@@ -590,4 +590,9 @@
     <string name="widget_freeform">Вільне розміщення віджетів</string>
     <string name="widget_freeform_on">Віджети залишаються там, де ви їх поставили, і мають задані розміри</string>
     <string name="widget_freeform_off">Віджети розміщуються в клітинках головного екрана</string>
+    <string name="widget_overlap">Дозволити віджетам перекриватися</string>
+    <string name="widget_overlap_on">Віджети не займають клітинки й лежать над значками та іншими віджетами</string>
+    <string name="widget_overlap_off">Віджети залишаються у своїх клітинках</string>
+    <string name="widget_overlap_off_title">Вимкнути перекриття?</string>
+    <string name="widget_overlap_off_message">Віджети над іншими елементами переміщуються на найближче вільне місце свого розміру; віджет без місця буде видалено.</string>
 </resources>

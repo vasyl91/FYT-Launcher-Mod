@@ -590,4 +590,9 @@
     <string name="widget_freeform">Widgets frei platzieren</string>
     <string name="widget_freeform_on">Widgets bleiben, wo Sie sie ablegen, und behalten die gewählte Größe</string>
     <string name="widget_freeform_off">Widgets werden in den Zellen des Startbildschirms platziert</string>
+    <string name="widget_overlap">Überlappen von Widgets erlauben</string>
+    <string name="widget_overlap_on">Widgets belegen keine Zellen und liegen über Symbolen und anderen Widgets</string>
+    <string name="widget_overlap_off">Widgets bleiben in ihren eigenen Zellen</string>
+    <string name="widget_overlap_off_title">Überlappung ausschalten?</string>
+    <string name="widget_overlap_off_message">Widgets über anderen Elementen wandern an die nächste freie Stelle ihrer Größe; ein Widget ohne Platz wird entfernt.</string>
 </resources>

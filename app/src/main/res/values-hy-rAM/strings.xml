@@ -590,4 +590,9 @@
     <string name="widget_freeform">Վիջեթների ազատ տեղադրում</string>
     <string name="widget_freeform_on">Վիջեթները մնում են այնտեղ, որտեղ դնում եք, և ստանում են ձեր տված չափը</string>
     <string name="widget_freeform_off">Վիջեթները տեղադրվում են գլխավոր էկրանի վանդակներում</string>
+    <string name="widget_overlap">Թույլ տալ վիջեթների համընկնումը</string>
+    <string name="widget_overlap_on">Վիջեթները վանդակներ չեն զբաղեցնում և դրվում են պատկերակների ու այլ վիջեթների վրա</string>
+    <string name="widget_overlap_off">Վիջեթները մնում են իրենց վանդակներում</string>
+    <string name="widget_overlap_off_title">Անջատե՞լ համընկնումը</string>
+    <string name="widget_overlap_off_message">Այլ տարրերի վրա գտնվող վիջեթները տեղափոխվում են իրենց չափի ամենամոտ ազատ տեղը․ տեղ չունեցող վիջեթը հեռացվում է։</string>
 </resources>

@@ -590,4 +590,9 @@
     <string name="widget_freeform">Widgetek szabad elhelyezése</string>
     <string name="widget_freeform_on">A widgetek ott maradnak, ahová teszi őket, és a megadott méretet kapják</string>
     <string name="widget_freeform_off">A widgetek a kezdőképernyő celláiba kerülnek</string>
+    <string name="widget_overlap">Widgetek átfedésének engedélyezése</string>
+    <string name="widget_overlap_on">A widgetek nem foglalnak cellát, és az ikonok és más widgetek fölé kerülnek</string>
+    <string name="widget_overlap_off">A widgetek a saját celláikban maradnak</string>
+    <string name="widget_overlap_off_title">Kikapcsolja az átfedést?</string>
+    <string name="widget_overlap_off_message">A más elemek fölött lévő widgetek a legközelebbi, azonos méretű szabad helyre kerülnek; a hely nélküli widget törlődik.</string>
 </resources>

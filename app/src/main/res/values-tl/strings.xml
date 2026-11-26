@@ -590,4 +590,9 @@
     <string name="widget_freeform">Malayang paglalagay ng widget</string>
     <string name="widget_freeform_on">Mananatili ang mga widget kung saan mo inilagay at gagamitin ang laking ibinigay mo</string>
     <string name="widget_freeform_off">Ilalagay ang mga widget sa mga cell ng home screen</string>
+    <string name="widget_overlap">Payagan ang mga widget na magpatong</string>
+    <string name="widget_overlap_on">Hindi kumukuha ng cell ang mga widget at nakapatong sa mga icon at ibang widget</string>
+    <string name="widget_overlap_off">Mananatili ang mga widget sa sarili nilang cell</string>
+    <string name="widget_overlap_off_title">I-off ang pagpapatong?</string>
+    <string name="widget_overlap_off_message">Ang mga widget na nakapatong sa ibang item ay ililipat sa pinakamalapit na bakanteng lugar na kasya; aalisin ang widget na walang lugar.</string>
 </resources>

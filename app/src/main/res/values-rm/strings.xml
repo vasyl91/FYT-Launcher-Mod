@@ -590,4 +590,9 @@
     <string name="widget_freeform">Placazion libra dals widgets</string>
     <string name="widget_freeform_on">Ils widgets restan nua che ti als metta e prendan la grondezza che ti dastgas</string>
     <string name="widget_freeform_off">Ils widgets vegnan messas en las cellas da la surfatscha da partenza</string>
+    <string name="widget_overlap">Lubir che ils widgets sa surlappan</string>
+    <string name="widget_overlap_on">Ils widgets n\'occupeschan nagina cella e èn sur ils simbols ed auters widgets</string>
+    <string name="widget_overlap_off">Ils widgets restan en lur atgnas cellas</string>
+    <string name="widget_overlap_off_title">Deactivar la surlappaziun?</string>
+    <string name="widget_overlap_off_message">Ils widgets sur auters elements van sin il plaz liber il pli datiers da lur grondezza; in widget senza plaz vegn allontanà.</string>
 </resources>

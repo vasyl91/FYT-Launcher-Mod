@@ -590,4 +590,9 @@
     <string name="widget_freeform">Plasare liberă a widgeturilor</string>
     <string name="widget_freeform_on">Widgeturile rămân unde le puneți și iau dimensiunea dată</string>
     <string name="widget_freeform_off">Widgeturile sunt plasate în celulele ecranului principal</string>
+    <string name="widget_overlap">Permite suprapunerea widgeturilor</string>
+    <string name="widget_overlap_on">Widgeturile nu ocupă celule și stau peste pictograme și alte widgeturi</string>
+    <string name="widget_overlap_off">Widgeturile rămân în celulele lor</string>
+    <string name="widget_overlap_off_title">Dezactivați suprapunerea?</string>
+    <string name="widget_overlap_off_message">Widgeturile aflate peste alte elemente se mută în cel mai apropiat loc liber de dimensiunea lor; un widget fără loc este eliminat.</string>
 </resources>

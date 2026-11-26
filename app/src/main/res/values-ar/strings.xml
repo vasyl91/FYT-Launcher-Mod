@@ -590,4 +590,9 @@
     <string name="widget_freeform">وضع الأدوات بحرية</string>
     <string name="widget_freeform_on">تبقى الأدوات حيث تضعها وتأخذ الحجم الذي تحدده</string>
     <string name="widget_freeform_off">توضع الأدوات في خلايا الشاشة الرئيسية</string>
+    <string name="widget_overlap">السماح للأدوات بالتداخل</string>
+    <string name="widget_overlap_on">لا تشغل الأدوات خلايا وتظهر فوق الأيقونات والأدوات الأخرى</string>
+    <string name="widget_overlap_off">تبقى الأدوات داخل خلاياها</string>
+    <string name="widget_overlap_off_title">إيقاف التداخل؟</string>
+    <string name="widget_overlap_off_message">تنتقل الأدوات الموجودة فوق عناصر أخرى إلى أقرب مكان خالٍ بحجمها، وتُحذف الأداة التي لا يوجد لها مكان.</string>
 </resources>

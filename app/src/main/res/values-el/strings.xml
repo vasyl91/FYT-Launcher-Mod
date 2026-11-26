@@ -590,4 +590,9 @@
     <string name="widget_freeform">Ελεύθερη τοποθέτηση widget</string>
     <string name="widget_freeform_on">Τα widget μένουν εκεί που τα βάζετε και παίρνουν το μέγεθος που τους δίνετε</string>
     <string name="widget_freeform_off">Τα widget τοποθετούνται στα κελιά της αρχικής οθόνης</string>
+    <string name="widget_overlap">Να επικαλύπτονται τα widget</string>
+    <string name="widget_overlap_on">Τα widget δεν καταλαμβάνουν κελιά και βρίσκονται πάνω από εικονίδια και άλλα widget</string>
+    <string name="widget_overlap_off">Τα widget μένουν στα δικά τους κελιά</string>
+    <string name="widget_overlap_off_title">Απενεργοποίηση επικάλυψης;</string>
+    <string name="widget_overlap_off_message">Τα widget πάνω από άλλα στοιχεία μετακινούνται στην πλησιέστερη ελεύθερη θέση του μεγέθους τους· ένα widget χωρίς χώρο αφαιρείται.</string>
 </resources>

@@ -37,6 +37,15 @@ final class FreeformWidgets {
         return CreatorPrefs.of(prefs).getBoolean(Keys.WIDGET_FREEFORM, false);
     }
 
+    /**
+     * "Allow widgets to overlap" (D7, a creator setting, off by default and with the stock layout): widgets take no cells,
+     * so icons, folders and other widgets may lie under them; they are drawn over the icons and take the touch first.
+     */
+    static boolean overlapOn(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return CreatorPrefs.of(prefs).getBoolean(Keys.WIDGET_OVERLAP, false);
+    }
+
     /** The least size of a widget in pixels {width, height}: what its provider asks for, never less than 48 dp. */
     static int[] minSizePx(LauncherAppWidgetHostView view) {
         float density = view.getResources().getDisplayMetrics().density;

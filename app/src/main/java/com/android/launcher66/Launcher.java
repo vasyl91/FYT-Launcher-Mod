@@ -1378,6 +1378,15 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 if (WidgetStyler.isLookSetting(key)) {
                     WidgetStyler.apply(Launcher.this, "setting " + key);
                 }
+                // "Allow widgets to overlap" and "Free widget placement": the cells taken are counted anew; with the first
+                // turned off the widgets that overlap are put on the grid again
+                if (mWorkspace != null && (Keys.WIDGET_OVERLAP.equals(key) || Keys.WIDGET_FREEFORM.equals(key)
+                        || Keys.USER_LAYOUT.equals(key))) {
+                    if (Keys.WIDGET_OVERLAP.equals(key) && !FreeformWidgets.overlapOn(Launcher.this)) {
+                        mWorkspace.refitWidgetsToGrid();
+                    }
+                    mWorkspace.onWidgetRulesChanged();
+                }
             };
 
     private void noteWorkspaceBindProgress() {

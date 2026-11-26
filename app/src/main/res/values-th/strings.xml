@@ -590,4 +590,9 @@
     <string name="widget_freeform">วางวิดเจ็ตได้อิสระ</string>
     <string name="widget_freeform_on">วิดเจ็ตอยู่ตรงที่คุณวางและมีขนาดตามที่คุณกำหนด</string>
     <string name="widget_freeform_off">วิดเจ็ตวางอยู่ในช่องของหน้าจอหลัก</string>
+    <string name="widget_overlap">อนุญาตให้วิดเจ็ตซ้อนทับกัน</string>
+    <string name="widget_overlap_on">วิดเจ็ตไม่ใช้ช่องและวางทับไอคอนและวิดเจ็ตอื่น</string>
+    <string name="widget_overlap_off">วิดเจ็ตอยู่ในช่องของตัวเอง</string>
+    <string name="widget_overlap_off_title">ปิดการซ้อนทับหรือไม่</string>
+    <string name="widget_overlap_off_message">วิดเจ็ตที่อยู่ทับรายการอื่นจะย้ายไปยังที่ว่างที่ใกล้ที่สุดตามขนาดของมัน วิดเจ็ตที่ไม่มีที่ว่างจะถูกลบ</string>
 </resources>

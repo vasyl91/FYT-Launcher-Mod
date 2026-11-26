@@ -1323,7 +1323,24 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
      * the cells taken, so an icon or a widget can be dropped under the window.
      */
     boolean takesCells(View child) {
+        if (child instanceof LauncherAppWidgetHostView && FreeformWidgets.overlapOn(getContext())) {
+            return false;   // "Allow widgets to overlap": a widget takes no cell, icons may lie under it
+        }
         return child == null || child != mStatsPlaceholder || CustomElement.STATS.takesCells();
+    }
+
+    /** The cells taken, counted anew from the children (after "Allow widgets to overlap" or the grid rule changed). */
+    void rebuildOccupied() {
+        for (int x = 0; x < mCountX; x++) {
+            for (int y = 0; y < mCountY; y++) {
+                mOccupied[x][y] = false;
+            }
+        }
+        for (int i = 0; i < mShortcutsAndWidgets.getChildCount(); i++) {
+            markCellsAsOccupiedForView(mShortcutsAndWidgets.getChildAt(i));
+        }
+        mShortcutsAndWidgets.invalidateDrawOrder();
+        requestLayout();
     }
 
     private View getCustomElementView(CustomElement element) {
@@ -5034,7 +5051,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
             boxes.add(new CellOverlap.Box(lp.cellX, lp.cellY, lp.cellHSpan, lp.cellVSpan,
                     child instanceof LauncherAppWidgetHostView));
         }
-        List<Integer> toMove = PageFit.toMove(boxes, mCountX, mCountY);
+        List<Integer> toMove = PageFit.toMove(boxes, mCountX, mCountY, FreeformWidgets.overlapOn(getContext()));
         if (toMove.isEmpty()) {
             return;
         }

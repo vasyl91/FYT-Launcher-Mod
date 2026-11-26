@@ -590,4 +590,9 @@
     <string name="widget_freeform">Đặt widget tự do</string>
     <string name="widget_freeform_on">Widget ở đúng chỗ bạn đặt và có kích thước bạn chọn</string>
     <string name="widget_freeform_off">Widget được đặt trong các ô của màn hình chính</string>
+    <string name="widget_overlap">Cho phép widget chồng lên nhau</string>
+    <string name="widget_overlap_on">Widget không chiếm ô và nằm trên biểu tượng và widget khác</string>
+    <string name="widget_overlap_off">Widget nằm trong ô của riêng nó</string>
+    <string name="widget_overlap_off_title">Tắt chồng lấn?</string>
+    <string name="widget_overlap_off_message">Widget nằm đè lên mục khác sẽ chuyển đến chỗ trống gần nhất cùng cỡ; widget không còn chỗ sẽ bị xóa.</string>
 </resources>

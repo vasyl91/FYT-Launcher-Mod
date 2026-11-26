@@ -590,4 +590,9 @@
     <string name="widget_freeform">विजेट की मनचाही जगह</string>
     <string name="widget_freeform_on">विजेट वहीं रहते हैं जहाँ आप रखते हैं और आपका दिया आकार लेते हैं</string>
     <string name="widget_freeform_off">विजेट होम स्क्रीन के खानों में रखे जाते हैं</string>
+    <string name="widget_overlap">विजेट को ओवरलैप होने दें</string>
+    <string name="widget_overlap_on">विजेट खाने नहीं घेरते और आइकन व अन्य विजेट के ऊपर रहते हैं</string>
+    <string name="widget_overlap_off">विजेट अपने खानों में ही रहते हैं</string>
+    <string name="widget_overlap_off_title">ओवरलैप बंद करें?</string>
+    <string name="widget_overlap_off_message">अन्य आइटम के ऊपर वाले विजेट अपने आकार की सबसे पास की खाली जगह पर जाते हैं; जगह न मिलने पर विजेट हटा दिया जाता है।</string>
 </resources>

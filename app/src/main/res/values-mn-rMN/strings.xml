@@ -590,4 +590,9 @@
     <string name="widget_freeform">Виджетийг чөлөөтэй байрлуулах</string>
     <string name="widget_freeform_on">Виджетүүд таны тавьсан газраа үлдэж, таны өгсөн хэмжээтэй болно</string>
     <string name="widget_freeform_off">Виджетүүд нүүр дэлгэцийн нүднүүдэд байрлана</string>
+    <string name="widget_overlap">Виджетүүд давхцахыг зөвшөөрөх</string>
+    <string name="widget_overlap_on">Виджетүүд нүд эзлэхгүй, дүрс болон бусад виджет дээр байрлана</string>
+    <string name="widget_overlap_off">Виджетүүд өөрийн нүдэндээ үлдэнэ</string>
+    <string name="widget_overlap_off_title">Давхцлыг унтраах уу?</string>
+    <string name="widget_overlap_off_message">Бусад зүйлийн дээр байгаа виджетүүд өөрийн хэмжээний хамгийн ойрын сул газарт шилжинэ; газаргүй виджет устгагдана.</string>
 </resources>

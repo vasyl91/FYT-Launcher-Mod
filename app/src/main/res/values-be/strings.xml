@@ -590,4 +590,9 @@
     <string name="widget_freeform">Свабоднае размяшчэнне віджэтаў</string>
     <string name="widget_freeform_on">Віджэты застаюцца там, дзе вы іх паставілі, і маюць зададзены памер</string>
     <string name="widget_freeform_off">Віджэты размяшчаюцца ў ячэйках галоўнага экрана</string>
+    <string name="widget_overlap">Дазволіць віджэтам перакрывацца</string>
+    <string name="widget_overlap_on">Віджэты не займаюць ячэйкі і ляжаць над значкамі і іншымі віджэтамі</string>
+    <string name="widget_overlap_off">Віджэты застаюцца ў сваіх ячэйках</string>
+    <string name="widget_overlap_off_title">Выключыць перакрыўванне?</string>
+    <string name="widget_overlap_off_message">Віджэты, што ляжаць над іншымі элементамі, пераходзяць на бліжэйшае вольнае месца свайго памеру; віджэт без месца выдаляецца.</string>
 </resources>

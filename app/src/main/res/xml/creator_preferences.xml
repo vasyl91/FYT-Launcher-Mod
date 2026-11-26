@@ -104,6 +104,14 @@
             android:summaryOn="@string/widget_freeform_on"
             android:summaryOff="@string/widget_freeform_off"
             app:layout="@layout/nested_preference_category_switch" />
+        <!-- Turning it off asks first (SettingsFragmentSecond): the widgets that overlap are put on the grid again -->
+        <com.android.launcher66.settings.CustomSwitchPreference
+            android:key="widget_overlap"
+            android:defaultValue="false"
+            android:title="@string/widget_overlap"
+            android:summaryOn="@string/widget_overlap_on"
+            android:summaryOff="@string/widget_overlap_off"
+            app:layout="@layout/nested_preference_category_switch" />
 
     </PreferenceCategory>
 

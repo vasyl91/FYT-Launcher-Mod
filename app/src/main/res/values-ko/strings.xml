@@ -590,4 +590,9 @@
     <string name="widget_freeform">위젯 자유 배치</string>
     <string name="widget_freeform_on">위젯은 놓은 자리에 머무르고 지정한 크기가 됩니다</string>
     <string name="widget_freeform_off">위젯은 홈 화면의 칸에 배치됩니다</string>
+    <string name="widget_overlap">위젯 겹침 허용</string>
+    <string name="widget_overlap_on">위젯은 칸을 차지하지 않고 아이콘과 다른 위젯 위에 놓입니다</string>
+    <string name="widget_overlap_off">위젯은 각자의 칸 안에 있습니다</string>
+    <string name="widget_overlap_off_title">겹침을 끌까요?</string>
+    <string name="widget_overlap_off_message">다른 항목 위에 있는 위젯은 크기에 맞는 가장 가까운 빈 자리로 옮겨지고, 자리가 없는 위젯은 삭제됩니다.</string>
 </resources>

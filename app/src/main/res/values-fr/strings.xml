@@ -590,4 +590,9 @@
     <string name="widget_freeform">Placement libre des widgets</string>
     <string name="widget_freeform_on">Les widgets restent où vous les posez et prennent la taille que vous leur donnez</string>
     <string name="widget_freeform_off">Les widgets sont placés dans les cellules de l\'écran d\'accueil</string>
+    <string name="widget_overlap">Autoriser le chevauchement des widgets</string>
+    <string name="widget_overlap_on">Les widgets n\'occupent pas de cellules et se placent par-dessus les icônes et d\'autres widgets</string>
+    <string name="widget_overlap_off">Les widgets restent dans leurs propres cellules</string>
+    <string name="widget_overlap_off_title">Désactiver le chevauchement ?</string>
+    <string name="widget_overlap_off_message">Les widgets au-dessus d\'autres éléments passent à l\'emplacement libre le plus proche de leur taille ; un widget sans place est supprimé.</string>
 </resources>

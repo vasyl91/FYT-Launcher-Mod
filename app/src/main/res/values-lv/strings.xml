@@ -590,4 +590,9 @@
     <string name="widget_freeform">Brīva logrīku izvietošana</string>
     <string name="widget_freeform_on">Logrīki paliek tur, kur tos novietojat, un iegūst jūsu norādīto izmēru</string>
     <string name="widget_freeform_off">Logrīki tiek novietoti sākuma ekrāna šūnās</string>
+    <string name="widget_overlap">Atļaut logrīku pārklāšanos</string>
+    <string name="widget_overlap_on">Logrīki neaizņem šūnas un atrodas virs ikonām un citiem logrīkiem</string>
+    <string name="widget_overlap_off">Logrīki paliek savās šūnās</string>
+    <string name="widget_overlap_off_title">Izslēgt pārklāšanos?</string>
+    <string name="widget_overlap_off_message">Logrīki, kas atrodas virs citiem elementiem, tiek pārvietoti uz tuvāko brīvo tāda paša izmēra vietu; logrīks bez vietas tiek noņemts.</string>
 </resources>

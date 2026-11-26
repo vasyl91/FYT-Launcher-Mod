@@ -590,4 +590,9 @@
     <string name="widget_freeform">Свободное размещение виджетов</string>
     <string name="widget_freeform_on">Виджеты остаются там, где вы их поставили, и имеют заданный размер</string>
     <string name="widget_freeform_off">Виджеты размещаются в ячейках главного экрана</string>
+    <string name="widget_overlap">Разрешить виджетам перекрываться</string>
+    <string name="widget_overlap_on">Виджеты не занимают ячейки и лежат поверх значков и других виджетов</string>
+    <string name="widget_overlap_off">Виджеты остаются в своих ячейках</string>
+    <string name="widget_overlap_off_title">Отключить перекрытие?</string>
+    <string name="widget_overlap_off_message">Виджеты поверх других элементов переместятся на ближайшее свободное место своего размера; виджет, которому не хватило места, будет удалён.</string>
 </resources>

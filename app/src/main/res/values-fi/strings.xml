@@ -590,4 +590,9 @@
     <string name="widget_freeform">Widgetien vapaa sijoittelu</string>
     <string name="widget_freeform_on">Widgetit pysyvät siellä, mihin ne laitat, ja saavat antamasi koon</string>
     <string name="widget_freeform_off">Widgetit sijoitetaan aloitusnäytön ruutuihin</string>
+    <string name="widget_overlap">Salli widgetien päällekkäisyys</string>
+    <string name="widget_overlap_on">Widgetit eivät vie ruutuja ja ovat kuvakkeiden ja muiden widgetien päällä</string>
+    <string name="widget_overlap_off">Widgetit pysyvät omissa ruuduissaan</string>
+    <string name="widget_overlap_off_title">Poistetaanko päällekkäisyys käytöstä?</string>
+    <string name="widget_overlap_off_message">Muiden kohteiden päällä olevat widgetit siirtyvät lähimpään vapaaseen saman kokoiseen paikkaan; widget, jolle ei ole tilaa, poistetaan.</string>
 </resources>

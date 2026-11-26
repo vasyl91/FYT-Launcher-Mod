@@ -590,4 +590,9 @@
     <string name="widget_freeform">Voľné umiestnenie widgetov</string>
     <string name="widget_freeform_on">Widgety zostanú tam, kam ich dáte, a majú veľkosť, ktorú im nastavíte</string>
     <string name="widget_freeform_off">Widgety sa umiestňujú do buniek domovskej obrazovky</string>
+    <string name="widget_overlap">Povoliť prekrývanie widgetov</string>
+    <string name="widget_overlap_on">Widgety nezaberajú bunky a ležia nad ikonami aj inými widgetmi</string>
+    <string name="widget_overlap_off">Widgety zostávajú vo svojich bunkách</string>
+    <string name="widget_overlap_off_title">Vypnúť prekrývanie?</string>
+    <string name="widget_overlap_off_message">Widgety ležiace nad inými položkami sa presunú na najbližšie voľné miesto svojej veľkosti; widget bez miesta sa odstráni.</string>
 </resources>
