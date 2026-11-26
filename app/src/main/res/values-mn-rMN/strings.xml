@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Хавтасны дэвсгэр сонгох</string>
     <string name="folders_background_dialog_title">Хавтасны дэвсгэрийг сонгоно уу:</string>
     <string name="folder_follow_grid">Хавтас дотор нүүр дэлгэцийн торыг дагах</string>
-    <string name="folder_follow_grid_on">Хавтсууд нүүр дэлгэцийн баганыг ашиглаж, шаардлагатай мөртэй байна</string>
-    <string name="folder_follow_grid_off">Хавтсууд нүүр дэлгэцийн хэмжээ хүртэл дөрвөлжин хэлбэртэй томорно</string>
     <string name="widget_freeform">Виджетийг чөлөөтэй байрлуулах</string>
-    <string name="widget_freeform_on">Виджетүүд таны тавьсан газраа үлдэж, таны өгсөн хэмжээтэй болно</string>
-    <string name="widget_freeform_off">Виджетүүд нүүр дэлгэцийн нүднүүдэд байрлана</string>
     <string name="widget_overlap">Виджетүүд давхцахыг зөвшөөрөх</string>
-    <string name="widget_overlap_on">Виджетүүд нүд эзлэхгүй, дүрс болон бусад виджет дээр байрлана</string>
-    <string name="widget_overlap_off">Виджетүүд өөрийн нүдэндээ үлдэнэ</string>
-    <string name="widget_overlap_off_title">Давхцлыг унтраах уу?</string>
-    <string name="widget_overlap_off_message">Бусад зүйлийн дээр байгаа виджетүүд өөрийн хэмжээний хамгийн ойрын сул газарт шилжинэ; газаргүй виджет устгагдана.</string>
     <string name="autostart_apps_summary_fyt">Системийн автомат эхлүүлэх боломжоор эхэлсэн аппууд лаунчерын эхлэлтийг удаашруулж болно. Лаунчерын суурилуулсан сонголт нь лаунчер хүйтэн эхлэлтээ дуусгасны дараа л тэдгээрийг эхлүүлнэ. Энэ жагсаалтыг ашиглахдаа эдгээр аппуудыг FYT-ийн тохиргоо болон автоматаар эхлэхээр тохируулсан бусад бүх газарт унтраахаа бүү март; үгүй бол тэд хоёр удаа эхэлнэ.</string>
     <string name="autostart_apps_summary_other">Системийн автомат эхлүүлэх боломжоор эхэлсэн аппууд лаунчерын эхлэлтийг удаашруулж болно. Лаунчерын суурилуулсан сонголт нь лаунчер хүйтэн эхлэлтээ дуусгасны дараа л тэдгээрийг эхлүүлнэ. Энэ жагсаалтыг ашиглахдаа эдгээр аппуудын автомат эхлэлийг идэвхжүүлсэн бусад бүх газарт унтраахаа бүү март; үгүй бол тэд хоёр удаа эхэлнэ.</string>
     <string name="autostart_apps_by_boot_completed_summary">“Асаахад эхлүүлэх” болон “Сэрэхэд эхлүүлэх”-д хамаарна</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Дээд</string>
     <string name="drawer_tab_bar_bottom">Доод</string>
     <string name="display_vertical_bar">Босоо самбар харуулах</string>
+    <string name="folder_follow_grid_on">Хавтсууд дүрсийг нүүр дэлгэцийн мөр, баганад зохион байгуулна</string>
+    <string name="folder_follow_grid_off">Хавтсууд өөрийн торыг ашиглана</string>
+    <string name="widget_freeform_on">Виджетийг торноос үл хамааран чөлөөтэй зөөж, хэмжээг нь өөрчилж болно</string>
+    <string name="widget_freeform_off">Виджетүүд нүүр дэлгэцийн торонд таарна</string>
+    <string name="widget_overlap_on">Виджетүүд дүрс болон бусад виджетийг халхалж болно</string>
+    <string name="widget_overlap_off">Виджетүүд чөлөөтэй нүдэнд үлдэнэ</string>
+    <string name="widget_overlap_off_title">Виджетийг торонд тохируулах уу?</string>
+    <string name="widget_overlap_off_message">Зарим виджет торонд багтахгүй байж магадгүй. Байрлуулах боломжгүй виджетүүд нүүр дэлгэцээс хасагдана.</string>
 </resources>

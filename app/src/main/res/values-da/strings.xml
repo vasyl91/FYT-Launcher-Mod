@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Vælg baggrund til mapper</string>
     <string name="folders_background_dialog_title">Vælg baggrund til mapper:</string>
     <string name="folder_follow_grid">Følg startskærmens gitter i mapper</string>
-    <string name="folder_follow_grid_on">Mapper bruger startskærmens kolonner og så mange rækker, de har brug for</string>
-    <string name="folder_follow_grid_off">Mapper vokser næsten kvadratisk op til startskærmens størrelse</string>
     <string name="widget_freeform">Fri placering af widgets</string>
-    <string name="widget_freeform_on">Widgets bliver, hvor du placerer dem, og får den størrelse, du giver dem</string>
-    <string name="widget_freeform_off">Widgets placeres i startskærmens felter</string>
     <string name="widget_overlap">Tillad at widgets overlapper</string>
-    <string name="widget_overlap_on">Widgets optager ingen felter og ligger over ikoner og andre widgets</string>
-    <string name="widget_overlap_off">Widgets bliver i deres egne felter</string>
-    <string name="widget_overlap_off_title">Slå overlapning fra?</string>
-    <string name="widget_overlap_off_message">Widgets, der ligger over andre elementer, flyttes til nærmeste frie plads af deres størrelse; en widget uden plads fjernes.</string>
     <string name="autostart_apps_summary_fyt">Apps, der startes af systemets autostartfunktion, kan gøre launcherens start langsommere. Launcherens indbyggede mulighed starter dem først, når launcheren har afsluttet sin kolde start. Når du bruger denne liste, skal du huske at slå disse apps fra i FYT-indstillingerne og alle andre steder, hvor de er sat til at starte automatisk; ellers startes de to gange.</string>
     <string name="autostart_apps_summary_other">Apps, der startes af systemets autostartfunktion, kan gøre launcherens start langsommere. Launcherens indbyggede mulighed starter dem først, når launcheren har afsluttet sin kolde start. Når du bruger denne liste, skal du huske at slå automatisk start fra for disse apps alle andre steder, hvor den er slået til; ellers startes de to gange.</string>
     <string name="autostart_apps_by_boot_completed_summary">Gælder for “Start ved opstart” og “Start ved vækning”</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Øverst</string>
     <string name="drawer_tab_bar_bottom">Nederst</string>
     <string name="display_vertical_bar">Vis lodret bjælke</string>
+    <string name="folder_follow_grid_on">Mapper placerer ikoner i startskærmens rækker og kolonner</string>
+    <string name="folder_follow_grid_off">Mapper bruger deres eget gitter</string>
+    <string name="widget_freeform_on">Widgets kan flyttes og ændres frit i størrelse uafhængigt af gitteret</string>
+    <string name="widget_freeform_off">Widgets klikker fast på startskærmens gitter</string>
+    <string name="widget_overlap_on">Widgets må gerne dække ikoner og andre widgets</string>
+    <string name="widget_overlap_off">Widgets holder sig til frie felter</string>
+    <string name="widget_overlap_off_title">Tilpas widgets til gitteret?</string>
+    <string name="widget_overlap_off_message">Nogle widgets passer muligvis ikke til gitteret. Widgets, der ikke kan placeres, fjernes fra startskærmen.</string>
 </resources>

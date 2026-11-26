@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Odaberite pozadinu za mape</string>
     <string name="folders_background_dialog_title">Odaberite pozadinu za mape:</string>
     <string name="folder_follow_grid">Koristi mrežu početnog zaslona u mapama</string>
-    <string name="folder_follow_grid_on">Mape koriste stupce početnog zaslona i onoliko redaka koliko im treba</string>
-    <string name="folder_follow_grid_off">Mape rastu gotovo kvadratno, do veličine početnog zaslona</string>
     <string name="widget_freeform">Slobodan smještaj widgeta</string>
-    <string name="widget_freeform_on">Widgeti ostaju gdje ih postavite i poprimaju zadanu veličinu</string>
-    <string name="widget_freeform_off">Widgeti se postavljaju u ćelije početnog zaslona</string>
     <string name="widget_overlap">Dopusti preklapanje widgeta</string>
-    <string name="widget_overlap_on">Widgeti ne zauzimaju ćelije i leže iznad ikona i drugih widgeta</string>
-    <string name="widget_overlap_off">Widgeti ostaju u svojim ćelijama</string>
-    <string name="widget_overlap_off_title">Isključiti preklapanje?</string>
-    <string name="widget_overlap_off_message">Widgeti iznad drugih stavki premještaju se na najbliže slobodno mjesto svoje veličine; widget bez mjesta uklanja se.</string>
     <string name="autostart_apps_summary_fyt">Aplikacije koje pokreće automatsko pokretanje sustava mogu usporiti pokretanje launchera. Ugrađena opcija launchera pokrenut će ih tek nakon što launcher završi hladni start. Kad koristite ovaj popis, ne zaboravite isključiti te aplikacije u FYT postavkama i svugdje drugdje gdje su postavljene da se pokreću automatski; inače će se pokrenuti dvaput.</string>
     <string name="autostart_apps_summary_other">Aplikacije koje pokreće automatsko pokretanje sustava mogu usporiti pokretanje launchera. Ugrađena opcija launchera pokrenut će ih tek nakon što launcher završi hladni start. Kad koristite ovaj popis, ne zaboravite isključiti automatsko pokretanje tih aplikacija svugdje drugdje gdje je uključeno; inače će se pokrenuti dvaput.</string>
     <string name="autostart_apps_by_boot_completed_summary">Vrijedi za „Pokreni pri uključivanju” i „Pokreni pri buđenju”</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Gore</string>
     <string name="drawer_tab_bar_bottom">Dolje</string>
     <string name="display_vertical_bar">Prikaži okomitu traku</string>
+    <string name="folder_follow_grid_on">Mape raspoređuju ikone u redcima i stupcima početnog zaslona</string>
+    <string name="folder_follow_grid_off">Mape koriste vlastitu mrežu</string>
+    <string name="widget_freeform_on">Widgeti se mogu slobodno premještati i mijenjati im veličinu, neovisno o mreži</string>
+    <string name="widget_freeform_off">Widgeti se poravnavaju s mrežom početnog zaslona</string>
+    <string name="widget_overlap_on">Widgeti smiju prekrivati ikone i druge widgete</string>
+    <string name="widget_overlap_off">Widgeti ostaju u slobodnim ćelijama</string>
+    <string name="widget_overlap_off_title">Prilagoditi widgete mreži?</string>
+    <string name="widget_overlap_off_message">Neki se widgeti možda neće uklopiti u mrežu. Widgeti koji se ne mogu smjestiti bit će uklonjeni s početnog zaslona.</string>
 </resources>

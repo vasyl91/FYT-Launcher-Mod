@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Wybierz tło folderów</string>
     <string name="folders_background_dialog_title">Wybierz tło dla folderów:</string>
     <string name="folder_follow_grid">Siatka ekranu głównego w folderach</string>
-    <string name="folder_follow_grid_on">Foldery używają kolumn ekranu głównego i tylu wierszy, ile potrzeba</string>
-    <string name="folder_follow_grid_off">Foldery rosną niemal do kwadratu, do rozmiaru ekranu głównego</string>
     <string name="widget_freeform">Swobodne rozmieszczanie widżetów</string>
-    <string name="widget_freeform_on">Widżety zostają tam, gdzie je położysz, i mają ustawiony rozmiar</string>
-    <string name="widget_freeform_off">Widżety są umieszczane w komórkach ekranu głównego</string>
     <string name="widget_overlap">Zezwalaj na nakładanie się widżetów</string>
-    <string name="widget_overlap_on">Widżety nie zajmują komórek i leżą nad ikonami i innymi widżetami</string>
-    <string name="widget_overlap_off">Widżety pozostają w swoich komórkach</string>
-    <string name="widget_overlap_off_title">Wyłączyć nakładanie?</string>
-    <string name="widget_overlap_off_message">Widżety leżące nad innymi elementami przesuną się na najbliższe wolne miejsce o swoim rozmiarze; widżet bez miejsca zostanie usunięty.</string>
     <string name="autostart_apps_summary_fyt">Aplikacje uruchamiane przez systemowy autostart mogą spowalniać uruchamianie launchera. Opcja wbudowana w launcher uruchomi je dopiero po zakończeniu jego zimnego startu. Korzystając z tej listy, pamiętaj, aby wyłączyć te aplikacje w ustawieniach FYT i wszędzie indziej, gdzie są ustawione na automatyczny start; w przeciwnym razie uruchomią się dwukrotnie.</string>
     <string name="autostart_apps_summary_other">Aplikacje uruchamiane przez systemowy autostart mogą spowalniać uruchamianie launchera. Opcja wbudowana w launcher uruchomi je dopiero po zakończeniu jego zimnego startu. Korzystając z tej listy, pamiętaj, aby wyłączyć automatyczny start tych aplikacji wszędzie indziej, gdzie jest włączony; w przeciwnym razie uruchomią się dwukrotnie.</string>
     <string name="autostart_apps_by_boot_completed_summary">Dotyczy „Uruchamiaj przy starcie systemu” i „Uruchamiaj po wybudzeniu”</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Na górze</string>
     <string name="drawer_tab_bar_bottom">Na dole</string>
     <string name="display_vertical_bar">Wyświetlaj pasek pionowy</string>
+    <string name="folder_follow_grid_on">Foldery układają ikony w wierszach i kolumnach ekranu głównego</string>
+    <string name="folder_follow_grid_off">Foldery używają własnej siatki</string>
+    <string name="widget_freeform_on">Widżety można swobodnie przesuwać i zmieniać ich rozmiar, niezależnie od siatki</string>
+    <string name="widget_freeform_off">Widżety przyciągają się do siatki ekranu głównego</string>
+    <string name="widget_overlap_on">Widżety mogą zasłaniać ikony i inne widżety</string>
+    <string name="widget_overlap_off">Widżety pozostają w wolnych komórkach</string>
+    <string name="widget_overlap_off_title">Dopasować widżety do siatki?</string>
+    <string name="widget_overlap_off_message">Niektóre widżety mogą nie zmieścić się w siatce. Widżety, których nie da się umieścić, zostaną usunięte z ekranu głównego.</string>
 </resources>

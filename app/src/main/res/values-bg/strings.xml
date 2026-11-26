@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Изберете фон за папките</string>
     <string name="folders_background_dialog_title">Изберете фон за папките:</string>
     <string name="folder_follow_grid">Мрежата на началния екран в папките</string>
-    <string name="folder_follow_grid_on">Папките използват колоните на началния екран и толкова реда, колкото са нужни</string>
-    <string name="folder_follow_grid_off">Папките растат почти квадратно – до размера на началния екран</string>
     <string name="widget_freeform">Свободно поставяне на джаджите</string>
-    <string name="widget_freeform_on">Джаджите остават където ги поставите и приемат зададения размер</string>
-    <string name="widget_freeform_off">Джаджите се поставят в клетките на началния екран</string>
     <string name="widget_overlap">Позволяване на джаджите да се застъпват</string>
-    <string name="widget_overlap_on">Джаджите не заемат клетки и лежат над иконите и другите джаджи</string>
-    <string name="widget_overlap_off">Джаджите остават в своите клетки</string>
-    <string name="widget_overlap_off_title">Изключване на застъпването?</string>
-    <string name="widget_overlap_off_message">Джаджите над други елементи се преместват на най-близкото свободно място за размера им; джаджа без място се премахва.</string>
     <string name="autostart_apps_summary_fyt">Приложенията, стартирани от функцията за автоматично стартиране на системата, може да забавят стартирането на лаунчъра. Вградената опция на лаунчъра ги стартира едва след като лаунчърът е завършил студения си старт. Когато използвате този списък, не забравяйте да изключите тези приложения в настройките на FYT и навсякъде, където са зададени да стартират автоматично; иначе ще бъдат стартирани два пъти.</string>
     <string name="autostart_apps_summary_other">Приложенията, стартирани от функцията за автоматично стартиране на системата, може да забавят стартирането на лаунчъра. Вградената опция на лаунчъра ги стартира едва след като лаунчърът е завършил студения си старт. Когато използвате този списък, не забравяйте да изключите автоматичното стартиране на тези приложения навсякъде, където е включено; иначе ще бъдат стартирани два пъти.</string>
     <string name="autostart_apps_by_boot_completed_summary">Важи за „Стартиране при включване“ и „Стартиране при събуждане“</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Горе</string>
     <string name="drawer_tab_bar_bottom">Долу</string>
     <string name="display_vertical_bar">Показване на вертикалната лента</string>
+    <string name="folder_follow_grid_on">Папките подреждат иконите в редовете и колоните на началния екран</string>
+    <string name="folder_follow_grid_off">Папките използват собствена мрежа</string>
+    <string name="widget_freeform_on">Джаджите могат да се местят и преоразмеряват свободно, независимо от мрежата</string>
+    <string name="widget_freeform_off">Джаджите се прилепват към мрежата на началния екран</string>
+    <string name="widget_overlap_on">Джаджите могат да покриват икони и други джаджи</string>
+    <string name="widget_overlap_off">Джаджите остават в свободни клетки</string>
+    <string name="widget_overlap_off_title">Нагласяване на джаджите към мрежата?</string>
+    <string name="widget_overlap_off_message">Някои джаджи може да не се поберат в мрежата. Джаджите, които не могат да бъдат поставени, ще бъдат премахнати от началния екран.</string>
 </resources>

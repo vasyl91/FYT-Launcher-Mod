@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Chagua mandharinyuma ya folda</string>
     <string name="folders_background_dialog_title">Chagua mandharinyuma ya folda:</string>
     <string name="folder_follow_grid">Fuata gridi ya skrini ya kwanza ndani ya folda</string>
-    <string name="folder_follow_grid_on">Folda hutumia safu wima za skrini ya kwanza na safu mlalo zinazohitajika</string>
-    <string name="folder_follow_grid_off">Folda hukua karibu mraba, hadi ukubwa wa skrini ya kwanza</string>
     <string name="widget_freeform">Uwekaji huru wa wijeti</string>
-    <string name="widget_freeform_on">Wijeti hubaki mahali unapoziweka na huchukua ukubwa unaoupa</string>
-    <string name="widget_freeform_off">Wijeti huwekwa kwenye seli za skrini ya kwanza</string>
     <string name="widget_overlap">Ruhusu wijeti kupishana</string>
-    <string name="widget_overlap_on">Wijeti hazichukui seli na hukaa juu ya aikoni na wijeti nyingine</string>
-    <string name="widget_overlap_off">Wijeti hubaki katika seli zake</string>
-    <string name="widget_overlap_off_title">Zima kupishana?</string>
-    <string name="widget_overlap_off_message">Wijeti zilizo juu ya vipengee vingine huhamia nafasi huru iliyo karibu zaidi ya ukubwa wake; wijeti isiyo na nafasi huondolewa.</string>
     <string name="autostart_apps_summary_fyt">Programu zinazoanzishwa na kipengele cha kuanza kiotomatiki cha mfumo zinaweza kupunguza kasi ya kuanza kwa kizinduzi. Chaguo lililojengewa ndani la kizinduzi huzianzisha tu baada ya kizinduzi kumaliza kuanza kwa baridi. Unapotumia orodha hii, kumbuka kuzima programu hizi katika mipangilio ya FYT na kila mahali pengine zilipowekwa kuanza kiotomatiki; vinginevyo zitaanzishwa mara mbili.</string>
     <string name="autostart_apps_summary_other">Programu zinazoanzishwa na kipengele cha kuanza kiotomatiki cha mfumo zinaweza kupunguza kasi ya kuanza kwa kizinduzi. Chaguo lililojengewa ndani la kizinduzi huzianzisha tu baada ya kizinduzi kumaliza kuanza kwa baridi. Unapotumia orodha hii, kumbuka kuzima kuanza kiotomatiki kwa programu hizi kila mahali pengine ilipowashwa; vinginevyo zitaanzishwa mara mbili.</string>
     <string name="autostart_apps_by_boot_completed_summary">Inatumika kwa “Anza wakati wa kuwasha” na “Anza wakati wa kuamka”</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Juu</string>
     <string name="drawer_tab_bar_bottom">Chini</string>
     <string name="display_vertical_bar">Onyesha upau wima</string>
+    <string name="folder_follow_grid_on">Folda hupanga aikoni katika safu mlalo na safu wima za skrini ya kwanza</string>
+    <string name="folder_follow_grid_off">Folda hutumia gridi yake yenyewe</string>
+    <string name="widget_freeform_on">Wijeti zinaweza kuhamishwa na kubadilishwa ukubwa kwa uhuru, bila kutegemea gridi</string>
+    <string name="widget_freeform_off">Wijeti hushikamana na gridi ya skrini ya kwanza</string>
+    <string name="widget_overlap_on">Wijeti zinaweza kufunika aikoni na wijeti nyingine</string>
+    <string name="widget_overlap_off">Wijeti hubaki katika seli huru</string>
+    <string name="widget_overlap_off_title">Pangilia wijeti kwenye gridi?</string>
+    <string name="widget_overlap_off_message">Baadhi ya wijeti huenda zisitoshee kwenye gridi. Wijeti zisizoweza kuwekwa zitaondolewa kwenye skrini ya kwanza.</string>
 </resources>

@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Vyberte pozadie priečinkov</string>
     <string name="folders_background_dialog_title">Vyberte pozadie priečinkov:</string>
     <string name="folder_follow_grid">Mriežka domovskej obrazovky v priečinkoch</string>
-    <string name="folder_follow_grid_on">Priečinky používajú stĺpce domovskej obrazovky a toľko riadkov, koľko potrebujú</string>
-    <string name="folder_follow_grid_off">Priečinky rastú takmer do štvorca až do veľkosti domovskej obrazovky</string>
     <string name="widget_freeform">Voľné umiestnenie widgetov</string>
-    <string name="widget_freeform_on">Widgety zostanú tam, kam ich dáte, a majú veľkosť, ktorú im nastavíte</string>
-    <string name="widget_freeform_off">Widgety sa umiestňujú do buniek domovskej obrazovky</string>
     <string name="widget_overlap">Povoliť prekrývanie widgetov</string>
-    <string name="widget_overlap_on">Widgety nezaberajú bunky a ležia nad ikonami aj inými widgetmi</string>
-    <string name="widget_overlap_off">Widgety zostávajú vo svojich bunkách</string>
-    <string name="widget_overlap_off_title">Vypnúť prekrývanie?</string>
-    <string name="widget_overlap_off_message">Widgety ležiace nad inými položkami sa presunú na najbližšie voľné miesto svojej veľkosti; widget bez miesta sa odstráni.</string>
     <string name="autostart_apps_summary_fyt">Aplikácie spúšťané funkciou automatického spúšťania systému môžu spomaliť štart launchera. Vstavaná možnosť launchera ich spustí až po dokončení jeho studeného štartu. Pri používaní tohto zoznamu nezabudnite tieto aplikácie vypnúť v nastaveniach FYT a všade, kde je nastavené ich automatické spustenie; inak sa spustia dvakrát.</string>
     <string name="autostart_apps_summary_other">Aplikácie spúšťané funkciou automatického spúšťania systému môžu spomaliť štart launchera. Vstavaná možnosť launchera ich spustí až po dokončení jeho studeného štartu. Pri používaní tohto zoznamu nezabudnite vypnúť automatické spúšťanie týchto aplikácií všade, kde je zapnuté; inak sa spustia dvakrát.</string>
     <string name="autostart_apps_by_boot_completed_summary">Platí pre „Spustiť pri štarte“ a „Spustiť pri prebudení“</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Hore</string>
     <string name="drawer_tab_bar_bottom">Dole</string>
     <string name="display_vertical_bar">Zobraziť zvislý panel</string>
+    <string name="folder_follow_grid_on">Priečinky usporadúvajú ikony do riadkov a stĺpcov domovskej obrazovky</string>
+    <string name="folder_follow_grid_off">Priečinky používajú vlastnú mriežku</string>
+    <string name="widget_freeform_on">Widgety možno voľne presúvať a meniť ich veľkosť nezávisle od mriežky</string>
+    <string name="widget_freeform_off">Widgety sa prichytávajú k mriežke domovskej obrazovky</string>
+    <string name="widget_overlap_on">Widgety môžu zakrývať ikony aj iné widgety</string>
+    <string name="widget_overlap_off">Widgety zostávajú vo voľných bunkách</string>
+    <string name="widget_overlap_off_title">Prispôsobiť widgety mriežke?</string>
+    <string name="widget_overlap_off_message">Niektoré widgety sa do mriežky nemusia zmestiť. Widgety, ktoré nemožno umiestniť, sa z domovskej obrazovky odstránia.</string>
 </resources>

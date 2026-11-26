@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Klasörler için arka plan seçin</string>
     <string name="folders_background_dialog_title">Klasörler için arka planı seçin:</string>
     <string name="folder_follow_grid">Klasörlerde ana ekran ızgarasını izle</string>
-    <string name="folder_follow_grid_on">Klasörler ana ekranın sütunlarını ve gereken sayıda satırı kullanır</string>
-    <string name="folder_follow_grid_off">Klasörler ana ekranın boyutuna kadar neredeyse kare büyür</string>
     <string name="widget_freeform">Widget\'ların serbest yerleşimi</string>
-    <string name="widget_freeform_on">Widget\'lar bıraktığınız yerde kalır ve verdiğiniz boyutu alır</string>
-    <string name="widget_freeform_off">Widget\'lar ana ekranın hücrelerine yerleştirilir</string>
     <string name="widget_overlap">Widget\'ların çakışmasına izin ver</string>
-    <string name="widget_overlap_on">Widget\'lar hücre kaplamaz, simgelerin ve diğer widget\'ların üstünde durur</string>
-    <string name="widget_overlap_off">Widget\'lar kendi hücrelerinde kalır</string>
-    <string name="widget_overlap_off_title">Çakışma kapatılsın mı?</string>
-    <string name="widget_overlap_off_message">Diğer öğelerin üzerindeki widget\'lar boyutlarına uygun en yakın boş yere taşınır; yeri olmayan widget kaldırılır.</string>
     <string name="autostart_apps_summary_fyt">Sistemin otomatik başlatma özelliğiyle başlatılan uygulamalar başlatıcının açılışını yavaşlatabilir. Başlatıcının yerleşik seçeneği bunları yalnızca başlatıcı soğuk açılışını tamamladıktan sonra başlatır. Bu listeyi kullanırken bu uygulamaları FYT ayarlarında ve otomatik başlayacak şekilde ayarlandıkları diğer tüm yerlerde kapatmayı unutmayın; aksi halde iki kez başlatılırlar.</string>
     <string name="autostart_apps_summary_other">Sistemin otomatik başlatma özelliğiyle başlatılan uygulamalar başlatıcının açılışını yavaşlatabilir. Başlatıcının yerleşik seçeneği bunları yalnızca başlatıcı soğuk açılışını tamamladıktan sonra başlatır. Bu listeyi kullanırken bu uygulamaların otomatik başlatmasını açık olduğu diğer tüm yerlerde kapatmayı unutmayın; aksi halde iki kez başlatılırlar.</string>
     <string name="autostart_apps_by_boot_completed_summary">“Açılışta başlat” ve “Uyandırmada başlat” için geçerlidir</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Üstte</string>
     <string name="drawer_tab_bar_bottom">Altta</string>
     <string name="display_vertical_bar">Dikey çubuğu göster</string>
+    <string name="folder_follow_grid_on">Klasörler simgeleri ana ekranın satır ve sütunlarına göre düzenler</string>
+    <string name="folder_follow_grid_off">Klasörler kendi ızgarasını kullanır</string>
+    <string name="widget_freeform_on">Widget\'lar ızgaradan bağımsız olarak serbestçe taşınabilir ve yeniden boyutlandırılabilir</string>
+    <string name="widget_freeform_off">Widget\'lar ana ekran ızgarasına oturur</string>
+    <string name="widget_overlap_on">Widget\'lar simgeleri ve diğer widget\'ları örtebilir</string>
+    <string name="widget_overlap_off">Widget\'lar boş hücrelerde kalır</string>
+    <string name="widget_overlap_off_title">Widget\'lar ızgaraya uydurulsun mu?</string>
+    <string name="widget_overlap_off_message">Bazı widget\'lar ızgaraya sığmayabilir. Yerleştirilemeyen widget\'lar ana ekrandan kaldırılır.</string>
 </resources>

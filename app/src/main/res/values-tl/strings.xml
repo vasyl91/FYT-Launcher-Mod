@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Pumili ng background para sa mga folder</string>
     <string name="folders_background_dialog_title">Pumili ng background para sa mga folder:</string>
     <string name="folder_follow_grid">Sundin ang grid ng home screen sa loob ng mga folder</string>
-    <string name="folder_follow_grid_on">Gagamitin ng mga folder ang mga column ng home screen at ang kailangang bilang ng row</string>
-    <string name="folder_follow_grid_off">Halos parisukat ang paglaki ng mga folder, hanggang sa laki ng home screen</string>
     <string name="widget_freeform">Malayang paglalagay ng widget</string>
-    <string name="widget_freeform_on">Mananatili ang mga widget kung saan mo inilagay at gagamitin ang laking ibinigay mo</string>
-    <string name="widget_freeform_off">Ilalagay ang mga widget sa mga cell ng home screen</string>
     <string name="widget_overlap">Payagan ang mga widget na magpatong</string>
-    <string name="widget_overlap_on">Hindi kumukuha ng cell ang mga widget at nakapatong sa mga icon at ibang widget</string>
-    <string name="widget_overlap_off">Mananatili ang mga widget sa sarili nilang cell</string>
-    <string name="widget_overlap_off_title">I-off ang pagpapatong?</string>
-    <string name="widget_overlap_off_message">Ang mga widget na nakapatong sa ibang item ay ililipat sa pinakamalapit na bakanteng lugar na kasya; aalisin ang widget na walang lugar.</string>
     <string name="autostart_apps_summary_fyt">Ang mga app na sinimulan ng autostart feature ng system ay maaaring magpabagal sa pagsisimula ng launcher. Ang built-in na opsyon ng launcher ay sisimulan lang ang mga ito pagkatapos matapos ng launcher ang cold start nito. Kapag ginagamit ang listahang ito, tandaang i-disable ang mga app na ito sa mga setting ng FYT at sa iba pang lugar na nakatakda silang magsimula nang awtomatiko; kung hindi, dalawang beses silang masisimulan.</string>
     <string name="autostart_apps_summary_other">Ang mga app na sinimulan ng autostart feature ng system ay maaaring magpabagal sa pagsisimula ng launcher. Ang built-in na opsyon ng launcher ay sisimulan lang ang mga ito pagkatapos matapos ng launcher ang cold start nito. Kapag ginagamit ang listahang ito, tandaang i-off ang awtomatikong pagsisimula ng mga app na ito sa iba pang lugar na naka-on ito; kung hindi, dalawang beses silang masisimulan.</string>
     <string name="autostart_apps_by_boot_completed_summary">Nalalapat sa “Simulan sa boot” at “Simulan sa paggising”</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Itaas</string>
     <string name="drawer_tab_bar_bottom">Ibaba</string>
     <string name="display_vertical_bar">Ipakita ang patayong bar</string>
+    <string name="folder_follow_grid_on">Inaayos ng mga folder ang mga icon sa mga row at column ng home screen</string>
+    <string name="folder_follow_grid_off">Gumagamit ang mga folder ng sarili nilang grid</string>
+    <string name="widget_freeform_on">Maaaring malayang ilipat at palitan ang laki ng mga widget, hiwalay sa grid</string>
+    <string name="widget_freeform_off">Dumidikit ang mga widget sa grid ng home screen</string>
+    <string name="widget_overlap_on">Maaaring takpan ng mga widget ang mga icon at ibang widget</string>
+    <string name="widget_overlap_off">Mananatili ang mga widget sa mga bakanteng cell</string>
+    <string name="widget_overlap_off_title">I-fit ang mga widget sa grid?</string>
+    <string name="widget_overlap_off_message">Maaaring hindi magkasya sa grid ang ilang widget. Aalisin sa home screen ang mga widget na hindi mailalagay.</string>
 </resources>

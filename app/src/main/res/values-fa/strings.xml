@@ -578,16 +578,8 @@
     <string name="folders_background_preference">پس‌زمینه پوشه‌ها را انتخاب کنید</string>
     <string name="folders_background_dialog_title">پس‌زمینهٔ پوشه‌ها را انتخاب کنید:</string>
     <string name="folder_follow_grid">پیروی از شبکهٔ صفحهٔ اصلی در پوشه‌ها</string>
-    <string name="folder_follow_grid_on">پوشه‌ها از ستون‌های صفحهٔ اصلی و به تعداد لازم ردیف استفاده می‌کنند</string>
-    <string name="folder_follow_grid_off">پوشه‌ها تقریباً مربعی تا اندازهٔ صفحهٔ اصلی بزرگ می‌شوند</string>
     <string name="widget_freeform">قرار دادن آزاد ویجت‌ها</string>
-    <string name="widget_freeform_on">ویجت‌ها همان‌جا که می‌گذارید می‌مانند و اندازهٔ دلخواه را می‌گیرند</string>
-    <string name="widget_freeform_off">ویجت‌ها در خانه‌های صفحهٔ اصلی قرار می‌گیرند</string>
     <string name="widget_overlap">اجازهٔ هم‌پوشانی ویجت‌ها</string>
-    <string name="widget_overlap_on">ویجت‌ها خانه‌ای نمی‌گیرند و روی نمادها و ویجت‌های دیگر قرار می‌گیرند</string>
-    <string name="widget_overlap_off">ویجت‌ها در خانه‌های خود می‌مانند</string>
-    <string name="widget_overlap_off_title">خاموش کردن هم‌پوشانی؟</string>
-    <string name="widget_overlap_off_message">ویجت‌هایی که روی موارد دیگر قرار دارند به نزدیک‌ترین جای خالی هم‌اندازه می‌روند؛ ویجتی که جا نداشته باشد حذف می‌شود.</string>
     <string name="autostart_apps_summary_fyt">برنامه‌هایی که با قابلیت راه‌اندازی خودکار سیستم اجرا می‌شوند ممکن است شروع به کار لانچر را کند کنند. گزینهٔ داخلی لانچر آن‌ها را فقط پس از پایان شروع سرد لانچر اجرا می‌کند. هنگام استفاده از این فهرست، فراموش نکنید این برنامه‌ها را در تنظیمات FYT و هر جای دیگری که برای شروع خودکار تنظیم شده‌اند غیرفعال کنید؛ در غیر این صورت دو بار اجرا می‌شوند.</string>
     <string name="autostart_apps_summary_other">برنامه‌هایی که با قابلیت راه‌اندازی خودکار سیستم اجرا می‌شوند ممکن است شروع به کار لانچر را کند کنند. گزینهٔ داخلی لانچر آن‌ها را فقط پس از پایان شروع سرد لانچر اجرا می‌کند. هنگام استفاده از این فهرست، فراموش نکنید شروع خودکار این برنامه‌ها را در هر جای دیگری که فعال است خاموش کنید؛ در غیر این صورت دو بار اجرا می‌شوند.</string>
     <string name="autostart_apps_by_boot_completed_summary">برای «شروع هنگام راه‌اندازی» و «شروع هنگام بیدار شدن» اعمال می‌شود</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">بالا</string>
     <string name="drawer_tab_bar_bottom">پایین</string>
     <string name="display_vertical_bar">نمایش نوار عمودی</string>
+    <string name="folder_follow_grid_on">پوشه‌ها نمادها را در ردیف‌ها و ستون‌های صفحهٔ اصلی می‌چینند</string>
+    <string name="folder_follow_grid_off">پوشه‌ها از شبکهٔ خودشان استفاده می‌کنند</string>
+    <string name="widget_freeform_on">ویجت‌ها را می‌توان مستقل از شبکه آزادانه جابه‌جا و تغییر اندازه داد</string>
+    <string name="widget_freeform_off">ویجت‌ها به شبکهٔ صفحهٔ اصلی می‌چسبند</string>
+    <string name="widget_overlap_on">ویجت‌ها می‌توانند نمادها و ویجت‌های دیگر را بپوشانند</string>
+    <string name="widget_overlap_off">ویجت‌ها در خانه‌های آزاد می‌مانند</string>
+    <string name="widget_overlap_off_title">ویجت‌ها با شبکه تنظیم شوند؟</string>
+    <string name="widget_overlap_off_message">ممکن است برخی ویجت‌ها در شبکه جا نشوند. ویجت‌هایی که نتوان جایشان داد از صفحهٔ اصلی حذف می‌شوند.</string>
 </resources>

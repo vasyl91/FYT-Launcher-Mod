@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Välj bakgrund för mappar</string>
     <string name="folders_background_dialog_title">Välj bakgrund för mappar:</string>
     <string name="folder_follow_grid">Följ startskärmens rutnät i mappar</string>
-    <string name="folder_follow_grid_on">Mappar använder startskärmens kolumner och så många rader de behöver</string>
-    <string name="folder_follow_grid_off">Mappar växer nästan kvadratiskt, upp till startskärmens storlek</string>
     <string name="widget_freeform">Fri placering av widgets</string>
-    <string name="widget_freeform_on">Widgets stannar där du placerar dem och får den storlek du ger dem</string>
-    <string name="widget_freeform_off">Widgets placeras i startskärmens rutor</string>
     <string name="widget_overlap">Tillåt att widgets överlappar</string>
-    <string name="widget_overlap_on">Widgets tar inga rutor och ligger över ikoner och andra widgets</string>
-    <string name="widget_overlap_off">Widgets håller sig till sina egna rutor</string>
-    <string name="widget_overlap_off_title">Stänga av överlappning?</string>
-    <string name="widget_overlap_off_message">Widgets som ligger över andra objekt flyttas till närmaste lediga plats i sin storlek; en widget utan plats tas bort.</string>
     <string name="autostart_apps_summary_fyt">Appar som startas av systemets autostartfunktion kan göra att launchern startar långsammare. Launcherns inbyggda alternativ startar dem först när launchern har slutfört sin kallstart. När du använder den här listan, kom ihåg att stänga av apparna i FYT-inställningarna och överallt annars där de är inställda på att starta automatiskt; annars startas de två gånger.</string>
     <string name="autostart_apps_summary_other">Appar som startas av systemets autostartfunktion kan göra att launchern startar långsammare. Launcherns inbyggda alternativ startar dem först när launchern har slutfört sin kallstart. När du använder den här listan, kom ihåg att stänga av automatisk start för apparna överallt annars där den är påslagen; annars startas de två gånger.</string>
     <string name="autostart_apps_by_boot_completed_summary">Gäller “Starta vid uppstart” och “Starta vid väckning”</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Överst</string>
     <string name="drawer_tab_bar_bottom">Nederst</string>
     <string name="display_vertical_bar">Visa vertikalt fält</string>
+    <string name="folder_follow_grid_on">Mappar ordnar ikoner i startskärmens rader och kolumner</string>
+    <string name="folder_follow_grid_off">Mappar använder sitt eget rutnät</string>
+    <string name="widget_freeform_on">Widgets kan flyttas och ändras fritt i storlek, oberoende av rutnätet</string>
+    <string name="widget_freeform_off">Widgets fästs vid startskärmens rutnät</string>
+    <string name="widget_overlap_on">Widgets får täcka ikoner och andra widgets</string>
+    <string name="widget_overlap_off">Widgets håller sig till lediga rutor</string>
+    <string name="widget_overlap_off_title">Anpassa widgets till rutnätet?</string>
+    <string name="widget_overlap_off_message">Vissa widgets kanske inte ryms i rutnätet. Widgets som inte kan placeras tas bort från startskärmen.</string>
 </resources>

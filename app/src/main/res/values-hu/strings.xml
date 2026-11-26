@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Mappák hátterének kiválasztása</string>
     <string name="folders_background_dialog_title">Válassza ki a mappák hátterét:</string>
     <string name="folder_follow_grid">Kezdőképernyő rácsának követése a mappákban</string>
-    <string name="folder_follow_grid_on">A mappák a kezdőképernyő oszlopait és annyi sort használnak, amennyi kell</string>
-    <string name="folder_follow_grid_off">A mappák közel négyzetesen nőnek a kezdőképernyő méretéig</string>
     <string name="widget_freeform">Widgetek szabad elhelyezése</string>
-    <string name="widget_freeform_on">A widgetek ott maradnak, ahová teszi őket, és a megadott méretet kapják</string>
-    <string name="widget_freeform_off">A widgetek a kezdőképernyő celláiba kerülnek</string>
     <string name="widget_overlap">Widgetek átfedésének engedélyezése</string>
-    <string name="widget_overlap_on">A widgetek nem foglalnak cellát, és az ikonok és más widgetek fölé kerülnek</string>
-    <string name="widget_overlap_off">A widgetek a saját celláikban maradnak</string>
-    <string name="widget_overlap_off_title">Kikapcsolja az átfedést?</string>
-    <string name="widget_overlap_off_message">A más elemek fölött lévő widgetek a legközelebbi, azonos méretű szabad helyre kerülnek; a hely nélküli widget törlődik.</string>
     <string name="autostart_apps_summary_fyt">A rendszer automatikus indítása által elindított alkalmazások lassíthatják a launcher indulását. A launcher beépített lehetősége csak azután indítja el őket, hogy a launcher befejezte a hidegindítást. A lista használatakor ne felejtse el kikapcsolni ezeket az alkalmazásokat az FYT beállításaiban és mindenhol máshol, ahol automatikus indításra vannak állítva; különben kétszer indulnak el.</string>
     <string name="autostart_apps_summary_other">A rendszer automatikus indítása által elindított alkalmazások lassíthatják a launcher indulását. A launcher beépített lehetősége csak azután indítja el őket, hogy a launcher befejezte a hidegindítást. A lista használatakor ne felejtse el kikapcsolni ezeknek az alkalmazásoknak az automatikus indítását mindenhol máshol, ahol be van kapcsolva; különben kétszer indulnak el.</string>
     <string name="autostart_apps_by_boot_completed_summary">A „Indítás rendszerindításkor” és az „Indítás ébredéskor” beállításra vonatkozik</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Fent</string>
     <string name="drawer_tab_bar_bottom">Lent</string>
     <string name="display_vertical_bar">Függőleges sáv megjelenítése</string>
+    <string name="folder_follow_grid_on">A mappák a kezdőképernyő sorai és oszlopai szerint rendezik az ikonokat</string>
+    <string name="folder_follow_grid_off">A mappák saját rácsot használnak</string>
+    <string name="widget_freeform_on">A widgetek a rácstól függetlenül szabadon mozgathatók és átméretezhetők</string>
+    <string name="widget_freeform_off">A widgetek a kezdőképernyő rácsához igazodnak</string>
+    <string name="widget_overlap_on">A widgetek eltakarhatják az ikonokat és más widgeteket</string>
+    <string name="widget_overlap_off">A widgetek a szabad cellákban maradnak</string>
+    <string name="widget_overlap_off_title">Rácshoz igazítja a widgeteket?</string>
+    <string name="widget_overlap_off_message">Egyes widgetek nem biztos, hogy elférnek a rácsban. Az el nem helyezhető widgetek törlődnek a kezdőképernyőről.</string>
 </resources>

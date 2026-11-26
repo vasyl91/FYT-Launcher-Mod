@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Pasirinkite aplankų foną</string>
     <string name="folders_background_dialog_title">Pasirinkite aplankų foną:</string>
     <string name="folder_follow_grid">Aplankuose naudoti pagrindinio ekrano tinklelį</string>
-    <string name="folder_follow_grid_on">Aplankai naudoja pagrindinio ekrano stulpelius ir tiek eilučių, kiek reikia</string>
-    <string name="folder_follow_grid_off">Aplankai auga beveik kvadratu iki pagrindinio ekrano dydžio</string>
     <string name="widget_freeform">Laisva valdiklių išdėstymas</string>
-    <string name="widget_freeform_on">Valdikliai lieka ten, kur juos padedate, ir turi jūsų nurodytą dydį</string>
-    <string name="widget_freeform_off">Valdikliai dedami į pagrindinio ekrano langelius</string>
     <string name="widget_overlap">Leisti valdikliams persidengti</string>
-    <string name="widget_overlap_on">Valdikliai neužima langelių ir būna virš piktogramų bei kitų valdiklių</string>
-    <string name="widget_overlap_off">Valdikliai lieka savo langeliuose</string>
-    <string name="widget_overlap_off_title">Išjungti persidengimą?</string>
-    <string name="widget_overlap_off_message">Valdikliai, esantys virš kitų elementų, perkeliami į artimiausią tokio paties dydžio laisvą vietą; valdiklis be vietos pašalinamas.</string>
     <string name="autostart_apps_summary_fyt">Programos, paleidžiamos sistemos automatinio paleidimo funkcijos, gali sulėtinti paleidimo programos starto laiką. Integruota paleidimo programos parinktis jas paleidžia tik tada, kai paleidimo programa baigia šaltąjį startą. Naudodami šį sąrašą nepamirškite išjungti šių programų FYT nustatymuose ir visur kitur, kur jos nustatytos paleisti automatiškai; kitaip jos bus paleistos du kartus.</string>
     <string name="autostart_apps_summary_other">Programos, paleidžiamos sistemos automatinio paleidimo funkcijos, gali sulėtinti paleidimo programos starto laiką. Integruota paleidimo programos parinktis jas paleidžia tik tada, kai paleidimo programa baigia šaltąjį startą. Naudodami šį sąrašą nepamirškite išjungti automatinio šių programų paleidimo visur kitur, kur jis įjungtas; kitaip jos bus paleistos du kartus.</string>
     <string name="autostart_apps_by_boot_completed_summary">Taikoma „Paleisti įjungus“ ir „Paleisti pabudus“</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Viršuje</string>
     <string name="drawer_tab_bar_bottom">Apačioje</string>
     <string name="display_vertical_bar">Rodyti vertikaliąją juostą</string>
+    <string name="folder_follow_grid_on">Aplankai išdėsto piktogramas pagrindinio ekrano eilutėmis ir stulpeliais</string>
+    <string name="folder_follow_grid_off">Aplankai naudoja savo tinklelį</string>
+    <string name="widget_freeform_on">Valdiklius galima laisvai perkelti ir keisti jų dydį nepriklausomai nuo tinklelio</string>
+    <string name="widget_freeform_off">Valdikliai prisitaiko prie pagrindinio ekrano tinklelio</string>
+    <string name="widget_overlap_on">Valdikliai gali dengti piktogramas ir kitus valdiklius</string>
+    <string name="widget_overlap_off">Valdikliai lieka laisvuose langeliuose</string>
+    <string name="widget_overlap_off_title">Pritaikyti valdiklius prie tinklelio?</string>
+    <string name="widget_overlap_off_message">Kai kurie valdikliai gali netilpti tinklelyje. Valdikliai, kurių nepavyks išdėstyti, bus pašalinti iš pagrindinio ekrano.</string>
 </resources>

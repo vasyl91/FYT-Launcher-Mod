@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Scegli lo sfondo per le cartelle</string>
     <string name="folders_background_dialog_title">Seleziona lo sfondo per le cartelle:</string>
     <string name="folder_follow_grid">Segui la griglia della schermata Home nelle cartelle</string>
-    <string name="folder_follow_grid_on">Le cartelle usano le colonne della schermata Home e le righe necessarie</string>
-    <string name="folder_follow_grid_off">Le cartelle crescono quasi quadrate, fino alla dimensione della schermata Home</string>
     <string name="widget_freeform">Posizionamento libero dei widget</string>
-    <string name="widget_freeform_on">I widget restano dove li metti e prendono la dimensione che dai loro</string>
-    <string name="widget_freeform_off">I widget sono posizionati nelle celle della schermata Home</string>
     <string name="widget_overlap">Consenti la sovrapposizione dei widget</string>
-    <string name="widget_overlap_on">I widget non occupano celle e stanno sopra icone e altri widget</string>
-    <string name="widget_overlap_off">I widget restano nelle proprie celle</string>
-    <string name="widget_overlap_off_title">Disattivare la sovrapposizione?</string>
-    <string name="widget_overlap_off_message">I widget sopra altri elementi passano al posto libero più vicino della loro dimensione; un widget senza spazio viene rimosso.</string>
     <string name="autostart_apps_summary_fyt">Le app avviate dalla funzione di avvio automatico del sistema possono rallentare l\'avvio del launcher. L\'opzione integrata del launcher le avvia solo dopo che il launcher ha completato l\'avvio a freddo. Quando usi questo elenco, ricorda di disattivare queste app nelle impostazioni FYT e ovunque altrove siano impostate per avviarsi automaticamente; altrimenti verranno avviate due volte.</string>
     <string name="autostart_apps_summary_other">Le app avviate dalla funzione di avvio automatico del sistema possono rallentare l\'avvio del launcher. L\'opzione integrata del launcher le avvia solo dopo che il launcher ha completato l\'avvio a freddo. Quando usi questo elenco, ricorda di disattivare l\'avvio automatico di queste app ovunque altrove sia attivo; altrimenti verranno avviate due volte.</string>
     <string name="autostart_apps_by_boot_completed_summary">Vale per «Avvia all\'accensione» e «Avvia alla riattivazione»</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">In alto</string>
     <string name="drawer_tab_bar_bottom">In basso</string>
     <string name="display_vertical_bar">Mostra la barra verticale</string>
+    <string name="folder_follow_grid_on">Le cartelle dispongono le icone nelle righe e colonne della schermata Home</string>
+    <string name="folder_follow_grid_off">Le cartelle usano una griglia propria</string>
+    <string name="widget_freeform_on">I widget possono essere spostati e ridimensionati liberamente, indipendentemente dalla griglia</string>
+    <string name="widget_freeform_off">I widget si agganciano alla griglia della schermata Home</string>
+    <string name="widget_overlap_on">I widget possono coprire icone e altri widget</string>
+    <string name="widget_overlap_off">I widget restano nelle celle libere</string>
+    <string name="widget_overlap_off_title">Adattare i widget alla griglia?</string>
+    <string name="widget_overlap_off_message">Alcuni widget potrebbero non entrare nella griglia. I widget che non possono essere posizionati verranno rimossi dalla schermata Home.</string>
 </resources>

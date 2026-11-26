@@ -578,16 +578,8 @@
     <string name="folders_background_preference">ជ្រើសរើសផ្ទៃខាងក្រោយសម្រាប់ថត</string>
     <string name="folders_background_dialog_title">ជ្រើសរើសផ្ទៃខាងក្រោយសម្រាប់ថត៖</string>
     <string name="folder_follow_grid">ធ្វើតាមក្រឡាចត្រង្គអេក្រង់ដើមក្នុងថត</string>
-    <string name="folder_follow_grid_on">ថតប្រើជួរឈរនៃអេក្រង់ដើម និងជួរដេកតាមតម្រូវការ</string>
-    <string name="folder_follow_grid_off">ថតលូតលាស់ស្ទើរតែការ៉េ រហូតដល់ទំហំអេក្រង់ដើម</string>
     <string name="widget_freeform">ការដាក់ធាតុក្រាហ្វិកដោយសេរី</string>
-    <string name="widget_freeform_on">ធាតុក្រាហ្វិកនៅកន្លែងដែលអ្នកដាក់ ហើយមានទំហំតាមដែលអ្នកកំណត់</string>
-    <string name="widget_freeform_off">ធាតុក្រាហ្វិកត្រូវបានដាក់ក្នុងក្រឡានៃអេក្រង់ដើម</string>
     <string name="widget_overlap">អនុញ្ញាតឱ្យធាតុក្រាហ្វិកត្រួតគ្នា</string>
-    <string name="widget_overlap_on">ធាតុក្រាហ្វិកមិនកាន់កាប់ក្រឡា ហើយនៅលើរូបតំណាង និងធាតុក្រាហ្វិកផ្សេងទៀត</string>
-    <string name="widget_overlap_off">ធាតុក្រាហ្វិកនៅក្នុងក្រឡារបស់ខ្លួន</string>
-    <string name="widget_overlap_off_title">បិទការត្រួតគ្នា?</string>
-    <string name="widget_overlap_off_message">ធាតុក្រាហ្វិកដែលនៅលើធាតុផ្សេងនឹងផ្លាស់ទៅកន្លែងទំនេរជិតបំផុតតាមទំហំរបស់វា ហើយធាតុក្រាហ្វិកដែលគ្មានកន្លែងនឹងត្រូវលុប។</string>
     <string name="autostart_apps_summary_fyt">កម្មវិធីដែលដំណើរការដោយមុខងារចាប់ផ្តើមស្វ័យប្រវត្តិរបស់ប្រព័ន្ធ អាចធ្វើឱ្យការចាប់ផ្តើមកម្មវិធីចាប់ផ្តើមយឺត។ ជម្រើសដែលភ្ជាប់មកជាមួយរបស់កម្មវិធីចាប់ផ្តើមនឹងបើកវាតែបន្ទាប់ពីកម្មវិធីចាប់ផ្តើមបានបញ្ចប់ការចាប់ផ្តើមត្រជាក់ប៉ុណ្ណោះ។ នៅពេលប្រើបញ្ជីនេះ សូមចាំបិទកម្មវិធីទាំងនេះក្នុងការកំណត់ FYT និងគ្រប់កន្លែងផ្សេងទៀតដែលបានកំណត់ឱ្យចាប់ផ្តើមស្វ័យប្រវត្តិ បើមិនដូច្នោះទេ វានឹងត្រូវបានបើកពីរដង។</string>
     <string name="autostart_apps_summary_other">កម្មវិធីដែលដំណើរការដោយមុខងារចាប់ផ្តើមស្វ័យប្រវត្តិរបស់ប្រព័ន្ធ អាចធ្វើឱ្យការចាប់ផ្តើមកម្មវិធីចាប់ផ្តើមយឺត។ ជម្រើសដែលភ្ជាប់មកជាមួយរបស់កម្មវិធីចាប់ផ្តើមនឹងបើកវាតែបន្ទាប់ពីកម្មវិធីចាប់ផ្តើមបានបញ្ចប់ការចាប់ផ្តើមត្រជាក់ប៉ុណ្ណោះ។ នៅពេលប្រើបញ្ជីនេះ សូមចាំបិទការចាប់ផ្តើមស្វ័យប្រវត្តិនៃកម្មវិធីទាំងនេះនៅគ្រប់កន្លែងផ្សេងទៀតដែលបានបើក បើមិនដូច្នោះទេ វានឹងត្រូវបានបើកពីរដង។</string>
     <string name="autostart_apps_by_boot_completed_summary">អនុវត្តចំពោះ “ចាប់ផ្តើមពេលបើកម៉ាស៊ីន” និង “ចាប់ផ្តើមពេលភ្ញាក់”</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">ខាងលើ</string>
     <string name="drawer_tab_bar_bottom">ខាងក្រោម</string>
     <string name="display_vertical_bar">បង្ហាញរបារបញ្ឈរ</string>
+    <string name="folder_follow_grid_on">ថតរៀបរូបតំណាងតាមជួរដេក និងជួរឈរនៃអេក្រង់ដើម</string>
+    <string name="folder_follow_grid_off">ថតប្រើក្រឡាចត្រង្គផ្ទាល់ខ្លួន</string>
+    <string name="widget_freeform_on">អាចផ្លាស់ទី និងប្តូរទំហំធាតុក្រាហ្វិកដោយសេរី ដោយមិនពឹងលើក្រឡាចត្រង្គ</string>
+    <string name="widget_freeform_off">ធាតុក្រាហ្វិកតម្រឹមតាមក្រឡាចត្រង្គអេក្រង់ដើម</string>
+    <string name="widget_overlap_on">ធាតុក្រាហ្វិកអាចគ្របលើរូបតំណាង និងធាតុក្រាហ្វិកផ្សេងទៀត</string>
+    <string name="widget_overlap_off">ធាតុក្រាហ្វិកនៅក្នុងក្រឡាទំនេរ</string>
+    <string name="widget_overlap_off_title">តម្រឹមធាតុក្រាហ្វិកទៅក្រឡាចត្រង្គ?</string>
+    <string name="widget_overlap_off_message">ធាតុក្រាហ្វិកខ្លះប្រហែលជាមិនសមនឹងក្រឡាចត្រង្គទេ។ ធាតុក្រាហ្វិកដែលមិនអាចដាក់បានត្រូវបានយកចេញពីអេក្រង់ដើម។</string>
 </resources>

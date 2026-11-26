@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Tria el fons de les carpetes</string>
     <string name="folders_background_dialog_title">Tria el fons de les carpetes:</string>
     <string name="folder_follow_grid">Segueix la quadrícula de la pantalla d\'inici dins les carpetes</string>
-    <string name="folder_follow_grid_on">Les carpetes usen les columnes de la pantalla d\'inici i les files que necessitin</string>
-    <string name="folder_follow_grid_off">Les carpetes creixen gairebé quadrades, fins a la mida de la pantalla d\'inici</string>
     <string name="widget_freeform">Col·locació lliure dels ginys</string>
-    <string name="widget_freeform_on">Els ginys es queden on els poses i prenen la mida que els dónes</string>
-    <string name="widget_freeform_off">Els ginys es col·loquen a les cel·les de la pantalla d\'inici</string>
     <string name="widget_overlap">Permet que els ginys se superposin</string>
-    <string name="widget_overlap_on">Els ginys no ocupen cel·les i queden damunt d\'icones i altres ginys</string>
-    <string name="widget_overlap_off">Els ginys es queden a les seves cel·les</string>
-    <string name="widget_overlap_off_title">Voleu desactivar la superposició?</string>
-    <string name="widget_overlap_off_message">Els ginys que són damunt d\'altres elements passen al lloc lliure més proper de la seva mida; un giny sense lloc s\'elimina.</string>
     <string name="autostart_apps_summary_fyt">Les aplicacions que inicia la funció d\'inici automàtic del sistema poden alentir l\'arrencada del llançador. L\'opció integrada del llançador només les iniciarà quan el llançador hagi acabat l\'arrencada en fred. Quan useu aquesta llista, recordeu desactivar aquestes aplicacions a la configuració d\'FYT i a qualsevol altre lloc on estiguin configurades per iniciar-se automàticament; si no, s\'iniciaran dues vegades.</string>
     <string name="autostart_apps_summary_other">Les aplicacions que inicia la funció d\'inici automàtic del sistema poden alentir l\'arrencada del llançador. L\'opció integrada del llançador només les iniciarà quan el llançador hagi acabat l\'arrencada en fred. Quan useu aquesta llista, recordeu desactivar l\'inici automàtic d\'aquestes aplicacions a qualsevol altre lloc on estigui activat; si no, s\'iniciaran dues vegades.</string>
     <string name="autostart_apps_by_boot_completed_summary">S\'aplica a «Inicia en arrencar» i «Inicia en despertar»</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">A dalt</string>
     <string name="drawer_tab_bar_bottom">A baix</string>
     <string name="display_vertical_bar">Mostra la barra vertical</string>
+    <string name="folder_follow_grid_on">Les carpetes ordenen les icones en les files i columnes de la pantalla d\'inici</string>
+    <string name="folder_follow_grid_off">Les carpetes usen la seva pròpia quadrícula</string>
+    <string name="widget_freeform_on">Els ginys es poden moure i canviar de mida lliurement, independentment de la quadrícula</string>
+    <string name="widget_freeform_off">Els ginys s\'ajusten a la quadrícula de la pantalla d\'inici</string>
+    <string name="widget_overlap_on">Els ginys poden cobrir icones i altres ginys</string>
+    <string name="widget_overlap_off">Els ginys es queden a les cel·les lliures</string>
+    <string name="widget_overlap_off_title">Voleu ajustar els ginys a la quadrícula?</string>
+    <string name="widget_overlap_off_message">Alguns ginys potser no cabran a la quadrícula. Els ginys que no es puguin col·locar se suprimiran de la pantalla d\'inici.</string>
 </resources>

@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Velg bakgrunn for mapper</string>
     <string name="folders_background_dialog_title">Velg bakgrunn for mapper:</string>
     <string name="folder_follow_grid">Følg startskjermens rutenett i mapper</string>
-    <string name="folder_follow_grid_on">Mapper bruker startskjermens kolonner og så mange rader de trenger</string>
-    <string name="folder_follow_grid_off">Mapper vokser nesten kvadratisk, opp til startskjermens størrelse</string>
     <string name="widget_freeform">Fri plassering av widgeter</string>
-    <string name="widget_freeform_on">Widgeter blir der du plasserer dem og får den størrelsen du gir dem</string>
-    <string name="widget_freeform_off">Widgeter plasseres i startskjermens ruter</string>
     <string name="widget_overlap">Tillat at widgeter overlapper</string>
-    <string name="widget_overlap_on">Widgeter tar ingen ruter og ligger over ikoner og andre widgeter</string>
-    <string name="widget_overlap_off">Widgeter holder seg til sine egne ruter</string>
-    <string name="widget_overlap_off_title">Slå av overlapping?</string>
-    <string name="widget_overlap_off_message">Widgeter som ligger over andre elementer flyttes til nærmeste ledige plass i samme størrelse; en widget uten plass fjernes.</string>
     <string name="autostart_apps_summary_fyt">Apper som startes av systemets autostartfunksjon, kan gjøre at launcheren starter tregere. Launcherens innebygde alternativ starter dem først etter at launcheren har fullført kaldstarten. Når du bruker denne listen, husk å slå av disse appene i FYT-innstillingene og alle andre steder de er satt til å starte automatisk; ellers startes de to ganger.</string>
     <string name="autostart_apps_summary_other">Apper som startes av systemets autostartfunksjon, kan gjøre at launcheren starter tregere. Launcherens innebygde alternativ starter dem først etter at launcheren har fullført kaldstarten. Når du bruker denne listen, husk å slå av automatisk start for disse appene alle andre steder der det er slått på; ellers startes de to ganger.</string>
     <string name="autostart_apps_by_boot_completed_summary">Gjelder “Start ved oppstart” og “Start ved oppvåkning”</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Øverst</string>
     <string name="drawer_tab_bar_bottom">Nederst</string>
     <string name="display_vertical_bar">Vis vertikalt felt</string>
+    <string name="folder_follow_grid_on">Mapper ordner ikoner i startskjermens rader og kolonner</string>
+    <string name="folder_follow_grid_off">Mapper bruker sitt eget rutenett</string>
+    <string name="widget_freeform_on">Widgeter kan flyttes og endres fritt i størrelse, uavhengig av rutenettet</string>
+    <string name="widget_freeform_off">Widgeter låses til startskjermens rutenett</string>
+    <string name="widget_overlap_on">Widgeter kan dekke ikoner og andre widgeter</string>
+    <string name="widget_overlap_off">Widgeter holder seg til ledige ruter</string>
+    <string name="widget_overlap_off_title">Tilpasse widgeter til rutenettet?</string>
+    <string name="widget_overlap_off_message">Noen widgeter passer kanskje ikke i rutenettet. Widgeter som ikke kan plasseres, fjernes fra startskjermen.</string>
 </resources>

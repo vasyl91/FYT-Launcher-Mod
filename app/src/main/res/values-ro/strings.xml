@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Alegeți fundalul pentru dosare</string>
     <string name="folders_background_dialog_title">Selectați fundalul pentru dosare:</string>
     <string name="folder_follow_grid">Folosește grila ecranului principal în dosare</string>
-    <string name="folder_follow_grid_on">Dosarele folosesc coloanele ecranului principal și câte rânduri au nevoie</string>
-    <string name="folder_follow_grid_off">Dosarele cresc aproape pătrate, până la dimensiunea ecranului principal</string>
     <string name="widget_freeform">Plasare liberă a widgeturilor</string>
-    <string name="widget_freeform_on">Widgeturile rămân unde le puneți și iau dimensiunea dată</string>
-    <string name="widget_freeform_off">Widgeturile sunt plasate în celulele ecranului principal</string>
     <string name="widget_overlap">Permite suprapunerea widgeturilor</string>
-    <string name="widget_overlap_on">Widgeturile nu ocupă celule și stau peste pictograme și alte widgeturi</string>
-    <string name="widget_overlap_off">Widgeturile rămân în celulele lor</string>
-    <string name="widget_overlap_off_title">Dezactivați suprapunerea?</string>
-    <string name="widget_overlap_off_message">Widgeturile aflate peste alte elemente se mută în cel mai apropiat loc liber de dimensiunea lor; un widget fără loc este eliminat.</string>
     <string name="autostart_apps_summary_fyt">Aplicațiile pornite de funcția de pornire automată a sistemului pot încetini pornirea launcherului. Opțiunea integrată a launcherului le pornește abia după ce launcherul și-a încheiat pornirea la rece. Când folosiți această listă, nu uitați să dezactivați aceste aplicații în setările FYT și oriunde altundeva sunt setate să pornească automat; altfel vor fi pornite de două ori.</string>
     <string name="autostart_apps_summary_other">Aplicațiile pornite de funcția de pornire automată a sistemului pot încetini pornirea launcherului. Opțiunea integrată a launcherului le pornește abia după ce launcherul și-a încheiat pornirea la rece. Când folosiți această listă, nu uitați să dezactivați pornirea automată a acestor aplicații oriunde altundeva este activată; altfel vor fi pornite de două ori.</string>
     <string name="autostart_apps_by_boot_completed_summary">Se aplică pentru „Pornire la boot” și „Pornire la trezire”</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Sus</string>
     <string name="drawer_tab_bar_bottom">Jos</string>
     <string name="display_vertical_bar">Afișează bara verticală</string>
+    <string name="folder_follow_grid_on">Dosarele aranjează pictogramele în rândurile și coloanele ecranului principal</string>
+    <string name="folder_follow_grid_off">Dosarele folosesc propria grilă</string>
+    <string name="widget_freeform_on">Widgeturile pot fi mutate și redimensionate liber, independent de grilă</string>
+    <string name="widget_freeform_off">Widgeturile se aliniază la grila ecranului principal</string>
+    <string name="widget_overlap_on">Widgeturile pot acoperi pictograme și alte widgeturi</string>
+    <string name="widget_overlap_off">Widgeturile rămân în celule libere</string>
+    <string name="widget_overlap_off_title">Potriviți widgeturile în grilă?</string>
+    <string name="widget_overlap_off_message">Este posibil ca unele widgeturi să nu încapă în grilă. Widgeturile care nu pot fi plasate vor fi eliminate de pe ecranul principal.</string>
 </resources>

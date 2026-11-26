@@ -578,16 +578,8 @@
     <string name="folders_background_preference">აირჩიეთ საქაღალდეების ფონი</string>
     <string name="folders_background_dialog_title">აირჩიეთ საქაღალდეების ფონი:</string>
     <string name="folder_follow_grid">საქაღალდეებში მთავარი ეკრანის ბადის გამოყენება</string>
-    <string name="folder_follow_grid_on">საქაღალდეები იყენებენ მთავარი ეკრანის სვეტებს და საჭირო რაოდენობის რიგებს</string>
-    <string name="folder_follow_grid_off">საქაღალდეები თითქმის კვადრატულად იზრდება, მთავარი ეკრანის ზომამდე</string>
     <string name="widget_freeform">ვიჯეტების თავისუფალი განლაგება</string>
-    <string name="widget_freeform_on">ვიჯეტები რჩება იქ, სადაც დადებთ, და იღებს თქვენს მიერ მითითებულ ზომას</string>
-    <string name="widget_freeform_off">ვიჯეტები თავსდება მთავარი ეკრანის უჯრედებში</string>
     <string name="widget_overlap">ვიჯეტების გადაფარვის დაშვება</string>
-    <string name="widget_overlap_on">ვიჯეტები არ იკავებს უჯრედებს და ხატულებისა და სხვა ვიჯეტების ზემოთ დევს</string>
-    <string name="widget_overlap_off">ვიჯეტები რჩება საკუთარ უჯრედებში</string>
-    <string name="widget_overlap_off_title">გამოვრთოთ გადაფარვა?</string>
-    <string name="widget_overlap_off_message">სხვა ელემენტებზე მდებარე ვიჯეტები გადადის ზომის შესაბამის უახლოეს თავისუფალ ადგილზე; ადგილის გარეშე დარჩენილი ვიჯეტი ამოიშლება.</string>
     <string name="autostart_apps_summary_fyt">სისტემის ავტომატური გაშვების ფუნქციით გაშვებულმა აპებმა შეიძლება ლანჩერის გაშვება შეანელონ. ლანჩერის ჩაშენებული ოპცია მათ მხოლოდ მას შემდეგ უშვებს, რაც ლანჩერი ცივ გაშვებას დაასრულებს. ამ სიის გამოყენებისას არ დაგავიწყდეთ ამ აპების გამორთვა FYT-ის პარამეტრებში და ყველგან, სადაც ისინი ავტომატურად გასაშვებად არის დაყენებული; წინააღმდეგ შემთხვევაში ისინი ორჯერ გაეშვება.</string>
     <string name="autostart_apps_summary_other">სისტემის ავტომატური გაშვების ფუნქციით გაშვებულმა აპებმა შეიძლება ლანჩერის გაშვება შეანელონ. ლანჩერის ჩაშენებული ოპცია მათ მხოლოდ მას შემდეგ უშვებს, რაც ლანჩერი ცივ გაშვებას დაასრულებს. ამ სიის გამოყენებისას არ დაგავიწყდეთ ამ აპების ავტომატური გაშვების გამორთვა ყველგან, სადაც ის ჩართულია; წინააღმდეგ შემთხვევაში ისინი ორჯერ გაეშვება.</string>
     <string name="autostart_apps_by_boot_completed_summary">ვრცელდება „გაშვება ჩატვირთვისას“ და „გაშვება გაღვიძებისას“ პარამეტრებზე</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">ზემოთ</string>
     <string name="drawer_tab_bar_bottom">ქვემოთ</string>
     <string name="display_vertical_bar">ვერტიკალური ზოლის ჩვენება</string>
+    <string name="folder_follow_grid_on">საქაღალდეები ხატულებს მთავარი ეკრანის რიგებსა და სვეტებში აწყობს</string>
+    <string name="folder_follow_grid_off">საქაღალდეები საკუთარ ბადეს იყენებს</string>
+    <string name="widget_freeform_on">ვიჯეტების გადატანა და ზომის შეცვლა შესაძლებელია თავისუფლად, ბადისგან დამოუკიდებლად</string>
+    <string name="widget_freeform_off">ვიჯეტები მთავარი ეკრანის ბადეს მიებმება</string>
+    <string name="widget_overlap_on">ვიჯეტებს შეუძლია ხატულებისა და სხვა ვიჯეტების დაფარვა</string>
+    <string name="widget_overlap_off">ვიჯეტები რჩება თავისუფალ უჯრედებში</string>
+    <string name="widget_overlap_off_title">მოვარგოთ ვიჯეტები ბადეს?</string>
+    <string name="widget_overlap_off_message">ზოგი ვიჯეტი შეიძლება ბადეში ვერ დაეტიოს. ვიჯეტები, რომლებიც ვერ განთავსდება, მთავარი ეკრანიდან წაიშლება.</string>
 </resources>

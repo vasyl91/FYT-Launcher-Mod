@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Valitse kansioiden tausta</string>
     <string name="folders_background_dialog_title">Valitse kansioiden tausta:</string>
     <string name="folder_follow_grid">Käytä aloitusnäytön ruudukkoa kansioissa</string>
-    <string name="folder_follow_grid_on">Kansiot käyttävät aloitusnäytön sarakkeita ja tarvitsemansa määrän rivejä</string>
-    <string name="folder_follow_grid_off">Kansiot kasvavat lähes neliöksi aloitusnäytön kokoon asti</string>
     <string name="widget_freeform">Widgetien vapaa sijoittelu</string>
-    <string name="widget_freeform_on">Widgetit pysyvät siellä, mihin ne laitat, ja saavat antamasi koon</string>
-    <string name="widget_freeform_off">Widgetit sijoitetaan aloitusnäytön ruutuihin</string>
     <string name="widget_overlap">Salli widgetien päällekkäisyys</string>
-    <string name="widget_overlap_on">Widgetit eivät vie ruutuja ja ovat kuvakkeiden ja muiden widgetien päällä</string>
-    <string name="widget_overlap_off">Widgetit pysyvät omissa ruuduissaan</string>
-    <string name="widget_overlap_off_title">Poistetaanko päällekkäisyys käytöstä?</string>
-    <string name="widget_overlap_off_message">Muiden kohteiden päällä olevat widgetit siirtyvät lähimpään vapaaseen saman kokoiseen paikkaan; widget, jolle ei ole tilaa, poistetaan.</string>
     <string name="autostart_apps_summary_fyt">Järjestelmän automaattikäynnistyksen käynnistämät sovellukset voivat hidastaa laukaisimen käynnistymistä. Laukaisimen sisäänrakennettu vaihtoehto käynnistää ne vasta, kun laukaisin on saanut kylmäkäynnistyksensä valmiiksi. Kun käytät tätä luetteloa, muista poistaa nämä sovellukset käytöstä FYT-asetuksissa ja kaikkialla muualla, missä ne on asetettu käynnistymään automaattisesti; muuten ne käynnistyvät kahdesti.</string>
     <string name="autostart_apps_summary_other">Järjestelmän automaattikäynnistyksen käynnistämät sovellukset voivat hidastaa laukaisimen käynnistymistä. Laukaisimen sisäänrakennettu vaihtoehto käynnistää ne vasta, kun laukaisin on saanut kylmäkäynnistyksensä valmiiksi. Kun käytät tätä luetteloa, muista poistaa näiden sovellusten automaattinen käynnistys kaikkialla muualla, missä se on käytössä; muuten ne käynnistyvät kahdesti.</string>
     <string name="autostart_apps_by_boot_completed_summary">Koskee valintoja ”Käynnistä käynnistyksessä” ja ”Käynnistä herätessä”</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Ylhäällä</string>
     <string name="drawer_tab_bar_bottom">Alhaalla</string>
     <string name="display_vertical_bar">Näytä pystypalkki</string>
+    <string name="folder_follow_grid_on">Kansiot järjestävät kuvakkeet aloitusnäytön riveihin ja sarakkeisiin</string>
+    <string name="folder_follow_grid_off">Kansiot käyttävät omaa ruudukkoaan</string>
+    <string name="widget_freeform_on">Widgettejä voi siirtää ja niiden kokoa muuttaa vapaasti ruudukosta riippumatta</string>
+    <string name="widget_freeform_off">Widgetit kiinnittyvät aloitusnäytön ruudukkoon</string>
+    <string name="widget_overlap_on">Widgetit saavat peittää kuvakkeita ja muita widgettejä</string>
+    <string name="widget_overlap_off">Widgetit pysyvät vapaissa ruuduissa</string>
+    <string name="widget_overlap_off_title">Sovitetaanko widgetit ruudukkoon?</string>
+    <string name="widget_overlap_off_message">Kaikki widgetit eivät välttämättä mahdu ruudukkoon. Widgetit, joita ei voi sijoittaa, poistetaan aloitusnäytöltä.</string>
 </resources>

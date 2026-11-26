@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Izberite ozadje map</string>
     <string name="folders_background_dialog_title">Izberite ozadje za mape:</string>
     <string name="folder_follow_grid">Mreža domačega zaslona v mapah</string>
-    <string name="folder_follow_grid_on">Mape uporabljajo stolpce domačega zaslona in toliko vrstic, kolikor jih potrebujejo</string>
-    <string name="folder_follow_grid_off">Mape rastejo skoraj kvadratno do velikosti domačega zaslona</string>
     <string name="widget_freeform">Prosta razporeditev pripomočkov</string>
-    <string name="widget_freeform_on">Pripomočki ostanejo, kamor jih postavite, in imajo velikost, ki jo določite</string>
-    <string name="widget_freeform_off">Pripomočki so postavljeni v celice domačega zaslona</string>
     <string name="widget_overlap">Dovoli prekrivanje pripomočkov</string>
-    <string name="widget_overlap_on">Pripomočki ne zasedejo celic in ležijo nad ikonami in drugimi pripomočki</string>
-    <string name="widget_overlap_off">Pripomočki ostanejo v svojih celicah</string>
-    <string name="widget_overlap_off_title">Izklopim prekrivanje?</string>
-    <string name="widget_overlap_off_message">Pripomočki nad drugimi elementi se premaknejo na najbližje prosto mesto svoje velikosti; pripomoček brez prostora se odstrani.</string>
     <string name="autostart_apps_summary_fyt">Aplikacije, ki jih zažene funkcija samodejnega zagona sistema, lahko upočasnijo zagon zaganjalnika. Vgrajena možnost zaganjalnika jih zažene šele, ko zaganjalnik konča hladni zagon. Pri uporabi tega seznama ne pozabite izklopiti teh aplikacij v nastavitvah FYT in povsod drugje, kjer so nastavljene na samodejni zagon; sicer se bodo zagnale dvakrat.</string>
     <string name="autostart_apps_summary_other">Aplikacije, ki jih zažene funkcija samodejnega zagona sistema, lahko upočasnijo zagon zaganjalnika. Vgrajena možnost zaganjalnika jih zažene šele, ko zaganjalnik konča hladni zagon. Pri uporabi tega seznama ne pozabite izklopiti samodejnega zagona teh aplikacij povsod drugje, kjer je vklopljen; sicer se bodo zagnale dvakrat.</string>
     <string name="autostart_apps_by_boot_completed_summary">Velja za »Zaženi ob zagonu« in »Zaženi ob prebuditvi«</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Zgoraj</string>
     <string name="drawer_tab_bar_bottom">Spodaj</string>
     <string name="display_vertical_bar">Prikaži navpično vrstico</string>
+    <string name="folder_follow_grid_on">Mape razporejajo ikone v vrstice in stolpce domačega zaslona</string>
+    <string name="folder_follow_grid_off">Mape uporabljajo lastno mrežo</string>
+    <string name="widget_freeform_on">Pripomočke lahko prosto premikate in jim spreminjate velikost, neodvisno od mreže</string>
+    <string name="widget_freeform_off">Pripomočki se pripnejo na mrežo domačega zaslona</string>
+    <string name="widget_overlap_on">Pripomočki lahko prekrivajo ikone in druge pripomočke</string>
+    <string name="widget_overlap_off">Pripomočki ostanejo v prostih celicah</string>
+    <string name="widget_overlap_off_title">Prilagodim pripomočke mreži?</string>
+    <string name="widget_overlap_off_message">Nekateri pripomočki se morda ne bodo prilegali mreži. Pripomočki, ki jih ni mogoče postaviti, bodo odstranjeni z domačega zaslona.</string>
 </resources>

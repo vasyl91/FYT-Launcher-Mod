@@ -578,16 +578,8 @@
     <string name="folders_background_preference">選擇資料夾背景</string>
     <string name="folders_background_dialog_title">選擇資料夾的背景：</string>
     <string name="folder_follow_grid">資料夾內沿用主畫面格線</string>
-    <string name="folder_follow_grid_on">資料夾使用主畫面的欄數，並視需要增加列數</string>
-    <string name="folder_follow_grid_off">資料夾近似正方形增長，最大為主畫面大小</string>
     <string name="widget_freeform">自由放置小工具</string>
-    <string name="widget_freeform_on">小工具停留在您放置的位置，並採用您設定的大小</string>
-    <string name="widget_freeform_off">小工具放置在主畫面的格線中</string>
     <string name="widget_overlap">允許小工具重疊</string>
-    <string name="widget_overlap_on">小工具不佔用格線，可覆蓋在圖示和其他小工具之上</string>
-    <string name="widget_overlap_off">小工具保持在各自的格線內</string>
-    <string name="widget_overlap_off_title">關閉重疊？</string>
-    <string name="widget_overlap_off_message">重疊在其他項目上的小工具會移到最近的同尺寸空位；沒有空位的小工具將被刪除。</string>
     <string name="autostart_apps_summary_fyt">系統自動啟動功能所啟動的應用程式可能會拖慢啟動器的啟動。啟動器的內建選項只會在啟動器完成冷啟動之後才啟動它們。使用此清單時，請記得在 FYT 設定以及其他所有設定了自動啟動的地方關閉這些應用程式；否則它們會被啟動兩次。</string>
     <string name="autostart_apps_summary_other">系統自動啟動功能所啟動的應用程式可能會拖慢啟動器的啟動。啟動器的內建選項只會在啟動器完成冷啟動之後才啟動它們。使用此清單時，請記得在其他所有開啟了自動啟動的地方關閉這些應用程式的自動啟動；否則它們會被啟動兩次。</string>
     <string name="autostart_apps_by_boot_completed_summary">適用於「開機時啟動」和「喚醒時啟動」</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">頂部</string>
     <string name="drawer_tab_bar_bottom">底部</string>
     <string name="display_vertical_bar">顯示縱欄</string>
+    <string name="folder_follow_grid_on">資料夾依主畫面的列與欄排列圖示</string>
+    <string name="folder_follow_grid_off">資料夾使用自己的格線</string>
+    <string name="widget_freeform_on">小工具可以不受格線限制，自由移動和調整大小</string>
+    <string name="widget_freeform_off">小工具吸附到主畫面格線</string>
+    <string name="widget_overlap_on">小工具可以覆蓋圖示和其他小工具</string>
+    <string name="widget_overlap_off">小工具保持在空閒格線內</string>
+    <string name="widget_overlap_off_title">讓小工具配合格線？</string>
+    <string name="widget_overlap_off_message">部分小工具可能無法放入格線。無法放置的小工具將從主畫面中移除。</string>
 </resources>

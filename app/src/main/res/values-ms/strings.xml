@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Pilih latar belakang folder</string>
     <string name="folders_background_dialog_title">Pilih latar belakang untuk folder:</string>
     <string name="folder_follow_grid">Ikut grid skrin utama dalam folder</string>
-    <string name="folder_follow_grid_on">Folder menggunakan lajur skrin utama dan baris mengikut keperluan</string>
-    <string name="folder_follow_grid_off">Folder membesar hampir segi empat sama, sehingga saiz skrin utama</string>
     <string name="widget_freeform">Penempatan widget bebas</string>
-    <string name="widget_freeform_on">Widget kekal di tempat anda letak dan mengambil saiz yang anda beri</string>
-    <string name="widget_freeform_off">Widget diletakkan dalam sel skrin utama</string>
     <string name="widget_overlap">Benarkan widget bertindih</string>
-    <string name="widget_overlap_on">Widget tidak mengambil sel dan terletak di atas ikon dan widget lain</string>
-    <string name="widget_overlap_off">Widget kekal dalam selnya sendiri</string>
-    <string name="widget_overlap_off_title">Matikan pertindihan?</string>
-    <string name="widget_overlap_off_message">Widget yang menindih item lain dialihkan ke tempat kosong terdekat sebesar widget; widget tanpa ruang akan dibuang.</string>
     <string name="autostart_apps_summary_fyt">Aplikasi yang dilancarkan oleh ciri autostart sistem boleh melambatkan permulaan pelancar. Pilihan terbina dalam pelancar hanya akan melancarkannya selepas pelancar selesai permulaan sejuk. Apabila menggunakan senarai ini, ingat untuk melumpuhkan aplikasi ini dalam tetapan FYT dan di tempat lain yang ditetapkan untuk bermula secara automatik; jika tidak, ia akan dilancarkan dua kali.</string>
     <string name="autostart_apps_summary_other">Aplikasi yang dilancarkan oleh ciri autostart sistem boleh melambatkan permulaan pelancar. Pilihan terbina dalam pelancar hanya akan melancarkannya selepas pelancar selesai permulaan sejuk. Apabila menggunakan senarai ini, ingat untuk mematikan permulaan automatik aplikasi ini di tempat lain yang mengaktifkannya; jika tidak, ia akan dilancarkan dua kali.</string>
     <string name="autostart_apps_by_boot_completed_summary">Terpakai untuk “Mula semasa but” dan “Mula semasa bangun”</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Atas</string>
     <string name="drawer_tab_bar_bottom">Bawah</string>
     <string name="display_vertical_bar">Paparkan bar menegak</string>
+    <string name="folder_follow_grid_on">Folder menyusun ikon dalam baris dan lajur skrin utama</string>
+    <string name="folder_follow_grid_off">Folder menggunakan grid sendiri</string>
+    <string name="widget_freeform_on">Widget boleh dialih dan diubah saiz dengan bebas, tanpa bergantung pada grid</string>
+    <string name="widget_freeform_off">Widget melekat pada grid skrin utama</string>
+    <string name="widget_overlap_on">Widget boleh menutup ikon dan widget lain</string>
+    <string name="widget_overlap_off">Widget kekal dalam sel kosong</string>
+    <string name="widget_overlap_off_title">Muatkan widget pada grid?</string>
+    <string name="widget_overlap_off_message">Sesetengah widget mungkin tidak muat pada grid. Widget yang tidak dapat diletakkan akan dibuang daripada skrin utama.</string>
 </resources>

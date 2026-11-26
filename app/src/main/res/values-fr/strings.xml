@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Choisir l\'arrière-plan des dossiers</string>
     <string name="folders_background_dialog_title">Sélectionnez l\'arrière-plan des dossiers :</string>
     <string name="folder_follow_grid">Suivre la grille de l\'écran d\'accueil dans les dossiers</string>
-    <string name="folder_follow_grid_on">Les dossiers utilisent les colonnes de l\'écran d\'accueil et autant de lignes que nécessaire</string>
-    <string name="folder_follow_grid_off">Les dossiers grandissent presque en carré, jusqu\'à la taille de l\'écran d\'accueil</string>
     <string name="widget_freeform">Placement libre des widgets</string>
-    <string name="widget_freeform_on">Les widgets restent où vous les posez et prennent la taille que vous leur donnez</string>
-    <string name="widget_freeform_off">Les widgets sont placés dans les cellules de l\'écran d\'accueil</string>
     <string name="widget_overlap">Autoriser le chevauchement des widgets</string>
-    <string name="widget_overlap_on">Les widgets n\'occupent pas de cellules et se placent par-dessus les icônes et d\'autres widgets</string>
-    <string name="widget_overlap_off">Les widgets restent dans leurs propres cellules</string>
-    <string name="widget_overlap_off_title">Désactiver le chevauchement ?</string>
-    <string name="widget_overlap_off_message">Les widgets au-dessus d\'autres éléments passent à l\'emplacement libre le plus proche de leur taille ; un widget sans place est supprimé.</string>
     <string name="autostart_apps_summary_fyt">Les applications lancées par la fonction de démarrage automatique du système peuvent ralentir le démarrage du lanceur. L\'option intégrée du lanceur ne les lance qu\'une fois le démarrage à froid du lanceur terminé. Lorsque vous utilisez cette liste, pensez à désactiver ces applications dans les réglages FYT et partout ailleurs où elles sont configurées pour démarrer automatiquement ; sinon, elles seront lancées deux fois.</string>
     <string name="autostart_apps_summary_other">Les applications lancées par la fonction de démarrage automatique du système peuvent ralentir le démarrage du lanceur. L\'option intégrée du lanceur ne les lance qu\'une fois le démarrage à froid du lanceur terminé. Lorsque vous utilisez cette liste, pensez à désactiver le démarrage automatique de ces applications partout ailleurs où il est activé ; sinon, elles seront lancées deux fois.</string>
     <string name="autostart_apps_by_boot_completed_summary">S\'applique à « Lancer au démarrage » et « Lancer au réveil »</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">En haut</string>
     <string name="drawer_tab_bar_bottom">En bas</string>
     <string name="display_vertical_bar">Afficher la barre verticale</string>
+    <string name="folder_follow_grid_on">Les dossiers rangent les icônes selon les lignes et colonnes de l\'écran d\'accueil</string>
+    <string name="folder_follow_grid_off">Les dossiers utilisent leur propre grille</string>
+    <string name="widget_freeform_on">Les widgets peuvent être déplacés et redimensionnés librement, indépendamment de la grille</string>
+    <string name="widget_freeform_off">Les widgets s\'alignent sur la grille de l\'écran d\'accueil</string>
+    <string name="widget_overlap_on">Les widgets peuvent recouvrir des icônes et d\'autres widgets</string>
+    <string name="widget_overlap_off">Les widgets restent dans les cellules libres</string>
+    <string name="widget_overlap_off_title">Aligner les widgets sur la grille ?</string>
+    <string name="widget_overlap_off_message">Certains widgets risquent de ne pas tenir dans la grille. Les widgets qui ne peuvent pas être placés seront supprimés de l\'écran d\'accueil.</string>
 </resources>

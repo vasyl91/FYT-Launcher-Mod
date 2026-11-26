@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Khetha ingemuva yamafolda</string>
     <string name="folders_background_dialog_title">Khetha ingemuva yamafolda:</string>
     <string name="folder_follow_grid">Landela igridi yesikrini sasekhaya ngaphakathi kwamafolda</string>
-    <string name="folder_follow_grid_on">Amafolda asebenzisa amakholomu esikrini sasekhaya nemigqa edingekayo</string>
-    <string name="folder_follow_grid_off">Amafolda akhula cishe abe yisikwele, kuze kufike osayizi wesikrini sasekhaya</string>
     <string name="widget_freeform">Ukubeka amawijethi ngokukhululeka</string>
-    <string name="widget_freeform_on">Amawijethi ahlala lapho uwabeka khona futhi athatha usayizi owunikezayo</string>
-    <string name="widget_freeform_off">Amawijethi abekwa kumaseli esikrini sasekhaya</string>
     <string name="widget_overlap">Vumela amawijethi ukugcwalisana</string>
-    <string name="widget_overlap_on">Amawijethi awathathi amaseli futhi alala phezu kwezithonjana namanye amawijethi</string>
-    <string name="widget_overlap_off">Amawijethi ahlala emaseli awo</string>
-    <string name="widget_overlap_off_title">Vala ukugcwalisana?</string>
-    <string name="widget_overlap_off_message">Amawijethi aphezu kwezinye izinto ashintshela endaweni ekhululekile eseduze ngosayizi wawo; iwijethi engenayo indawo iyasuswa.</string>
     <string name="autostart_apps_summary_fyt">Izinhlelo zokusebenza eziqalwa isici sokuziqalela sesistimu zingehlisa ukuqala komqalisi. Inketho eyakhelwe ngaphakathi yomqalisi izoziqala kuphela ngemva kokuba umqalisi eqede ukuqala kwakhe okubandayo. Uma usebenzisa lolu hlu, khumbula ukukhubaza lezi zinhlelo zokusebenza kumasethingi e-FYT nakwenye indawo yonke ezisethelwe ukuqala ngokuzenzakalelayo; ngaphandle kwalokho ziyaqalwa kabili.</string>
     <string name="autostart_apps_summary_other">Izinhlelo zokusebenza eziqalwa isici sokuziqalela sesistimu zingehlisa ukuqala komqalisi. Inketho eyakhelwe ngaphakathi yomqalisi izoziqala kuphela ngemva kokuba umqalisi eqede ukuqala kwakhe okubandayo. Uma usebenzisa lolu hlu, khumbula ukucisha ukuqala ngokuzenzakalelayo kwalezi zinhlelo zokusebenza kwenye indawo yonke okuvuliwe kuyo; ngaphandle kwalokho ziyaqalwa kabili.</string>
     <string name="autostart_apps_by_boot_completed_summary">Isebenza ku-“Qala lapho kuqala” nasku-“Qala lapho kuvuka”</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Phezulu</string>
     <string name="drawer_tab_bar_bottom">Phansi</string>
     <string name="display_vertical_bar">Bonisa ibha eqondile</string>
+    <string name="folder_follow_grid_on">Amafolda ahlela izithonjana emigqeni nasemakholomu esikrini sasekhaya</string>
+    <string name="folder_follow_grid_off">Amafolda asebenzisa igridi yawo</string>
+    <string name="widget_freeform_on">Amawijethi angahanjiswa futhi aguqulwe usayizi ngokukhululeka, ngaphandle kwegridi</string>
+    <string name="widget_freeform_off">Amawijethi anamathela kugridi yesikrini sasekhaya</string>
+    <string name="widget_overlap_on">Amawijethi angagquma izithonjana namanye amawijethi</string>
+    <string name="widget_overlap_off">Amawijethi ahlala emaseli akhululekile</string>
+    <string name="widget_overlap_off_title">Lungisa amawijethi egridini?</string>
+    <string name="widget_overlap_off_message">Amanye amawijethi angase angangeni egridini. Amawijethi angeke abekwe azosuswa esikrinini sasekhaya.</string>
 </resources>

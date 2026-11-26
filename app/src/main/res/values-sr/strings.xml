@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Изаберите позадину за фасцикле</string>
     <string name="folders_background_dialog_title">Изаберите позадину за фасцикле:</string>
     <string name="folder_follow_grid">Користи мрежу почетног екрана у фасциклама</string>
-    <string name="folder_follow_grid_on">Фасцикле користе колоне почетног екрана и онолико редова колико им треба</string>
-    <string name="folder_follow_grid_off">Фасцикле расту готово квадратно, до величине почетног екрана</string>
     <string name="widget_freeform">Слободан распоред виџета</string>
-    <string name="widget_freeform_on">Виџети остају где их ставите и добијају величину коју задате</string>
-    <string name="widget_freeform_off">Виџети се постављају у ћелије почетног екрана</string>
     <string name="widget_overlap">Дозволи преклапање виџета</string>
-    <string name="widget_overlap_on">Виџети не заузимају ћелије и леже изнад икона и других виџета</string>
-    <string name="widget_overlap_off">Виџети остају у својим ћелијама</string>
-    <string name="widget_overlap_off_title">Искључити преклапање?</string>
-    <string name="widget_overlap_off_message">Виџети изнад других ставки померају се на најближе слободно место своје величине; виџет без места се уклања.</string>
     <string name="autostart_apps_summary_fyt">Апликације које покреће функција аутоматског покретања система могу успорити покретање покретача. Уграђена опција покретача покреће их тек пошто покретач заврши хладно покретање. Када користите ову листу, не заборавите да искључите ове апликације у FYT подешавањима и свуда другде где су подешене да се аутоматски покрећу; иначе ће се покренути двапут.</string>
     <string name="autostart_apps_summary_other">Апликације које покреће функција аутоматског покретања система могу успорити покретање покретача. Уграђена опција покретача покреће их тек пошто покретач заврши хладно покретање. Када користите ову листу, не заборавите да искључите аутоматско покретање ових апликација свуда другде где је укључено; иначе ће се покренути двапут.</string>
     <string name="autostart_apps_by_boot_completed_summary">Важи за „Покрени при укључивању“ и „Покрени при буђењу“</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Горе</string>
     <string name="drawer_tab_bar_bottom">Доле</string>
     <string name="display_vertical_bar">Прикажи вертикалну траку</string>
+    <string name="folder_follow_grid_on">Фасцикле распоређују иконе у редове и колоне почетног екрана</string>
+    <string name="folder_follow_grid_off">Фасцикле користе сопствену мрежу</string>
+    <string name="widget_freeform_on">Виџети се могу слободно померати и мењати им величину, независно од мреже</string>
+    <string name="widget_freeform_off">Виџети се хватају за мрежу почетног екрана</string>
+    <string name="widget_overlap_on">Виџети могу прекривати иконе и друге виџете</string>
+    <string name="widget_overlap_off">Виџети остају у слободним ћелијама</string>
+    <string name="widget_overlap_off_title">Прилагодити виџете мрежи?</string>
+    <string name="widget_overlap_off_message">Неки виџети се можда неће уклопити у мрежу. Виџети који не могу да се поставе биће уклоњени са почетног екрана.</string>
 </resources>

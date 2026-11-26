@@ -578,16 +578,8 @@
     <string name="folders_background_preference">เลือกพื้นหลังของโฟลเดอร์</string>
     <string name="folders_background_dialog_title">เลือกพื้นหลังของโฟลเดอร์:</string>
     <string name="folder_follow_grid">ใช้ตารางหน้าจอหลักในโฟลเดอร์</string>
-    <string name="folder_follow_grid_on">โฟลเดอร์ใช้จำนวนคอลัมน์ของหน้าจอหลักและแถวเท่าที่จำเป็น</string>
-    <string name="folder_follow_grid_off">โฟลเดอร์ขยายเกือบเป็นสี่เหลี่ยมจัตุรัส ไม่เกินขนาดหน้าจอหลัก</string>
     <string name="widget_freeform">วางวิดเจ็ตได้อิสระ</string>
-    <string name="widget_freeform_on">วิดเจ็ตอยู่ตรงที่คุณวางและมีขนาดตามที่คุณกำหนด</string>
-    <string name="widget_freeform_off">วิดเจ็ตวางอยู่ในช่องของหน้าจอหลัก</string>
     <string name="widget_overlap">อนุญาตให้วิดเจ็ตซ้อนทับกัน</string>
-    <string name="widget_overlap_on">วิดเจ็ตไม่ใช้ช่องและวางทับไอคอนและวิดเจ็ตอื่น</string>
-    <string name="widget_overlap_off">วิดเจ็ตอยู่ในช่องของตัวเอง</string>
-    <string name="widget_overlap_off_title">ปิดการซ้อนทับหรือไม่</string>
-    <string name="widget_overlap_off_message">วิดเจ็ตที่อยู่ทับรายการอื่นจะย้ายไปยังที่ว่างที่ใกล้ที่สุดตามขนาดของมัน วิดเจ็ตที่ไม่มีที่ว่างจะถูกลบ</string>
     <string name="autostart_apps_summary_fyt">แอปที่เริ่มโดยฟีเจอร์เริ่มอัตโนมัติของระบบอาจทำให้ตัวเปิดแอปเริ่มทำงานช้าลง ตัวเลือกในตัวของตัวเปิดแอปจะเริ่มแอปเหล่านั้นหลังจากที่ตัวเปิดแอปเริ่มแบบเย็นเสร็จแล้วเท่านั้น เมื่อใช้รายการนี้ โปรดอย่าลืมปิดแอปเหล่านี้ในการตั้งค่า FYT และทุกที่อื่นที่ตั้งให้เริ่มอัตโนมัติ มิฉะนั้นแอปจะถูกเริ่มสองครั้ง</string>
     <string name="autostart_apps_summary_other">แอปที่เริ่มโดยฟีเจอร์เริ่มอัตโนมัติของระบบอาจทำให้ตัวเปิดแอปเริ่มทำงานช้าลง ตัวเลือกในตัวของตัวเปิดแอปจะเริ่มแอปเหล่านั้นหลังจากที่ตัวเปิดแอปเริ่มแบบเย็นเสร็จแล้วเท่านั้น เมื่อใช้รายการนี้ โปรดอย่าลืมปิดการเริ่มอัตโนมัติของแอปเหล่านี้ในทุกที่อื่นที่เปิดอยู่ มิฉะนั้นแอปจะถูกเริ่มสองครั้ง</string>
     <string name="autostart_apps_by_boot_completed_summary">ใช้กับ “เริ่มเมื่อเปิดเครื่อง” และ “เริ่มเมื่อปลุก”</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">ด้านบน</string>
     <string name="drawer_tab_bar_bottom">ด้านล่าง</string>
     <string name="display_vertical_bar">แสดงแถบแนวตั้ง</string>
+    <string name="folder_follow_grid_on">โฟลเดอร์จัดไอคอนตามแถวและคอลัมน์ของหน้าจอหลัก</string>
+    <string name="folder_follow_grid_off">โฟลเดอร์ใช้ตารางของตัวเอง</string>
+    <string name="widget_freeform_on">ย้ายและปรับขนาดวิดเจ็ตได้อย่างอิสระ โดยไม่ขึ้นกับตาราง</string>
+    <string name="widget_freeform_off">วิดเจ็ตจะเกาะตามตารางของหน้าจอหลัก</string>
+    <string name="widget_overlap_on">วิดเจ็ตอาจบังไอคอนและวิดเจ็ตอื่นได้</string>
+    <string name="widget_overlap_off">วิดเจ็ตอยู่ในช่องที่ว่าง</string>
+    <string name="widget_overlap_off_title">จัดวิดเจ็ตให้พอดีกับตารางหรือไม่</string>
+    <string name="widget_overlap_off_message">วิดเจ็ตบางรายการอาจไม่พอดีกับตาราง วิดเจ็ตที่วางไม่ได้จะถูกลบออกจากหน้าจอหลัก</string>
 </resources>

@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Hintergrund für Ordner wählen</string>
     <string name="folders_background_dialog_title">Hintergrund für Ordner auswählen:</string>
     <string name="folder_follow_grid">Raster des Startbildschirms in Ordnern verwenden</string>
-    <string name="folder_follow_grid_on">Ordner nutzen die Spalten des Startbildschirms und so viele Zeilen wie nötig</string>
-    <string name="folder_follow_grid_off">Ordner wachsen annähernd quadratisch bis zur Größe des Startbildschirms</string>
     <string name="widget_freeform">Widgets frei platzieren</string>
-    <string name="widget_freeform_on">Widgets bleiben, wo Sie sie ablegen, und behalten die gewählte Größe</string>
-    <string name="widget_freeform_off">Widgets werden in den Zellen des Startbildschirms platziert</string>
     <string name="widget_overlap">Überlappen von Widgets erlauben</string>
-    <string name="widget_overlap_on">Widgets belegen keine Zellen und liegen über Symbolen und anderen Widgets</string>
-    <string name="widget_overlap_off">Widgets bleiben in ihren eigenen Zellen</string>
-    <string name="widget_overlap_off_title">Überlappung ausschalten?</string>
-    <string name="widget_overlap_off_message">Widgets über anderen Elementen wandern an die nächste freie Stelle ihrer Größe; ein Widget ohne Platz wird entfernt.</string>
     <string name="autostart_apps_summary_fyt">Apps, die über die Autostart-Funktion des Systems gestartet werden, können den Start des Launchers verlangsamen. Die integrierte Option des Launchers startet sie erst, nachdem der Launcher seinen Kaltstart abgeschlossen hat. Wenn Sie diese Liste verwenden, deaktivieren Sie diese Apps in den FYT-Einstellungen und überall sonst, wo sie automatisch starten sollen; sonst werden sie doppelt gestartet.</string>
     <string name="autostart_apps_summary_other">Apps, die über die Autostart-Funktion des Systems gestartet werden, können den Start des Launchers verlangsamen. Die integrierte Option des Launchers startet sie erst, nachdem der Launcher seinen Kaltstart abgeschlossen hat. Wenn Sie diese Liste verwenden, schalten Sie den automatischen Start dieser Apps überall sonst aus, wo er aktiviert ist; sonst werden sie doppelt gestartet.</string>
     <string name="autostart_apps_by_boot_completed_summary">Gilt für „Beim Start öffnen“ und „Beim Aufwachen öffnen“</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Oben</string>
     <string name="drawer_tab_bar_bottom">Unten</string>
     <string name="display_vertical_bar">Vertikale Leiste anzeigen</string>
+    <string name="folder_follow_grid_on">Ordner ordnen Symbole in den Zeilen und Spalten des Startbildschirms an</string>
+    <string name="folder_follow_grid_off">Ordner verwenden ihr eigenes Raster</string>
+    <string name="widget_freeform_on">Widgets lassen sich unabhängig vom Raster frei verschieben und in der Größe ändern</string>
+    <string name="widget_freeform_off">Widgets rasten im Raster des Startbildschirms ein</string>
+    <string name="widget_overlap_on">Widgets dürfen Symbole und andere Widgets überdecken</string>
+    <string name="widget_overlap_off">Widgets bleiben in freien Zellen</string>
+    <string name="widget_overlap_off_title">Widgets am Raster ausrichten?</string>
+    <string name="widget_overlap_off_message">Einige Widgets passen möglicherweise nicht ins Raster. Widgets, die nicht platziert werden können, werden vom Startbildschirm entfernt.</string>
 </resources>

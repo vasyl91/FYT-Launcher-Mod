@@ -578,16 +578,8 @@
     <string name="folders_background_preference">ለአቃፊዎች ዳራ ይምረጡ</string>
     <string name="folders_background_dialog_title">ለአቃፊዎች ዳራ ይምረጡ፦</string>
     <string name="folder_follow_grid">በአቃፊዎች ውስጥ የመነሻ ማያ ገጹን ፍርግርግ ተከተል</string>
-    <string name="folder_follow_grid_on">አቃፊዎች የመነሻ ማያ ገጹን ዓምዶች እና የሚያስፈልጋቸውን ያህል ረድፎች ይጠቀማሉ</string>
-    <string name="folder_follow_grid_off">አቃፊዎች እስከ መነሻ ማያ ገጹ መጠን ድረስ ወደ ካሬ የቀረበ ቅርጽ ያድጋሉ</string>
     <string name="widget_freeform">የምግብር ነጻ አቀማመጥ</string>
-    <string name="widget_freeform_on">ምግብሮች ባስቀመጡበት ይቆያሉ እና የሰጧቸውን መጠን ይይዛሉ</string>
-    <string name="widget_freeform_off">ምግብሮች በመነሻ ማያ ገጹ ህዋሶች ውስጥ ይቀመጣሉ</string>
     <string name="widget_overlap">ምግብሮች እንዲደራረቡ ፍቀድ</string>
-    <string name="widget_overlap_on">ምግብሮች ህዋሶችን አይይዙም እና በአዶዎች እና በሌሎች ምግብሮች ላይ ይቀመጣሉ</string>
-    <string name="widget_overlap_off">ምግብሮች በራሳቸው ህዋሶች ውስጥ ይቆያሉ</string>
-    <string name="widget_overlap_off_title">መደራረብን ማጥፋት?</string>
-    <string name="widget_overlap_off_message">በሌሎች ነገሮች ላይ የሚገኙ ምግብሮች ወደ ቅርብ ነጻ ቦታ ይሄዳሉ፤ ቦታ የሌለው ምግብ ይወገዳል።</string>
     <string name="autostart_apps_summary_fyt">በስርዓቱ የራስ-ጀምር ባህሪ የሚጀምሩ መተግበሪያዎች የማስጀመሪያውን ጅምር ሊያዘገዩ ይችላሉ። የማስጀመሪያው አብሮ የተሰራ አማራጭ ማስጀመሪያው ቀዝቃዛ ጅምሩን ካጠናቀቀ በኋላ ብቻ ያስጀምራቸዋል። ይህን ዝርዝር ሲጠቀሙ እነዚህን መተግበሪያዎች በFYT ቅንብሮች እና በራስ-ሰር እንዲጀምሩ በተዘጋጁበት ሌላ ቦታ ሁሉ ማጥፋትዎን ያስታውሱ፤ አለበለዚያ ሁለት ጊዜ ይጀምራሉ።</string>
     <string name="autostart_apps_summary_other">በስርዓቱ የራስ-ጀምር ባህሪ የሚጀምሩ መተግበሪያዎች የማስጀመሪያውን ጅምር ሊያዘገዩ ይችላሉ። የማስጀመሪያው አብሮ የተሰራ አማራጭ ማስጀመሪያው ቀዝቃዛ ጅምሩን ካጠናቀቀ በኋላ ብቻ ያስጀምራቸዋል። ይህን ዝርዝር ሲጠቀሙ ለእነዚህ መተግበሪያዎች ራስ-ሰር ጅምርን በበራበት ሌላ ቦታ ሁሉ ማጥፋትዎን ያስታውሱ፤ አለበለዚያ ሁለት ጊዜ ይጀምራሉ።</string>
     <string name="autostart_apps_by_boot_completed_summary">ለ“ሲነሳ ጀምር” እና ለ“ሲነቃ ጀምር” ይሠራል</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">ላይ</string>
     <string name="drawer_tab_bar_bottom">ታች</string>
     <string name="display_vertical_bar">ቀጥ ያለ አሞሌን አሳይ</string>
+    <string name="folder_follow_grid_on">አቃፊዎች አዶዎችን በመነሻ ማያ ገጹ ረድፎች እና ዓምዶች ያደራጃሉ</string>
+    <string name="folder_follow_grid_off">አቃፊዎች የራሳቸውን ፍርግርግ ይጠቀማሉ</string>
+    <string name="widget_freeform_on">ምግብሮች ከፍርግርጉ ተለይተው በነጻነት ሊንቀሳቀሱ እና መጠናቸው ሊቀየር ይችላል</string>
+    <string name="widget_freeform_off">ምግብሮች ከመነሻ ማያ ገጹ ፍርግርግ ጋር ይጣመራሉ</string>
+    <string name="widget_overlap_on">ምግብሮች አዶዎችን እና ሌሎች ምግብሮችን ሊሸፍኑ ይችላሉ</string>
+    <string name="widget_overlap_off">ምግብሮች በነጻ ህዋሶች ውስጥ ይቆያሉ</string>
+    <string name="widget_overlap_off_title">ምግብሮችን ከፍርግርጉ ጋር ልታስማማ?</string>
+    <string name="widget_overlap_off_message">አንዳንድ ምግብሮች ከፍርግርጉ ጋር ላይስማሙ ይችላሉ። ሊቀመጡ የማይችሉ ምግብሮች ከመነሻ ማያ ገጹ ይወገዳሉ።</string>
 </resources>

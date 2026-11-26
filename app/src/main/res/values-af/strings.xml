@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Kies agtergrond vir vouers</string>
     <string name="folders_background_dialog_title">Kies agtergrond vir vouers:</string>
     <string name="folder_follow_grid">Volg tuisskerm-rooster binne vouers</string>
-    <string name="folder_follow_grid_on">Vouers gebruik die tuisskerm se kolomme en soveel rye as wat hulle nodig het</string>
-    <string name="folder_follow_grid_off">Vouers groei amper vierkantig, tot die grootte van die tuisskerm</string>
     <string name="widget_freeform">Vrye plasing van legstukke</string>
-    <string name="widget_freeform_on">Legstukke bly waar jy hulle sit en kry die grootte wat jy gee</string>
-    <string name="widget_freeform_off">Legstukke word in die selle van die tuisskerm geplaas</string>
     <string name="widget_overlap">Laat legstukke oorvleuel</string>
-    <string name="widget_overlap_on">Legstukke neem geen selle in en lê oor ikone en ander legstukke</string>
-    <string name="widget_overlap_off">Legstukke bly in hul eie selle</string>
-    <string name="widget_overlap_off_title">Skakel oorvleueling af?</string>
-    <string name="widget_overlap_off_message">Legstukke wat oor ander items lê, skuif na die naaste vrye plek van hul grootte; \'n legstuk sonder ruimte word verwyder.</string>
     <string name="autostart_apps_summary_fyt">Programme wat deur die stelsel se outostart-funksie begin word, kan die lanseerder se opstart vertraag. Die lanseerder se ingeboude opsie begin hulle eers nadat die lanseerder sy koue begin voltooi het. Onthou wanneer jy hierdie lys gebruik om hierdie programme in die FYT-instellings en enige ander plek waar hulle outomaties begin, af te skakel; anders word hulle twee keer begin.</string>
     <string name="autostart_apps_summary_other">Programme wat deur die stelsel se outostart-funksie begin word, kan die lanseerder se opstart vertraag. Die lanseerder se ingeboude opsie begin hulle eers nadat die lanseerder sy koue begin voltooi het. Onthou wanneer jy hierdie lys gebruik om outomatiese begin vir hierdie programme op enige ander plek waar dit aan is, af te skakel; anders word hulle twee keer begin.</string>
     <string name="autostart_apps_by_boot_completed_summary">Geld vir “Begin by opstart” en “Begin by ontwaking”</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Bo</string>
     <string name="drawer_tab_bar_bottom">Onder</string>
     <string name="display_vertical_bar">Wys vertikale balk</string>
+    <string name="folder_follow_grid_on">Vouers rangskik ikone in die tuisskerm se rye en kolomme</string>
+    <string name="folder_follow_grid_off">Vouers gebruik hul eie rooster</string>
+    <string name="widget_freeform_on">Legstukke kan vryelik verskuif en van grootte verander word, onafhanklik van die rooster</string>
+    <string name="widget_freeform_off">Legstukke pas by die tuisskerm se rooster</string>
+    <string name="widget_overlap_on">Legstukke mag ikone en ander legstukke bedek</string>
+    <string name="widget_overlap_off">Legstukke hou by vrye selle</string>
+    <string name="widget_overlap_off_title">Pas legstukke by die rooster?</string>
+    <string name="widget_overlap_off_message">Sommige legstukke pas dalk nie by die rooster nie. Legstukke wat nie geplaas kan word nie, sal van die tuisskerm verwyder word.</string>
 </resources>

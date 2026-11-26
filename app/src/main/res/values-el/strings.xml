@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Επιλογή φόντου για φακέλους</string>
     <string name="folders_background_dialog_title">Επιλέξτε φόντο για φακέλους:</string>
     <string name="folder_follow_grid">Ακολούθηση του πλέγματος της αρχικής οθόνης στους φακέλους</string>
-    <string name="folder_follow_grid_on">Οι φάκελοι χρησιμοποιούν τις στήλες της αρχικής οθόνης και όσες γραμμές χρειάζονται</string>
-    <string name="folder_follow_grid_off">Οι φάκελοι μεγαλώνουν σχεδόν τετράγωνοι, έως το μέγεθος της αρχικής οθόνης</string>
     <string name="widget_freeform">Ελεύθερη τοποθέτηση widget</string>
-    <string name="widget_freeform_on">Τα widget μένουν εκεί που τα βάζετε και παίρνουν το μέγεθος που τους δίνετε</string>
-    <string name="widget_freeform_off">Τα widget τοποθετούνται στα κελιά της αρχικής οθόνης</string>
     <string name="widget_overlap">Να επικαλύπτονται τα widget</string>
-    <string name="widget_overlap_on">Τα widget δεν καταλαμβάνουν κελιά και βρίσκονται πάνω από εικονίδια και άλλα widget</string>
-    <string name="widget_overlap_off">Τα widget μένουν στα δικά τους κελιά</string>
-    <string name="widget_overlap_off_title">Απενεργοποίηση επικάλυψης;</string>
-    <string name="widget_overlap_off_message">Τα widget πάνω από άλλα στοιχεία μετακινούνται στην πλησιέστερη ελεύθερη θέση του μεγέθους τους· ένα widget χωρίς χώρο αφαιρείται.</string>
     <string name="autostart_apps_summary_fyt">Οι εφαρμογές που εκκινούνται από τη λειτουργία αυτόματης εκκίνησης του συστήματος μπορεί να επιβραδύνουν την εκκίνηση του launcher. Η ενσωματωμένη επιλογή του launcher τις εκκινεί μόνο αφού ο launcher ολοκληρώσει την ψυχρή εκκίνησή του. Όταν χρησιμοποιείτε αυτή τη λίστα, θυμηθείτε να απενεργοποιήσετε αυτές τις εφαρμογές στις ρυθμίσεις FYT και σε κάθε άλλο σημείο όπου έχουν οριστεί να ξεκινούν αυτόματα· διαφορετικά θα εκκινηθούν δύο φορές.</string>
     <string name="autostart_apps_summary_other">Οι εφαρμογές που εκκινούνται από τη λειτουργία αυτόματης εκκίνησης του συστήματος μπορεί να επιβραδύνουν την εκκίνηση του launcher. Η ενσωματωμένη επιλογή του launcher τις εκκινεί μόνο αφού ο launcher ολοκληρώσει την ψυχρή εκκίνησή του. Όταν χρησιμοποιείτε αυτή τη λίστα, θυμηθείτε να απενεργοποιήσετε την αυτόματη εκκίνηση αυτών των εφαρμογών σε κάθε άλλο σημείο όπου είναι ενεργή· διαφορετικά θα εκκινηθούν δύο φορές.</string>
     <string name="autostart_apps_by_boot_completed_summary">Ισχύει για την «Εκκίνηση κατά την ενεργοποίηση» και την «Εκκίνηση κατά την αφύπνιση»</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Επάνω</string>
     <string name="drawer_tab_bar_bottom">Κάτω</string>
     <string name="display_vertical_bar">Εμφάνιση κάθετης γραμμής</string>
+    <string name="folder_follow_grid_on">Οι φάκελοι τακτοποιούν τα εικονίδια στις γραμμές και στήλες της αρχικής οθόνης</string>
+    <string name="folder_follow_grid_off">Οι φάκελοι χρησιμοποιούν το δικό τους πλέγμα</string>
+    <string name="widget_freeform_on">Τα widget μπορούν να μετακινούνται και να αλλάζουν μέγεθος ελεύθερα, ανεξάρτητα από το πλέγμα</string>
+    <string name="widget_freeform_off">Τα widget προσκολλώνται στο πλέγμα της αρχικής οθόνης</string>
+    <string name="widget_overlap_on">Τα widget μπορούν να καλύπτουν εικονίδια και άλλα widget</string>
+    <string name="widget_overlap_off">Τα widget μένουν σε ελεύθερα κελιά</string>
+    <string name="widget_overlap_off_title">Προσαρμογή των widget στο πλέγμα;</string>
+    <string name="widget_overlap_off_message">Ορισμένα widget μπορεί να μην χωρούν στο πλέγμα. Τα widget που δεν μπορούν να τοποθετηθούν θα αφαιρεθούν από την αρχική οθόνη.</string>
 </resources>

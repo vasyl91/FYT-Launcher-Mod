@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Kies achtergrond voor mappen</string>
     <string name="folders_background_dialog_title">Selecteer de achtergrond voor mappen:</string>
     <string name="folder_follow_grid">Raster van het startscherm volgen in mappen</string>
-    <string name="folder_follow_grid_on">Mappen gebruiken de kolommen van het startscherm en zoveel rijen als nodig</string>
-    <string name="folder_follow_grid_off">Mappen groeien bijna vierkant, tot de grootte van het startscherm</string>
     <string name="widget_freeform">Widgets vrij plaatsen</string>
-    <string name="widget_freeform_on">Widgets blijven waar u ze neerzet en krijgen de grootte die u opgeeft</string>
-    <string name="widget_freeform_off">Widgets worden in de cellen van het startscherm geplaatst</string>
     <string name="widget_overlap">Widgets mogen overlappen</string>
-    <string name="widget_overlap_on">Widgets nemen geen cellen in en liggen boven pictogrammen en andere widgets</string>
-    <string name="widget_overlap_off">Widgets blijven in hun eigen cellen</string>
-    <string name="widget_overlap_off_title">Overlappen uitschakelen?</string>
-    <string name="widget_overlap_off_message">Widgets boven andere items verschuiven naar de dichtstbijzijnde vrije plek van hun formaat; een widget zonder plek wordt verwijderd.</string>
     <string name="autostart_apps_summary_fyt">Apps die door de autostartfunctie van het systeem worden gestart, kunnen het opstarten van de launcher vertragen. De ingebouwde optie van de launcher start ze pas nadat de launcher zijn koude start heeft voltooid. Vergeet bij het gebruik van deze lijst niet deze apps uit te schakelen in de FYT-instellingen en overal elders waar ze automatisch worden gestart; anders worden ze twee keer gestart.</string>
     <string name="autostart_apps_summary_other">Apps die door de autostartfunctie van het systeem worden gestart, kunnen het opstarten van de launcher vertragen. De ingebouwde optie van de launcher start ze pas nadat de launcher zijn koude start heeft voltooid. Vergeet bij het gebruik van deze lijst niet het automatisch starten van deze apps uit te schakelen overal elders waar het is ingeschakeld; anders worden ze twee keer gestart.</string>
     <string name="autostart_apps_by_boot_completed_summary">Geldt voor “Starten bij opstarten” en “Starten bij ontwaken”</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Boven</string>
     <string name="drawer_tab_bar_bottom">Onder</string>
     <string name="display_vertical_bar">Verticale balk weergeven</string>
+    <string name="folder_follow_grid_on">Mappen rangschikken pictogrammen in de rijen en kolommen van het startscherm</string>
+    <string name="folder_follow_grid_off">Mappen gebruiken hun eigen raster</string>
+    <string name="widget_freeform_on">Widgets kunnen vrij worden verplaatst en van grootte veranderd, los van het raster</string>
+    <string name="widget_freeform_off">Widgets klikken vast op het raster van het startscherm</string>
+    <string name="widget_overlap_on">Widgets mogen pictogrammen en andere widgets bedekken</string>
+    <string name="widget_overlap_off">Widgets blijven in vrije cellen</string>
+    <string name="widget_overlap_off_title">Widgets aan het raster aanpassen?</string>
+    <string name="widget_overlap_off_message">Sommige widgets passen mogelijk niet in het raster. Widgets die niet geplaatst kunnen worden, worden van het startscherm verwijderd.</string>
 </resources>

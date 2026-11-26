@@ -578,16 +578,8 @@
     <string name="folders_background_preference">폴더 배경 선택</string>
     <string name="folders_background_dialog_title">폴더 배경을 선택하세요:</string>
     <string name="folder_follow_grid">폴더 안에서 홈 화면 격자 따르기</string>
-    <string name="folder_follow_grid_on">폴더는 홈 화면의 열 수를 쓰고 필요한 만큼 행이 늘어납니다</string>
-    <string name="folder_follow_grid_off">폴더는 홈 화면 크기까지 거의 정사각형으로 커집니다</string>
     <string name="widget_freeform">위젯 자유 배치</string>
-    <string name="widget_freeform_on">위젯은 놓은 자리에 머무르고 지정한 크기가 됩니다</string>
-    <string name="widget_freeform_off">위젯은 홈 화면의 칸에 배치됩니다</string>
     <string name="widget_overlap">위젯 겹침 허용</string>
-    <string name="widget_overlap_on">위젯은 칸을 차지하지 않고 아이콘과 다른 위젯 위에 놓입니다</string>
-    <string name="widget_overlap_off">위젯은 각자의 칸 안에 있습니다</string>
-    <string name="widget_overlap_off_title">겹침을 끌까요?</string>
-    <string name="widget_overlap_off_message">다른 항목 위에 있는 위젯은 크기에 맞는 가장 가까운 빈 자리로 옮겨지고, 자리가 없는 위젯은 삭제됩니다.</string>
     <string name="autostart_apps_summary_fyt">시스템의 자동 시작 기능으로 실행되는 앱은 런처의 시작을 느리게 할 수 있습니다. 런처의 내장 옵션은 런처가 콜드 스타트를 마친 뒤에야 앱을 실행합니다. 이 목록을 사용할 때는 이 앱들을 FYT 설정과 자동으로 시작하도록 설정된 다른 모든 곳에서 꺼 두세요. 그렇지 않으면 두 번 실행됩니다.</string>
     <string name="autostart_apps_summary_other">시스템의 자동 시작 기능으로 실행되는 앱은 런처의 시작을 느리게 할 수 있습니다. 런처의 내장 옵션은 런처가 콜드 스타트를 마친 뒤에야 앱을 실행합니다. 이 목록을 사용할 때는 이 앱들의 자동 시작을 켜져 있는 다른 모든 곳에서 꺼 두세요. 그렇지 않으면 두 번 실행됩니다.</string>
     <string name="autostart_apps_by_boot_completed_summary">“부팅 시 시작”과 “절전 해제 시 시작”에 적용됩니다</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">위쪽</string>
     <string name="drawer_tab_bar_bottom">아래쪽</string>
     <string name="display_vertical_bar">세로 바 표시</string>
+    <string name="folder_follow_grid_on">폴더는 아이콘을 홈 화면의 행과 열에 맞춰 배치합니다</string>
+    <string name="folder_follow_grid_off">폴더는 자체 격자를 사용합니다</string>
+    <string name="widget_freeform_on">위젯을 격자와 상관없이 자유롭게 옮기고 크기를 바꿀 수 있습니다</string>
+    <string name="widget_freeform_off">위젯이 홈 화면 격자에 맞춰집니다</string>
+    <string name="widget_overlap_on">위젯이 아이콘과 다른 위젯을 덮을 수 있습니다</string>
+    <string name="widget_overlap_off">위젯은 비어 있는 칸에만 놓입니다</string>
+    <string name="widget_overlap_off_title">위젯을 격자에 맞출까요?</string>
+    <string name="widget_overlap_off_message">일부 위젯은 격자에 맞지 않을 수 있습니다. 배치할 수 없는 위젯은 홈 화면에서 제거됩니다.</string>
 </resources>

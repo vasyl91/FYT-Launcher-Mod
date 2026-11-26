@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Tscherner il fund da las cartellas</string>
     <string name="folders_background_dialog_title">Tscherner il fund per las cartellas:</string>
     <string name="folder_follow_grid">Suandar la rasté da la surfatscha da partenza en las cartellas</string>
-    <string name="folder_follow_grid_on">Las cartellas utiliseschan las colonnas da la surfatscha da partenza e las lingias necessarias</string>
-    <string name="folder_follow_grid_off">Las cartellas creschan memia quadraticamain, fin a la grondezza da la surfatscha da partenza</string>
     <string name="widget_freeform">Placazion libra dals widgets</string>
-    <string name="widget_freeform_on">Ils widgets restan nua che ti als metta e prendan la grondezza che ti dastgas</string>
-    <string name="widget_freeform_off">Ils widgets vegnan messas en las cellas da la surfatscha da partenza</string>
     <string name="widget_overlap">Lubir che ils widgets sa surlappan</string>
-    <string name="widget_overlap_on">Ils widgets n\'occupeschan nagina cella e èn sur ils simbols ed auters widgets</string>
-    <string name="widget_overlap_off">Ils widgets restan en lur atgnas cellas</string>
-    <string name="widget_overlap_off_title">Deactivar la surlappaziun?</string>
-    <string name="widget_overlap_off_message">Ils widgets sur auters elements van sin il plaz liber il pli datiers da lur grondezza; in widget senza plaz vegn allontanà.</string>
     <string name="autostart_apps_summary_fyt">Las applicaziuns che la funcziun d\'autostart dal sistem lantscha pon retardar l\'avertura dal launcher. L\'opziun integrada dal launcher las lantscha mo suenter che il launcher ha terminà sia partenza a fraid. Cura che ti utiliseschas questa glista, regorda da deactivar questas applicaziuns en las parameters FYT e en mintga auter lieu nua ch\'ellas èn definidas per partir automaticamain; uschiglio vegnan ellas lantschadas duas giadas.</string>
     <string name="autostart_apps_summary_other">Las applicaziuns che la funcziun d\'autostart dal sistem lantscha pon retardar l\'avertura dal launcher. L\'opziun integrada dal launcher las lantscha mo suenter che il launcher ha terminà sia partenza a fraid. Cura che ti utiliseschas questa glista, regorda da deactivar l\'autostart da questas applicaziuns en mintga auter lieu nua ch\'el è activà; uschiglio vegnan ellas lantschadas duas giadas.</string>
     <string name="autostart_apps_by_boot_completed_summary">Valaiv per «Lantschar a l\'enviada» e «Lantschar al dasdar»</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Sura</string>
     <string name="drawer_tab_bar_bottom">Sut</string>
     <string name="display_vertical_bar">Mussar la bara verticala</string>
+    <string name="folder_follow_grid_on">Las cartellas ordineschan ils simbols en las lingias e colonnas da la surfatscha da partenza</string>
+    <string name="folder_follow_grid_off">Las cartellas utiliseschan lur agen rasté</string>
+    <string name="widget_freeform_on">Ils widgets pon vegnir spustads e midads en la grondezza libramain, independentamain da la rasté</string>
+    <string name="widget_freeform_off">Ils widgets s\'adattan a la rasté da la surfatscha da partenza</string>
+    <string name="widget_overlap_on">Ils widgets pon cuvrir simbols ed auters widgets</string>
+    <string name="widget_overlap_off">Ils widgets restan en cellas libras</string>
+    <string name="widget_overlap_off_title">Adattar ils widgets a la rasté?</string>
+    <string name="widget_overlap_off_message">Intgins widgets na pon forsa betg star en la rasté. Ils widgets che na pon betg vegnir messs vegnan allontanads da la surfatscha da partenza.</string>
 </resources>

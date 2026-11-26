@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Vali kaustade taust</string>
     <string name="folders_background_dialog_title">Valige kaustade taust:</string>
     <string name="folder_follow_grid">Kasuta kaustades avakuva ruudustikku</string>
-    <string name="folder_follow_grid_on">Kaustad kasutavad avakuva veerge ja vajalikku arvu ridu</string>
-    <string name="folder_follow_grid_off">Kaustad kasvavad peaaegu ruudukujuliseks avakuva suuruseni</string>
     <string name="widget_freeform">Vidinate vaba paigutus</string>
-    <string name="widget_freeform_on">Vidinad jäävad sinna, kuhu need panete, ja saavad määratud suuruse</string>
-    <string name="widget_freeform_off">Vidinad paigutatakse avakuva lahtritesse</string>
     <string name="widget_overlap">Luba vidinatel kattuda</string>
-    <string name="widget_overlap_on">Vidinad ei võta lahtreid ja asuvad ikoonide ja teiste vidinate peal</string>
-    <string name="widget_overlap_off">Vidinad jäävad oma lahtritesse</string>
-    <string name="widget_overlap_off_title">Lülitada kattumine välja?</string>
-    <string name="widget_overlap_off_message">Teiste elementide peal olevad vidinad liiguvad lähimasse sama suurusega vabasse kohta; vidin, millele ruumi pole, eemaldatakse.</string>
     <string name="autostart_apps_summary_fyt">Süsteemi automaatkäivituse funktsiooni kaudu käivitatud rakendused võivad launcheri käivitamist aeglustada. Launcheri sisseehitatud valik käivitab need alles pärast launcheri külmkäivituse lõppu. Selle loendi kasutamisel pidage meeles need rakendused FYT seadetes ja kõikjal mujal, kus need automaatselt käivituvad, välja lülitada; muidu käivituvad need kaks korda.</string>
     <string name="autostart_apps_summary_other">Süsteemi automaatkäivituse funktsiooni kaudu käivitatud rakendused võivad launcheri käivitamist aeglustada. Launcheri sisseehitatud valik käivitab need alles pärast launcheri külmkäivituse lõppu. Selle loendi kasutamisel pidage meeles lülitada nende rakenduste automaatkäivitus välja kõikjal mujal, kus see on sisse lülitatud; muidu käivituvad need kaks korda.</string>
     <string name="autostart_apps_by_boot_completed_summary">Kehtib valikutele „Käivita käivitumisel“ ja „Käivita ärkamisel“</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Ülal</string>
     <string name="drawer_tab_bar_bottom">All</string>
     <string name="display_vertical_bar">Kuva vertikaalne riba</string>
+    <string name="folder_follow_grid_on">Kaustad paigutavad ikoonid avakuva ridadesse ja veergudesse</string>
+    <string name="folder_follow_grid_off">Kaustad kasutavad oma ruudustikku</string>
+    <string name="widget_freeform_on">Vidinaid saab vabalt liigutada ja nende suurust muuta ruudustikust sõltumatult</string>
+    <string name="widget_freeform_off">Vidinad joonduvad avakuva ruudustikule</string>
+    <string name="widget_overlap_on">Vidinad võivad katta ikoone ja teisi vidinaid</string>
+    <string name="widget_overlap_off">Vidinad jäävad vabadesse lahtritesse</string>
+    <string name="widget_overlap_off_title">Kas sobitada vidinad ruudustikuga?</string>
+    <string name="widget_overlap_off_message">Mõned vidinad ei pruugi ruudustikku mahtuda. Vidinad, mida ei saa paigutada, eemaldatakse avakuvalt.</string>
 </resources>

@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Ընտրեք թղթապանակների ֆոնը</string>
     <string name="folders_background_dialog_title">Ընտրեք թղթապանակների ֆոնը՝</string>
     <string name="folder_follow_grid">Թղթապանակներում օգտագործել գլխավոր էկրանի ցանցը</string>
-    <string name="folder_follow_grid_on">Թղթապանակները օգտագործում են գլխավոր էկրանի սյունակները և անհրաժեշտ թվով տողեր</string>
-    <string name="folder_follow_grid_off">Թղթապանակները աճում են գրեթե քառակուսի՝ մինչև գլխավոր էկրանի չափը</string>
     <string name="widget_freeform">Վիջեթների ազատ տեղադրում</string>
-    <string name="widget_freeform_on">Վիջեթները մնում են այնտեղ, որտեղ դնում եք, և ստանում են ձեր տված չափը</string>
-    <string name="widget_freeform_off">Վիջեթները տեղադրվում են գլխավոր էկրանի վանդակներում</string>
     <string name="widget_overlap">Թույլ տալ վիջեթների համընկնումը</string>
-    <string name="widget_overlap_on">Վիջեթները վանդակներ չեն զբաղեցնում և դրվում են պատկերակների ու այլ վիջեթների վրա</string>
-    <string name="widget_overlap_off">Վիջեթները մնում են իրենց վանդակներում</string>
-    <string name="widget_overlap_off_title">Անջատե՞լ համընկնումը</string>
-    <string name="widget_overlap_off_message">Այլ տարրերի վրա գտնվող վիջեթները տեղափոխվում են իրենց չափի ամենամոտ ազատ տեղը․ տեղ չունեցող վիջեթը հեռացվում է։</string>
     <string name="autostart_apps_summary_fyt">Համակարգի ինքնագործարկման գործառույթով գործարկվող հավելվածները կարող են դանդաղեցնել լաունչերի գործարկումը։ Լաունչերի ներկառուցված տարբերակը դրանք գործարկում է միայն այն բանից հետո, երբ լաունչերն ավարտել է իր սառը գործարկումը։ Այս ցանկն օգտագործելիս մի մոռացեք անջատել այս հավելվածները FYT-ի կարգավորումներում և ամենուր, որտեղ դրանք ավտոմատ գործարկվելու են սահմանված. հակառակ դեպքում դրանք կգործարկվեն երկու անգամ։</string>
     <string name="autostart_apps_summary_other">Համակարգի ինքնագործարկման գործառույթով գործարկվող հավելվածները կարող են դանդաղեցնել լաունչերի գործարկումը։ Լաունչերի ներկառուցված տարբերակը դրանք գործարկում է միայն այն բանից հետո, երբ լաունչերն ավարտել է իր սառը գործարկումը։ Այս ցանկն օգտագործելիս մի մոռացեք անջատել այս հավելվածների ավտոմատ գործարկումը ամենուր, որտեղ այն միացված է. հակառակ դեպքում դրանք կգործարկվեն երկու անգամ։</string>
     <string name="autostart_apps_by_boot_completed_summary">Վերաբերում է «Գործարկել միացնելիս» և «Գործարկել արթնանալիս» տարբերակներին</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Վերևում</string>
     <string name="drawer_tab_bar_bottom">Ներքևում</string>
     <string name="display_vertical_bar">Ցուցադրել ուղղահայաց գոտին</string>
+    <string name="folder_follow_grid_on">Թղթապանակները պատկերակները դասավորում են գլխավոր էկրանի տողերով և սյունակներով</string>
+    <string name="folder_follow_grid_off">Թղթապանակներն օգտագործում են իրենց սեփական ցանցը</string>
+    <string name="widget_freeform_on">Վիջեթները կարելի է ազատ տեղափոխել և չափը փոխել՝ անկախ ցանցից</string>
+    <string name="widget_freeform_off">Վիջեթները կպչում են գլխավոր էկրանի ցանցին</string>
+    <string name="widget_overlap_on">Վիջեթները կարող են ծածկել պատկերակները և այլ վիջեթներ</string>
+    <string name="widget_overlap_off">Վիջեթները մնում են ազատ վանդակներում</string>
+    <string name="widget_overlap_off_title">Տեղավորե՞լ վիջեթները ցանցում</string>
+    <string name="widget_overlap_off_message">ոմանք վիջեթներ կարող է չտեղավորվեն ցանցում։ Վիջեթները, որոնք հնարավոր չէ տեղադրել, կհեռացվեն գլխավոր էկրանից։</string>
 </resources>

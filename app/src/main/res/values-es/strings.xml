@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Elegir fondo para carpetas</string>
     <string name="folders_background_dialog_title">Selecciona el fondo de las carpetas:</string>
     <string name="folder_follow_grid">Seguir la cuadrícula de la pantalla de inicio en las carpetas</string>
-    <string name="folder_follow_grid_on">Las carpetas usan las columnas de la pantalla de inicio y las filas que necesiten</string>
-    <string name="folder_follow_grid_off">Las carpetas crecen casi cuadradas, hasta el tamaño de la pantalla de inicio</string>
     <string name="widget_freeform">Colocación libre de widgets</string>
-    <string name="widget_freeform_on">Los widgets se quedan donde los pones y toman el tamaño que les das</string>
-    <string name="widget_freeform_off">Los widgets se colocan en las celdas de la pantalla de inicio</string>
     <string name="widget_overlap">Permitir que los widgets se superpongan</string>
-    <string name="widget_overlap_on">Los widgets no ocupan celdas y quedan sobre iconos y otros widgets</string>
-    <string name="widget_overlap_off">Los widgets se quedan en sus propias celdas</string>
-    <string name="widget_overlap_off_title">¿Desactivar la superposición?</string>
-    <string name="widget_overlap_off_message">Los widgets sobre otros elementos pasan al hueco libre más cercano de su tamaño; un widget sin sitio se elimina.</string>
     <string name="autostart_apps_summary_fyt">Las aplicaciones que inicia la función de inicio automático del sistema pueden ralentizar el arranque del launcher. La opción integrada del launcher solo las inicia cuando el launcher ha terminado su arranque en frío. Al usar esta lista, recuerda desactivar estas aplicaciones en los ajustes de FYT y en cualquier otro lugar donde estén configuradas para iniciarse automáticamente; de lo contrario, se iniciarán dos veces.</string>
     <string name="autostart_apps_summary_other">Las aplicaciones que inicia la función de inicio automático del sistema pueden ralentizar el arranque del launcher. La opción integrada del launcher solo las inicia cuando el launcher ha terminado su arranque en frío. Al usar esta lista, recuerda desactivar el inicio automático de estas aplicaciones en cualquier otro lugar donde esté activado; de lo contrario, se iniciarán dos veces.</string>
     <string name="autostart_apps_by_boot_completed_summary">Se aplica a «Iniciar al arrancar» e «Iniciar al despertar»</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Arriba</string>
     <string name="drawer_tab_bar_bottom">Abajo</string>
     <string name="display_vertical_bar">Mostrar barra vertical</string>
+    <string name="folder_follow_grid_on">Las carpetas organizan los iconos en las filas y columnas de la pantalla de inicio</string>
+    <string name="folder_follow_grid_off">Las carpetas usan su propia cuadrícula</string>
+    <string name="widget_freeform_on">Los widgets se pueden mover y redimensionar libremente, sin depender de la cuadrícula</string>
+    <string name="widget_freeform_off">Los widgets se ajustan a la cuadrícula de la pantalla de inicio</string>
+    <string name="widget_overlap_on">Los widgets pueden cubrir iconos y otros widgets</string>
+    <string name="widget_overlap_off">Los widgets se quedan en celdas libres</string>
+    <string name="widget_overlap_off_title">¿Ajustar los widgets a la cuadrícula?</string>
+    <string name="widget_overlap_off_message">Es posible que algunos widgets no quepan en la cuadrícula. Los widgets que no se puedan colocar se quitarán de la pantalla de inicio.</string>
 </resources>

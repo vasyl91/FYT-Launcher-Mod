@@ -578,16 +578,8 @@
     <string name="folders_background_preference">ເລືອກພື້ນຫຼັງສຳລັບແຟ້ມ</string>
     <string name="folders_background_dialog_title">ເລືອກພື້ນຫຼັງສຳລັບແຟ້ມ:</string>
     <string name="folder_follow_grid">ໃຊ້ຕາຕະລາງໜ້າຈໍຫຼັກໃນແຟ້ມ</string>
-    <string name="folder_follow_grid_on">ແຟ້ມໃຊ້ຖັນຂອງໜ້າຈໍຫຼັກ ແລະ ແຖວຕາມທີ່ຈຳເປັນ</string>
-    <string name="folder_follow_grid_off">ແຟ້ມຂະຫຍາຍເກືອບເປັນສີ່ຫຼ່ຽມ ຈົນເຖິງຂະໜາດໜ້າຈໍຫຼັກ</string>
     <string name="widget_freeform">ການວາງວິດເຈັດແບບອິດສະຫຼະ</string>
-    <string name="widget_freeform_on">ວິດເຈັດຢູ່ບ່ອນທີ່ທ່ານວາງ ແລະ ມີຂະໜາດຕາມທີ່ທ່ານກຳນົດ</string>
-    <string name="widget_freeform_off">ວິດເຈັດຖືກວາງໃນຊ່ອງຂອງໜ້າຈໍຫຼັກ</string>
     <string name="widget_overlap">ອະນຸຍາດໃຫ້ວິດເຈັດຊ້ອນກັນ</string>
-    <string name="widget_overlap_on">ວິດເຈັດບໍ່ຈອງຊ່ອງ ແລະ ວາງທັບໄອຄອນ ແລະ ວິດເຈັດອື່ນ</string>
-    <string name="widget_overlap_off">ວິດເຈັດຢູ່ໃນຊ່ອງຂອງຕົນເອງ</string>
-    <string name="widget_overlap_off_title">ປິດການຊ້ອນກັນບໍ?</string>
-    <string name="widget_overlap_off_message">ວິດເຈັດທີ່ຢູ່ເທິງລາຍການອື່ນຈະຍ້າຍໄປບ່ອນວ່າງໃກ້ສຸດທີ່ມີຂະໜາດເທົ່າກັນ; ວິດເຈັດທີ່ບໍ່ມີບ່ອນຈະຖືກລຶບ.</string>
     <string name="autostart_apps_summary_fyt">ແອັບທີ່ເລີ່ມໂດຍຄຸນສົມບັດເລີ່ມອັດຕະໂນມັດຂອງລະບົບອາດເຮັດໃຫ້ການເລີ່ມຂອງຕົວເປີດໜ້າຈໍຊ້າລົງ. ຕົວເລືອກໃນຕົວຂອງຕົວເປີດໜ້າຈໍຈະເລີ່ມມັນຫຼັງຈາກຕົວເປີດໜ້າຈໍເລີ່ມແບບເຢັນສຳເລັດແລ້ວເທົ່ານັ້ນ. ເມື່ອໃຊ້ລາຍການນີ້, ຢ່າລືມປິດແອັບເຫຼົ່ານີ້ໃນການຕັ້ງຄ່າ FYT ແລະ ທຸກບ່ອນອື່ນທີ່ຕັ້ງໃຫ້ເລີ່ມອັດຕະໂນມັດ; ບໍ່ດັ່ງນັ້ນມັນຈະຖືກເລີ່ມສອງຄັ້ງ.</string>
     <string name="autostart_apps_summary_other">ແອັບທີ່ເລີ່ມໂດຍຄຸນສົມບັດເລີ່ມອັດຕະໂນມັດຂອງລະບົບອາດເຮັດໃຫ້ການເລີ່ມຂອງຕົວເປີດໜ້າຈໍຊ້າລົງ. ຕົວເລືອກໃນຕົວຂອງຕົວເປີດໜ້າຈໍຈະເລີ່ມມັນຫຼັງຈາກຕົວເປີດໜ້າຈໍເລີ່ມແບບເຢັນສຳເລັດແລ້ວເທົ່ານັ້ນ. ເມື່ອໃຊ້ລາຍການນີ້, ຢ່າລືມປິດການເລີ່ມອັດຕະໂນມັດຂອງແອັບເຫຼົ່ານີ້ໃນທຸກບ່ອນອື່ນທີ່ເປີດຢູ່; ບໍ່ດັ່ງນັ້ນມັນຈະຖືກເລີ່ມສອງຄັ້ງ.</string>
     <string name="autostart_apps_by_boot_completed_summary">ໃຊ້ກັບ “ເລີ່ມເມື່ອເປີດເຄື່ອງ” ແລະ “ເລີ່ມເມື່ອປຸກ”</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">ເທິງ</string>
     <string name="drawer_tab_bar_bottom">ລຸ່ມ</string>
     <string name="display_vertical_bar">ສະແດງແຖບແນວຕັ້ງ</string>
+    <string name="folder_follow_grid_on">ແຟ້ມຈັດໄອຄອນຕາມແຖວ ແລະ ຖັນຂອງໜ້າຈໍຫຼັກ</string>
+    <string name="folder_follow_grid_off">ແຟ້ມໃຊ້ຕາຕະລາງຂອງຕົນເອງ</string>
+    <string name="widget_freeform_on">ສາມາດຍ້າຍ ແລະ ປ່ຽນຂະໜາດວິດເຈັດໄດ້ຢ່າງອິດສະຫຼະ ໂດຍບໍ່ຂຶ້ນກັບຕາຕະລາງ</string>
+    <string name="widget_freeform_off">ວິດເຈັດຕິດກັບຕາຕະລາງໜ້າຈໍຫຼັກ</string>
+    <string name="widget_overlap_on">ວິດເຈັດສາມາດທັບໄອຄອນ ແລະ ວິດເຈັດອື່ນໄດ້</string>
+    <string name="widget_overlap_off">ວິດເຈັດຢູ່ໃນຊ່ອງວ່າງ</string>
+    <string name="widget_overlap_off_title">ປັບວິດເຈັດໃຫ້ພໍດີກັບຕາຕະລາງບໍ?</string>
+    <string name="widget_overlap_off_message">ວິດເຈັດບາງອັນອາດບໍ່ພໍດີກັບຕາຕະລາງ. ວິດເຈັດທີ່ວາງບໍ່ໄດ້ຈະຖືກລຶບອອກຈາກໜ້າຈໍຫຼັກ.</string>
 </resources>

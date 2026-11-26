@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Chọn nền cho thư mục</string>
     <string name="folders_background_dialog_title">Chọn nền cho thư mục:</string>
     <string name="folder_follow_grid">Dùng lưới màn hình chính trong thư mục</string>
-    <string name="folder_follow_grid_on">Thư mục dùng số cột của màn hình chính và đủ số hàng cần thiết</string>
-    <string name="folder_follow_grid_off">Thư mục lớn dần gần như vuông, tối đa bằng cỡ màn hình chính</string>
     <string name="widget_freeform">Đặt widget tự do</string>
-    <string name="widget_freeform_on">Widget ở đúng chỗ bạn đặt và có kích thước bạn chọn</string>
-    <string name="widget_freeform_off">Widget được đặt trong các ô của màn hình chính</string>
     <string name="widget_overlap">Cho phép widget chồng lên nhau</string>
-    <string name="widget_overlap_on">Widget không chiếm ô và nằm trên biểu tượng và widget khác</string>
-    <string name="widget_overlap_off">Widget nằm trong ô của riêng nó</string>
-    <string name="widget_overlap_off_title">Tắt chồng lấn?</string>
-    <string name="widget_overlap_off_message">Widget nằm đè lên mục khác sẽ chuyển đến chỗ trống gần nhất cùng cỡ; widget không còn chỗ sẽ bị xóa.</string>
     <string name="autostart_apps_summary_fyt">Các ứng dụng được khởi chạy bởi tính năng tự khởi động của hệ thống có thể làm trình khởi chạy khởi động chậm hơn. Tùy chọn tích hợp của trình khởi chạy chỉ khởi chạy chúng sau khi trình khởi chạy hoàn tất khởi động nguội. Khi dùng danh sách này, hãy nhớ tắt các ứng dụng này trong cài đặt FYT và ở mọi nơi khác đã đặt chúng tự khởi động; nếu không chúng sẽ được khởi chạy hai lần.</string>
     <string name="autostart_apps_summary_other">Các ứng dụng được khởi chạy bởi tính năng tự khởi động của hệ thống có thể làm trình khởi chạy khởi động chậm hơn. Tùy chọn tích hợp của trình khởi chạy chỉ khởi chạy chúng sau khi trình khởi chạy hoàn tất khởi động nguội. Khi dùng danh sách này, hãy nhớ tắt tự khởi động của các ứng dụng này ở mọi nơi khác đang bật; nếu không chúng sẽ được khởi chạy hai lần.</string>
     <string name="autostart_apps_by_boot_completed_summary">Áp dụng cho “Chạy khi khởi động” và “Chạy khi thức dậy”</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Trên cùng</string>
     <string name="drawer_tab_bar_bottom">Dưới cùng</string>
     <string name="display_vertical_bar">Hiện thanh dọc</string>
+    <string name="folder_follow_grid_on">Thư mục sắp xếp biểu tượng theo hàng và cột của màn hình chính</string>
+    <string name="folder_follow_grid_off">Thư mục dùng lưới riêng</string>
+    <string name="widget_freeform_on">Có thể di chuyển và đổi kích thước widget tự do, không phụ thuộc vào lưới</string>
+    <string name="widget_freeform_off">Widget bám theo lưới của màn hình chính</string>
+    <string name="widget_overlap_on">Widget có thể che biểu tượng và widget khác</string>
+    <string name="widget_overlap_off">Widget nằm trong các ô trống</string>
+    <string name="widget_overlap_off_title">Căn widget theo lưới?</string>
+    <string name="widget_overlap_off_message">Một số widget có thể không vừa với lưới. Widget không thể đặt vào sẽ bị xóa khỏi màn hình chính.</string>
 </resources>

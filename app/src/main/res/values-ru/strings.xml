@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Выберите фон для папок</string>
     <string name="folders_background_dialog_title">Выберите фон для папок:</string>
     <string name="folder_follow_grid">Сетка главного экрана внутри папок</string>
-    <string name="folder_follow_grid_on">Папки используют столбцы главного экрана и столько строк, сколько нужно</string>
-    <string name="folder_follow_grid_off">Папки растут почти квадратом, до размера главного экрана</string>
     <string name="widget_freeform">Свободное размещение виджетов</string>
-    <string name="widget_freeform_on">Виджеты остаются там, где вы их поставили, и имеют заданный размер</string>
-    <string name="widget_freeform_off">Виджеты размещаются в ячейках главного экрана</string>
     <string name="widget_overlap">Разрешить виджетам перекрываться</string>
-    <string name="widget_overlap_on">Виджеты не занимают ячейки и лежат поверх значков и других виджетов</string>
-    <string name="widget_overlap_off">Виджеты остаются в своих ячейках</string>
-    <string name="widget_overlap_off_title">Отключить перекрытие?</string>
-    <string name="widget_overlap_off_message">Виджеты поверх других элементов переместятся на ближайшее свободное место своего размера; виджет, которому не хватило места, будет удалён.</string>
     <string name="autostart_apps_summary_fyt">Приложения, запускаемые функцией автозапуска системы, могут замедлить запуск лаунчера. Встроенная опция лаунчера запускает их только после завершения холодного старта лаунчера. При использовании этого списка не забудьте отключить эти приложения в настройках FYT и везде, где для них включён автозапуск; иначе они запустятся дважды.</string>
     <string name="autostart_apps_summary_other">Приложения, запускаемые функцией автозапуска системы, могут замедлить запуск лаунчера. Встроенная опция лаунчера запускает их только после завершения холодного старта лаунчера. При использовании этого списка не забудьте отключить автозапуск этих приложений везде, где он включён; иначе они запустятся дважды.</string>
     <string name="autostart_apps_by_boot_completed_summary">Действует для «Запуск при включении» и «Запуск при пробуждении»</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Сверху</string>
     <string name="drawer_tab_bar_bottom">Снизу</string>
     <string name="display_vertical_bar">Показывать вертикальную панель</string>
+    <string name="folder_follow_grid_on">Папки располагают значки по строкам и столбцам главного экрана</string>
+    <string name="folder_follow_grid_off">Папки используют собственную сетку</string>
+    <string name="widget_freeform_on">Виджеты можно свободно перемещать и менять их размер независимо от сетки</string>
+    <string name="widget_freeform_off">Виджеты привязываются к сетке главного экрана</string>
+    <string name="widget_overlap_on">Виджеты могут перекрывать значки и другие виджеты</string>
+    <string name="widget_overlap_off">Виджеты остаются в свободных ячейках</string>
+    <string name="widget_overlap_off_title">Подогнать виджеты под сетку?</string>
+    <string name="widget_overlap_off_message">Некоторые виджеты могут не поместиться в сетку. Виджеты, которые нельзя разместить, будут удалены с главного экрана.</string>
 </resources>

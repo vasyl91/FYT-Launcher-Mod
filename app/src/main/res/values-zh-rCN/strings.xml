@@ -578,16 +578,8 @@
     <string name="folders_background_preference">选择文件夹背景</string>
     <string name="folders_background_dialog_title">选择文件夹的背景：</string>
     <string name="folder_follow_grid">文件夹内沿用主屏幕网格</string>
-    <string name="folder_follow_grid_on">文件夹使用主屏幕的列数，并按需增加行数</string>
-    <string name="folder_follow_grid_off">文件夹近似正方形增长，最大为主屏幕大小</string>
     <string name="widget_freeform">自由放置小部件</string>
-    <string name="widget_freeform_on">小部件停留在您放置的位置，并采用您设定的大小</string>
-    <string name="widget_freeform_off">小部件放置在主屏幕的网格中</string>
     <string name="widget_overlap">允许小部件重叠</string>
-    <string name="widget_overlap_on">小部件不占用网格，可覆盖在图标和其他小部件之上</string>
-    <string name="widget_overlap_off">小部件保持在各自的网格内</string>
-    <string name="widget_overlap_off_title">关闭重叠？</string>
-    <string name="widget_overlap_off_message">重叠在其他项目上的小部件会移到最近的同尺寸空位；没有空位的小部件将被删除。</string>
     <string name="autostart_apps_summary_fyt">系统自启动功能启动的应用可能会拖慢启动器的启动。启动器的内置选项只会在启动器完成冷启动之后才启动它们。使用此列表时，请记得在 FYT 设置以及其他所有设置了自动启动的地方关闭这些应用；否则它们会被启动两次。</string>
     <string name="autostart_apps_summary_other">系统自启动功能启动的应用可能会拖慢启动器的启动。启动器的内置选项只会在启动器完成冷启动之后才启动它们。使用此列表时，请记得在其他所有开启了自动启动的地方关闭这些应用的自动启动；否则它们会被启动两次。</string>
     <string name="autostart_apps_by_boot_completed_summary">适用于“开机时启动”和“唤醒时启动”</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">顶部</string>
     <string name="drawer_tab_bar_bottom">底部</string>
     <string name="display_vertical_bar">显示纵栏</string>
+    <string name="folder_follow_grid_on">文件夹按主屏幕的行和列排列图标</string>
+    <string name="folder_follow_grid_off">文件夹使用自己的网格</string>
+    <string name="widget_freeform_on">小部件可以不受网格限制，自由移动和调整大小</string>
+    <string name="widget_freeform_off">小部件吸附到主屏幕网格</string>
+    <string name="widget_overlap_on">小部件可以覆盖图标和其他小部件</string>
+    <string name="widget_overlap_off">小部件保持在空闲网格内</string>
+    <string name="widget_overlap_off_title">让小部件适应网格？</string>
+    <string name="widget_overlap_off_message">部分小部件可能无法放入网格。无法放置的小部件将从主屏幕中移除。</string>
 </resources>

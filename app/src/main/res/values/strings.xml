@@ -590,16 +590,8 @@
     <string name="folders_background_preference">Choose background for folders</string>
     <string name="folders_background_dialog_title">Select background for folders:</string>
     <string name="folder_follow_grid">Follow home screen grid inside folders</string>
-    <string name="folder_follow_grid_on">Folders use the home screen\'s columns and as many rows as they need</string>
-    <string name="folder_follow_grid_off">Folders grow nearly square, up to the home screen\'s size</string>
     <string name="widget_freeform">Free widget placement</string>
-    <string name="widget_freeform_on">Widgets stay where you put them and take the size you give them</string>
-    <string name="widget_freeform_off">Widgets are placed in the cells of the home screen</string>
     <string name="widget_overlap">Allow widgets to overlap</string>
-    <string name="widget_overlap_on">Widgets take no cells and lie over icons and other widgets</string>
-    <string name="widget_overlap_off">Widgets keep to their own cells</string>
-    <string name="widget_overlap_off_title">Turn off overlapping?</string>
-    <string name="widget_overlap_off_message">Widgets that lie over other items move to the nearest free place of their size; a widget with no room is removed.</string>
     <string name="autostart_apps_summary_fyt">Apps launched by the system\'s autostart feature may slow down the launcher\'s startup. The launcher\'s built-in option will launch them only after the launcher has completed its cold start. When using this list, remember to disable these apps in the FYT settings and anywhere else they are set to start automatically; otherwise, they will be launched twice.</string>
     <string name="autostart_apps_summary_other">Apps launched by the system\'s autostart feature may slow down the launcher\'s startup. The launcher\'s built-in option will launch them only after the launcher has completed its cold start. When using this list, remember to turn off automatic start for these apps anywhere else it is enabled; otherwise, they will be launched twice.</string>
     <string name="autostart_apps_by_boot_completed_summary">Applies to “Start on boot” and “Start on wake”</string>
@@ -656,4 +648,12 @@
     <string name="drawer_tab_bar_top">Top</string>
     <string name="drawer_tab_bar_bottom">Bottom</string>
     <string name="display_vertical_bar">Display vertical bar</string>
+    <string name="folder_follow_grid_on">Folders arrange icons in the home screen\'s rows and columns</string>
+    <string name="folder_follow_grid_off">Folders use their own grid</string>
+    <string name="widget_freeform_on">Widgets can be moved and resized freely, independent of the grid</string>
+    <string name="widget_freeform_off">Widgets snap to the home screen grid</string>
+    <string name="widget_overlap_on">Widgets may cover icons and other widgets</string>
+    <string name="widget_overlap_off">Widgets keep to free cells</string>
+    <string name="widget_overlap_off_title">Fit widgets to the grid?</string>
+    <string name="widget_overlap_off_message">Some widgets may not fit the grid. Widgets that cannot be placed will be removed from the home screen.</string>
 </resources>

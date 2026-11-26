@@ -578,16 +578,8 @@
     <string name="folders_background_preference">フォルダの背景を選択</string>
     <string name="folders_background_dialog_title">フォルダの背景を選んでください:</string>
     <string name="folder_follow_grid">フォルダ内でホーム画面のグリッドに合わせる</string>
-    <string name="folder_follow_grid_on">フォルダはホーム画面の列数を使い、必要な数の行になります</string>
-    <string name="folder_follow_grid_off">フォルダはほぼ正方形に広がり、ホーム画面の大きさが上限です</string>
     <string name="widget_freeform">ウィジェットの自由配置</string>
-    <string name="widget_freeform_on">ウィジェットは置いた場所に留まり、指定した大きさになります</string>
-    <string name="widget_freeform_off">ウィジェットはホーム画面のマスに配置されます</string>
     <string name="widget_overlap">ウィジェットの重なりを許可</string>
-    <string name="widget_overlap_on">ウィジェットはマスを占有せず、アイコンや他のウィジェットの上に重なります</string>
-    <string name="widget_overlap_off">ウィジェットはそれぞれのマスに収まります</string>
-    <string name="widget_overlap_off_title">重なりをオフにしますか？</string>
-    <string name="widget_overlap_off_message">他の項目に重なっているウィジェットは、同じ大きさの最も近い空き位置に移動し、場所がないウィジェットは削除されます。</string>
     <string name="autostart_apps_summary_fyt">システムの自動起動機能で起動されるアプリは、ランチャーの起動を遅くする場合があります。ランチャー内蔵のオプションは、ランチャーのコールドスタートが完了してからアプリを起動します。このリストを使うときは、これらのアプリをFYTの設定や、自動起動に設定されているほかの場所すべてでオフにしてください。そうしないと2回起動されます。</string>
     <string name="autostart_apps_summary_other">システムの自動起動機能で起動されるアプリは、ランチャーの起動を遅くする場合があります。ランチャー内蔵のオプションは、ランチャーのコールドスタートが完了してからアプリを起動します。このリストを使うときは、これらのアプリの自動起動を、有効になっているほかの場所すべてでオフにしてください。そうしないと2回起動されます。</string>
     <string name="autostart_apps_by_boot_completed_summary">「起動時に開始」と「スリープ解除時に開始」に適用されます</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">上</string>
     <string name="drawer_tab_bar_bottom">下</string>
     <string name="display_vertical_bar">縦バーを表示</string>
+    <string name="folder_follow_grid_on">フォルダはアイコンをホーム画面の行と列に合わせて並べます</string>
+    <string name="folder_follow_grid_off">フォルダは独自のグリッドを使います</string>
+    <string name="widget_freeform_on">ウィジェットはグリッドに関係なく自由に移動・サイズ変更できます</string>
+    <string name="widget_freeform_off">ウィジェットはホーム画面のグリッドに合わせて配置されます</string>
+    <string name="widget_overlap_on">ウィジェットはアイコンや他のウィジェットを覆ってもかまいません</string>
+    <string name="widget_overlap_off">ウィジェットは空いているマスに収まります</string>
+    <string name="widget_overlap_off_title">ウィジェットをグリッドに合わせますか？</string>
+    <string name="widget_overlap_off_message">グリッドに収まらないウィジェットがある場合があります。配置できないウィジェットはホーム画面から削除されます。</string>
 </resources>

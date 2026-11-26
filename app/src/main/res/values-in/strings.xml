@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Pilih latar belakang folder</string>
     <string name="folders_background_dialog_title">Pilih latar belakang untuk folder:</string>
     <string name="folder_follow_grid">Ikuti kisi layar utama di dalam folder</string>
-    <string name="folder_follow_grid_on">Folder memakai kolom layar utama dan baris sebanyak yang dibutuhkan</string>
-    <string name="folder_follow_grid_off">Folder tumbuh hampir persegi, hingga ukuran layar utama</string>
     <string name="widget_freeform">Penempatan widget bebas</string>
-    <string name="widget_freeform_on">Widget tetap di tempat yang Anda tentukan dan berukuran sesuai pilihan Anda</string>
-    <string name="widget_freeform_off">Widget ditempatkan di sel layar utama</string>
     <string name="widget_overlap">Izinkan widget saling menumpuk</string>
-    <string name="widget_overlap_on">Widget tidak memakai sel dan berada di atas ikon dan widget lain</string>
-    <string name="widget_overlap_off">Widget tetap di selnya sendiri</string>
-    <string name="widget_overlap_off_title">Matikan penumpukan?</string>
-    <string name="widget_overlap_off_message">Widget yang menimpa item lain dipindah ke tempat kosong terdekat seukuran widget; widget yang tidak muat dihapus.</string>
     <string name="autostart_apps_summary_fyt">Aplikasi yang dijalankan oleh fitur autostart sistem dapat memperlambat startup launcher. Opsi bawaan launcher baru menjalankannya setelah launcher menyelesaikan cold start. Saat memakai daftar ini, ingatlah untuk menonaktifkan aplikasi tersebut di pengaturan FYT dan di tempat lain yang disetel untuk mulai otomatis; jika tidak, aplikasi akan dijalankan dua kali.</string>
     <string name="autostart_apps_summary_other">Aplikasi yang dijalankan oleh fitur autostart sistem dapat memperlambat startup launcher. Opsi bawaan launcher baru menjalankannya setelah launcher menyelesaikan cold start. Saat memakai daftar ini, ingatlah untuk mematikan mulai otomatis aplikasi tersebut di tempat lain yang mengaktifkannya; jika tidak, aplikasi akan dijalankan dua kali.</string>
     <string name="autostart_apps_by_boot_completed_summary">Berlaku untuk “Mulai saat boot” dan “Mulai saat bangun”</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Atas</string>
     <string name="drawer_tab_bar_bottom">Bawah</string>
     <string name="display_vertical_bar">Tampilkan bilah vertikal</string>
+    <string name="folder_follow_grid_on">Folder menata ikon sesuai baris dan kolom layar utama</string>
+    <string name="folder_follow_grid_off">Folder memakai kisinya sendiri</string>
+    <string name="widget_freeform_on">Widget dapat dipindahkan dan diubah ukurannya dengan bebas, tidak terikat grid</string>
+    <string name="widget_freeform_off">Widget menempel ke grid layar utama</string>
+    <string name="widget_overlap_on">Widget boleh menutupi ikon dan widget lain</string>
+    <string name="widget_overlap_off">Widget tetap di sel yang kosong</string>
+    <string name="widget_overlap_off_title">Sesuaikan widget dengan grid?</string>
+    <string name="widget_overlap_off_message">Beberapa widget mungkin tidak muat di grid. Widget yang tidak dapat ditempatkan akan dihapus dari layar utama.</string>
 </resources>

@@ -578,16 +578,8 @@
     <string name="folders_background_preference">اختر خلفية للمجلدات</string>
     <string name="folders_background_dialog_title">اختر خلفية للمجلدات:</string>
     <string name="folder_follow_grid">اتباع شبكة الشاشة الرئيسية داخل المجلدات</string>
-    <string name="folder_follow_grid_on">تستخدم المجلدات أعمدة الشاشة الرئيسية وعدد الصفوف الذي تحتاجه</string>
-    <string name="folder_follow_grid_off">تنمو المجلدات بشكل شبه مربع حتى حجم الشاشة الرئيسية</string>
     <string name="widget_freeform">وضع الأدوات بحرية</string>
-    <string name="widget_freeform_on">تبقى الأدوات حيث تضعها وتأخذ الحجم الذي تحدده</string>
-    <string name="widget_freeform_off">توضع الأدوات في خلايا الشاشة الرئيسية</string>
     <string name="widget_overlap">السماح للأدوات بالتداخل</string>
-    <string name="widget_overlap_on">لا تشغل الأدوات خلايا وتظهر فوق الأيقونات والأدوات الأخرى</string>
-    <string name="widget_overlap_off">تبقى الأدوات داخل خلاياها</string>
-    <string name="widget_overlap_off_title">إيقاف التداخل؟</string>
-    <string name="widget_overlap_off_message">تنتقل الأدوات الموجودة فوق عناصر أخرى إلى أقرب مكان خالٍ بحجمها، وتُحذف الأداة التي لا يوجد لها مكان.</string>
     <string name="autostart_apps_summary_fyt">قد تُبطئ التطبيقات التي تُشغَّل بميزة التشغيل التلقائي في النظام بدء تشغيل المشغّل. سيُشغّلها خيار المشغّل المدمج فقط بعد أن يُكمل المشغّل بدءه البارد. عند استخدام هذه القائمة، تذكّر تعطيل هذه التطبيقات في إعدادات FYT وفي أي مكان آخر مضبوطة فيه للبدء تلقائيًا؛ وإلا ستُشغَّل مرتين.</string>
     <string name="autostart_apps_summary_other">قد تُبطئ التطبيقات التي تُشغَّل بميزة التشغيل التلقائي في النظام بدء تشغيل المشغّل. سيُشغّلها خيار المشغّل المدمج فقط بعد أن يُكمل المشغّل بدءه البارد. عند استخدام هذه القائمة، تذكّر إيقاف البدء التلقائي لهذه التطبيقات في أي مكان آخر مفعّل فيه؛ وإلا ستُشغَّل مرتين.</string>
     <string name="autostart_apps_by_boot_completed_summary">ينطبق على «البدء عند التشغيل» و«البدء عند الاستيقاظ»</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">أعلى</string>
     <string name="drawer_tab_bar_bottom">أسفل</string>
     <string name="display_vertical_bar">عرض الشريط العمودي</string>
+    <string name="folder_follow_grid_on">ترتّب المجلدات الأيقونات في صفوف وأعمدة الشاشة الرئيسية</string>
+    <string name="folder_follow_grid_off">تستخدم المجلدات شبكتها الخاصة</string>
+    <string name="widget_freeform_on">يمكن نقل الأدوات وتغيير حجمها بحرية بغض النظر عن الشبكة</string>
+    <string name="widget_freeform_off">تلتصق الأدوات بشبكة الشاشة الرئيسية</string>
+    <string name="widget_overlap_on">يمكن للأدوات تغطية الأيقونات والأدوات الأخرى</string>
+    <string name="widget_overlap_off">تبقى الأدوات في الخلايا الحرة</string>
+    <string name="widget_overlap_off_title">ملاءمة الأدوات مع الشبكة؟</string>
+    <string name="widget_overlap_off_message">قد لا تناسب بعض الأدوات الشبكة. ستُزال الأدوات التي لا يمكن وضعها من الشاشة الرئيسية.</string>
 </resources>

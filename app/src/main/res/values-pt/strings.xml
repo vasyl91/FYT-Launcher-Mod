@@ -578,16 +578,8 @@
     <string name="folders_background_preference">Escolher fundo das pastas</string>
     <string name="folders_background_dialog_title">Selecione o fundo das pastas:</string>
     <string name="folder_follow_grid">Seguir a grelha do ecrã principal nas pastas</string>
-    <string name="folder_follow_grid_on">As pastas usam as colunas do ecrã principal e as linhas de que precisarem</string>
-    <string name="folder_follow_grid_off">As pastas crescem quase quadradas, até ao tamanho do ecrã principal</string>
     <string name="widget_freeform">Colocação livre de widgets</string>
-    <string name="widget_freeform_on">Os widgets ficam onde os coloca e têm o tamanho que lhes der</string>
-    <string name="widget_freeform_off">Os widgets são colocados nas células do ecrã principal</string>
     <string name="widget_overlap">Permitir sobreposição de widgets</string>
-    <string name="widget_overlap_on">Os widgets não ocupam células e ficam sobre ícones e outros widgets</string>
-    <string name="widget_overlap_off">Os widgets ficam nas suas próprias células</string>
-    <string name="widget_overlap_off_title">Desativar a sobreposição?</string>
-    <string name="widget_overlap_off_message">Os widgets sobre outros itens passam para o espaço livre mais próximo do seu tamanho; um widget sem espaço é removido.</string>
     <string name="autostart_apps_summary_fyt">As aplicações iniciadas pela função de arranque automático do sistema podem atrasar o arranque do launcher. A opção integrada do launcher só as inicia depois de o launcher concluir o arranque a frio. Ao usar esta lista, lembre-se de desativar estas aplicações nas definições do FYT e em qualquer outro local onde estejam definidas para iniciar automaticamente; caso contrário, serão iniciadas duas vezes.</string>
     <string name="autostart_apps_summary_other">As aplicações iniciadas pela função de arranque automático do sistema podem atrasar o arranque do launcher. A opção integrada do launcher só as inicia depois de o launcher concluir o arranque a frio. Ao usar esta lista, lembre-se de desativar o arranque automático destas aplicações em qualquer outro local onde esteja ativo; caso contrário, serão iniciadas duas vezes.</string>
     <string name="autostart_apps_by_boot_completed_summary">Aplica-se a “Iniciar no arranque” e “Iniciar ao despertar”</string>
@@ -644,4 +636,12 @@
     <string name="drawer_tab_bar_top">Em cima</string>
     <string name="drawer_tab_bar_bottom">Em baixo</string>
     <string name="display_vertical_bar">Mostrar barra vertical</string>
+    <string name="folder_follow_grid_on">As pastas organizam os ícones nas linhas e colunas do ecrã principal</string>
+    <string name="folder_follow_grid_off">As pastas usam a sua própria grelha</string>
+    <string name="widget_freeform_on">Os widgets podem ser movidos e redimensionados livremente, independentemente da grelha</string>
+    <string name="widget_freeform_off">Os widgets ajustam-se à grelha do ecrã principal</string>
+    <string name="widget_overlap_on">Os widgets podem cobrir ícones e outros widgets</string>
+    <string name="widget_overlap_off">Os widgets ficam em células livres</string>
+    <string name="widget_overlap_off_title">Ajustar os widgets à grelha?</string>
+    <string name="widget_overlap_off_message">Alguns widgets podem não caber na grelha. Os widgets que não puderem ser colocados serão removidos do ecrã principal.</string>
 </resources>
