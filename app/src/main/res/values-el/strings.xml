@@ -109,9 +109,6 @@
     <string name="fyt_title_source">Πηγή τίτλου μουσικής FYT</string>
     <string name="fyt_metadata">Από τα μεταδεδομένα</string>
     <string name="fyt_file">Από τη διαδρομή του αρχείου</string>
-    <string name="vertical_bar">Χρήση κάθετης γραμμής</string>
-    <string name="vertical_bar_on">Κάθετη γραμμή + οριζόντια γραμμή</string>
-    <string name="vertical_bar_off">Μόνο οριζόντια γραμμή</string>
     <string name="stats_screen_summary">Ορίστε την οθόνη που θα εμφανίζει τα στατιστικά</string>
     <string name="date_widget">Γραφικό στοιχείο ημερομηνίας και ώρας</string>
     <string name="music_widget">Γραφικό στοιχείο μουσικής</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Θέση γραμμής καρτελών</string>
     <string name="drawer_tab_bar_top">Επάνω</string>
     <string name="drawer_tab_bar_bottom">Κάτω</string>
+    <string name="display_vertical_bar">Εμφάνιση κάθετης γραμμής</string>
 </resources>

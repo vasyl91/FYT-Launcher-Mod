@@ -365,9 +365,7 @@
             app:singleLineTitle="false"
             android:key="left_bar"
             android:defaultValue="false"
-            android:title="@string/vertical_bar"
-            android:summaryOn="@string/vertical_bar_on"
-            android:summaryOff="@string/vertical_bar_off" />
+            android:title="@string/display_vertical_bar" />
         <com.android.launcher66.settings.CustomNoSwitchPreference
             android:key="vertical_bar_right"
             android:defaultValue="false"

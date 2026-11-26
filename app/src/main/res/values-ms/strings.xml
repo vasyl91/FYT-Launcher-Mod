@@ -109,9 +109,6 @@
     <string name="fyt_title_source">Sumber tajuk muzik FYT</string>
     <string name="fyt_metadata">Daripada metadata</string>
     <string name="fyt_file">Daripada laluan fail</string>
-    <string name="vertical_bar">Guna bar menegak</string>
-    <string name="vertical_bar_on">Bar menegak + bar mendatar</string>
-    <string name="vertical_bar_off">Bar mendatar sahaja</string>
     <string name="stats_screen_summary">Tetapkan skrin yang akan memaparkan statistik</string>
     <string name="date_widget">Widget tarikh dan masa</string>
     <string name="music_widget">Widget muzik</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Penempatan bar tab</string>
     <string name="drawer_tab_bar_top">Atas</string>
     <string name="drawer_tab_bar_bottom">Bawah</string>
+    <string name="display_vertical_bar">Paparkan bar menegak</string>
 </resources>

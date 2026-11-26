@@ -109,9 +109,6 @@
     <string name="fyt_title_source">FYT 음악 제목 출처</string>
     <string name="fyt_metadata">메타데이터에서</string>
     <string name="fyt_file">파일 경로에서</string>
-    <string name="vertical_bar">세로 바 사용</string>
-    <string name="vertical_bar_on">세로 바 + 가로 바</string>
-    <string name="vertical_bar_off">가로 바만</string>
     <string name="stats_screen_summary">통계를 표시할 화면 설정</string>
     <string name="date_widget">날짜 및 시간 위젯</string>
     <string name="music_widget">음악 위젯</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">탭 바 위치</string>
     <string name="drawer_tab_bar_top">위쪽</string>
     <string name="drawer_tab_bar_bottom">아래쪽</string>
+    <string name="display_vertical_bar">세로 바 표시</string>
 </resources>

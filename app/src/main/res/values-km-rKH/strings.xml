@@ -109,9 +109,6 @@
     <string name="fyt_title_source">ប្រភពចំណងជើងតន្ត្រី FYT</string>
     <string name="fyt_metadata">ពីទិន្នន័យមេតា</string>
     <string name="fyt_file">ពីផ្លូវឯកសារ</string>
-    <string name="vertical_bar">ប្រើរបារបញ្ឈរ</string>
-    <string name="vertical_bar_on">របារបញ្ឈរ + របារផ្ដេក</string>
-    <string name="vertical_bar_off">តែរបារផ្ដេក</string>
     <string name="stats_screen_summary">កំណត់អេក្រង់ដែលនឹងបង្ហាញស្ថិតិ</string>
     <string name="date_widget">ធាតុក្រាហ្វិកកាលបរិច្ឆេទ និងម៉ោង</string>
     <string name="music_widget">ធាតុក្រាហ្វិកតន្ត្រី</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">ទីតាំងរបារផ្ទាំង</string>
     <string name="drawer_tab_bar_top">ខាងលើ</string>
     <string name="drawer_tab_bar_bottom">ខាងក្រោម</string>
+    <string name="display_vertical_bar">បង្ហាញរបារបញ្ឈរ</string>
 </resources>

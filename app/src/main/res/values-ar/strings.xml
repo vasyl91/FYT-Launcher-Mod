@@ -109,9 +109,6 @@
     <string name="fyt_title_source">مصدر عنوان موسيقى FYT</string>
     <string name="fyt_metadata">من البيانات الوصفية</string>
     <string name="fyt_file">من مسار الملف</string>
-    <string name="vertical_bar">استخدام الشريط العمودي</string>
-    <string name="vertical_bar_on">الشريط العمودي + الشريط الأفقي</string>
-    <string name="vertical_bar_off">الشريط الأفقي فقط</string>
     <string name="stats_screen_summary">اضبط الشاشة التي ستعرض الإحصاءات</string>
     <string name="date_widget">عنصر واجهة التاريخ والوقت</string>
     <string name="music_widget">عنصر واجهة الموسيقى</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">موضع شريط علامات التبويب</string>
     <string name="drawer_tab_bar_top">أعلى</string>
     <string name="drawer_tab_bar_bottom">أسفل</string>
+    <string name="display_vertical_bar">عرض الشريط العمودي</string>
 </resources>

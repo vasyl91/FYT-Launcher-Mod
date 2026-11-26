@@ -109,9 +109,6 @@
     <string name="fyt_title_source">FYT音楽タイトルの取得元</string>
     <string name="fyt_metadata">メタデータから</string>
     <string name="fyt_file">ファイルパスから</string>
-    <string name="vertical_bar">縦バーを使用</string>
-    <string name="vertical_bar_on">縦バー＋横バー</string>
-    <string name="vertical_bar_off">横バーのみ</string>
     <string name="stats_screen_summary">統計を表示する画面を設定します</string>
     <string name="date_widget">日付と時刻のウィジェット</string>
     <string name="music_widget">ミュージックウィジェット</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">タブバーの位置</string>
     <string name="drawer_tab_bar_top">上</string>
     <string name="drawer_tab_bar_bottom">下</string>
+    <string name="display_vertical_bar">縦バーを表示</string>
 </resources>

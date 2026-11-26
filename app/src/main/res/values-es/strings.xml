@@ -109,9 +109,6 @@
     <string name="fyt_title_source">Origen del título de la música FYT</string>
     <string name="fyt_metadata">De los metadatos</string>
     <string name="fyt_file">De la ruta del archivo</string>
-    <string name="vertical_bar">Usar barra vertical</string>
-    <string name="vertical_bar_on">Barra vertical + barra horizontal</string>
-    <string name="vertical_bar_off">Solo barra horizontal</string>
     <string name="stats_screen_summary">Establece la pantalla que mostrará las estadísticas</string>
     <string name="date_widget">Widget de fecha y hora</string>
     <string name="music_widget">Widget de música</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Ubicación de la barra de pestañas</string>
     <string name="drawer_tab_bar_top">Arriba</string>
     <string name="drawer_tab_bar_bottom">Abajo</string>
+    <string name="display_vertical_bar">Mostrar barra vertical</string>
 </resources>

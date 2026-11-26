@@ -109,9 +109,6 @@
     <string name="fyt_title_source">Zdroj názvu hudby FYT</string>
     <string name="fyt_metadata">Z metadát</string>
     <string name="fyt_file">Z cesty k súboru</string>
-    <string name="vertical_bar">Použiť zvislý panel</string>
-    <string name="vertical_bar_on">Zvislý panel + vodorovný panel</string>
-    <string name="vertical_bar_off">Iba vodorovný panel</string>
     <string name="stats_screen_summary">Nastavte obrazovku, na ktorej sa zobrazia štatistiky</string>
     <string name="date_widget">Widget dátumu a času</string>
     <string name="music_widget">Widget hudby</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Umiestnenie panela kariet</string>
     <string name="drawer_tab_bar_top">Hore</string>
     <string name="drawer_tab_bar_bottom">Dole</string>
+    <string name="display_vertical_bar">Zobraziť zvislý panel</string>
 </resources>

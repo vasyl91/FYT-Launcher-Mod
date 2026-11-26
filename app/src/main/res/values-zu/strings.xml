@@ -109,9 +109,6 @@
     <string name="fyt_title_source">Umthombo wesihloko somculo we-FYT</string>
     <string name="fyt_metadata">Kusuka kudatha ye-meta</string>
     <string name="fyt_file">Kusuka endleleni yefayela</string>
-    <string name="vertical_bar">Sebenzisa ibha eqondile</string>
-    <string name="vertical_bar_on">Ibha eqondile + ibha evundlile</string>
-    <string name="vertical_bar_off">Ibha evundlile kuphela</string>
     <string name="stats_screen_summary">Setha isikrini esizovula izibalo</string>
     <string name="date_widget">Iwijethi yedethi nesikhathi</string>
     <string name="music_widget">Iwijethi yomculo</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Indawo yebha yamathebhu</string>
     <string name="drawer_tab_bar_top">Phezulu</string>
     <string name="drawer_tab_bar_bottom">Phansi</string>
+    <string name="display_vertical_bar">Bonisa ibha eqondile</string>
 </resources>

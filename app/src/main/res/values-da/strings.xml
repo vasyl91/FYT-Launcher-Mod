@@ -109,9 +109,6 @@
     <string name="fyt_title_source">Kilde til FYT-musiktitel</string>
     <string name="fyt_metadata">Fra metadata</string>
     <string name="fyt_file">Fra filsti</string>
-    <string name="vertical_bar">Brug lodret bjælke</string>
-    <string name="vertical_bar_on">Lodret bjælke + vandret bjælke</string>
-    <string name="vertical_bar_off">Kun vandret bjælke</string>
     <string name="stats_screen_summary">Indstil den skærm, der skal vise statistikken</string>
     <string name="date_widget">Dato- og tidswidget</string>
     <string name="music_widget">Musikwidget</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Placering af fanelinjen</string>
     <string name="drawer_tab_bar_top">Øverst</string>
     <string name="drawer_tab_bar_bottom">Nederst</string>
+    <string name="display_vertical_bar">Vis lodret bjælke</string>
 </resources>

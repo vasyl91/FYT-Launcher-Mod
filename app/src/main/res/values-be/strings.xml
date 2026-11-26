@@ -109,9 +109,6 @@
     <string name="fyt_title_source">Крыніца назвы музыкі FYT</string>
     <string name="fyt_metadata">З метаданых</string>
     <string name="fyt_file">З шляху да файла</string>
-    <string name="vertical_bar">Выкарыстоўваць вертыкальную панэль</string>
-    <string name="vertical_bar_on">Вертыкальная панэль + гарызантальная панэль</string>
-    <string name="vertical_bar_off">Толькі гарызантальная панэль</string>
     <string name="stats_screen_summary">Задайце экран, на якім будзе паказвацца статыстыка</string>
     <string name="date_widget">Віджэт даты і часу</string>
     <string name="music_widget">Віджэт музыкі</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Размяшчэнне панэлі ўкладак</string>
     <string name="drawer_tab_bar_top">Уверсе</string>
     <string name="drawer_tab_bar_bottom">Унізе</string>
+    <string name="display_vertical_bar">Паказваць вертыкальную панэль</string>
 </resources>

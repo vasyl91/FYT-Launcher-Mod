@@ -109,9 +109,6 @@
     <string name="fyt_title_source">FYT muzikos pavadinimo šaltinis</string>
     <string name="fyt_metadata">Iš metaduomenų</string>
     <string name="fyt_file">Iš failo kelio</string>
-    <string name="vertical_bar">Naudoti vertikaliąją juostą</string>
-    <string name="vertical_bar_on">Vertikalioji juosta + horizontalioji juosta</string>
-    <string name="vertical_bar_off">Tik horizontalioji juosta</string>
     <string name="stats_screen_summary">Nustatykite ekraną, kuriame bus rodoma statistika</string>
     <string name="date_widget">Datos ir laiko valdiklis</string>
     <string name="music_widget">Muzikos valdiklis</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Skirtukų juostos vieta</string>
     <string name="drawer_tab_bar_top">Viršuje</string>
     <string name="drawer_tab_bar_bottom">Apačioje</string>
+    <string name="display_vertical_bar">Rodyti vertikaliąją juostą</string>
 </resources>

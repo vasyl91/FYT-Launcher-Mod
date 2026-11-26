@@ -109,9 +109,6 @@
     <string name="fyt_title_source">FYT zenecímének forrása</string>
     <string name="fyt_metadata">Metaadatokból</string>
     <string name="fyt_file">Fájlútvonalból</string>
-    <string name="vertical_bar">Függőleges sáv használata</string>
-    <string name="vertical_bar_on">Függőleges sáv + vízszintes sáv</string>
-    <string name="vertical_bar_off">Csak vízszintes sáv</string>
     <string name="stats_screen_summary">Állítsa be a statisztikát megjelenítő képernyőt</string>
     <string name="date_widget">Dátum- és időwidget</string>
     <string name="music_widget">Zenewidget</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Lapsáv elhelyezése</string>
     <string name="drawer_tab_bar_top">Fent</string>
     <string name="drawer_tab_bar_bottom">Lent</string>
+    <string name="display_vertical_bar">Függőleges sáv megjelenítése</string>
 </resources>

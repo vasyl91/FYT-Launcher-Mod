@@ -109,9 +109,6 @@
     <string name="fyt_title_source">Vir naslova glasbe FYT</string>
     <string name="fyt_metadata">Iz metapodatkov</string>
     <string name="fyt_file">Iz poti datoteke</string>
-    <string name="vertical_bar">Uporabi navpično vrstico</string>
-    <string name="vertical_bar_on">Navpična vrstica + vodoravna vrstica</string>
-    <string name="vertical_bar_off">Samo vodoravna vrstica</string>
     <string name="stats_screen_summary">Nastavite zaslon, ki bo prikazoval statistiko</string>
     <string name="date_widget">Gradnik datuma in časa</string>
     <string name="music_widget">Gradnik glasbe</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Mesto vrstice zavihkov</string>
     <string name="drawer_tab_bar_top">Zgoraj</string>
     <string name="drawer_tab_bar_bottom">Spodaj</string>
+    <string name="display_vertical_bar">Prikaži navpično vrstico</string>
 </resources>

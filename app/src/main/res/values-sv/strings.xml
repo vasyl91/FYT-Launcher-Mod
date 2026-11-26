@@ -109,9 +109,6 @@
     <string name="fyt_title_source">Källa för FYT-musiktitel</string>
     <string name="fyt_metadata">Från metadata</string>
     <string name="fyt_file">Från filsökväg</string>
-    <string name="vertical_bar">Använd vertikalt fält</string>
-    <string name="vertical_bar_on">Vertikalt fält + horisontellt fält</string>
-    <string name="vertical_bar_off">Endast horisontellt fält</string>
     <string name="stats_screen_summary">Ställ in skärmen som ska visa statistiken</string>
     <string name="date_widget">Datum- och tidswidget</string>
     <string name="music_widget">Musikwidget</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Placering av flikfältet</string>
     <string name="drawer_tab_bar_top">Överst</string>
     <string name="drawer_tab_bar_bottom">Nederst</string>
+    <string name="display_vertical_bar">Visa vertikalt fält</string>
 </resources>

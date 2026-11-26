@@ -109,9 +109,6 @@
     <string name="fyt_title_source">FYT müzik başlığı kaynağı</string>
     <string name="fyt_metadata">Meta verilerden</string>
     <string name="fyt_file">Dosya yolundan</string>
-    <string name="vertical_bar">Dikey çubuğu kullan</string>
-    <string name="vertical_bar_on">Dikey çubuk + yatay çubuk</string>
-    <string name="vertical_bar_off">Yalnızca yatay çubuk</string>
     <string name="stats_screen_summary">İstatistiklerin görüntüleneceği ekranı ayarlayın</string>
     <string name="date_widget">Tarih ve saat widget\'ı</string>
     <string name="music_widget">Müzik widget\'ı</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Sekme çubuğu konumu</string>
     <string name="drawer_tab_bar_top">Üstte</string>
     <string name="drawer_tab_bar_bottom">Altta</string>
+    <string name="display_vertical_bar">Dikey çubuğu göster</string>
 </resources>

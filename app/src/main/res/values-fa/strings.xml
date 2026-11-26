@@ -109,9 +109,6 @@
     <string name="fyt_title_source">منبع عنوان موسیقی FYT</string>
     <string name="fyt_metadata">از فراداده</string>
     <string name="fyt_file">از مسیر فایل</string>
-    <string name="vertical_bar">استفاده از نوار عمودی</string>
-    <string name="vertical_bar_on">نوار عمودی + نوار افقی</string>
-    <string name="vertical_bar_off">فقط نوار افقی</string>
     <string name="stats_screen_summary">صفحه‌ای را که آمار را نمایش می‌دهد تنظیم کنید</string>
     <string name="date_widget">ویجت تاریخ و ساعت</string>
     <string name="music_widget">ویجت موسیقی</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">جای نوار زبانه‌ها</string>
     <string name="drawer_tab_bar_top">بالا</string>
     <string name="drawer_tab_bar_bottom">پایین</string>
+    <string name="display_vertical_bar">نمایش نوار عمودی</string>
 </resources>

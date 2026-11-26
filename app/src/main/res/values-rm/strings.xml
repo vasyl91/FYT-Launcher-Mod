@@ -109,9 +109,6 @@
     <string name="fyt_title_source">Funtauna dal titel da la musica FYT</string>
     <string name="fyt_metadata">Da las metadatas</string>
     <string name="fyt_file">Dal path da la datoteca</string>
-    <string name="vertical_bar">Duvrar la bara verticala</string>
-    <string name="vertical_bar_on">Bara verticala + bara orizontala</string>
-    <string name="vertical_bar_off">Mo bara orizontala</string>
     <string name="stats_screen_summary">Fixescha l\'visur che duai mussar las statisticas</string>
     <string name="date_widget">Widget da data ed ura</string>
     <string name="music_widget">Widget da musica</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Posiziun da la bara dals tabs</string>
     <string name="drawer_tab_bar_top">Sura</string>
     <string name="drawer_tab_bar_bottom">Sut</string>
+    <string name="display_vertical_bar">Mussar la bara verticala</string>
 </resources>

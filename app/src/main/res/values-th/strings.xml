@@ -109,9 +109,6 @@
     <string name="fyt_title_source">แหล่งที่มาของชื่อเพลง FYT</string>
     <string name="fyt_metadata">จากเมทาดาตา</string>
     <string name="fyt_file">จากพาธของไฟล์</string>
-    <string name="vertical_bar">ใช้แถบแนวตั้ง</string>
-    <string name="vertical_bar_on">แถบแนวตั้ง + แถบแนวนอน</string>
-    <string name="vertical_bar_off">เฉพาะแถบแนวนอน</string>
     <string name="stats_screen_summary">ตั้งค่าหน้าจอที่จะแสดงสถิติ</string>
     <string name="date_widget">วิดเจ็ตวันที่และเวลา</string>
     <string name="music_widget">วิดเจ็ตเพลง</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">ตำแหน่งแถบแท็บ</string>
     <string name="drawer_tab_bar_top">ด้านบน</string>
     <string name="drawer_tab_bar_bottom">ด้านล่าง</string>
+    <string name="display_vertical_bar">แสดงแถบแนวตั้ง</string>
 </resources>

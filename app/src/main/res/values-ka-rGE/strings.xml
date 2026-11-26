@@ -109,9 +109,6 @@
     <string name="fyt_title_source">FYT მუსიკის სათაურის წყარო</string>
     <string name="fyt_metadata">მეტამონაცემებიდან</string>
     <string name="fyt_file">ფაილის გზიდან</string>
-    <string name="vertical_bar">ვერტიკალური ზოლის გამოყენება</string>
-    <string name="vertical_bar_on">ვერტიკალური ზოლი + ჰორიზონტალური ზოლი</string>
-    <string name="vertical_bar_off">მხოლოდ ჰორიზონტალური ზოლი</string>
     <string name="stats_screen_summary">აირჩიეთ ეკრანი, რომელიც სტატისტიკას აჩვენებს</string>
     <string name="date_widget">თარიღისა და დროის ვიჯეტი</string>
     <string name="music_widget">მუსიკის ვიჯეტი</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">ჩანართების ზოლის განლაგება</string>
     <string name="drawer_tab_bar_top">ზემოთ</string>
     <string name="drawer_tab_bar_bottom">ქვემოთ</string>
+    <string name="display_vertical_bar">ვერტიკალური ზოლის ჩვენება</string>
 </resources>

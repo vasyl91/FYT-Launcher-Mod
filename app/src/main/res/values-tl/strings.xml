@@ -109,9 +109,6 @@
     <string name="fyt_title_source">Pinagmulan ng pamagat ng musika ng FYT</string>
     <string name="fyt_metadata">Mula sa metadata</string>
     <string name="fyt_file">Mula sa path ng file</string>
-    <string name="vertical_bar">Gamitin ang patayong bar</string>
-    <string name="vertical_bar_on">Patayong bar + pahalang na bar</string>
-    <string name="vertical_bar_off">Pahalang na bar lang</string>
     <string name="stats_screen_summary">Itakda ang screen na magpapakita ng mga istatistika</string>
     <string name="date_widget">Widget ng petsa at oras</string>
     <string name="music_widget">Widget ng musika</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Lokasyon ng tab bar</string>
     <string name="drawer_tab_bar_top">Itaas</string>
     <string name="drawer_tab_bar_bottom">Ibaba</string>
+    <string name="display_vertical_bar">Ipakita ang patayong bar</string>
 </resources>

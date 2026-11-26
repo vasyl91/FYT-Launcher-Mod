@@ -109,9 +109,6 @@
     <string name="fyt_title_source">音乐标题来源</string>
     <string name="fyt_metadata">来自元数据</string>
     <string name="fyt_file">来自文件路径</string>
-    <string name="vertical_bar">使用纵栏</string>
-    <string name="vertical_bar_on">纵栏 + 横栏</string>
-    <string name="vertical_bar_off">仅横栏</string>
     <string name="stats_screen_summary">设置显示统计信息的屏幕</string>
     <string name="date_widget">时间日期小部件</string>
     <string name="music_widget">音乐小部件</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">标签栏位置</string>
     <string name="drawer_tab_bar_top">顶部</string>
     <string name="drawer_tab_bar_bottom">底部</string>
+    <string name="display_vertical_bar">显示纵栏</string>
 </resources>

@@ -109,9 +109,6 @@
     <string name="fyt_title_source">Chanzo cha jina la muziki wa FYT</string>
     <string name="fyt_metadata">Kutoka kwenye metadata</string>
     <string name="fyt_file">Kutoka kwenye njia ya faili</string>
-    <string name="vertical_bar">Tumia upau wima</string>
-    <string name="vertical_bar_on">Upau wa kushoto + upau mlalo</string>
-    <string name="vertical_bar_off">Upau mlalo pekee</string>
     <string name="stats_screen_summary">Weka skrini itakayoonyesha takwimu</string>
     <string name="date_widget">Wijeti ya tarehe na saa</string>
     <string name="music_widget">Wijeti ya muziki</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Mahali pa upau wa vichupo</string>
     <string name="drawer_tab_bar_top">Juu</string>
     <string name="drawer_tab_bar_bottom">Chini</string>
+    <string name="display_vertical_bar">Onyesha upau wima</string>
 </resources>

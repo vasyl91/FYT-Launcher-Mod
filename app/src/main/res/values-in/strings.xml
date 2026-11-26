@@ -109,9 +109,6 @@
     <string name="fyt_title_source">Sumber judul musik FYT</string>
     <string name="fyt_metadata">Dari metadata</string>
     <string name="fyt_file">Dari jalur file</string>
-    <string name="vertical_bar">Gunakan bilah vertikal</string>
-    <string name="vertical_bar_on">Bilah vertikal + bilah horizontal</string>
-    <string name="vertical_bar_off">Hanya bilah horizontal</string>
     <string name="stats_screen_summary">Setel layar yang akan menampilkan statistik</string>
     <string name="date_widget">Widget tanggal dan waktu</string>
     <string name="music_widget">Widget musik</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Penempatan bilah tab</string>
     <string name="drawer_tab_bar_top">Atas</string>
     <string name="drawer_tab_bar_bottom">Bawah</string>
+    <string name="display_vertical_bar">Tampilkan bilah vertikal</string>
 </resources>

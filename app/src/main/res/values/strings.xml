@@ -114,9 +114,6 @@
     <string name="fyt_title_source">FYT music title source</string> 
     <string name="fyt_metadata">From metadata</string> 
     <string name="fyt_file">From file path</string> 
-    <string name="vertical_bar">Use vertical bar</string> 
-    <string name="vertical_bar_on">Vertical bar + horizontal bar</string> 
-    <string name="vertical_bar_off">Only horizontal bar</string>
     <string name="stats_screen_summary">Set the screen that will display the stats</string>   
     <string name="date_widget">Date and time widget</string> 
     <string name="music_widget">Music widget</string> 
@@ -658,4 +655,5 @@
     <string name="drawer_tab_bar_position">Tab bar placement</string>
     <string name="drawer_tab_bar_top">Top</string>
     <string name="drawer_tab_bar_bottom">Bottom</string>
+    <string name="display_vertical_bar">Display vertical bar</string>
 </resources>

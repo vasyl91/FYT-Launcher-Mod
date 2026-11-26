@@ -109,9 +109,6 @@
     <string name="fyt_title_source">Izvor naslova glazbe FYT</string>
     <string name="fyt_metadata">Iz metapodataka</string>
     <string name="fyt_file">Iz putanje datoteke</string>
-    <string name="vertical_bar">Koristi okomitu traku</string>
-    <string name="vertical_bar_on">Okomita traka + vodoravna traka</string>
-    <string name="vertical_bar_off">Samo vodoravna traka</string>
     <string name="stats_screen_summary">Postavite zaslon na kojem će se prikazivati statistika</string>
     <string name="date_widget">Widget datuma i vremena</string>
     <string name="music_widget">Widget glazbe</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Položaj trake s karticama</string>
     <string name="drawer_tab_bar_top">Gore</string>
     <string name="drawer_tab_bar_bottom">Dolje</string>
+    <string name="display_vertical_bar">Prikaži okomitu traku</string>
 </resources>

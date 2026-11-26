@@ -109,9 +109,6 @@
     <string name="fyt_title_source">FYT mūzikas nosaukuma avots</string>
     <string name="fyt_metadata">No metadatiem</string>
     <string name="fyt_file">No faila ceļa</string>
-    <string name="vertical_bar">Izmantot vertikālo joslu</string>
-    <string name="vertical_bar_on">Vertikālā josla + horizontālā josla</string>
-    <string name="vertical_bar_off">Tikai horizontālā josla</string>
     <string name="stats_screen_summary">Iestatiet ekrānu, kurā tiks rādīta statistika</string>
     <string name="date_widget">Datuma un laika logrīks</string>
     <string name="music_widget">Mūzikas logrīks</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Cilņu joslas novietojums</string>
     <string name="drawer_tab_bar_top">Augšā</string>
     <string name="drawer_tab_bar_bottom">Apakšā</string>
+    <string name="display_vertical_bar">Rādīt vertikālo joslu</string>
 </resources>

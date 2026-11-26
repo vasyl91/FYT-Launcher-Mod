@@ -109,9 +109,6 @@
     <string name="fyt_title_source">Nguồn tiêu đề nhạc FYT</string>
     <string name="fyt_metadata">Từ siêu dữ liệu</string>
     <string name="fyt_file">Từ đường dẫn tệp</string>
-    <string name="vertical_bar">Dùng thanh dọc</string>
-    <string name="vertical_bar_on">Thanh dọc + thanh ngang</string>
-    <string name="vertical_bar_off">Chỉ thanh ngang</string>
     <string name="stats_screen_summary">Đặt màn hình sẽ hiển thị thống kê</string>
     <string name="date_widget">Widget ngày và giờ</string>
     <string name="music_widget">Widget nhạc</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Vị trí thanh tab</string>
     <string name="drawer_tab_bar_top">Trên cùng</string>
     <string name="drawer_tab_bar_bottom">Dưới cùng</string>
+    <string name="display_vertical_bar">Hiện thanh dọc</string>
 </resources>

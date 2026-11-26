@@ -109,9 +109,6 @@
     <string name="fyt_title_source">Bron van FYT-musiektitel</string>
     <string name="fyt_metadata">Uit metadata</string>
     <string name="fyt_file">Uit lêerpad</string>
-    <string name="vertical_bar">Gebruik vertikale balk</string>
-    <string name="vertical_bar_on">Vertikale balk + horisontale balk</string>
-    <string name="vertical_bar_off">Slegs horisontale balk</string>
     <string name="stats_screen_summary">Stel die skerm wat die statistiek sal wys</string>
     <string name="date_widget">Datum- en tydlegstuk</string>
     <string name="music_widget">Musieklegstuk</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Plasing van oortjiebalk</string>
     <string name="drawer_tab_bar_top">Bo</string>
     <string name="drawer_tab_bar_bottom">Onder</string>
+    <string name="display_vertical_bar">Wys vertikale balk</string>
 </resources>

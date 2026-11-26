@@ -109,9 +109,6 @@
     <string name="fyt_title_source">Quelle des FYT-Musiktitels</string>
     <string name="fyt_metadata">Aus Metadaten</string>
     <string name="fyt_file">Aus Dateipfad</string>
-    <string name="vertical_bar">Vertikale Leiste verwenden</string>
-    <string name="vertical_bar_on">Vertikale Leiste + horizontale Leiste</string>
-    <string name="vertical_bar_off">Nur horizontale Leiste</string>
     <string name="stats_screen_summary">Bildschirm festlegen, auf dem die Statistik angezeigt wird</string>
     <string name="date_widget">Datum- und Uhrzeit-Widget</string>
     <string name="music_widget">Musik-Widget</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Position der Tab-Leiste</string>
     <string name="drawer_tab_bar_top">Oben</string>
     <string name="drawer_tab_bar_bottom">Unten</string>
+    <string name="display_vertical_bar">Vertikale Leiste anzeigen</string>
 </resources>

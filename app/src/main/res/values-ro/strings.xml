@@ -109,9 +109,6 @@
     <string name="fyt_title_source">Sursa titlului muzicii FYT</string>
     <string name="fyt_metadata">Din metadate</string>
     <string name="fyt_file">Din calea fișierului</string>
-    <string name="vertical_bar">Folosește bara verticală</string>
-    <string name="vertical_bar_on">Bara verticală + bara orizontală</string>
-    <string name="vertical_bar_off">Doar bara orizontală</string>
     <string name="stats_screen_summary">Setați ecranul care va afișa statisticile</string>
     <string name="date_widget">Widget dată și oră</string>
     <string name="music_widget">Widget muzică</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Poziția barei de file</string>
     <string name="drawer_tab_bar_top">Sus</string>
     <string name="drawer_tab_bar_bottom">Jos</string>
+    <string name="display_vertical_bar">Afișează bara verticală</string>
 </resources>

@@ -109,9 +109,6 @@
     <string name="fyt_title_source">Source du titre de la musique FYT</string>
     <string name="fyt_metadata">Depuis les métadonnées</string>
     <string name="fyt_file">Depuis le chemin du fichier</string>
-    <string name="vertical_bar">Utiliser la barre verticale</string>
-    <string name="vertical_bar_on">Barre verticale + barre horizontale</string>
-    <string name="vertical_bar_off">Barre horizontale uniquement</string>
     <string name="stats_screen_summary">Définir l\'écran qui affichera les statistiques</string>
     <string name="date_widget">Widget date et heure</string>
     <string name="music_widget">Widget musique</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Emplacement de la barre d\'onglets</string>
     <string name="drawer_tab_bar_top">En haut</string>
     <string name="drawer_tab_bar_bottom">En bas</string>
+    <string name="display_vertical_bar">Afficher la barre verticale</string>
 </resources>

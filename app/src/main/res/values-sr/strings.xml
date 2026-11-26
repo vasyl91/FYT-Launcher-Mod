@@ -109,9 +109,6 @@
     <string name="fyt_title_source">Извор наслова музике FYT</string>
     <string name="fyt_metadata">Из метаподатака</string>
     <string name="fyt_file">Из путање датотеке</string>
-    <string name="vertical_bar">Користи вертикалну траку</string>
-    <string name="vertical_bar_on">Вертикална трака + хоризонтална трака</string>
-    <string name="vertical_bar_off">Само хоризонтална трака</string>
     <string name="stats_screen_summary">Подесите екран на ком ће се приказивати статистика</string>
     <string name="date_widget">Виџет датума и времена</string>
     <string name="music_widget">Виџет музике</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Положај траке картица</string>
     <string name="drawer_tab_bar_top">Горе</string>
     <string name="drawer_tab_bar_bottom">Доле</string>
+    <string name="display_vertical_bar">Прикажи вертикалну траку</string>
 </resources>

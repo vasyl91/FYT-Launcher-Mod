@@ -109,9 +109,6 @@
     <string name="fyt_title_source">FYT muusikapealkirja allikas</string>
     <string name="fyt_metadata">Metaandmetest</string>
     <string name="fyt_file">Failiteelt</string>
-    <string name="vertical_bar">Kasuta vertikaalset riba</string>
-    <string name="vertical_bar_on">Vertikaalne riba + horisontaalne riba</string>
-    <string name="vertical_bar_off">Ainult horisontaalne riba</string>
     <string name="stats_screen_summary">Määrake ekraan, kus statistikat kuvatakse</string>
     <string name="date_widget">Kuupäeva ja kellaaja vidin</string>
     <string name="music_widget">Muusika vidin</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Vahelehtede riba asukoht</string>
     <string name="drawer_tab_bar_top">Ülal</string>
     <string name="drawer_tab_bar_bottom">All</string>
+    <string name="display_vertical_bar">Kuva vertikaalne riba</string>
 </resources>

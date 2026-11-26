@@ -109,9 +109,6 @@
     <string name="fyt_title_source">FYT संगीत शीर्षक का स्रोत</string>
     <string name="fyt_metadata">मेटाडेटा से</string>
     <string name="fyt_file">फ़ाइल पाथ से</string>
-    <string name="vertical_bar">ऊर्ध्वाधर बार इस्तेमाल करें</string>
-    <string name="vertical_bar_on">ऊर्ध्वाधर बार + क्षैतिज बार</string>
-    <string name="vertical_bar_off">केवल क्षैतिज बार</string>
     <string name="stats_screen_summary">वह स्क्रीन सेट करें जो आँकड़े दिखाएगी</string>
     <string name="date_widget">दिनांक और समय विजेट</string>
     <string name="music_widget">संगीत विजेट</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">टैब बार की स्थिति</string>
     <string name="drawer_tab_bar_top">ऊपर</string>
     <string name="drawer_tab_bar_bottom">नीचे</string>
+    <string name="display_vertical_bar">ऊर्ध्वाधर बार दिखाएं</string>
 </resources>

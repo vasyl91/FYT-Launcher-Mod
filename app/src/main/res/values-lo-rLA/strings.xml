@@ -109,9 +109,6 @@
     <string name="fyt_title_source">ແຫຼ່ງຊື່ເພງ FYT</string>
     <string name="fyt_metadata">ຈາກເມຕາດາຕາ</string>
     <string name="fyt_file">ຈາກເສັ້ນທາງໄຟລ໌</string>
-    <string name="vertical_bar">ໃຊ້ແຖບແນວຕັ້ງ</string>
-    <string name="vertical_bar_on">ແຖບແນວຕັ້ງ + ແຖບແນວນອນ</string>
-    <string name="vertical_bar_off">ສະເພາະແຖບແນວນອນ</string>
     <string name="stats_screen_summary">ຕັ້ງໜ້າຈໍທີ່ຈະສະແດງສະຖິຕິ</string>
     <string name="date_widget">ວິດເຈັດວັນທີ ແລະ ເວລາ</string>
     <string name="music_widget">ວິດເຈັດເພງ</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">ຕຳແໜ່ງແຖບແຖບ</string>
     <string name="drawer_tab_bar_top">ເທິງ</string>
     <string name="drawer_tab_bar_bottom">ລຸ່ມ</string>
+    <string name="display_vertical_bar">ສະແດງແຖບແນວຕັ້ງ</string>
 </resources>

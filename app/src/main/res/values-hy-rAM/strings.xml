@@ -109,9 +109,6 @@
     <string name="fyt_title_source">FYT երաժշտության վերնագրի աղբյուր</string>
     <string name="fyt_metadata">Մետատվյալներից</string>
     <string name="fyt_file">Ֆայլի ուղուց</string>
-    <string name="vertical_bar">Օգտագործել ուղղահայաց գոտին</string>
-    <string name="vertical_bar_on">Ուղղահայաց գոտի + հորիզոնական գոտի</string>
-    <string name="vertical_bar_off">Միայն հորիզոնական գոտի</string>
     <string name="stats_screen_summary">Սահմանեք էկրանը, որը կցուցադրի վիճակագրությունը</string>
     <string name="date_widget">Ամսաթվի և ժամի վիջեթ</string>
     <string name="music_widget">Երաժշտության վիջեթ</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Ներդիրների գոտու դիրքը</string>
     <string name="drawer_tab_bar_top">Վերևում</string>
     <string name="drawer_tab_bar_bottom">Ներքևում</string>
+    <string name="display_vertical_bar">Ցուցադրել ուղղահայաց գոտին</string>
 </resources>

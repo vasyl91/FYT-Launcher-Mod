@@ -109,9 +109,6 @@
     <string name="fyt_title_source">FYT хөгжмийн гарчгийн эх сурвалж</string>
     <string name="fyt_metadata">Мета өгөгдлөөс</string>
     <string name="fyt_file">Файлын замаас</string>
-    <string name="vertical_bar">Босоо самбар ашиглах</string>
-    <string name="vertical_bar_on">Босоо самбар + хэвтээ самбар</string>
-    <string name="vertical_bar_off">Зөвхөн хэвтээ самбар</string>
     <string name="stats_screen_summary">Статистикийг харуулах дэлгэцийг тохируулах</string>
     <string name="date_widget">Огноо, цагийн виджет</string>
     <string name="music_widget">Хөгжмийн виджет</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Табын самбарын байрлал</string>
     <string name="drawer_tab_bar_top">Дээд</string>
     <string name="drawer_tab_bar_bottom">Доод</string>
+    <string name="display_vertical_bar">Босоо самбар харуулах</string>
 </resources>

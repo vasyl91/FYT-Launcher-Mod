@@ -109,9 +109,6 @@
     <string name="fyt_title_source">Източник на заглавието на музиката FYT</string>
     <string name="fyt_metadata">От метаданните</string>
     <string name="fyt_file">От пътя на файла</string>
-    <string name="vertical_bar">Използване на вертикалната лента</string>
-    <string name="vertical_bar_on">Вертикална лента + хоризонтална лента</string>
-    <string name="vertical_bar_off">Само хоризонтална лента</string>
     <string name="stats_screen_summary">Задайте екрана, който ще показва статистиката</string>
     <string name="date_widget">Приспособление за дата и час</string>
     <string name="music_widget">Приспособление за музика</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Разположение на лентата с раздели</string>
     <string name="drawer_tab_bar_top">Горе</string>
     <string name="drawer_tab_bar_bottom">Долу</string>
+    <string name="display_vertical_bar">Показване на вертикалната лента</string>
 </resources>

@@ -109,9 +109,6 @@
     <string name="fyt_title_source">Origen del títol de la música FYT</string>
     <string name="fyt_metadata">Des de les metadades</string>
     <string name="fyt_file">Des de la ruta del fitxer</string>
-    <string name="vertical_bar">Usa la barra vertical</string>
-    <string name="vertical_bar_on">Barra vertical + barra horitzontal</string>
-    <string name="vertical_bar_off">Només barra horitzontal</string>
     <string name="stats_screen_summary">Defineix la pantalla que mostrarà les estadístiques</string>
     <string name="date_widget">Widget de data i hora</string>
     <string name="music_widget">Widget de música</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Ubicació de la barra de pestanyes</string>
     <string name="drawer_tab_bar_top">A dalt</string>
     <string name="drawer_tab_bar_bottom">A baix</string>
+    <string name="display_vertical_bar">Mostra la barra vertical</string>
 </resources>

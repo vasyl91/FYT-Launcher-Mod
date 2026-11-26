@@ -109,9 +109,6 @@
     <string name="fyt_title_source">Źródło dla danych z odtwarzacza FYT</string>
     <string name="fyt_metadata">Metadata</string>
     <string name="fyt_file">Nazwa pliku</string>
-    <string name="vertical_bar">Używaj paska pionowego</string>
-    <string name="vertical_bar_on">Pasek pionowy + pasek poziomy</string>
-    <string name="vertical_bar_off">Tylko poziomy pasek</string>
     <string name="stats_screen_summary">Wybierz ekran, na którym zostanie wyświetlony widget statystyk</string>
     <string name="date_widget">Widget daty i czasu</string>
     <string name="music_widget">Widget muzyczny</string>
@@ -646,4 +643,5 @@
     <string name="drawer_tab_bar_position">Położenie paska kart</string>
     <string name="drawer_tab_bar_top">Na górze</string>
     <string name="drawer_tab_bar_bottom">Na dole</string>
+    <string name="display_vertical_bar">Wyświetlaj pasek pionowy</string>
 </resources>
