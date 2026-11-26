@@ -1483,6 +1483,8 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         mContentType = type;
         invalidatePageData(page, true);
         syncVertical();
+        // the strip of tabs is for the apps only: the widgets have none
+        syncTabs();
     }
 
     public ContentType getContentType() {
