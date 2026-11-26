@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Aby blokować ekran dwukrotnym dotknięciem, włącz usługę dostępności launchera.</string>
     <string name="folders_background_preference">Wybierz tło folderów</string>
     <string name="folders_background_dialog_title">Wybierz tło dla folderów:</string>
+    <string name="folder_follow_grid">Siatka ekranu głównego w folderach</string>
+    <string name="folder_follow_grid_on">Foldery używają kolumn ekranu głównego i tylu wierszy, ile potrzeba</string>
+    <string name="folder_follow_grid_off">Foldery rosną niemal do kwadratu, do rozmiaru ekranu głównego</string>
 </resources>

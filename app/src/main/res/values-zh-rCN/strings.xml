@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">要通过双击锁定屏幕，请开启启动器的无障碍服务。</string>
     <string name="folders_background_preference">选择文件夹背景</string>
     <string name="folders_background_dialog_title">选择文件夹的背景：</string>
+    <string name="folder_follow_grid">文件夹内沿用主屏幕网格</string>
+    <string name="folder_follow_grid_on">文件夹使用主屏幕的列数，并按需增加行数</string>
+    <string name="folder_follow_grid_off">文件夹近似正方形增长，最大为主屏幕大小</string>
 </resources>

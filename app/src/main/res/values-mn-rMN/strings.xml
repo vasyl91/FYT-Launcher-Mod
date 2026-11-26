@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Дэлгэцийг хоёр товшиж түгжихийн тулд лаунчерын хандалтын үйлчилгээг асаана уу.</string>
     <string name="folders_background_preference">Хавтасны дэвсгэр сонгох</string>
     <string name="folders_background_dialog_title">Хавтасны дэвсгэрийг сонгоно уу:</string>
+    <string name="folder_follow_grid">Хавтас дотор нүүр дэлгэцийн торыг дагах</string>
+    <string name="folder_follow_grid_on">Хавтсууд нүүр дэлгэцийн баганыг ашиглаж, шаардлагатай мөртэй байна</string>
+    <string name="folder_follow_grid_off">Хавтсууд нүүр дэлгэцийн хэмжээ хүртэл дөрвөлжин хэлбэртэй томорно</string>
 </resources>

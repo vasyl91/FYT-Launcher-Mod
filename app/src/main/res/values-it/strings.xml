@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Per bloccare lo schermo con un doppio tocco, attiva il servizio di accessibilità del launcher.</string>
     <string name="folders_background_preference">Scegli lo sfondo per le cartelle</string>
     <string name="folders_background_dialog_title">Seleziona lo sfondo per le cartelle:</string>
+    <string name="folder_follow_grid">Segui la griglia della schermata Home nelle cartelle</string>
+    <string name="folder_follow_grid_on">Le cartelle usano le colonne della schermata Home e le righe necessarie</string>
+    <string name="folder_follow_grid_off">Le cartelle crescono quasi quadrate, fino alla dimensione della schermata Home</string>
 </resources>

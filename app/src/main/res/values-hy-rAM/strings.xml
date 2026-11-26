@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Էկրանը կրկնակի հպումով արգելափակելու համար միացրեք լաունչերի հասանելիության ծառայությունը։</string>
     <string name="folders_background_preference">Ընտրեք թղթապանակների ֆոնը</string>
     <string name="folders_background_dialog_title">Ընտրեք թղթապանակների ֆոնը՝</string>
+    <string name="folder_follow_grid">Թղթապանակներում օգտագործել գլխավոր էկրանի ցանցը</string>
+    <string name="folder_follow_grid_on">Թղթապանակները օգտագործում են գլխավոր էկրանի սյունակները և անհրաժեշտ թվով տողեր</string>
+    <string name="folder_follow_grid_off">Թղթապանակները աճում են գրեթե քառակուսի՝ մինչև գլխավոր էկրանի չափը</string>
 </resources>

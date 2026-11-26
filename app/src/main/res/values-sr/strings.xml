@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Da biste zaključavali ekran dvostrukim dodirom, uključite uslugu pristupačnosti pokretača.</string>
     <string name="folders_background_preference">Изаберите позадину за фасцикле</string>
     <string name="folders_background_dialog_title">Изаберите позадину за фасцикле:</string>
+    <string name="folder_follow_grid">Користи мрежу почетног екрана у фасциклама</string>
+    <string name="folder_follow_grid_on">Фасцикле користе колоне почетног екрана и онолико редова колико им треба</string>
+    <string name="folder_follow_grid_off">Фасцикле расту готово квадратно, до величине почетног екрана</string>
 </resources>

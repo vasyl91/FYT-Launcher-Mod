@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Para bloquear la pantalla con un doble toque, activa el servicio de accesibilidad del launcher.</string>
     <string name="folders_background_preference">Elegir fondo para carpetas</string>
     <string name="folders_background_dialog_title">Selecciona el fondo de las carpetas:</string>
+    <string name="folder_follow_grid">Seguir la cuadrícula de la pantalla de inicio en las carpetas</string>
+    <string name="folder_follow_grid_on">Las carpetas usan las columnas de la pantalla de inicio y las filas que necesiten</string>
+    <string name="folder_follow_grid_off">Las carpetas crecen casi cuadradas, hasta el tamaño de la pantalla de inicio</string>
 </resources>

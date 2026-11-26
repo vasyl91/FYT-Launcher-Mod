@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Slå launcherens hjælpefunktion til for at låse skærmen med et dobbelttryk.</string>
     <string name="folders_background_preference">Vælg baggrund til mapper</string>
     <string name="folders_background_dialog_title">Vælg baggrund til mapper:</string>
+    <string name="folder_follow_grid">Følg startskærmens gitter i mapper</string>
+    <string name="folder_follow_grid_on">Mapper bruger startskærmens kolonner og så mange rækker, de har brug for</string>
+    <string name="folder_follow_grid_off">Mapper vokser næsten kvadratisk op til startskærmens størrelse</string>
 </resources>

@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Para i-lock ang screen gamit ang double tap, i-on ang accessibility service ng launcher.</string>
     <string name="folders_background_preference">Pumili ng background para sa mga folder</string>
     <string name="folders_background_dialog_title">Pumili ng background para sa mga folder:</string>
+    <string name="folder_follow_grid">Sundin ang grid ng home screen sa loob ng mga folder</string>
+    <string name="folder_follow_grid_on">Gagamitin ng mga folder ang mga column ng home screen at ang kailangang bilang ng row</string>
+    <string name="folder_follow_grid_off">Halos parisukat ang paglaki ng mga folder, hanggang sa laki ng home screen</string>
 </resources>

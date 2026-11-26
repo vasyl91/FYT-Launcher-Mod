@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">หากต้องการล็อกหน้าจอด้วยการแตะสองครั้ง ให้เปิดบริการการเข้าถึงของแลนเชอร์</string>
     <string name="folders_background_preference">เลือกพื้นหลังของโฟลเดอร์</string>
     <string name="folders_background_dialog_title">เลือกพื้นหลังของโฟลเดอร์:</string>
+    <string name="folder_follow_grid">ใช้ตารางหน้าจอหลักในโฟลเดอร์</string>
+    <string name="folder_follow_grid_on">โฟลเดอร์ใช้จำนวนคอลัมน์ของหน้าจอหลักและแถวเท่าที่จำเป็น</string>
+    <string name="folder_follow_grid_off">โฟลเดอร์ขยายเกือบเป็นสี่เหลี่ยมจัตุรัส ไม่เกินขนาดหน้าจอหลัก</string>
 </resources>

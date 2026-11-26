@@ -90,6 +90,13 @@
         <Preference
             android:key="choose_folders_background"
             android:title="@string/folders_background_preference" />
+        <com.android.launcher66.settings.CustomSwitchPreference
+            android:key="folder_follow_grid"
+            android:defaultValue="false"
+            android:title="@string/folder_follow_grid"
+            android:summaryOn="@string/folder_follow_grid_on"
+            android:summaryOff="@string/folder_follow_grid_off"
+            app:layout="@layout/nested_preference_category_switch" />
 
     </PreferenceCategory>
 

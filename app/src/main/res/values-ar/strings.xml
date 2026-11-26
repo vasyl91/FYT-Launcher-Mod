@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">لقفل الشاشة بالنقر المزدوج، فعّل خدمة إمكانية الوصول الخاصة بالمشغّل.</string>
     <string name="folders_background_preference">اختر خلفية للمجلدات</string>
     <string name="folders_background_dialog_title">اختر خلفية للمجلدات:</string>
+    <string name="folder_follow_grid">اتباع شبكة الشاشة الرئيسية داخل المجلدات</string>
+    <string name="folder_follow_grid_on">تستخدم المجلدات أعمدة الشاشة الرئيسية وعدد الصفوف الذي تحتاجه</string>
+    <string name="folder_follow_grid_off">تنمو المجلدات بشكل شبه مربع حتى حجم الشاشة الرئيسية</string>
 </resources>

@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">ເພື່ອລັອກໜ້າຈໍດ້ວຍການແຕະສອງຄັ້ງ, ກະລຸນາເປີດບໍລິການການຊ່ວຍເຂົ້າເຖິງຂອງ launcher.</string>
     <string name="folders_background_preference">ເລືອກພື້ນຫຼັງສຳລັບແຟ້ມ</string>
     <string name="folders_background_dialog_title">ເລືອກພື້ນຫຼັງສຳລັບແຟ້ມ:</string>
+    <string name="folder_follow_grid">ໃຊ້ຕາຕະລາງໜ້າຈໍຫຼັກໃນແຟ້ມ</string>
+    <string name="folder_follow_grid_on">ແຟ້ມໃຊ້ຖັນຂອງໜ້າຈໍຫຼັກ ແລະ ແຖວຕາມທີ່ຈຳເປັນ</string>
+    <string name="folder_follow_grid_off">ແຟ້ມຂະຫຍາຍເກືອບເປັນສີ່ຫຼ່ຽມ ຈົນເຖິງຂະໜາດໜ້າຈໍຫຼັກ</string>
 </resources>

@@ -596,4 +596,7 @@
     <string name="double_tap_needs_accessibility">To lock the screen with a double tap, turn on the launcher\'s accessibility service.</string>
     <string name="folders_background_preference">Choose background for folders</string>
     <string name="folders_background_dialog_title">Select background for folders:</string>
+    <string name="folder_follow_grid">Follow home screen grid inside folders</string>
+    <string name="folder_follow_grid_on">Folders use the home screen\'s columns and as many rows as they need</string>
+    <string name="folder_follow_grid_off">Folders grow nearly square, up to the home screen\'s size</string>
 </resources>

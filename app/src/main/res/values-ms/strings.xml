@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Untuk mengunci skrin dengan ketik dua kali, hidupkan perkhidmatan kebolehcapaian pelancar.</string>
     <string name="folders_background_preference">Pilih latar belakang folder</string>
     <string name="folders_background_dialog_title">Pilih latar belakang untuk folder:</string>
+    <string name="folder_follow_grid">Ikut grid skrin utama dalam folder</string>
+    <string name="folder_follow_grid_on">Folder menggunakan lajur skrin utama dan baris mengikut keperluan</string>
+    <string name="folder_follow_grid_off">Folder membesar hampir segi empat sama, sehingga saiz skrin utama</string>
 </resources>

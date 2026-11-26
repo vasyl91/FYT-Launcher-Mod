@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Ak chcete zamykať obrazovku dvojitým klepnutím, zapnite službu dostupnosti launchera.</string>
     <string name="folders_background_preference">Vyberte pozadie priečinkov</string>
     <string name="folders_background_dialog_title">Vyberte pozadie priečinkov:</string>
+    <string name="folder_follow_grid">Mriežka domovskej obrazovky v priečinkoch</string>
+    <string name="folder_follow_grid_on">Priečinky používajú stĺpce domovskej obrazovky a toľko riadkov, koľko potrebujú</string>
+    <string name="folder_follow_grid_off">Priečinky rastú takmer do štvorca až do veľkosti domovskej obrazovky</string>
 </resources>

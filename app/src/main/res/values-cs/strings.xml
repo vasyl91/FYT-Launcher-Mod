@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Chcete-li zamykat obrazovku dvojitým klepnutím, zapněte službu usnadnění přístupu launcheru.</string>
     <string name="folders_background_preference">Vyberte pozadí složek</string>
     <string name="folders_background_dialog_title">Vyberte pozadí složek:</string>
+    <string name="folder_follow_grid">Mřížka domovské obrazovky ve složkách</string>
+    <string name="folder_follow_grid_on">Složky mají sloupce domovské obrazovky a tolik řádků, kolik potřebují</string>
+    <string name="folder_follow_grid_off">Složky rostou téměř do čtverce, až do velikosti domovské obrazovky</string>
 </resources>

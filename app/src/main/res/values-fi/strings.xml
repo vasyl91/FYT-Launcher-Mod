@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Jos haluat lukita näytön kaksoisnapautuksella, ota käyttöön käynnistysnäkymän esteettömyyspalvelu.</string>
     <string name="folders_background_preference">Valitse kansioiden tausta</string>
     <string name="folders_background_dialog_title">Valitse kansioiden tausta:</string>
+    <string name="folder_follow_grid">Käytä aloitusnäytön ruudukkoa kansioissa</string>
+    <string name="folder_follow_grid_on">Kansiot käyttävät aloitusnäytön sarakkeita ja tarvitsemansa määrän rivejä</string>
+    <string name="folder_follow_grid_off">Kansiot kasvavat lähes neliöksi aloitusnäytön kokoon asti</string>
 </resources>

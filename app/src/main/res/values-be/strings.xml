@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Каб блакіраваць экран падвойным націскам, уключыце службу спецыяльных магчымасцей лаўнчара.</string>
     <string name="folders_background_preference">Выберыце фон для папак</string>
     <string name="folders_background_dialog_title">Выберыце фон для папак:</string>
+    <string name="folder_follow_grid">Выкарыстоўваць сетку галоўнага экрана ў папках</string>
+    <string name="folder_follow_grid_on">Папкі выкарыстоўваюць слупкі галоўнага экрана і столькі радкоў, колькі трэба</string>
+    <string name="folder_follow_grid_off">Папкі растуць амаль квадратам, да памераў галоўнага экрана</string>
 </resources>

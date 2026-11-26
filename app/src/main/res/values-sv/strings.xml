@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Aktivera startskärmens tillgänglighetstjänst för att låsa skärmen med dubbeltryck.</string>
     <string name="folders_background_preference">Välj bakgrund för mappar</string>
     <string name="folders_background_dialog_title">Välj bakgrund för mappar:</string>
+    <string name="folder_follow_grid">Följ startskärmens rutnät i mappar</string>
+    <string name="folder_follow_grid_on">Mappar använder startskärmens kolumner och så många rader de behöver</string>
+    <string name="folder_follow_grid_off">Mappar växer nästan kvadratiskt, upp till startskärmens storlek</string>
 </resources>

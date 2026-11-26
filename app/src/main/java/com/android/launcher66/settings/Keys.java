@@ -63,6 +63,8 @@ public final class Keys {
     public static final String SWIPE_DOWN_NOTIFICATIONS = "swipe_down_notifications";
     /** "Double-tap action" on empty space of the home screen: "none" (default), "lock" or "screen_off" (DoubleTapActions). */
     public static final String DOUBLE_TAP_ACTION = "double_tap_action";
+    /** "Follow home screen grid inside folders": the folder has the home screen's columns (FolderGrid), off by default. */
+    public static final String FOLDER_FOLLOW_GRID = "folder_follow_grid";
     /** Before it was split into LAUNCHER_HOME_WAKE and LAUNCHER_HOME_COLD_START; only migrated. */
     public static final String LAUNCHER_HOME = "launcher_home";
     public static final String LAUNCHER_HOME_WAKE = "launcher_home_wake";

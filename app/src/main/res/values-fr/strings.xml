@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Pour verrouiller l\'écran par un double appui, activez le service d\'accessibilité du lanceur.</string>
     <string name="folders_background_preference">Choisir l\'arrière-plan des dossiers</string>
     <string name="folders_background_dialog_title">Sélectionnez l\'arrière-plan des dossiers :</string>
+    <string name="folder_follow_grid">Suivre la grille de l\'écran d\'accueil dans les dossiers</string>
+    <string name="folder_follow_grid_on">Les dossiers utilisent les colonnes de l\'écran d\'accueil et autant de lignes que nécessaire</string>
+    <string name="folder_follow_grid_off">Les dossiers grandissent presque en carré, jusqu\'à la taille de l\'écran d\'accueil</string>
 </resources>

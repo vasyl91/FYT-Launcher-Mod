@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Slå på tilgjengelighetstjenesten til launcheren for å låse skjermen med et dobbelttrykk.</string>
     <string name="folders_background_preference">Velg bakgrunn for mapper</string>
     <string name="folders_background_dialog_title">Velg bakgrunn for mapper:</string>
+    <string name="folder_follow_grid">Følg startskjermens rutenett i mapper</string>
+    <string name="folder_follow_grid_on">Mapper bruker startskjermens kolonner og så mange rader de trenger</string>
+    <string name="folder_follow_grid_off">Mapper vokser nesten kvadratisk, opp til startskjermens størrelse</string>
 </resources>

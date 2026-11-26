@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Per bloquejar la pantalla amb un doble toc, activa el servei d\'accessibilitat de l\'iniciador.</string>
     <string name="folders_background_preference">Tria el fons de les carpetes</string>
     <string name="folders_background_dialog_title">Tria el fons de les carpetes:</string>
+    <string name="folder_follow_grid">Segueix la quadrícula de la pantalla d\'inici dins les carpetes</string>
+    <string name="folder_follow_grid_on">Les carpetes usen les columnes de la pantalla d\'inici i les files que necessitin</string>
+    <string name="folder_follow_grid_off">Les carpetes creixen gairebé quadrades, fins a la mida de la pantalla d\'inici</string>
 </resources>

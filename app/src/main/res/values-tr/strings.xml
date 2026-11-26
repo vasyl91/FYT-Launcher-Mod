@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Ekranı çift dokunuşla kilitlemek için başlatıcının erişilebilirlik hizmetini açın.</string>
     <string name="folders_background_preference">Klasörler için arka plan seçin</string>
     <string name="folders_background_dialog_title">Klasörler için arka planı seçin:</string>
+    <string name="folder_follow_grid">Klasörlerde ana ekran ızgarasını izle</string>
+    <string name="folder_follow_grid_on">Klasörler ana ekranın sütunlarını ve gereken sayıda satırı kullanır</string>
+    <string name="folder_follow_grid_off">Klasörler ana ekranın boyutuna kadar neredeyse kare büyür</string>
 </resources>

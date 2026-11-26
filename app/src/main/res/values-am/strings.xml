@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">ማያ ገጹን በሁለቴ መታ ለመቆለፍ የማስጀመሪያውን የተደራሽነት አገልግሎት ያብሩ።</string>
     <string name="folders_background_preference">ለአቃፊዎች ዳራ ይምረጡ</string>
     <string name="folders_background_dialog_title">ለአቃፊዎች ዳራ ይምረጡ፦</string>
+    <string name="folder_follow_grid">በአቃፊዎች ውስጥ የመነሻ ማያ ገጹን ፍርግርግ ተከተል</string>
+    <string name="folder_follow_grid_on">አቃፊዎች የመነሻ ማያ ገጹን ዓምዶች እና የሚያስፈልጋቸውን ያህል ረድፎች ይጠቀማሉ</string>
+    <string name="folder_follow_grid_off">አቃፊዎች እስከ መነሻ ማያ ገጹ መጠን ድረስ ወደ ካሬ የቀረበ ቅርጽ ያድጋሉ</string>
 </resources>

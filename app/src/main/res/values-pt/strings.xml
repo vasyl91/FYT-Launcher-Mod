@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Para bloquear a tela com um toque duplo, ative o serviço de acessibilidade do launcher.</string>
     <string name="folders_background_preference">Escolher fundo das pastas</string>
     <string name="folders_background_dialog_title">Selecione o fundo das pastas:</string>
+    <string name="folder_follow_grid">Seguir a grelha do ecrã principal nas pastas</string>
+    <string name="folder_follow_grid_on">As pastas usam as colunas do ecrã principal e as linhas de que precisarem</string>
+    <string name="folder_follow_grid_off">As pastas crescem quase quadradas, até ao tamanho do ecrã principal</string>
 </resources>

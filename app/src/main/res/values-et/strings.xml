@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Ekraani topeltpuudutusega lukustamiseks lülitage sisse käivitaja juurdepääsetavusteenus.</string>
     <string name="folders_background_preference">Vali kaustade taust</string>
     <string name="folders_background_dialog_title">Valige kaustade taust:</string>
+    <string name="folder_follow_grid">Kasuta kaustades avakuva ruudustikku</string>
+    <string name="folder_follow_grid_on">Kaustad kasutavad avakuva veerge ja vajalikku arvu ridu</string>
+    <string name="folder_follow_grid_off">Kaustad kasvavad peaaegu ruudukujuliseks avakuva suuruseni</string>
 </resources>

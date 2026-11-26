@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Чтобы блокировать экран двойным касанием, включите службу специальных возможностей лаунчера.</string>
     <string name="folders_background_preference">Выберите фон для папок</string>
     <string name="folders_background_dialog_title">Выберите фон для папок:</string>
+    <string name="folder_follow_grid">Сетка главного экрана внутри папок</string>
+    <string name="folder_follow_grid_on">Папки используют столбцы главного экрана и столько строк, сколько нужно</string>
+    <string name="folder_follow_grid_off">Папки растут почти квадратом, до размера главного экрана</string>
 </resources>

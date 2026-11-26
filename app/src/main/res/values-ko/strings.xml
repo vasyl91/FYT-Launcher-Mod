@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">두 번 탭하여 화면을 잠그려면 런처의 접근성 서비스를 켜세요.</string>
     <string name="folders_background_preference">폴더 배경 선택</string>
     <string name="folders_background_dialog_title">폴더 배경을 선택하세요:</string>
+    <string name="folder_follow_grid">폴더 안에서 홈 화면 격자 따르기</string>
+    <string name="folder_follow_grid_on">폴더는 홈 화면의 열 수를 쓰고 필요한 만큼 행이 늘어납니다</string>
+    <string name="folder_follow_grid_off">폴더는 홈 화면 크기까지 거의 정사각형으로 커집니다</string>
 </resources>

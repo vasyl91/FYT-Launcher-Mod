@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Untuk mengunci layar dengan ketuk dua kali, aktifkan layanan aksesibilitas launcher.</string>
     <string name="folders_background_preference">Pilih latar belakang folder</string>
     <string name="folders_background_dialog_title">Pilih latar belakang untuk folder:</string>
+    <string name="folder_follow_grid">Ikuti kisi layar utama di dalam folder</string>
+    <string name="folder_follow_grid_on">Folder memakai kolom layar utama dan baris sebanyak yang dibutuhkan</string>
+    <string name="folder_follow_grid_off">Folder tumbuh hampir persegi, hingga ukuran layar utama</string>
 </resources>

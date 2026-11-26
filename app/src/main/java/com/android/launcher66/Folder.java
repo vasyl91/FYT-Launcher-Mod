@@ -8,6 +8,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -37,6 +38,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
+import com.android.launcher66.settings.WorkspaceGrids;
+import com.android.launcher66.settings.Keys;
 import androidx.preference.PreferenceManager;
 import androidx.core.widget.AutoScrollHelper;
 
@@ -80,6 +83,10 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
     private int mMaxCountX;
     private int mMaxCountY;
     private int mMaxNumItems;
+    /** The cell of the folder's own grid (itemCellSize), kept for the times it is not the page's. */
+    private int[] mOwnCell;
+    /** Whether the content was last arranged in the home screen's grid (D5), so a change of the setting is seen at opening. */
+    private boolean mFollowApplied;
     private ArrayList<View> mItemsInReadingOrder = new ArrayList<View>();
     private Drawable mIconDrawable;
     boolean mItemsInvalidated = false;
@@ -169,6 +176,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
 
         int[] cell = itemCellSize(grid);
+        mOwnCell = cell;
         mContent.setCellDimensions(cell[0], cell[1]);
         mContent.setRowPadding(false);
         mContent.setGridSize(0, 0);
@@ -511,6 +519,9 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
 
     public void animateOpen() {
         applyOwnBackground();
+        if (followsHomeGrid() != mFollowApplied) {
+            setupContentDimensions(getItemCount());   // the setting was changed since the folder was arranged
+        }
         positionAndSizeAsIcon();
 
         if (!(getParent() instanceof DragLayer)) return;
@@ -939,36 +950,75 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         return true;
     }
 
+    /**
+     * "Follow home screen grid inside folders" (D5, a creator setting; the stock layout never follows it): the
+     * folder has the home screen's columns whatever the number of icons, as many rows as they need, and cells as wide
+     * as those of the current page. Otherwise it grows nearly square (FolderGrid.own), as it always did.
+     */
+    private boolean followsHomeGrid() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        return CreatorPrefs.of(prefs).getBoolean(Keys.FOLDER_FOLLOW_GRID, false);
+    }
+
+    /** The largest grid the folder may have in the way it is arranged now. */
+    private void refreshGridLimits() {
+        if (followsHomeGrid()) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+            boolean landscape = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+            mMaxCountX = WorkspaceGrids.columns(prefs, landscape);
+            mMaxCountY = WorkspaceGrids.rows(prefs, landscape);
+        } else {
+            DeviceProfile grid = LauncherAppState.getInstance().getDynamicGrid().getDeviceProfile();
+            mMaxCountX = (int) grid.numColumns;
+            mMaxCountY = (int) grid.numRows;
+        }
+        mMaxNumItems = mMaxCountX * mMaxCountY;
+    }
+
+    /**
+     * The width of the folder's cells in the home screen's grid: the page's cell width, narrowed when the columns would
+     * be wider than the page (the folder is never wider than the page; above its height the content scrolls).
+     */
+    private void sizeCellsToPage(int columns) {
+        int cellWidth = mOwnCell[0];
+        Workspace workspace = mLauncher.getWorkspace();
+        if (workspace != null && workspace.getCurrentPage() >= 0
+                && workspace.getCurrentPage() < workspace.getChildCount()
+                && workspace.getChildAt(workspace.getCurrentPage()) instanceof CellLayout) {
+            CellLayout page = (CellLayout) workspace.getChildAt(workspace.getCurrentPage());
+            if (page.getCellWidth() > 0) {
+                cellWidth = page.getCellWidth();
+                int room = workspace.getWidth() - getPaddingLeft() - getPaddingRight()
+                        - mContent.getPaddingLeft() - mContent.getPaddingRight();
+                if (room > 0 && columns > 0) {
+                    cellWidth = Math.min(cellWidth, room / columns);
+                }
+            }
+        }
+        mContent.setCellDimensions(cellWidth, mOwnCell[1]);
+    }
+
     private void setupContentDimensions(int count) {
         ArrayList<View> list = getItemsInReadingOrder();
-
-        int countX = mContent.getCountX();
-        int countY = mContent.getCountY();
-        boolean done = false;
-
-        while (!done) {
-            int oldCountX = countX;
-            int oldCountY = countY;
-            if (countX * countY < count) {
-                // Current grid is too small, expand it
-                if ((countX <= countY || countY == mMaxCountY) && countX < mMaxCountX) {
-                    countX++;
-                } else if (countY < mMaxCountY) {
-                    countY++;
-                }
-                if (countY == 0) countY++;
-            } else if ((countY - 1) * countX >= count && countY >= countX) {
-                countY = Math.max(0, countY - 1);
-            } else if ((countX - 1) * countY >= count) {
-                countX = Math.max(0, countX - 1);
+        boolean follow = followsHomeGrid();
+        refreshGridLimits();
+        int[] grid;
+        if (follow) {
+            grid = FolderGrid.followGrid(count, mMaxCountX);
+            sizeCellsToPage(grid[0]);
+        } else {
+            grid = FolderGrid.own(count, mContent.getCountX(), mContent.getCountY(), mMaxCountX, mMaxCountY);
+            if (mFollowApplied && mOwnCell != null) {
+                mContent.setCellDimensions(mOwnCell[0], mOwnCell[1]);   // back to the folder's own cells
             }
-            done = countX == oldCountX && countY == oldCountY;
         }
-        mContent.setGridSize(countX, countY);
+        mFollowApplied = follow;
+        mContent.setGridSize(grid[0], grid[1]);
         arrangeChildren(list);
     }
 
     public boolean isFull() {
+        refreshGridLimits();
         return getItemCount() >= mMaxNumItems;
     }
 

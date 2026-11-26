@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Da biste zaslon zaključavali dvostrukim dodirom, uključite uslugu pristupačnosti pokretača.</string>
     <string name="folders_background_preference">Odaberite pozadinu za mape</string>
     <string name="folders_background_dialog_title">Odaberite pozadinu za mape:</string>
+    <string name="folder_follow_grid">Koristi mrežu početnog zaslona u mapama</string>
+    <string name="folder_follow_grid_on">Mape koriste stupce početnog zaslona i onoliko redaka koliko im treba</string>
+    <string name="folder_follow_grid_off">Mape rastu gotovo kvadratno, do veličine početnog zaslona</string>
 </resources>

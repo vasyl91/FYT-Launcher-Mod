@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">डबल टैप से स्क्रीन लॉक करने के लिए, लॉन्चर की सुलभता सेवा चालू करें।</string>
     <string name="folders_background_preference">फ़ोल्डर के लिए पृष्ठभूमि चुनें</string>
     <string name="folders_background_dialog_title">फ़ोल्डर के लिए पृष्ठभूमि चुनें:</string>
+    <string name="folder_follow_grid">फ़ोल्डर में होम स्क्रीन की ग्रिड अपनाएँ</string>
+    <string name="folder_follow_grid_on">फ़ोल्डर होम स्क्रीन के कॉलम और ज़रूरत भर की पंक्तियाँ इस्तेमाल करते हैं</string>
+    <string name="folder_follow_grid_off">फ़ोल्डर लगभग वर्गाकार बढ़ते हैं, होम स्क्रीन के आकार तक</string>
 </resources>

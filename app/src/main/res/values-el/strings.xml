@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Για να κλειδώνετε την οθόνη με διπλό πάτημα, ενεργοποιήστε την υπηρεσία προσβασιμότητας του launcher.</string>
     <string name="folders_background_preference">Επιλογή φόντου για φακέλους</string>
     <string name="folders_background_dialog_title">Επιλέξτε φόντο για φακέλους:</string>
+    <string name="folder_follow_grid">Ακολούθηση του πλέγματος της αρχικής οθόνης στους φακέλους</string>
+    <string name="folder_follow_grid_on">Οι φάκελοι χρησιμοποιούν τις στήλες της αρχικής οθόνης και όσες γραμμές χρειάζονται</string>
+    <string name="folder_follow_grid_off">Οι φάκελοι μεγαλώνουν σχεδόν τετράγωνοι, έως το μέγεθος της αρχικής οθόνης</string>
 </resources>

@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Ili kufunga skrini kwa kugusa mara mbili, washa huduma ya ufikivu ya kizindua.</string>
     <string name="folders_background_preference">Chagua mandharinyuma ya folda</string>
     <string name="folders_background_dialog_title">Chagua mandharinyuma ya folda:</string>
+    <string name="folder_follow_grid">Fuata gridi ya skrini ya kwanza ndani ya folda</string>
+    <string name="folder_follow_grid_on">Folda hutumia safu wima za skrini ya kwanza na safu mlalo zinazohitajika</string>
+    <string name="folder_follow_grid_off">Folda hukua karibu mraba, hadi ukubwa wa skrini ya kwanza</string>
 </resources>

@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">За да заключвате екрана с двукратно докосване, включете услугата за достъпност на лаунчъра.</string>
     <string name="folders_background_preference">Изберете фон за папките</string>
     <string name="folders_background_dialog_title">Изберете фон за папките:</string>
+    <string name="folder_follow_grid">Мрежата на началния екран в папките</string>
+    <string name="folder_follow_grid_on">Папките използват колоните на началния екран и толкова реда, колкото са нужни</string>
+    <string name="folder_follow_grid_off">Папките растат почти квадратно – до размера на началния екран</string>
 </resources>

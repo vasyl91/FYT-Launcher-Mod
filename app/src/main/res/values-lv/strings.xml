@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Lai bloķētu ekrānu ar dubulto pieskārienu, ieslēdziet palaidēja pieejamības pakalpojumu.</string>
     <string name="folders_background_preference">Izvēlieties mapju fonu</string>
     <string name="folders_background_dialog_title">Izvēlieties mapju fonu:</string>
+    <string name="folder_follow_grid">Mapēs izmantot sākuma ekrāna režģi</string>
+    <string name="folder_follow_grid_on">Mapes izmanto sākuma ekrāna kolonnas un tik rindu, cik vajag</string>
+    <string name="folder_follow_grid_off">Mapes aug gandrīz kvadrātveidā līdz sākuma ekrāna izmēram</string>
 </resources>

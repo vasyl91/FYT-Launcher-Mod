@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">若要點兩下鎖定螢幕，請開啟啟動器的無障礙服務。</string>
     <string name="folders_background_preference">選擇資料夾背景</string>
     <string name="folders_background_dialog_title">選擇資料夾的背景：</string>
+    <string name="folder_follow_grid">資料夾內沿用主畫面格線</string>
+    <string name="folder_follow_grid_on">資料夾使用主畫面的欄數，並視需要增加列數</string>
+    <string name="folder_follow_grid_off">資料夾近似正方形增長，最大為主畫面大小</string>
 </resources>

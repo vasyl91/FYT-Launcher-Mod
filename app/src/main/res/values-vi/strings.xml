@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Để khóa màn hình bằng cách chạm đúp, hãy bật dịch vụ hỗ trợ tiếp cận của trình khởi chạy.</string>
     <string name="folders_background_preference">Chọn nền cho thư mục</string>
     <string name="folders_background_dialog_title">Chọn nền cho thư mục:</string>
+    <string name="folder_follow_grid">Dùng lưới màn hình chính trong thư mục</string>
+    <string name="folder_follow_grid_on">Thư mục dùng số cột của màn hình chính và đủ số hàng cần thiết</string>
+    <string name="folder_follow_grid_off">Thư mục lớn dần gần như vuông, tối đa bằng cỡ màn hình chính</string>
 </resources>

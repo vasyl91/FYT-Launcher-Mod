@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Pentru a bloca ecranul cu o atingere dublă, activați serviciul de accesibilitate al launcherului.</string>
     <string name="folders_background_preference">Alegeți fundalul pentru dosare</string>
     <string name="folders_background_dialog_title">Selectați fundalul pentru dosare:</string>
+    <string name="folder_follow_grid">Folosește grila ecranului principal în dosare</string>
+    <string name="folder_follow_grid_on">Dosarele folosesc coloanele ecranului principal și câte rânduri au nevoie</string>
+    <string name="folder_follow_grid_off">Dosarele cresc aproape pătrate, până la dimensiunea ecranului principal</string>
 </resources>

@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Kad užrakintumėte ekraną dvigubu palietimu, įjunkite paleidimo priemonės pritaikymo neįgaliesiems paslaugą.</string>
     <string name="folders_background_preference">Pasirinkite aplankų foną</string>
     <string name="folders_background_dialog_title">Pasirinkite aplankų foną:</string>
+    <string name="folder_follow_grid">Aplankuose naudoti pagrindinio ekrano tinklelį</string>
+    <string name="folder_follow_grid_on">Aplankai naudoja pagrindinio ekrano stulpelius ir tiek eilučių, kiek reikia</string>
+    <string name="folder_follow_grid_off">Aplankai auga beveik kvadratu iki pagrindinio ekrano dydžio</string>
 </resources>

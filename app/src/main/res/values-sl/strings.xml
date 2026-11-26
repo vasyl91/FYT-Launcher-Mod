@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Če želite zaslon zakleniti z dvojnim dotikom, vklopite storitev za dostopnost zaganjalnika.</string>
     <string name="folders_background_preference">Izberite ozadje map</string>
     <string name="folders_background_dialog_title">Izberite ozadje za mape:</string>
+    <string name="folder_follow_grid">Mreža domačega zaslona v mapah</string>
+    <string name="folder_follow_grid_on">Mape uporabljajo stolpce domačega zaslona in toliko vrstic, kolikor jih potrebujejo</string>
+    <string name="folder_follow_grid_off">Mape rastejo skoraj kvadratno do velikosti domačega zaslona</string>
 </resources>

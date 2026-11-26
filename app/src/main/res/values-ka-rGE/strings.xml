@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">ეკრანის ორმაგი შეხებით დასაბლოკად ჩართეთ ლაუნჩერის მისაწვდომობის სერვისი.</string>
     <string name="folders_background_preference">აირჩიეთ საქაღალდეების ფონი</string>
     <string name="folders_background_dialog_title">აირჩიეთ საქაღალდეების ფონი:</string>
+    <string name="folder_follow_grid">საქაღალდეებში მთავარი ეკრანის ბადის გამოყენება</string>
+    <string name="folder_follow_grid_on">საქაღალდეები იყენებენ მთავარი ეკრანის სვეტებს და საჭირო რაოდენობის რიგებს</string>
+    <string name="folder_follow_grid_off">საქაღალდეები თითქმის კვადრატულად იზრდება, მთავარი ეკრანის ზომამდე</string>
 </resources>

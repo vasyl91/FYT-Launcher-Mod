@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Skakel die lanseerder se toeganklikheidsdiens aan om die skerm met \'n dubbeltik te sluit.</string>
     <string name="folders_background_preference">Kies agtergrond vir vouers</string>
     <string name="folders_background_dialog_title">Kies agtergrond vir vouers:</string>
+    <string name="folder_follow_grid">Volg tuisskerm-rooster binne vouers</string>
+    <string name="folder_follow_grid_on">Vouers gebruik die tuisskerm se kolomme en soveel rye as wat hulle nodig het</string>
+    <string name="folder_follow_grid_off">Vouers groei amper vierkantig, tot die grootte van die tuisskerm</string>
 </resources>

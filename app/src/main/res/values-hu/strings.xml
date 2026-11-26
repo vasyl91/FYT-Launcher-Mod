@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">A képernyő dupla koppintással történő zárolásához kapcsolja be a kezdőképernyő-kezelő kisegítő szolgáltatását.</string>
     <string name="folders_background_preference">Mappák hátterének kiválasztása</string>
     <string name="folders_background_dialog_title">Válassza ki a mappák hátterét:</string>
+    <string name="folder_follow_grid">Kezdőképernyő rácsának követése a mappákban</string>
+    <string name="folder_follow_grid_on">A mappák a kezdőképernyő oszlopait és annyi sort használnak, amennyi kell</string>
+    <string name="folder_follow_grid_off">A mappák közel négyzetesen nőnek a kezdőképernyő méretéig</string>
 </resources>

@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">ដើម្បីចាក់សោអេក្រង់ដោយប៉ះពីរដង សូមបើកសេវាកម្មភាពងាយស្រួលរបស់ឡុនឆឺ។</string>
     <string name="folders_background_preference">ជ្រើសរើសផ្ទៃខាងក្រោយសម្រាប់ថត</string>
     <string name="folders_background_dialog_title">ជ្រើសរើសផ្ទៃខាងក្រោយសម្រាប់ថត៖</string>
+    <string name="folder_follow_grid">ធ្វើតាមក្រឡាចត្រង្គអេក្រង់ដើមក្នុងថត</string>
+    <string name="folder_follow_grid_on">ថតប្រើជួរឈរនៃអេក្រង់ដើម និងជួរដេកតាមតម្រូវការ</string>
+    <string name="folder_follow_grid_off">ថតលូតលាស់ស្ទើរតែការ៉េ រហូតដល់ទំហំអេក្រង់ដើម</string>
 </resources>

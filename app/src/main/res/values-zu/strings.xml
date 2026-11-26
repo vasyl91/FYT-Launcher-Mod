@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Ukuze ukhiye isikrini ngokuthinta kabili, vula isevisi yokufinyeleleka ye-launcher.</string>
     <string name="folders_background_preference">Khetha ingemuva yamafolda</string>
     <string name="folders_background_dialog_title">Khetha ingemuva yamafolda:</string>
+    <string name="folder_follow_grid">Landela igridi yesikrini sasekhaya ngaphakathi kwamafolda</string>
+    <string name="folder_follow_grid_on">Amafolda asebenzisa amakholomu esikrini sasekhaya nemigqa edingekayo</string>
+    <string name="folder_follow_grid_off">Amafolda akhula cishe abe yisikwele, kuze kufike osayizi wesikrini sasekhaya</string>
 </resources>

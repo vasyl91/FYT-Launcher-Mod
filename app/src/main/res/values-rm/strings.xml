@@ -584,4 +584,7 @@
     <string name="double_tap_needs_accessibility">Per bloccar la visur cun in dubel clic, activescha il servetsch d\'accessibilitad dal launcher.</string>
     <string name="folders_background_preference">Tscherner il fund da las cartellas</string>
     <string name="folders_background_dialog_title">Tscherner il fund per las cartellas:</string>
+    <string name="folder_follow_grid">Suandar la rasté da la surfatscha da partenza en las cartellas</string>
+    <string name="folder_follow_grid_on">Las cartellas utiliseschan las colonnas da la surfatscha da partenza e las lingias necessarias</string>
+    <string name="folder_follow_grid_off">Las cartellas creschan memia quadraticamain, fin a la grondezza da la surfatscha da partenza</string>
 </resources>
