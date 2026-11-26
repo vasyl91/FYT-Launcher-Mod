@@ -58,56 +58,51 @@
             android:title="@string/theme_accent_color" />
         <!-- The swipes of the home screen (HomeGestures). The first is on whatever is stored while the app drawer has no
              other way to be opened (DrawerAccess; the row is then switched on and off for the user, SettingsFragmentSecond) -->
-        <com.android.launcher66.settings.CustomSwitchPreference
+        <SwitchPreferenceCompat
             android:key="swipe_up_app_drawer"
             android:defaultValue="false"
             android:title="@string/swipe_up_app_drawer"
             android:summaryOn="@string/swipe_up_app_drawer_on"
-            android:summaryOff="@string/swipe_up_app_drawer_off"
-            app:layout="@layout/nested_preference_category_switch" />
-        <com.android.launcher66.settings.CustomSwitchPreference
+            android:summaryOff="@string/swipe_up_app_drawer_off" />
+        <SwitchPreferenceCompat
             android:key="swipe_down_notifications"
             android:defaultValue="false"
             android:title="@string/swipe_down_notifications"
             android:summaryOn="@string/swipe_down_notifications_on"
-            android:summaryOff="@string/swipe_down_notifications_off"
-            app:layout="@layout/nested_preference_category_switch" />
+            android:summaryOff="@string/swipe_down_notifications_off" />
         <!-- A tap steps through the choices, the summary shows the one chosen (as the widget bar's lines);
              "Lock screen" is left out below Android 9 (SettingsFragmentSecond) -->
-        <com.android.launcher66.settings.CustomNestedThreePreference
+        <com.android.launcher66.settings.CustomThreePreference
             android:key="double_tap_action"
             android:defaultValue="none"
             android:title="@string/double_tap_action"
             android:entries="@array/double_tap_entries"
             android:entryValues="@array/double_tap_values"
-            app:layout="@layout/nested_preference_category_no_switch" />
+            app:layout="@layout/preference_no_switch" />
         <!-- The background selector, as for the widgets: the picture of the folder, the pictures of the widgets and the
              user's own colour; stored under folders_selected_background (BarBackground.folders) -->
         <Preference
             android:key="choose_folders_background"
             android:title="@string/folders_background_preference" />
-        <com.android.launcher66.settings.CustomSwitchPreference
+        <SwitchPreferenceCompat
             android:key="folder_follow_grid"
             android:defaultValue="false"
             android:title="@string/folder_follow_grid"
             android:summaryOn="@string/folder_follow_grid_on"
-            android:summaryOff="@string/folder_follow_grid_off"
-            app:layout="@layout/nested_preference_category_switch" />
-        <com.android.launcher66.settings.CustomSwitchPreference
+            android:summaryOff="@string/folder_follow_grid_off" />
+        <SwitchPreferenceCompat
             android:key="widget_freeform"
             android:defaultValue="false"
             android:title="@string/widget_freeform"
             android:summaryOn="@string/widget_freeform_on"
-            android:summaryOff="@string/widget_freeform_off"
-            app:layout="@layout/nested_preference_category_switch" />
+            android:summaryOff="@string/widget_freeform_off" />
         <!-- Turning it off asks first (SettingsFragmentSecond): the widgets that overlap are put on the grid again -->
-        <com.android.launcher66.settings.CustomSwitchPreference
+        <SwitchPreferenceCompat
             android:key="widget_overlap"
             android:defaultValue="false"
             android:title="@string/widget_overlap"
             android:summaryOn="@string/widget_overlap_on"
-            android:summaryOff="@string/widget_overlap_off"
-            app:layout="@layout/nested_preference_category_switch" />
+            android:summaryOff="@string/widget_overlap_off" />
 
     </PreferenceCategory>
 
@@ -435,21 +430,20 @@
         <Preference
             android:key="all_apps_text_color"
             android:title="@string/icon_text_color" />
-        <com.android.launcher66.settings.CustomSwitchPreference
+        <SwitchPreferenceCompat
             android:key="all_apps_search"
             android:defaultValue="false"
             android:title="@string/all_apps_search"
             android:summaryOn="@string/all_apps_search_on"
-            android:summaryOff="@string/all_apps_search_off"
-            app:layout="@layout/nested_preference_category_switch" />
+            android:summaryOff="@string/all_apps_search_off" />
         <!-- A tap steps through the two directions; the summary is the one chosen -->
-        <com.android.launcher66.settings.CustomNestedThreePreference
+        <com.android.launcher66.settings.CustomThreePreference
             android:key="all_apps_scroll"
             android:defaultValue="vertical"
             android:title="@string/all_apps_scroll"
             android:entries="@array/all_apps_scroll_entries"
             android:entryValues="@array/all_apps_scroll_values"
-            app:layout="@layout/nested_preference_category_no_switch" />
+            app:layout="@layout/preference_no_switch" />
         <!-- Opens the tab creator (DrawerTabsFragment) -->
         <Preference
             android:key="drawer_tabs"

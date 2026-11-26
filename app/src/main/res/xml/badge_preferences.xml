@@ -11,11 +11,10 @@
         app:key="notification_badges_category"
         app:title="@string/notification_badges">
 
-        <com.android.launcher66.settings.CustomSwitchPreference
+        <SwitchPreferenceCompat
             android:key="badges_enabled"
             android:defaultValue="true"
-            android:title="@string/badges_enabled"
-            app:layout="@layout/nested_preference_category_switch" />
+            android:title="@string/badges_enabled" />
         <Preference
             android:layout="@layout/preference_separator_within"
             android:selectable="false" />
@@ -25,20 +24,20 @@
             android:layout="@layout/preference_separator_within"
             android:selectable="false" />
         <!-- A tap steps through the corners; the summary is the one chosen -->
-        <com.android.launcher66.settings.CustomNestedThreePreference
+        <com.android.launcher66.settings.CustomThreePreference
             android:key="badges_position"
             android:defaultValue="top_right"
             android:title="@string/badges_position"
             android:entries="@array/badges_position_entries"
             android:entryValues="@array/badges_position_values"
-            app:layout="@layout/nested_preference_category_no_switch" />
-        <com.android.launcher66.settings.CustomNestedThreePreference
+            app:layout="@layout/preference_no_switch" />
+        <com.android.launcher66.settings.CustomThreePreference
             android:key="badges_size"
             android:defaultValue="medium"
             android:title="@string/badges_size"
             android:entries="@array/badges_size_entries"
             android:entryValues="@array/badges_size_values"
-            app:layout="@layout/nested_preference_category_no_switch" />
+            app:layout="@layout/preference_no_switch" />
         <Preference
             android:key="badges_corner_title"
             android:title="@string/badges_corner"
@@ -49,13 +48,12 @@
         <Preference
             android:key="badges_color"
             android:title="@string/badges_color" />
-        <com.android.launcher66.settings.CustomSwitchPreference
+        <SwitchPreferenceCompat
             android:key="badges_outline"
             android:defaultValue="false"
             android:title="@string/badges_outline"
             android:summaryOn="@string/badges_outline_on"
-            android:summaryOff="@string/badges_outline_off"
-            app:layout="@layout/nested_preference_category_switch" />
+            android:summaryOff="@string/badges_outline_off" />
     </PreferenceCategory>
 
 </PreferenceScreen>

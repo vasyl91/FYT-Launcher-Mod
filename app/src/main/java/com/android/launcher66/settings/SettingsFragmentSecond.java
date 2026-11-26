@@ -1,5 +1,6 @@
 package com.android.launcher66.settings;
 
+import com.android.launcher66.DoubleTapActions;
 import com.android.launcher66.SysCalls;
 import android.Manifest;
 import android.app.AppOpsManager;
@@ -49,6 +50,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
@@ -464,7 +466,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         bindDrawerTabs();
         bindWidgetOverlap();
         // On an FYT unit the framework shows its panel of quick settings for this swipe, not the notifications
-        androidx.preference.SwitchPreferenceCompat swipeDown = findPreference(Keys.SWIPE_DOWN_NOTIFICATIONS);
+        SwitchPreferenceCompat swipeDown = findPreference(Keys.SWIPE_DOWN_NOTIFICATIONS);
         if (swipeDown != null && LauncherApplication.isFytDevice()) {
             swipeDown.setSummaryOn(R.string.swipe_down_notifications_on_fyt);
         }
@@ -1309,21 +1311,21 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
      * (the permission flow), and "Turn off screen" says that the same double tap brings the screen back.
      */
     private void bindDoubleTap() {
-        androidx.preference.ListPreference row = findPreference(Keys.DOUBLE_TAP_ACTION);
+        ListPreference row = findPreference(Keys.DOUBLE_TAP_ACTION);
         if (row == null) {
             return;
         }
-        if (!com.android.launcher66.DoubleTapActions.lockAvailable()) {
+        if (!DoubleTapActions.lockAvailable()) {
             row.setEntries(new CharSequence[] {getString(R.string.double_tap_none), getString(R.string.double_tap_screen_off)});
-            row.setEntryValues(new CharSequence[] {com.android.launcher66.DoubleTapActions.NONE,
-                    com.android.launcher66.DoubleTapActions.SCREEN_OFF});
+            row.setEntryValues(new CharSequence[] {DoubleTapActions.NONE,
+                    DoubleTapActions.SCREEN_OFF});
         }
         row.setOnPreferenceChangeListener((preference, value) -> {
-            if (com.android.launcher66.DoubleTapActions.LOCK.equals(value)) {
-                com.android.launcher66.DoubleTapActions.lockChosen();
-            } else if (com.android.launcher66.DoubleTapActions.SCREEN_OFF.equals(value)) {
-                android.widget.Toast.makeText(requireContext(), R.string.double_tap_screen_off_hint,
-                        android.widget.Toast.LENGTH_LONG).show();
+            if (DoubleTapActions.LOCK.equals(value)) {
+                DoubleTapActions.lockChosen();
+            } else if (DoubleTapActions.SCREEN_OFF.equals(value)) {
+                Toast.makeText(requireContext(), R.string.double_tap_screen_off_hint,
+                        Toast.LENGTH_LONG).show();
             }
             return true;
         });
