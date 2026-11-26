@@ -321,7 +321,6 @@
     <string name="update_allow_install">Engedélyezze az alkalmazások telepítését erről a forrásról, majd koppintson újra a FRISSÍTÉS gombra</string>
     <string name="progress_dialog_str">%1$s letöltése</string>
     <string name="download_in_progress">Letöltés folyamatban…</string>
-    <string name="tv_map_str">Üdvözöljük az FYT Launcher Modban!\nHozza létre saját elrendezését a navigációs ablak megjelenítéséhez.\n\nEz a launcher két különböző módszerrel képes az alkalmazásokat kép a képben módban megjeleníteni, azonban egyes egységek egyiket sem támogatják. Ebben az esetben nem tudja a navigációs alkalmazást a főképernyőn megjeleníteni, hacsak nem flashel az eszközre egy ezt támogató egyéni ROM-ot (feltéve, hogy létezik ilyen ROM a fejegységéhez).\nA launchert továbbra is használhatja, de ki kell kapcsolnia a PiP-et a launcher beállításaiban (különben a Google Térkép minden alkalommal felugrik, amikor megpróbálja megnyitni a kezdőoldalt – ha ez megtörténik, törölje a launcher adatait vagy telepítse újra).</string>
 
     <string name="materialcolorpicker__errHex">A hexadecimális kód formátuma helytelen</string>
     <string name="materialcolorpicker__btnSelectColor">Kiválasztás</string>
@@ -597,4 +596,7 @@
     <string name="autostart_apps_summary_fyt">A rendszer automatikus indítása által elindított alkalmazások lassíthatják a launcher indulását. A launcher beépített lehetősége csak azután indítja el őket, hogy a launcher befejezte a hidegindítást. A lista használatakor ne felejtse el kikapcsolni ezeket az alkalmazásokat az FYT beállításaiban és mindenhol máshol, ahol automatikus indításra vannak állítva; különben kétszer indulnak el.</string>
     <string name="autostart_apps_summary_other">A rendszer automatikus indítása által elindított alkalmazások lassíthatják a launcher indulását. A launcher beépített lehetősége csak azután indítja el őket, hogy a launcher befejezte a hidegindítást. A lista használatakor ne felejtse el kikapcsolni ezeknek az alkalmazásoknak az automatikus indítását mindenhol máshol, ahol be van kapcsolva; különben kétszer indulnak el.</string>
     <string name="autostart_apps_by_boot_completed_summary">A „Indítás rendszerindításkor” és az „Indítás ébredéskor” beállításra vonatkozik</string>
+    <string name="welcome_fyt">Üdvözöljük a Launcher Modban!\nHozza létre saját elrendezését a beállításokban, hogy a navigáció és más alkalmazások ablakokban jelenjenek meg a kezdőképernyőn. Ha egy alkalmazás folyton a kezdőképernyő fölött nyílik meg, kapcsolja ki az ablakát a beállításokban.</string>
+    <string name="welcome_7870">Üdvözöljük a Launcher Modban!\nHozza létre saját elrendezését a beállításokban. Az alkalmazások ablakokban jeleníthetők meg a kezdőképernyőn, ahol az egység támogatja; ha valamelyik folyton a kezdőképernyő fölött nyílik meg, kapcsolja ki az ablakát a beállításokban.</string>
+    <string name="welcome_other">Üdvözöljük a Launcher Modban!\nHozza létre saját elrendezését a beállításokban. Az alkalmazások ablakokban való megjelenítéséhez a kezdőképernyőn root vagy Shizuku kell; nélkülük a launcher hagyományos kezdőképernyőként működik.</string>
 </resources>

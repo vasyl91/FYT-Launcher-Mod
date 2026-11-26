@@ -321,7 +321,6 @@
     <string name="update_allow_install">Dopustite instalaciju aplikacija iz ovog izvora, a zatim ponovno dodirnite AŽURIRAJ</string>
     <string name="progress_dialog_str">Preuzimanje %1$s</string>
     <string name="download_in_progress">Preuzimanje u tijeku…</string>
-    <string name="tv_map_str">Dobro došli u FYT Launcher Mod!\nIzradite vlastiti raspored za prikaz navigacijskog prozora.\n\nOvaj launcher omogućuje prikaz aplikacija u načinu slika u slici na dva različita načina, no neke jedinice možda ne podržavaju nijedan. Tada nećete moći prikazati navigacijsku aplikaciju na glavnom zaslonu osim ako na uređaj ne instalirate prilagođeni ROM koji to podržava (ako takav ROM postoji za vašu glavnu jedinicu).\nLauncher i dalje možete koristiti, ali ćete morati isključiti PiP u postavkama launchera (inače će se Google karte pojavljivati svaki put kad pokušate otvoriti početnu stranicu – ako se to dogodi, izbrišite podatke launchera ili ga ponovno instalirajte).</string>
 
     <string name="materialcolorpicker__errHex">Format heksadekadskog koda nije ispravan</string>
     <string name="materialcolorpicker__btnSelectColor">Odaberi</string>
@@ -597,4 +596,7 @@
     <string name="autostart_apps_summary_fyt">Aplikacije koje pokreće automatsko pokretanje sustava mogu usporiti pokretanje launchera. Ugrađena opcija launchera pokrenut će ih tek nakon što launcher završi hladni start. Kad koristite ovaj popis, ne zaboravite isključiti te aplikacije u FYT postavkama i svugdje drugdje gdje su postavljene da se pokreću automatski; inače će se pokrenuti dvaput.</string>
     <string name="autostart_apps_summary_other">Aplikacije koje pokreće automatsko pokretanje sustava mogu usporiti pokretanje launchera. Ugrađena opcija launchera pokrenut će ih tek nakon što launcher završi hladni start. Kad koristite ovaj popis, ne zaboravite isključiti automatsko pokretanje tih aplikacija svugdje drugdje gdje je uključeno; inače će se pokrenuti dvaput.</string>
     <string name="autostart_apps_by_boot_completed_summary">Vrijedi za „Pokreni pri uključivanju” i „Pokreni pri buđenju”</string>
+    <string name="welcome_fyt">Dobro došli u Launcher Mod!\nIzradite vlastiti raspored u postavkama za prikaz navigacije i drugih aplikacija u prozorima na početnom zaslonu. Ako se aplikacija stalno otvara preko početnog zaslona, isključite njezin prozor u postavkama.</string>
+    <string name="welcome_7870">Dobro došli u Launcher Mod!\nIzradite vlastiti raspored u postavkama. Aplikacije se mogu prikazati u prozorima na početnom zaslonu ondje gdje to uređaj podržava; ako se neka stalno otvara preko početnog zaslona, isključite njezin prozor u postavkama.</string>
+    <string name="welcome_other">Dobro došli u Launcher Mod!\nIzradite vlastiti raspored u postavkama. Prikaz aplikacija u prozorima na početnom zaslonu zahtijeva root ili Shizuku; bez njih launcher radi kao obični početni zaslon.</string>
 </resources>

@@ -321,7 +321,6 @@
     <string name="update_allow_install">Izinkan pemasangan aplikasi dari sumber ini, lalu ketuk PERBARUI lagi</string>
     <string name="progress_dialog_str">Mengunduh %1$s</string>
     <string name="download_in_progress">Pengunduhan sedang berlangsung…</string>
-    <string name="tv_map_str">Selamat datang di FYT Launcher Mod!\nBuat tata letak Anda sendiri untuk menampilkan jendela navigasi.\n\nPeluncur ini memungkinkan menampilkan aplikasi dalam mode Picture-in-Picture dengan dua metode berbeda, namun beberapa unit mungkin tidak mendukung keduanya. Dalam hal ini Anda tidak dapat menampilkan aplikasi navigasi di layar utama, kecuali Anda mem-flash perangkat dengan ROM kustom yang mendukungnya (jika ROM semacam itu ada untuk head unit Anda).\nAnda tetap dapat menggunakan peluncur, tetapi harus mematikan PiP di setelan peluncur (jika tidak, Google Maps akan muncul setiap kali Anda mencoba membuka halaman utama – jika itu terjadi, hapus data peluncur atau pasang ulang).</string>
 
     <string name="materialcolorpicker__errHex">Format kode hex salah</string>
     <string name="materialcolorpicker__btnSelectColor">Pilih</string>
@@ -597,4 +596,7 @@
     <string name="autostart_apps_summary_fyt">Aplikasi yang dijalankan oleh fitur autostart sistem dapat memperlambat startup launcher. Opsi bawaan launcher baru menjalankannya setelah launcher menyelesaikan cold start. Saat memakai daftar ini, ingatlah untuk menonaktifkan aplikasi tersebut di pengaturan FYT dan di tempat lain yang disetel untuk mulai otomatis; jika tidak, aplikasi akan dijalankan dua kali.</string>
     <string name="autostart_apps_summary_other">Aplikasi yang dijalankan oleh fitur autostart sistem dapat memperlambat startup launcher. Opsi bawaan launcher baru menjalankannya setelah launcher menyelesaikan cold start. Saat memakai daftar ini, ingatlah untuk mematikan mulai otomatis aplikasi tersebut di tempat lain yang mengaktifkannya; jika tidak, aplikasi akan dijalankan dua kali.</string>
     <string name="autostart_apps_by_boot_completed_summary">Berlaku untuk “Mulai saat boot” dan “Mulai saat bangun”</string>
+    <string name="welcome_fyt">Selamat datang di Launcher Mod!\nBuat tata letak Anda sendiri di pengaturan untuk menampilkan navigasi dan aplikasi lain dalam jendela di layar utama. Jika suatu aplikasi terus terbuka di atas layar utama, matikan jendelanya di pengaturan.</string>
+    <string name="welcome_7870">Selamat datang di Launcher Mod!\nBuat tata letak Anda sendiri di pengaturan. Aplikasi dapat ditampilkan dalam jendela di layar utama jika unit mendukungnya; jika ada yang terus terbuka di atas layar utama, matikan jendelanya di pengaturan.</string>
+    <string name="welcome_other">Selamat datang di Launcher Mod!\nBuat tata letak Anda sendiri di pengaturan. Menampilkan aplikasi dalam jendela di layar utama memerlukan root atau Shizuku; tanpa keduanya launcher bekerja sebagai layar utama biasa.</string>
 </resources>

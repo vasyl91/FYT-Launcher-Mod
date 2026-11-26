@@ -321,7 +321,6 @@
     <string name="update_allow_install">Atļaujiet lietotņu instalēšanu no šī avota un vēlreiz pieskarieties pie ATJAUNINĀT</string>
     <string name="progress_dialog_str">Notiek %1$s lejupielāde</string>
     <string name="download_in_progress">Notiek lejupielāde…</string>
-    <string name="tv_map_str">Laipni lūdzam FYT Launcher Mod!\nIzveidojiet savu izkārtojumu, lai rādītu navigācijas logu.\n\nŠis palaidējs ļauj rādīt lietotnes režīmā “attēls attēlā” ar divām dažādām metodēm, taču dažas iekārtas var neatbalstīt nevienu. Tādā gadījumā navigācijas lietotni galvenajā ekrānā nevarēsit parādīt, ja vien ierīcē neuzinstalēsit pielāgotu ROM, kas to atbalsta (ja šāds ROM pastāv jūsu galvenajai iekārtai).\nPalaidēju joprojām varat izmantot, taču palaidēja iestatījumos būs jāizslēdz PiP (citādi Google Maps parādīsies katru reizi, kad mēģināsit atvērt sākumlapu — ja tā notiek, notīriet palaidēja datus vai instalējiet to no jauna).</string>
 
     <string name="materialcolorpicker__errHex">Heksadecimālā koda formāts nav pareizs</string>
     <string name="materialcolorpicker__btnSelectColor">Atlasīt</string>
@@ -597,4 +596,7 @@
     <string name="autostart_apps_summary_fyt">Lietotnes, ko palaiž sistēmas automātiskās palaišanas funkcija, var palēnināt palaidēja startēšanu. Palaidēja iebūvētā opcija tās palaiž tikai pēc tam, kad palaidējs ir pabeidzis aukstās startēšanas procesu. Izmantojot šo sarakstu, neaizmirstiet izslēgt šīs lietotnes FYT iestatījumos un visur citur, kur tās iestatītas palaisties automātiski; citādi tās tiks palaistas divreiz.</string>
     <string name="autostart_apps_summary_other">Lietotnes, ko palaiž sistēmas automātiskās palaišanas funkcija, var palēnināt palaidēja startēšanu. Palaidēja iebūvētā opcija tās palaiž tikai pēc tam, kad palaidējs ir pabeidzis aukstās startēšanas procesu. Izmantojot šo sarakstu, neaizmirstiet izslēgt šo lietotņu automātisko palaišanu visur citur, kur tā ieslēgta; citādi tās tiks palaistas divreiz.</string>
     <string name="autostart_apps_by_boot_completed_summary">Attiecas uz “Palaist startējot” un “Palaist pamostoties”</string>
+    <string name="welcome_fyt">Laipni lūdzam Launcher Mod!\nIzveidojiet savu izkārtojumu iestatījumos, lai navigāciju un citas lietotnes rādītu logos sākuma ekrānā. Ja kāda lietotne pastāvīgi atveras virs sākuma ekrāna, izslēdziet tās logu iestatījumos.</string>
+    <string name="welcome_7870">Laipni lūdzam Launcher Mod!\nIzveidojiet savu izkārtojumu iestatījumos. Lietotnes var rādīt logos sākuma ekrānā, ja ierīce to atbalsta; ja kāda pastāvīgi atveras virs sākuma ekrāna, izslēdziet tās logu iestatījumos.</string>
+    <string name="welcome_other">Laipni lūdzam Launcher Mod!\nIzveidojiet savu izkārtojumu iestatījumos. Lai rādītu lietotnes logos sākuma ekrānā, nepieciešams root vai Shizuku; bez tiem palaidējs darbojas kā parasts sākuma ekrāns.</string>
 </resources>

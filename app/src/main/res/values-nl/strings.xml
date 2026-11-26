@@ -321,7 +321,6 @@
     <string name="update_allow_install">Sta het installeren van apps uit deze bron toe en tik daarna opnieuw op BIJWERKEN</string>
     <string name="progress_dialog_str">%1$s wordt gedownload</string>
     <string name="download_in_progress">Download bezig…</string>
-    <string name="tv_map_str">Welkom bij FYT Launcher Mod!\nMaak je eigen indeling om het navigatievenster te tonen.\n\nMet deze launcher kun je apps in Picture-in-Picture-modus tonen op twee verschillende manieren, maar sommige units ondersteunen geen van beide. Dan kun je de navigatie-app niet op het hoofdscherm tonen, tenzij je je apparaat flasht met een aangepaste ROM die dit ondersteunt (mits zo\'n ROM bestaat voor jouw head unit).\nJe kunt de launcher nog steeds gebruiken, maar je moet PiP uitschakelen in de launcher-instellingen (anders verschijnt Google Maps elke keer dat je de startpagina probeert te openen – als dat gebeurt, wis dan de gegevens van de launcher of installeer hem opnieuw).</string>
 
     <string name="materialcolorpicker__errHex">Hex-codeformaat onjuist</string>
     <string name="materialcolorpicker__btnSelectColor">Selecteren</string>
@@ -597,4 +596,7 @@
     <string name="autostart_apps_summary_fyt">Apps die door de autostartfunctie van het systeem worden gestart, kunnen het opstarten van de launcher vertragen. De ingebouwde optie van de launcher start ze pas nadat de launcher zijn koude start heeft voltooid. Vergeet bij het gebruik van deze lijst niet deze apps uit te schakelen in de FYT-instellingen en overal elders waar ze automatisch worden gestart; anders worden ze twee keer gestart.</string>
     <string name="autostart_apps_summary_other">Apps die door de autostartfunctie van het systeem worden gestart, kunnen het opstarten van de launcher vertragen. De ingebouwde optie van de launcher start ze pas nadat de launcher zijn koude start heeft voltooid. Vergeet bij het gebruik van deze lijst niet het automatisch starten van deze apps uit te schakelen overal elders waar het is ingeschakeld; anders worden ze twee keer gestart.</string>
     <string name="autostart_apps_by_boot_completed_summary">Geldt voor “Starten bij opstarten” en “Starten bij ontwaken”</string>
+    <string name="welcome_fyt">Welkom bij Launcher Mod!\nMaak in de instellingen uw eigen indeling om navigatie en andere apps in vensters op het startscherm te tonen. Blijft een app zich over het startscherm openen, zet dan het venster ervan uit in de instellingen.</string>
+    <string name="welcome_7870">Welkom bij Launcher Mod!\nMaak in de instellingen uw eigen indeling. Apps kunnen in vensters op het startscherm worden getoond waar het toestel dat ondersteunt; blijft er een zich over het startscherm openen, zet dan het venster ervan uit in de instellingen.</string>
+    <string name="welcome_other">Welkom bij Launcher Mod!\nMaak in de instellingen uw eigen indeling. Apps in vensters op het startscherm tonen vereist root of Shizuku; zonder die werkt de launcher als een gewoon startscherm.</string>
 </resources>

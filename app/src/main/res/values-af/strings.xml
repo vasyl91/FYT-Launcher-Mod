@@ -321,7 +321,6 @@
     <string name="update_allow_install">Laat die installering van programme uit hierdie bron toe en tik dan weer OPDATEER</string>
     <string name="progress_dialog_str">Laai %1$s af</string>
     <string name="download_in_progress">Aflaai aan die gang…</string>
-    <string name="tv_map_str">Welkom by FYT Launcher Mod!\nSkep jou eie uitleg om die navigasievenster te wys.\n\nHierdie lanseerder laat jou toe om programme op twee verskillende maniere in beeld-in-beeld-modus te wys, maar sommige eenhede ondersteun dalk nie een nie. Dan sal jy nie die navigasieprogram op die hoofskerm kan wys nie, tensy jy jou toestel met \'n pasgemaakte ROM flits wat dit ondersteun (mits so \'n ROM vir jou hoofeenheid bestaan).\nJy kan die lanseerder steeds gebruik, maar jy sal PiP in die lanseerder se instellings moet afskakel (anders verskyn Google Maps elke keer as jy die tuisblad probeer oopmaak – as dit gebeur, vee die lanseerder se data uit of installeer dit weer).</string>
 
     <string name="materialcolorpicker__errHex">Heksadesimale kode-formaat is verkeerd</string>
     <string name="materialcolorpicker__btnSelectColor">Kies</string>
@@ -597,4 +596,7 @@
     <string name="autostart_apps_summary_fyt">Programme wat deur die stelsel se outostart-funksie begin word, kan die lanseerder se opstart vertraag. Die lanseerder se ingeboude opsie begin hulle eers nadat die lanseerder sy koue begin voltooi het. Onthou wanneer jy hierdie lys gebruik om hierdie programme in die FYT-instellings en enige ander plek waar hulle outomaties begin, af te skakel; anders word hulle twee keer begin.</string>
     <string name="autostart_apps_summary_other">Programme wat deur die stelsel se outostart-funksie begin word, kan die lanseerder se opstart vertraag. Die lanseerder se ingeboude opsie begin hulle eers nadat die lanseerder sy koue begin voltooi het. Onthou wanneer jy hierdie lys gebruik om outomatiese begin vir hierdie programme op enige ander plek waar dit aan is, af te skakel; anders word hulle twee keer begin.</string>
     <string name="autostart_apps_by_boot_completed_summary">Geld vir “Begin by opstart” en “Begin by ontwaking”</string>
+    <string name="welcome_fyt">Welkom by Launcher Mod!\nSkep jou eie uitleg in die instellings om navigasie en ander programme in vensters op die tuisskerm te wys. As \'n program steeds oor die tuisskerm oopmaak, skakel sy venster in die instellings af.</string>
+    <string name="welcome_7870">Welkom by Launcher Mod!\nSkep jou eie uitleg in die instellings. Programme kan in vensters op die tuisskerm gewys word waar die eenheid dit ondersteun; as een steeds oor die tuisskerm oopmaak, skakel sy venster in die instellings af.</string>
+    <string name="welcome_other">Welkom by Launcher Mod!\nSkep jou eie uitleg in die instellings. Om programme in vensters op die tuisskerm te wys, het jy root of Shizuku nodig; sonder hulle werk die lanseerder as \'n gewone tuisskerm.</string>
 </resources>

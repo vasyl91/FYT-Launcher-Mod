@@ -321,7 +321,6 @@
     <string name="update_allow_install">Cho phép cài đặt ứng dụng từ nguồn này, rồi nhấn CẬP NHẬT lần nữa</string>
     <string name="progress_dialog_str">Đang tải xuống %1$s</string>
     <string name="download_in_progress">Đang tải xuống…</string>
-    <string name="tv_map_str">Chào mừng bạn đến với FYT Launcher Mod!\nHãy tạo bố cục riêng để hiển thị cửa sổ dẫn đường.\n\nTrình khởi chạy này cho phép hiển thị ứng dụng ở chế độ Hình trong hình bằng hai cách khác nhau, tuy nhiên một số thiết bị có thể không hỗ trợ cách nào. Khi đó bạn sẽ không thể hiển thị ứng dụng dẫn đường trên màn hình chính, trừ khi flash cho thiết bị một ROM tùy chỉnh có hỗ trợ (nếu có ROM như vậy cho đầu phát trên xe của bạn).\nBạn vẫn có thể dùng trình khởi chạy, nhưng phải tắt PiP trong cài đặt của trình khởi chạy (nếu không Google Maps sẽ bật lên mỗi khi bạn thử mở trang chủ – nếu điều đó xảy ra, hãy xóa dữ liệu của trình khởi chạy hoặc cài lại).</string>
 
     <string name="materialcolorpicker__errHex">Định dạng mã hex không đúng</string>
     <string name="materialcolorpicker__btnSelectColor">Chọn</string>
@@ -597,4 +596,7 @@
     <string name="autostart_apps_summary_fyt">Các ứng dụng được khởi chạy bởi tính năng tự khởi động của hệ thống có thể làm trình khởi chạy khởi động chậm hơn. Tùy chọn tích hợp của trình khởi chạy chỉ khởi chạy chúng sau khi trình khởi chạy hoàn tất khởi động nguội. Khi dùng danh sách này, hãy nhớ tắt các ứng dụng này trong cài đặt FYT và ở mọi nơi khác đã đặt chúng tự khởi động; nếu không chúng sẽ được khởi chạy hai lần.</string>
     <string name="autostart_apps_summary_other">Các ứng dụng được khởi chạy bởi tính năng tự khởi động của hệ thống có thể làm trình khởi chạy khởi động chậm hơn. Tùy chọn tích hợp của trình khởi chạy chỉ khởi chạy chúng sau khi trình khởi chạy hoàn tất khởi động nguội. Khi dùng danh sách này, hãy nhớ tắt tự khởi động của các ứng dụng này ở mọi nơi khác đang bật; nếu không chúng sẽ được khởi chạy hai lần.</string>
     <string name="autostart_apps_by_boot_completed_summary">Áp dụng cho “Chạy khi khởi động” và “Chạy khi thức dậy”</string>
+    <string name="welcome_fyt">Chào mừng đến với Launcher Mod!\nHãy tạo bố cục riêng trong phần cài đặt để hiển thị dẫn đường và các ứng dụng khác trong cửa sổ trên màn hình chính. Nếu một ứng dụng cứ mở đè lên màn hình chính, hãy tắt cửa sổ của nó trong cài đặt.</string>
+    <string name="welcome_7870">Chào mừng đến với Launcher Mod!\nHãy tạo bố cục riêng trong phần cài đặt. Ứng dụng có thể hiển thị trong cửa sổ trên màn hình chính nếu thiết bị hỗ trợ; nếu một ứng dụng cứ mở đè lên màn hình chính, hãy tắt cửa sổ của nó trong cài đặt.</string>
+    <string name="welcome_other">Chào mừng đến với Launcher Mod!\nHãy tạo bố cục riêng trong phần cài đặt. Hiển thị ứng dụng trong cửa sổ trên màn hình chính cần root hoặc Shizuku; nếu không có, trình khởi chạy hoạt động như màn hình chính thông thường.</string>
 </resources>

@@ -321,7 +321,6 @@
     <string name="update_allow_install">Vumela ukufakwa kwezinhlelo zokusebenza kulo mthombo, bese uthepha BUYEKEZA futhi</string>
     <string name="progress_dialog_str">Iyalanda i-%1$s</string>
     <string name="download_in_progress">Ukulanda kuyaqhubeka…</string>
-    <string name="tv_map_str">Siyakwamukela ku-FYT Launcher Mod!\nDala isakhiwo sakho ukuze ubonise iwindi le-navi.\n\nLesi siqalisi sikuvumela ukuthi ubonise izinhlelo zokusebenza kumodi ye-Picture-in-Picture ngezindlela ezimbili ezahlukene, kodwa amanye amayunithi angase angasekeli noma iyiphi. Lokhu kusho ukuthi ngeke ukwazi ukubonisa uhlelo lokusebenza le-navi esikrinini esiyinhloko, ngaphandle uma ufaka kudivayisi yakho i-ROM yangokwezifiso esekelayo (uma i-ROM enjalo ikhona eyunithi yakho eyinhloko).\nUngasasebenzisa isiqalisi, kodwa uzodinga ukucisha i-PiP ezilungiselelweni zesiqalisi (ngaphandle kwalokho i-Google Maps izovela njalo uma uzama ukuvula ikhasi lasekhaya – uma kwenzeka, sula idatha yesiqalisi noma usifake kabusha).</string>
 
     <string name="materialcolorpicker__errHex">Ifomethi yekhodi ye-hex ayilungile</string>
     <string name="materialcolorpicker__btnSelectColor">Khetha</string>
@@ -597,4 +596,7 @@
     <string name="autostart_apps_summary_fyt">Izinhlelo zokusebenza eziqalwa isici sokuziqalela sesistimu zingehlisa ukuqala komqalisi. Inketho eyakhelwe ngaphakathi yomqalisi izoziqala kuphela ngemva kokuba umqalisi eqede ukuqala kwakhe okubandayo. Uma usebenzisa lolu hlu, khumbula ukukhubaza lezi zinhlelo zokusebenza kumasethingi e-FYT nakwenye indawo yonke ezisethelwe ukuqala ngokuzenzakalelayo; ngaphandle kwalokho ziyaqalwa kabili.</string>
     <string name="autostart_apps_summary_other">Izinhlelo zokusebenza eziqalwa isici sokuziqalela sesistimu zingehlisa ukuqala komqalisi. Inketho eyakhelwe ngaphakathi yomqalisi izoziqala kuphela ngemva kokuba umqalisi eqede ukuqala kwakhe okubandayo. Uma usebenzisa lolu hlu, khumbula ukucisha ukuqala ngokuzenzakalelayo kwalezi zinhlelo zokusebenza kwenye indawo yonke okuvuliwe kuyo; ngaphandle kwalokho ziyaqalwa kabili.</string>
     <string name="autostart_apps_by_boot_completed_summary">Isebenza ku-“Qala lapho kuqala” nasku-“Qala lapho kuvuka”</string>
+    <string name="welcome_fyt">Siyakwamukela ku-Launcher Mod!\nDala isakhiwo sakho kumasethingi ukuze ubonise ukuzulazula nezinye izinhlelo zokusebenza emafasiteleni esikrini sasekhaya. Uma uhlelo lokusebenza luqhubeka luvuleka phezu kwesikrini sasekhaya, cisha ifasitela lalo kumasethingi.</string>
+    <string name="welcome_7870">Siyakwamukela ku-Launcher Mod!\nDala isakhiwo sakho kumasethingi. Izinhlelo zokusebenza zingabonisa emafasiteleni esikrini sasekhaya lapho iyunithi isekela khona; uma olunye luqhubeka luvuleka phezu kwesikrini sasekhaya, cisha ifasitela lalo kumasethingi.</string>
+    <string name="welcome_other">Siyakwamukela ku-Launcher Mod!\nDala isakhiwo sakho kumasethingi. Ukubonisa izinhlelo zokusebenza emafasiteleni esikrini sasekhaya kudinga i-root noma i-Shizuku; ngaphandle kwazo umqalisi usebenza njengesikrini sasekhaya esijwayelekile.</string>
 </resources>

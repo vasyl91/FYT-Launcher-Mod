@@ -321,7 +321,6 @@
     <string name="update_allow_install">이 출처의 앱 설치를 허용한 다음 업데이트를 다시 탭하세요</string>
     <string name="progress_dialog_str">%1$s 다운로드 중</string>
     <string name="download_in_progress">다운로드 진행 중…</string>
-    <string name="tv_map_str">FYT Launcher Mod에 오신 것을 환영합니다!\n나만의 레이아웃을 만들어 내비 창을 표시하세요.\n\n이 런처는 두 가지 방법으로 앱을 PIP 모드로 표시할 수 있지만, 일부 기기는 어느 쪽도 지원하지 않을 수 있습니다. 이 경우 지원하는 커스텀 ROM을 기기에 설치하지 않는 한(헤드유닛에 그런 ROM이 있는 경우) 내비 앱을 메인 화면에 표시할 수 없습니다.\n런처는 계속 사용할 수 있지만 런처 설정에서 PiP를 꺼야 합니다(그렇지 않으면 홈 페이지를 열려고 할 때마다 Google 지도가 뜹니다. 그럴 때는 런처 데이터를 지우거나 다시 설치하세요).</string>
 
     <string name="materialcolorpicker__errHex">16진수 코드 형식이 올바르지 않습니다</string>
     <string name="materialcolorpicker__btnSelectColor">선택</string>
@@ -597,4 +596,7 @@
     <string name="autostart_apps_summary_fyt">시스템의 자동 시작 기능으로 실행되는 앱은 런처의 시작을 느리게 할 수 있습니다. 런처의 내장 옵션은 런처가 콜드 스타트를 마친 뒤에야 앱을 실행합니다. 이 목록을 사용할 때는 이 앱들을 FYT 설정과 자동으로 시작하도록 설정된 다른 모든 곳에서 꺼 두세요. 그렇지 않으면 두 번 실행됩니다.</string>
     <string name="autostart_apps_summary_other">시스템의 자동 시작 기능으로 실행되는 앱은 런처의 시작을 느리게 할 수 있습니다. 런처의 내장 옵션은 런처가 콜드 스타트를 마친 뒤에야 앱을 실행합니다. 이 목록을 사용할 때는 이 앱들의 자동 시작을 켜져 있는 다른 모든 곳에서 꺼 두세요. 그렇지 않으면 두 번 실행됩니다.</string>
     <string name="autostart_apps_by_boot_completed_summary">“부팅 시 시작”과 “절전 해제 시 시작”에 적용됩니다</string>
+    <string name="welcome_fyt">Launcher Mod에 오신 것을 환영합니다!\n설정에서 나만의 레이아웃을 만들어 내비게이션과 다른 앱을 홈 화면의 창으로 표시하세요. 앱이 계속 홈 화면 위로 열리면 설정에서 해당 앱의 창을 끄세요.</string>
+    <string name="welcome_7870">Launcher Mod에 오신 것을 환영합니다!\n설정에서 나만의 레이아웃을 만드세요. 기기가 지원하는 경우 앱을 홈 화면의 창으로 표시할 수 있습니다. 앱이 계속 홈 화면 위로 열리면 설정에서 해당 앱의 창을 끄세요.</string>
+    <string name="welcome_other">Launcher Mod에 오신 것을 환영합니다!\n설정에서 나만의 레이아웃을 만드세요. 앱을 홈 화면의 창으로 표시하려면 루트 또는 Shizuku가 필요하며, 없으면 런처는 일반 홈 화면처럼 동작합니다.</string>
 </resources>

@@ -321,7 +321,6 @@
     <string name="update_allow_install">Installation von Apps aus dieser Quelle zulassen und dann erneut auf AKTUALISIEREN tippen</string>
     <string name="progress_dialog_str">%1$s wird heruntergeladen</string>
     <string name="download_in_progress">Download läuft…</string>
-    <string name="tv_map_str">Willkommen bei FYT Launcher Mod!\nErstellen Sie Ihr eigenes Layout, um das Navi-Fenster anzuzeigen.\n\nDieser Launcher kann Apps im Bild-in-Bild-Modus auf zwei verschiedene Arten anzeigen; manche Geräte unterstützen jedoch keine der beiden. Dann können Sie die Navi-App nicht auf dem Hauptbildschirm anzeigen, es sei denn, Sie flashen Ihr Gerät mit einer Custom-ROM, die dies unterstützt (sofern es für Ihr Autoradio eine solche ROM gibt).\nSie können den Launcher trotzdem verwenden; Sie müssen aber PiP in den Launcher-Einstellungen ausschalten (sonst öffnet sich bei jedem Versuch, die Startseite zu öffnen, Google Maps – falls das passiert, löschen Sie die Daten des Launchers oder installieren Sie ihn neu).</string>
 
     <string name="materialcolorpicker__errHex">Hex-Code-Format ungültig</string>
     <string name="materialcolorpicker__btnSelectColor">Auswählen</string>
@@ -597,4 +596,7 @@
     <string name="autostart_apps_summary_fyt">Apps, die über die Autostart-Funktion des Systems gestartet werden, können den Start des Launchers verlangsamen. Die integrierte Option des Launchers startet sie erst, nachdem der Launcher seinen Kaltstart abgeschlossen hat. Wenn Sie diese Liste verwenden, deaktivieren Sie diese Apps in den FYT-Einstellungen und überall sonst, wo sie automatisch starten sollen; sonst werden sie doppelt gestartet.</string>
     <string name="autostart_apps_summary_other">Apps, die über die Autostart-Funktion des Systems gestartet werden, können den Start des Launchers verlangsamen. Die integrierte Option des Launchers startet sie erst, nachdem der Launcher seinen Kaltstart abgeschlossen hat. Wenn Sie diese Liste verwenden, schalten Sie den automatischen Start dieser Apps überall sonst aus, wo er aktiviert ist; sonst werden sie doppelt gestartet.</string>
     <string name="autostart_apps_by_boot_completed_summary">Gilt für „Beim Start öffnen“ und „Beim Aufwachen öffnen“</string>
+    <string name="welcome_fyt">Willkommen bei Launcher Mod!\nErstellen Sie in den Einstellungen Ihr eigenes Layout, um Navigation und andere Apps in Fenstern auf dem Startbildschirm anzuzeigen. Wenn sich eine App immer wieder über dem Startbildschirm öffnet, schalten Sie ihr Fenster in den Einstellungen aus.</string>
+    <string name="welcome_7870">Willkommen bei Launcher Mod!\nErstellen Sie in den Einstellungen Ihr eigenes Layout. Apps können in Fenstern auf dem Startbildschirm angezeigt werden, wo das Gerät das unterstützt; öffnet sich eine immer wieder über dem Startbildschirm, schalten Sie ihr Fenster in den Einstellungen aus.</string>
+    <string name="welcome_other">Willkommen bei Launcher Mod!\nErstellen Sie in den Einstellungen Ihr eigenes Layout. Apps in Fenstern auf dem Startbildschirm anzuzeigen, erfordert Root oder Shizuku; ohne sie arbeitet der Launcher als normaler Startbildschirm.</string>
 </resources>

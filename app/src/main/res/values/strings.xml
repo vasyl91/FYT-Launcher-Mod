@@ -388,7 +388,6 @@
     <string name="update_allow_install">Allow installing apps from this source, then tap UPDATE again</string>
     <string name="progress_dialog_str">Downloading %1$s</string>
     <string name="download_in_progress">Download in progress…</string>
-    <string name="tv_map_str">Welcome to FYT Launcher Mod!\nCreate your own layout to display the navi window.\n\nThis launcher lets you display apps in Picture-in-Picture mode using two different methods; however, some units may not support either of them. This means that you won\'t be able to display the navi app on the main screen, unless you flash your device with the custom ROM that supports it (provided that such ROM exists for your head unit).\nYou can still use the launcher; however, you\'ll have to turn off the PiP in the launcher\'s settings (otherwise Google Maps will pop up every time you try to open the home page – if it happens, wipe the launcher\'s data or reinstall it).</string>
 
     <string name="materialcolorpicker__errHex">Hex Code Format incorrect</string>
     <string name="materialcolorpicker__btnSelectColor">Select</string>
@@ -609,4 +608,7 @@
     <string name="autostart_apps_summary_fyt">Apps launched by the system\'s autostart feature may slow down the launcher\'s startup. The launcher\'s built-in option will launch them only after the launcher has completed its cold start. When using this list, remember to disable these apps in the FYT settings and anywhere else they are set to start automatically; otherwise, they will be launched twice.</string>
     <string name="autostart_apps_summary_other">Apps launched by the system\'s autostart feature may slow down the launcher\'s startup. The launcher\'s built-in option will launch them only after the launcher has completed its cold start. When using this list, remember to turn off automatic start for these apps anywhere else it is enabled; otherwise, they will be launched twice.</string>
     <string name="autostart_apps_by_boot_completed_summary">Applies to “Start on boot” and “Start on wake”</string>
+    <string name="welcome_fyt">Welcome to Launcher Mod!\nCreate your own layout in the settings to show navigation and other apps in windows on the home screen. If an app keeps opening over the home screen, turn off its window in the settings.</string>
+    <string name="welcome_7870">Welcome to Launcher Mod!\nCreate your own layout in the settings. Apps can be shown in windows on the home screen where the unit supports it; if one keeps opening over the home screen, turn off its window in the settings.</string>
+    <string name="welcome_other">Welcome to Launcher Mod!\nCreate your own layout in the settings. Showing apps in windows on the home screen needs root or Shizuku; without them the launcher works as a regular home screen.</string>
 </resources>

@@ -321,7 +321,6 @@
     <string name="update_allow_install">Tillat installasjon av apper fra denne kilden, og trykk deretter på OPPDATER igjen</string>
     <string name="progress_dialog_str">Laster ned %1$s</string>
     <string name="download_in_progress">Nedlasting pågår…</string>
-    <string name="tv_map_str">Velkommen til FYT Launcher Mod!\nOpprett din egen layout for å vise navigasjonsvinduet.\n\nDenne launcheren kan vise apper i bilde-i-bilde-modus på to forskjellige måter, men enkelte enheter støtter kanskje ingen av dem. Da kan du ikke vise navigasjonsappen på hovedskjermen med mindre du flasher enheten med en tilpasset ROM som støtter det (forutsatt at en slik ROM finnes for hovedenheten din).\nDu kan fortsatt bruke launcheren, men du må slå av PiP i launcherens innstillinger (ellers dukker Google Maps opp hver gang du prøver å åpne startsiden – hvis det skjer, tøm launcherens data eller installer den på nytt).</string>
 
     <string name="materialcolorpicker__errHex">Hex-kodeformatet er feil</string>
     <string name="materialcolorpicker__btnSelectColor">Velg</string>
@@ -597,4 +596,7 @@
     <string name="autostart_apps_summary_fyt">Apper som startes av systemets autostartfunksjon, kan gjøre at launcheren starter tregere. Launcherens innebygde alternativ starter dem først etter at launcheren har fullført kaldstarten. Når du bruker denne listen, husk å slå av disse appene i FYT-innstillingene og alle andre steder de er satt til å starte automatisk; ellers startes de to ganger.</string>
     <string name="autostart_apps_summary_other">Apper som startes av systemets autostartfunksjon, kan gjøre at launcheren starter tregere. Launcherens innebygde alternativ starter dem først etter at launcheren har fullført kaldstarten. Når du bruker denne listen, husk å slå av automatisk start for disse appene alle andre steder der det er slått på; ellers startes de to ganger.</string>
     <string name="autostart_apps_by_boot_completed_summary">Gjelder “Start ved oppstart” og “Start ved oppvåkning”</string>
+    <string name="welcome_fyt">Velkommen til Launcher Mod!\nLag din egen layout i innstillingene for å vise navigasjon og andre apper i vinduer på startskjermen. Hvis en app stadig åpner seg over startskjermen, slår du av vinduet i innstillingene.</string>
+    <string name="welcome_7870">Velkommen til Launcher Mod!\nLag din egen layout i innstillingene. Apper kan vises i vinduer på startskjermen der enheten støtter det; hvis en stadig åpner seg over startskjermen, slår du av vinduet i innstillingene.</string>
+    <string name="welcome_other">Velkommen til Launcher Mod!\nLag din egen layout i innstillingene. Å vise apper i vinduer på startskjermen krever root eller Shizuku; uten dem fungerer launcheren som en vanlig startskjerm.</string>
 </resources>

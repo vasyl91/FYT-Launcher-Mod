@@ -321,7 +321,6 @@
     <string name="update_allow_install">Salli sovellusten asennus tästä lähteestä ja napauta sitten PÄIVITÄ uudelleen</string>
     <string name="progress_dialog_str">Ladataan %1$s</string>
     <string name="download_in_progress">Lataus käynnissä…</string>
-    <string name="tv_map_str">Tervetuloa FYT Launcher Modiin!\nLuo oma asettelusi navigointi-ikkunan näyttämiseksi.\n\nTämä launcher voi näyttää sovelluksia kuva kuvassa -tilassa kahdella eri tavalla, mutta kaikki laitteet eivät välttämättä tue kumpaakaan. Silloin et voi näyttää navigointisovellusta pääruudulla, ellet flashaa laitettasi mukautetulla ROMilla, joka tukee sitä (jos pääyksikköösi on olemassa sellainen ROM).\nVoit silti käyttää launcheria, mutta sinun on poistettava PiP käytöstä launcherin asetuksissa (muuten Google Maps avautuu aina, kun yrität avata kotisivun – jos niin käy, tyhjennä launcherin tiedot tai asenna se uudelleen).</string>
 
     <string name="materialcolorpicker__errHex">Heksakoodin muoto on virheellinen</string>
     <string name="materialcolorpicker__btnSelectColor">Valitse</string>
@@ -597,4 +596,7 @@
     <string name="autostart_apps_summary_fyt">Järjestelmän automaattikäynnistyksen käynnistämät sovellukset voivat hidastaa laukaisimen käynnistymistä. Laukaisimen sisäänrakennettu vaihtoehto käynnistää ne vasta, kun laukaisin on saanut kylmäkäynnistyksensä valmiiksi. Kun käytät tätä luetteloa, muista poistaa nämä sovellukset käytöstä FYT-asetuksissa ja kaikkialla muualla, missä ne on asetettu käynnistymään automaattisesti; muuten ne käynnistyvät kahdesti.</string>
     <string name="autostart_apps_summary_other">Järjestelmän automaattikäynnistyksen käynnistämät sovellukset voivat hidastaa laukaisimen käynnistymistä. Laukaisimen sisäänrakennettu vaihtoehto käynnistää ne vasta, kun laukaisin on saanut kylmäkäynnistyksensä valmiiksi. Kun käytät tätä luetteloa, muista poistaa näiden sovellusten automaattinen käynnistys kaikkialla muualla, missä se on käytössä; muuten ne käynnistyvät kahdesti.</string>
     <string name="autostart_apps_by_boot_completed_summary">Koskee valintoja ”Käynnistä käynnistyksessä” ja ”Käynnistä herätessä”</string>
+    <string name="welcome_fyt">Tervetuloa Launcher Modiin!\nLuo asetuksissa oma asettelusi, jotta navigointi ja muut sovellukset näkyvät ikkunoissa aloitusnäytöllä. Jos sovellus avautuu jatkuvasti aloitusnäytön päälle, poista sen ikkuna käytöstä asetuksissa.</string>
+    <string name="welcome_7870">Tervetuloa Launcher Modiin!\nLuo asetuksissa oma asettelusi. Sovelluksia voi näyttää ikkunoissa aloitusnäytöllä, jos laite tukee sitä; jos jokin avautuu jatkuvasti aloitusnäytön päälle, poista sen ikkuna käytöstä asetuksissa.</string>
+    <string name="welcome_other">Tervetuloa Launcher Modiin!\nLuo asetuksissa oma asettelusi. Sovellusten näyttäminen ikkunoissa aloitusnäytöllä vaatii roottia tai Shizukua; ilman niitä laukaisin toimii tavallisena aloitusnäyttönä.</string>
 </resources>

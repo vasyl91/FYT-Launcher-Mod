@@ -321,7 +321,6 @@
     <string name="update_allow_install">Benarkan pemasangan apl daripada sumber ini, kemudian ketik KEMAS KINI semula</string>
     <string name="progress_dialog_str">Memuat turun %1$s</string>
     <string name="download_in_progress">Muat turun sedang berjalan…</string>
-    <string name="tv_map_str">Selamat datang ke FYT Launcher Mod!\nCipta reka letak anda sendiri untuk memaparkan tetingkap navigasi.\n\nPelancar ini membolehkan apl dipaparkan dalam mod Picture-in-Picture menggunakan dua kaedah berbeza, namun sesetengah unit mungkin tidak menyokong kedua-duanya. Ini bermakna anda tidak dapat memaparkan apl navigasi pada skrin utama, melainkan anda mem-flash peranti dengan ROM tersuai yang menyokongnya (jika ROM sedemikian wujud untuk unit utama anda).\nAnda masih boleh menggunakan pelancar, tetapi anda perlu mematikan PiP dalam tetapan pelancar (jika tidak, Google Maps akan muncul setiap kali anda cuba membuka halaman utama – jika ini berlaku, kosongkan data pelancar atau pasang semula).</string>
 
     <string name="materialcolorpicker__errHex">Format kod hex tidak betul</string>
     <string name="materialcolorpicker__btnSelectColor">Pilih</string>
@@ -597,4 +596,7 @@
     <string name="autostart_apps_summary_fyt">Aplikasi yang dilancarkan oleh ciri autostart sistem boleh melambatkan permulaan pelancar. Pilihan terbina dalam pelancar hanya akan melancarkannya selepas pelancar selesai permulaan sejuk. Apabila menggunakan senarai ini, ingat untuk melumpuhkan aplikasi ini dalam tetapan FYT dan di tempat lain yang ditetapkan untuk bermula secara automatik; jika tidak, ia akan dilancarkan dua kali.</string>
     <string name="autostart_apps_summary_other">Aplikasi yang dilancarkan oleh ciri autostart sistem boleh melambatkan permulaan pelancar. Pilihan terbina dalam pelancar hanya akan melancarkannya selepas pelancar selesai permulaan sejuk. Apabila menggunakan senarai ini, ingat untuk mematikan permulaan automatik aplikasi ini di tempat lain yang mengaktifkannya; jika tidak, ia akan dilancarkan dua kali.</string>
     <string name="autostart_apps_by_boot_completed_summary">Terpakai untuk “Mula semasa but” dan “Mula semasa bangun”</string>
+    <string name="welcome_fyt">Selamat datang ke Launcher Mod!\nCipta reka letak anda sendiri dalam tetapan untuk memaparkan navigasi dan aplikasi lain dalam tetingkap pada skrin utama. Jika sesuatu aplikasi terus dibuka di atas skrin utama, matikan tetingkapnya dalam tetapan.</string>
+    <string name="welcome_7870">Selamat datang ke Launcher Mod!\nCipta reka letak anda sendiri dalam tetapan. Aplikasi boleh dipaparkan dalam tetingkap pada skrin utama jika unit menyokongnya; jika ada yang terus dibuka di atas skrin utama, matikan tetingkapnya dalam tetapan.</string>
+    <string name="welcome_other">Selamat datang ke Launcher Mod!\nCipta reka letak anda sendiri dalam tetapan. Memaparkan aplikasi dalam tetingkap pada skrin utama memerlukan root atau Shizuku; tanpanya pelancar berfungsi sebagai skrin utama biasa.</string>
 </resources>

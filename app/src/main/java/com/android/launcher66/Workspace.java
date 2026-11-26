@@ -989,6 +989,10 @@ public class Workspace extends SmoothPagedView
 
             TextView naviTextSize = workspaceView.findViewById(R.id.tv_map);
             naviTextSize.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.textSizeTitle);
+            // The welcome says what this device can do (WelcomeText)
+            WelcomeText.Kind welcome = WelcomeText.kind(DeviceIdentity.is7870(), LauncherApplication.isFytDevice());
+            naviTextSize.setText(welcome == WelcomeText.Kind.UNIT_7870 ? R.string.welcome_7870
+                    : welcome == WelcomeText.Kind.FYT ? R.string.welcome_fyt : R.string.welcome_other);
             TextView dateTextSize = workspaceView.findViewById(R.id.date);
             dateTextSize.setTextSize(TypedValue.COMPLEX_UNIT_SP, Launcher.widgetTextSizeBasic);
             TextView weekTextSize = workspaceView.findViewById(R.id.curWeek);

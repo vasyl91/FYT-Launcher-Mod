@@ -321,7 +321,6 @@
     <string name="update_allow_install">Permita a instalação de apps desta fonte e toque em ATUALIZAR novamente</string>
     <string name="progress_dialog_str">Baixando %1$s</string>
     <string name="download_in_progress">Download em andamento…</string>
-    <string name="tv_map_str">Bem-vindo ao FYT Launcher Mod!\nCrie seu próprio layout para exibir a janela de navegação.\n\nEste launcher permite exibir apps no modo Picture-in-Picture usando dois métodos diferentes; no entanto, algumas unidades podem não oferecer suporte a nenhum deles. Nesse caso, você não conseguirá exibir o app de navegação na tela principal, a menos que instale no dispositivo uma ROM personalizada com suporte (desde que exista uma ROM assim para a sua central multimídia).\nVocê ainda pode usar o launcher, mas terá que desativar o PiP nas configurações do launcher (caso contrário, o Google Maps aparecerá toda vez que você tentar abrir a página inicial – se isso acontecer, limpe os dados do launcher ou reinstale-o).</string>
 
     <string name="materialcolorpicker__errHex">Formato do código hexadecimal incorreto</string>
     <string name="materialcolorpicker__btnSelectColor">Selecionar</string>
@@ -597,4 +596,7 @@
     <string name="autostart_apps_summary_fyt">As aplicações iniciadas pela função de arranque automático do sistema podem atrasar o arranque do launcher. A opção integrada do launcher só as inicia depois de o launcher concluir o arranque a frio. Ao usar esta lista, lembre-se de desativar estas aplicações nas definições do FYT e em qualquer outro local onde estejam definidas para iniciar automaticamente; caso contrário, serão iniciadas duas vezes.</string>
     <string name="autostart_apps_summary_other">As aplicações iniciadas pela função de arranque automático do sistema podem atrasar o arranque do launcher. A opção integrada do launcher só as inicia depois de o launcher concluir o arranque a frio. Ao usar esta lista, lembre-se de desativar o arranque automático destas aplicações em qualquer outro local onde esteja ativo; caso contrário, serão iniciadas duas vezes.</string>
     <string name="autostart_apps_by_boot_completed_summary">Aplica-se a “Iniciar no arranque” e “Iniciar ao despertar”</string>
+    <string name="welcome_fyt">Bem-vindo ao Launcher Mod!\nCrie o seu próprio esquema nas definições para mostrar a navegação e outras aplicações em janelas no ecrã principal. Se uma aplicação continuar a abrir-se sobre o ecrã principal, desative a janela dela nas definições.</string>
+    <string name="welcome_7870">Bem-vindo ao Launcher Mod!\nCrie o seu próprio esquema nas definições. As aplicações podem ser mostradas em janelas no ecrã principal onde a unidade o suporta; se uma continuar a abrir-se sobre o ecrã principal, desative a janela dela nas definições.</string>
+    <string name="welcome_other">Bem-vindo ao Launcher Mod!\nCrie o seu próprio esquema nas definições. Mostrar aplicações em janelas no ecrã principal requer root ou Shizuku; sem eles, o launcher funciona como um ecrã principal normal.</string>
 </resources>

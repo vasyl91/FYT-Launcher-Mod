@@ -321,7 +321,6 @@
     <string name="update_allow_install">Lubage rakenduste installimine sellest allikast ja puudutage uuesti VÄRSKENDA</string>
     <string name="progress_dialog_str">Allalaadimine: %1$s</string>
     <string name="download_in_progress">Allalaadimine käib…</string>
-    <string name="tv_map_str">Tere tulemast FYT Launcher Modi!\nLooge oma paigutus, et navigatsiooniakent kuvada.\n\nSee käivitaja võimaldab kuvada rakendusi pilt-pildis režiimis kahel erineval viisil, kuid mõned seadmed ei pruugi kumbagi toetada. Siis ei saa te navigatsioonirakendust põhiekraanil kuvada, kui te ei installi seadmesse kohandatud ROM-i, mis seda toetab (kui teie peaseadme jaoks selline ROM olemas on).\nKäivitajat saate siiski kasutada, kuid peate käivitaja seadetes PiP välja lülitama (muidu ilmub Google Maps iga kord, kui proovite avalehte avada – kui see juhtub, tühjendage käivitaja andmed või installige see uuesti).</string>
 
     <string name="materialcolorpicker__errHex">Heksakoodi vorming on vale</string>
     <string name="materialcolorpicker__btnSelectColor">Vali</string>
@@ -597,4 +596,7 @@
     <string name="autostart_apps_summary_fyt">Süsteemi automaatkäivituse funktsiooni kaudu käivitatud rakendused võivad launcheri käivitamist aeglustada. Launcheri sisseehitatud valik käivitab need alles pärast launcheri külmkäivituse lõppu. Selle loendi kasutamisel pidage meeles need rakendused FYT seadetes ja kõikjal mujal, kus need automaatselt käivituvad, välja lülitada; muidu käivituvad need kaks korda.</string>
     <string name="autostart_apps_summary_other">Süsteemi automaatkäivituse funktsiooni kaudu käivitatud rakendused võivad launcheri käivitamist aeglustada. Launcheri sisseehitatud valik käivitab need alles pärast launcheri külmkäivituse lõppu. Selle loendi kasutamisel pidage meeles lülitada nende rakenduste automaatkäivitus välja kõikjal mujal, kus see on sisse lülitatud; muidu käivituvad need kaks korda.</string>
     <string name="autostart_apps_by_boot_completed_summary">Kehtib valikutele „Käivita käivitumisel“ ja „Käivita ärkamisel“</string>
+    <string name="welcome_fyt">Tere tulemast Launcher Modi!\nLooge seadetes oma paigutus, et kuvada navigatsiooni ja muid rakendusi avakuval akendes. Kui mõni rakendus avaneb pidevalt avakuva kohal, lülitage selle aken seadetes välja.</string>
+    <string name="welcome_7870">Tere tulemast Launcher Modi!\nLooge seadetes oma paigutus. Rakendusi saab avakuval akendes kuvada seal, kus seade seda toetab; kui mõni avaneb pidevalt avakuva kohal, lülitage selle aken seadetes välja.</string>
+    <string name="welcome_other">Tere tulemast Launcher Modi!\nLooge seadetes oma paigutus. Rakenduste kuvamine avakuval akendes nõuab roodi või Shizukut; ilma nendeta töötab launcher tavalise avakuvana.</string>
 </resources>

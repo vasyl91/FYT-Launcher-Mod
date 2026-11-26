@@ -52,7 +52,6 @@
                 android:gravity="center_horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/tv_map_str"
                 android:layout_centerHorizontal="true" />
             
         </ScrollView>

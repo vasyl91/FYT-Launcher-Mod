@@ -321,7 +321,6 @@
     <string name="update_allow_install">Povoľte inštaláciu aplikácií z tohto zdroja a potom znova klepnite na AKTUALIZOVAŤ</string>
     <string name="progress_dialog_str">Sťahuje sa %1$s</string>
     <string name="download_in_progress">Prebieha sťahovanie…</string>
-    <string name="tv_map_str">Vitajte vo FYT Launcher Mod!\nVytvorte si vlastné rozloženie na zobrazenie navigačného okna.\n\nTento launcher umožňuje zobraziť aplikácie v režime obraz v obraze dvoma rôznymi spôsobmi, niektoré jednotky však nemusia podporovať ani jeden. Potom nebudete môcť zobraziť navigačnú aplikáciu na hlavnej obrazovke, pokiaľ do zariadenia nenahráte vlastné ROM, ktoré to podporuje (ak takéto ROM pre vašu hlavnú jednotku existuje).\nLauncher môžete stále používať, ale budete musieť v jeho nastaveniach vypnúť PiP (inak sa pri každom pokuse o otvorenie domovskej stránky objavia Mapy Google – ak sa to stane, vymažte dáta launchera alebo ho preinštalujte).</string>
 
     <string name="materialcolorpicker__errHex">Formát hexadecimálneho kódu je nesprávny</string>
     <string name="materialcolorpicker__btnSelectColor">Vybrať</string>
@@ -597,4 +596,7 @@
     <string name="autostart_apps_summary_fyt">Aplikácie spúšťané funkciou automatického spúšťania systému môžu spomaliť štart launchera. Vstavaná možnosť launchera ich spustí až po dokončení jeho studeného štartu. Pri používaní tohto zoznamu nezabudnite tieto aplikácie vypnúť v nastaveniach FYT a všade, kde je nastavené ich automatické spustenie; inak sa spustia dvakrát.</string>
     <string name="autostart_apps_summary_other">Aplikácie spúšťané funkciou automatického spúšťania systému môžu spomaliť štart launchera. Vstavaná možnosť launchera ich spustí až po dokončení jeho studeného štartu. Pri používaní tohto zoznamu nezabudnite vypnúť automatické spúšťanie týchto aplikácií všade, kde je zapnuté; inak sa spustia dvakrát.</string>
     <string name="autostart_apps_by_boot_completed_summary">Platí pre „Spustiť pri štarte“ a „Spustiť pri prebudení“</string>
+    <string name="welcome_fyt">Vitajte v Launcher Mod!\nVytvorte si v nastaveniach vlastné rozloženie a zobrazte navigáciu a ďalšie aplikácie v oknách na domovskej obrazovke. Ak sa niektorá aplikácia stále otvára nad domovskou obrazovkou, vypnite jej okno v nastaveniach.</string>
+    <string name="welcome_7870">Vitajte v Launcher Mod!\nVytvorte si v nastaveniach vlastné rozloženie. Aplikácie možno zobraziť v oknách na domovskej obrazovke tam, kde to jednotka podporuje; ak sa niektorá stále otvára nad domovskou obrazovkou, vypnite jej okno v nastaveniach.</string>
+    <string name="welcome_other">Vitajte v Launcher Mod!\nVytvorte si v nastaveniach vlastné rozloženie. Zobrazenie aplikácií v oknách na domovskej obrazovke vyžaduje root alebo Shizuku; bez nich launcher funguje ako bežná domovská obrazovka.</string>
 </resources>

@@ -321,7 +321,6 @@
     <string name="update_allow_install">請允許安裝來自此來源的應用程式，然後再次點選更新</string>
     <string name="progress_dialog_str">正在下載 %1$s</string>
     <string name="download_in_progress">正在下載...</string>
-    <string name="tv_map_str">歡迎使用 FYT Launcher Mod！\n建立您自己的版面配置來顯示導航視窗。\n\n此桌面支援使用兩種不同的方法以子母畫面模式顯示應用程式，但某些車機可能不支援其中任何一種。這意味著，除非您將裝置刷入支援它的自訂 ROM（前提是您的車機存在這樣的 ROM），否則您將無法在主螢幕上顯示導航應用程式。\n您仍然可以使用此桌面，但需要在桌面設定中關閉子母畫面（否則每次嘗試開啟主頁面時 Google 地圖都會彈出——如果發生這種情況，請清除桌面資料或重新安裝）。</string>
 
     <string name="materialcolorpicker__errHex">十六進位代碼格式不正確</string>
     <string name="materialcolorpicker__btnSelectColor">選擇</string>
@@ -597,4 +596,7 @@
     <string name="autostart_apps_summary_fyt">系統自動啟動功能所啟動的應用程式可能會拖慢啟動器的啟動。啟動器的內建選項只會在啟動器完成冷啟動之後才啟動它們。使用此清單時，請記得在 FYT 設定以及其他所有設定了自動啟動的地方關閉這些應用程式；否則它們會被啟動兩次。</string>
     <string name="autostart_apps_summary_other">系統自動啟動功能所啟動的應用程式可能會拖慢啟動器的啟動。啟動器的內建選項只會在啟動器完成冷啟動之後才啟動它們。使用此清單時，請記得在其他所有開啟了自動啟動的地方關閉這些應用程式的自動啟動；否則它們會被啟動兩次。</string>
     <string name="autostart_apps_by_boot_completed_summary">適用於「開機時啟動」和「喚醒時啟動」</string>
+    <string name="welcome_fyt">歡迎使用 Launcher Mod！\n在設定中建立您自己的版面配置，即可在主畫面上以視窗顯示導航和其他應用程式。如果某個應用程式一直在主畫面上方開啟，請在設定中關閉它的視窗。</string>
+    <string name="welcome_7870">歡迎使用 Launcher Mod！\n在設定中建立您自己的版面配置。在裝置支援的情況下，應用程式可以在主畫面上以視窗顯示；如果某個應用程式一直在主畫面上方開啟，請在設定中關閉它的視窗。</string>
+    <string name="welcome_other">歡迎使用 Launcher Mod！\n在設定中建立您自己的版面配置。在主畫面上以視窗顯示應用程式需要 root 或 Shizuku；沒有它們時，啟動器作為一般主畫面運作。</string>
 </resources>

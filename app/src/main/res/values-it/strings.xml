@@ -321,7 +321,6 @@
     <string name="update_allow_install">Consenti l\'installazione di app da questa fonte, poi tocca di nuovo AGGIORNA</string>
     <string name="progress_dialog_str">Download di %1$s</string>
     <string name="download_in_progress">Download in corso…</string>
-    <string name="tv_map_str">Benvenuto in FYT Launcher Mod!\nCrea il tuo layout per mostrare la finestra del navigatore.\n\nQuesto launcher permette di mostrare le app in modalità Picture-in-Picture con due metodi diversi; tuttavia alcune unità potrebbero non supportarne nessuno. In tal caso non potrai mostrare l\'app di navigazione nella schermata principale, a meno di installare sul dispositivo una ROM personalizzata che lo supporti (sempre che esista una ROM simile per la tua autoradio).\nPuoi comunque usare il launcher, ma dovrai disattivare il PiP nelle impostazioni del launcher (altrimenti Google Maps si aprirà ogni volta che provi ad aprire la home page – in tal caso cancella i dati del launcher o reinstallalo).</string>
 
     <string name="materialcolorpicker__errHex">Formato del codice esadecimale errato</string>
     <string name="materialcolorpicker__btnSelectColor">Seleziona</string>
@@ -597,4 +596,7 @@
     <string name="autostart_apps_summary_fyt">Le app avviate dalla funzione di avvio automatico del sistema possono rallentare l\'avvio del launcher. L\'opzione integrata del launcher le avvia solo dopo che il launcher ha completato l\'avvio a freddo. Quando usi questo elenco, ricorda di disattivare queste app nelle impostazioni FYT e ovunque altrove siano impostate per avviarsi automaticamente; altrimenti verranno avviate due volte.</string>
     <string name="autostart_apps_summary_other">Le app avviate dalla funzione di avvio automatico del sistema possono rallentare l\'avvio del launcher. L\'opzione integrata del launcher le avvia solo dopo che il launcher ha completato l\'avvio a freddo. Quando usi questo elenco, ricorda di disattivare l\'avvio automatico di queste app ovunque altrove sia attivo; altrimenti verranno avviate due volte.</string>
     <string name="autostart_apps_by_boot_completed_summary">Vale per «Avvia all\'accensione» e «Avvia alla riattivazione»</string>
+    <string name="welcome_fyt">Benvenuto in Launcher Mod!\nCrea il tuo layout nelle impostazioni per mostrare navigazione e altre app in finestre sulla schermata Home. Se un\'app continua ad aprirsi sopra la schermata Home, disattiva la sua finestra nelle impostazioni.</string>
+    <string name="welcome_7870">Benvenuto in Launcher Mod!\nCrea il tuo layout nelle impostazioni. Le app possono essere mostrate in finestre sulla schermata Home dove l\'unità lo supporta; se una continua ad aprirsi sopra la schermata Home, disattiva la sua finestra nelle impostazioni.</string>
+    <string name="welcome_other">Benvenuto in Launcher Mod!\nCrea il tuo layout nelle impostazioni. Mostrare le app in finestre sulla schermata Home richiede root o Shizuku; senza, il launcher funziona come una normale schermata Home.</string>
 </resources>

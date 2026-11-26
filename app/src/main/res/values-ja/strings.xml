@@ -321,7 +321,6 @@
     <string name="update_allow_install">この提供元からのアプリのインストールを許可してから、もう一度「更新」をタップしてください</string>
     <string name="progress_dialog_str">%1$sをダウンロード中</string>
     <string name="download_in_progress">ダウンロード中…</string>
-    <string name="tv_map_str">FYT Launcher Modへようこそ！\n独自のレイアウトを作成して、ナビウィンドウを表示しましょう。\n\nこのランチャーは、2つの異なる方法でピクチャーインピクチャーモードでアプリを表示できますが、どちらにも対応していない機器もあります。その場合、対応するカスタムROMを端末に書き込まない限り（お使いのヘッドユニット向けにそのようなROMがある場合）、ナビアプリをメイン画面に表示できません。\nランチャー自体は使い続けられますが、ランチャーの設定でPiPをオフにする必要があります（そうしないと、ホームページを開こうとするたびにGoogleマップが表示されます。その場合は、ランチャーのデータを消去するか、再インストールしてください）。</string>
 
     <string name="materialcolorpicker__errHex">16進コードの形式が正しくありません</string>
     <string name="materialcolorpicker__btnSelectColor">選択</string>
@@ -597,4 +596,7 @@
     <string name="autostart_apps_summary_fyt">システムの自動起動機能で起動されるアプリは、ランチャーの起動を遅くする場合があります。ランチャー内蔵のオプションは、ランチャーのコールドスタートが完了してからアプリを起動します。このリストを使うときは、これらのアプリをFYTの設定や、自動起動に設定されているほかの場所すべてでオフにしてください。そうしないと2回起動されます。</string>
     <string name="autostart_apps_summary_other">システムの自動起動機能で起動されるアプリは、ランチャーの起動を遅くする場合があります。ランチャー内蔵のオプションは、ランチャーのコールドスタートが完了してからアプリを起動します。このリストを使うときは、これらのアプリの自動起動を、有効になっているほかの場所すべてでオフにしてください。そうしないと2回起動されます。</string>
     <string name="autostart_apps_by_boot_completed_summary">「起動時に開始」と「スリープ解除時に開始」に適用されます</string>
+    <string name="welcome_fyt">Launcher Mod へようこそ！\n設定で独自のレイアウトを作成すると、ナビゲーションなどのアプリをホーム画面のウィンドウに表示できます。アプリがホーム画面の上に何度も開く場合は、設定でそのウィンドウをオフにしてください。</string>
+    <string name="welcome_7870">Launcher Mod へようこそ！\n設定で独自のレイアウトを作成してください。本体が対応していれば、アプリをホーム画面のウィンドウに表示できます。アプリがホーム画面の上に何度も開く場合は、設定でそのウィンドウをオフにしてください。</string>
+    <string name="welcome_other">Launcher Mod へようこそ！\n設定で独自のレイアウトを作成してください。アプリをホーム画面のウィンドウに表示するには root または Shizuku が必要です。これらがない場合、ランチャーは通常のホーム画面として動作します。</string>
 </resources>

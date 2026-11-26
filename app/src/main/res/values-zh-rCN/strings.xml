@@ -321,7 +321,6 @@
     <string name="update_allow_install">请允许安装来自此来源的应用，然后再次点击更新</string>
     <string name="progress_dialog_str">正在下载 %1$s</string>
     <string name="download_in_progress">正在下载...</string>
-    <string name="tv_map_str">欢迎使用 FYT Launcher Mod！\n创建您自己的布局来显示导航窗口。\n\n此桌面支持使用两种不同的方法以画中画模式显示应用，但某些车机可能不支持其中任何一种。这意味着，除非您将设备刷入支持它的自定义 ROM（前提是您的车机存在这样的 ROM），否则您将无法在主屏幕上显示导航应用。\n您仍然可以使用此桌面，但需要在桌面设置中关闭画中画（否则每次尝试打开主页面时 Google 地图都会弹出——如果发生这种情况，请清除桌面数据或重新安装）。</string>
 
     <string name="materialcolorpicker__errHex">十六进制代码格式不正确</string>
     <string name="materialcolorpicker__btnSelectColor">选择</string>
@@ -597,4 +596,7 @@
     <string name="autostart_apps_summary_fyt">系统自启动功能启动的应用可能会拖慢启动器的启动。启动器的内置选项只会在启动器完成冷启动之后才启动它们。使用此列表时，请记得在 FYT 设置以及其他所有设置了自动启动的地方关闭这些应用；否则它们会被启动两次。</string>
     <string name="autostart_apps_summary_other">系统自启动功能启动的应用可能会拖慢启动器的启动。启动器的内置选项只会在启动器完成冷启动之后才启动它们。使用此列表时，请记得在其他所有开启了自动启动的地方关闭这些应用的自动启动；否则它们会被启动两次。</string>
     <string name="autostart_apps_by_boot_completed_summary">适用于“开机时启动”和“唤醒时启动”</string>
+    <string name="welcome_fyt">欢迎使用 Launcher Mod！\n在设置中创建您自己的布局，即可在主屏幕上以窗口显示导航和其他应用。如果某个应用总是在主屏幕上方打开，请在设置中关闭它的窗口。</string>
+    <string name="welcome_7870">欢迎使用 Launcher Mod！\n在设置中创建您自己的布局。在设备支持的情况下，应用可以在主屏幕上以窗口显示；如果某个应用总是在主屏幕上方打开，请在设置中关闭它的窗口。</string>
+    <string name="welcome_other">欢迎使用 Launcher Mod！\n在设置中创建您自己的布局。在主屏幕上以窗口显示应用需要 root 或 Shizuku；没有它们时，启动器作为普通主屏幕工作。</string>
 </resources>

@@ -321,7 +321,6 @@
     <string name="update_allow_install">Dovolite nameščanje aplikacij iz tega vira in se znova dotaknite POSODOBI</string>
     <string name="progress_dialog_str">Prenašanje %1$s</string>
     <string name="download_in_progress">Prenos poteka…</string>
-    <string name="tv_map_str">Dobrodošli v FYT Launcher Mod!\nUstvarite svojo razporeditev za prikaz navigacijskega okna.\n\nTa zaganjalnik omogoča prikaz aplikacij v načinu slika v sliki na dva različna načina, vendar nekatere enote morda ne podpirajo nobenega. Takrat navigacijske aplikacije ne boste mogli prikazati na glavnem zaslonu, razen če v napravo ne vgradite ROM-a po meri, ki to podpira (če tak ROM za vašo glavno enoto obstaja).\nZaganjalnik lahko še vedno uporabljate, vendar boste morali v njegovih nastavitvah izklopiti PiP (sicer se bodo Google Zemljevidi prikazali vsakič, ko poskusite odpreti začetno stran – če se to zgodi, izbrišite podatke zaganjalnika ali ga znova namestite).</string>
 
     <string name="materialcolorpicker__errHex">Oblika šestnajstiške kode ni pravilna</string>
     <string name="materialcolorpicker__btnSelectColor">Izberi</string>
@@ -597,4 +596,7 @@
     <string name="autostart_apps_summary_fyt">Aplikacije, ki jih zažene funkcija samodejnega zagona sistema, lahko upočasnijo zagon zaganjalnika. Vgrajena možnost zaganjalnika jih zažene šele, ko zaganjalnik konča hladni zagon. Pri uporabi tega seznama ne pozabite izklopiti teh aplikacij v nastavitvah FYT in povsod drugje, kjer so nastavljene na samodejni zagon; sicer se bodo zagnale dvakrat.</string>
     <string name="autostart_apps_summary_other">Aplikacije, ki jih zažene funkcija samodejnega zagona sistema, lahko upočasnijo zagon zaganjalnika. Vgrajena možnost zaganjalnika jih zažene šele, ko zaganjalnik konča hladni zagon. Pri uporabi tega seznama ne pozabite izklopiti samodejnega zagona teh aplikacij povsod drugje, kjer je vklopljen; sicer se bodo zagnale dvakrat.</string>
     <string name="autostart_apps_by_boot_completed_summary">Velja za »Zaženi ob zagonu« in »Zaženi ob prebuditvi«</string>
+    <string name="welcome_fyt">Dobrodošli v Launcher Mod!\nV nastavitvah ustvarite svojo razporeditev za prikaz navigacije in drugih aplikacij v oknih na domačem zaslonu. Če se aplikacija ves čas odpira čez domači zaslon, izklopite njeno okno v nastavitvah.</string>
+    <string name="welcome_7870">Dobrodošli v Launcher Mod!\nV nastavitvah ustvarite svojo razporeditev. Aplikacije lahko prikažete v oknih na domačem zaslonu, kjer enota to podpira; če se katera ves čas odpira čez domači zaslon, izklopite njeno okno v nastavitvah.</string>
+    <string name="welcome_other">Dobrodošli v Launcher Mod!\nV nastavitvah ustvarite svojo razporeditev. Prikaz aplikacij v oknih na domačem zaslonu zahteva root ali Shizuku; brez njiju zaganjalnik deluje kot običajen domači zaslon.</string>
 </resources>

@@ -321,7 +321,6 @@
     <string name="update_allow_install">Leiskite diegti programas iš šio šaltinio ir dar kartą palieskite ATNAUJINTI</string>
     <string name="progress_dialog_str">Atsisiunčiama %1$s</string>
     <string name="download_in_progress">Vyksta atsisiuntimas…</string>
-    <string name="tv_map_str">Sveiki atvykę į „FYT Launcher Mod“!\nSukurkite savo išdėstymą, kad būtų rodomas navigacijos langas.\n\nŠi paleidyklė leidžia rodyti programas vaizdo vaizde režimu dviem skirtingais būdais, tačiau kai kurie įrenginiai gali nepalaikyti nė vieno. Tada navigacijos programos pagrindiniame ekrane parodyti negalėsite, nebent į įrenginį įrašysite tai palaikantį pasirinktinį ROM (jei tokio ROM yra jūsų pagrindiniam įrenginiui).\nPaleidyklę vis tiek galite naudoti, bet paleidyklės nustatymuose turėsite išjungti PiP (kitaip „Google Maps“ iššoks kiekvieną kartą bandant atidaryti pradžios puslapį – jei taip nutiktų, išvalykite paleidyklės duomenis arba įdiekite ją iš naujo).</string>
 
     <string name="materialcolorpicker__errHex">Neteisingas šešioliktainio kodo formatas</string>
     <string name="materialcolorpicker__btnSelectColor">Pasirinkti</string>
@@ -597,4 +596,7 @@
     <string name="autostart_apps_summary_fyt">Programos, paleidžiamos sistemos automatinio paleidimo funkcijos, gali sulėtinti paleidimo programos starto laiką. Integruota paleidimo programos parinktis jas paleidžia tik tada, kai paleidimo programa baigia šaltąjį startą. Naudodami šį sąrašą nepamirškite išjungti šių programų FYT nustatymuose ir visur kitur, kur jos nustatytos paleisti automatiškai; kitaip jos bus paleistos du kartus.</string>
     <string name="autostart_apps_summary_other">Programos, paleidžiamos sistemos automatinio paleidimo funkcijos, gali sulėtinti paleidimo programos starto laiką. Integruota paleidimo programos parinktis jas paleidžia tik tada, kai paleidimo programa baigia šaltąjį startą. Naudodami šį sąrašą nepamirškite išjungti automatinio šių programų paleidimo visur kitur, kur jis įjungtas; kitaip jos bus paleistos du kartus.</string>
     <string name="autostart_apps_by_boot_completed_summary">Taikoma „Paleisti įjungus“ ir „Paleisti pabudus“</string>
+    <string name="welcome_fyt">Sveiki atvykę į „Launcher Mod“!\nSusikurkite savo išdėstymą nustatymuose, kad navigacija ir kitos programos būtų rodomos languose pagrindiniame ekrane. Jei programa nuolat atsidaro virš pagrindinio ekrano, išjunkite jos langą nustatymuose.</string>
+    <string name="welcome_7870">Sveiki atvykę į „Launcher Mod“!\nSusikurkite savo išdėstymą nustatymuose. Programas galima rodyti languose pagrindiniame ekrane, kai įrenginys tai palaiko; jei kuri nors nuolat atsidaro virš pagrindinio ekrano, išjunkite jos langą nustatymuose.</string>
+    <string name="welcome_other">Sveiki atvykę į „Launcher Mod“!\nSusikurkite savo išdėstymą nustatymuose. Programoms rodyti languose pagrindiniame ekrane reikia root arba Shizuku; be jų paleidimo programa veikia kaip įprastas pagrindinis ekranas.</string>
 </resources>

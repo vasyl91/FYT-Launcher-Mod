@@ -321,7 +321,6 @@
     <string name="update_allow_install">Permiteți instalarea aplicațiilor din această sursă, apoi atingeți din nou ACTUALIZARE</string>
     <string name="progress_dialog_str">Se descarcă %1$s</string>
     <string name="download_in_progress">Descărcare în curs…</string>
-    <string name="tv_map_str">Bun venit la FYT Launcher Mod!\nCreați-vă propriul aspect pentru a afișa fereastra de navigare.\n\nAcest launcher permite afișarea aplicațiilor în modul imagine în imagine prin două metode diferite, dar unele unități pot să nu le suporte pe niciuna. În acest caz nu veți putea afișa aplicația de navigare pe ecranul principal, decât dacă instalați pe dispozitiv un ROM personalizat care o suportă (dacă există un astfel de ROM pentru unitatea dvs. principală).\nPuteți folosi în continuare launcherul, dar va trebui să dezactivați PiP din setările launcherului (altfel Google Maps va apărea de fiecare dată când încercați să deschideți pagina principală – dacă se întâmplă, ștergeți datele launcherului sau reinstalați-l).</string>
 
     <string name="materialcolorpicker__errHex">Formatul codului hexazecimal este incorect</string>
     <string name="materialcolorpicker__btnSelectColor">Selectați</string>
@@ -597,4 +596,7 @@
     <string name="autostart_apps_summary_fyt">Aplicațiile pornite de funcția de pornire automată a sistemului pot încetini pornirea launcherului. Opțiunea integrată a launcherului le pornește abia după ce launcherul și-a încheiat pornirea la rece. Când folosiți această listă, nu uitați să dezactivați aceste aplicații în setările FYT și oriunde altundeva sunt setate să pornească automat; altfel vor fi pornite de două ori.</string>
     <string name="autostart_apps_summary_other">Aplicațiile pornite de funcția de pornire automată a sistemului pot încetini pornirea launcherului. Opțiunea integrată a launcherului le pornește abia după ce launcherul și-a încheiat pornirea la rece. Când folosiți această listă, nu uitați să dezactivați pornirea automată a acestor aplicații oriunde altundeva este activată; altfel vor fi pornite de două ori.</string>
     <string name="autostart_apps_by_boot_completed_summary">Se aplică pentru „Pornire la boot” și „Pornire la trezire”</string>
+    <string name="welcome_fyt">Bun venit în Launcher Mod!\nCreați propria aranjare în setări pentru a afișa navigația și alte aplicații în ferestre pe ecranul principal. Dacă o aplicație continuă să se deschidă peste ecranul principal, dezactivați fereastra ei în setări.</string>
+    <string name="welcome_7870">Bun venit în Launcher Mod!\nCreați propria aranjare în setări. Aplicațiile pot fi afișate în ferestre pe ecranul principal unde unitatea o permite; dacă una continuă să se deschidă peste ecranul principal, dezactivați fereastra ei în setări.</string>
+    <string name="welcome_other">Bun venit în Launcher Mod!\nCreați propria aranjare în setări. Afișarea aplicațiilor în ferestre pe ecranul principal necesită root sau Shizuku; fără ele, launcherul funcționează ca un ecran principal obișnuit.</string>
 </resources>

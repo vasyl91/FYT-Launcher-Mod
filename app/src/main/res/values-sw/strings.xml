@@ -321,7 +321,6 @@
     <string name="update_allow_install">Ruhusu usakinishaji wa programu kutoka chanzo hiki, kisha uguse SASISHA tena</string>
     <string name="progress_dialog_str">Inapakua %1$s</string>
     <string name="download_in_progress">Upakuaji unaendelea…</string>
-    <string name="tv_map_str">Karibu kwenye FYT Launcher Mod!\nUnda mpangilio wako ili kuonyesha dirisha la navi.\n\nKizinduzi hiki kinakuruhusu kuonyesha programu katika hali ya Picture-in-Picture kwa njia mbili tofauti, hata hivyo baadhi ya vitengo huenda visiauni yoyote. Hii ina maana kwamba hutaweza kuonyesha programu ya navi kwenye skrini kuu, isipokuwa uweke kwenye kifaa chako ROM maalum inayoauni (ikiwa ROM kama hiyo ipo kwa kitengo chako kikuu).\nBado unaweza kutumia kizinduzi, lakini utahitaji kuzima PiP kwenye mipangilio ya kizinduzi (vinginevyo Ramani za Google zitaibuka kila unapojaribu kufungua ukurasa wa mwanzo – ikitokea, futa data ya kizinduzi au kisakinishe upya).</string>
 
     <string name="materialcolorpicker__errHex">Umbizo la msimbo wa hex si sahihi</string>
     <string name="materialcolorpicker__btnSelectColor">Chagua</string>
@@ -597,4 +596,7 @@
     <string name="autostart_apps_summary_fyt">Programu zinazoanzishwa na kipengele cha kuanza kiotomatiki cha mfumo zinaweza kupunguza kasi ya kuanza kwa kizinduzi. Chaguo lililojengewa ndani la kizinduzi huzianzisha tu baada ya kizinduzi kumaliza kuanza kwa baridi. Unapotumia orodha hii, kumbuka kuzima programu hizi katika mipangilio ya FYT na kila mahali pengine zilipowekwa kuanza kiotomatiki; vinginevyo zitaanzishwa mara mbili.</string>
     <string name="autostart_apps_summary_other">Programu zinazoanzishwa na kipengele cha kuanza kiotomatiki cha mfumo zinaweza kupunguza kasi ya kuanza kwa kizinduzi. Chaguo lililojengewa ndani la kizinduzi huzianzisha tu baada ya kizinduzi kumaliza kuanza kwa baridi. Unapotumia orodha hii, kumbuka kuzima kuanza kiotomatiki kwa programu hizi kila mahali pengine ilipowashwa; vinginevyo zitaanzishwa mara mbili.</string>
     <string name="autostart_apps_by_boot_completed_summary">Inatumika kwa “Anza wakati wa kuwasha” na “Anza wakati wa kuamka”</string>
+    <string name="welcome_fyt">Karibu kwenye Launcher Mod!\nUnda mpangilio wako mwenyewe katika mipangilio ili kuonyesha urambazaji na programu nyingine katika madirisha kwenye skrini ya kwanza. Programu ikiendelea kufunguka juu ya skrini ya kwanza, zima dirisha lake katika mipangilio.</string>
+    <string name="welcome_7870">Karibu kwenye Launcher Mod!\nUnda mpangilio wako mwenyewe katika mipangilio. Programu zinaweza kuonyeshwa katika madirisha kwenye skrini ya kwanza pale kifaa kinapounga mkono; ikiwa moja inaendelea kufunguka juu ya skrini ya kwanza, zima dirisha lake katika mipangilio.</string>
+    <string name="welcome_other">Karibu kwenye Launcher Mod!\nUnda mpangilio wako mwenyewe katika mipangilio. Kuonyesha programu katika madirisha kwenye skrini ya kwanza kunahitaji root au Shizuku; bila hivyo kizinduzi hufanya kazi kama skrini ya kwanza ya kawaida.</string>
 </resources>

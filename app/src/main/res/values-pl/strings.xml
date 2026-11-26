@@ -321,7 +321,6 @@
     <string name="update_allow_install">Zezwól na instalowanie aplikacji z tego źródła, potem ponów aktualizację</string>
     <string name="progress_dialog_str">Pobieranie %1$s</string>
     <string name="download_in_progress">Trwa pobieranie...</string>
-    <string name="tv_map_str">Witaj w FYT Launcher Mod!\nStwórz swój własny layout, aby wyświetlić okno nawigacji.\n\n Ten launcher umożliwia wyświetlanie aplikacji w trybie Picture-in-Picture wykorzystując dwie różne metody, choć może się zdażyć radio, które nie będzie posiadało wsparcia dla żadnej z nich. Oznacza to, że nie będziesz mógł wtedy wyświetlić okna nawigacji na ekranie głównym. Rozwiązaniem może być instalacja zmodyfikowanego ROMu, który wspiera tę funkcję (pod warunkiem, że taki ROM dla twojego radia w ogóle istnieje).\nNiemniej jednak nadal możesz używac aplikację, ale będziesz musiał wyłaczyć Picture-in-Picture w ustawieniach apilkacji (w przeciwnym wypadku próbując przejść do strony głównej za każdym razem włączy się Google Maps - jeśli się tak stanie, usuń dane aplikacji lub przeinstaluj ją).</string>
 
     <string name="materialcolorpicker__errHex">nieprawidłowy Hex Code Format</string>
     <string name="materialcolorpicker__btnSelectColor">Zaznacz</string>
@@ -597,4 +596,7 @@
     <string name="autostart_apps_summary_fyt">Aplikacje uruchamiane przez systemowy autostart mogą spowalniać uruchamianie launchera. Opcja wbudowana w launcher uruchomi je dopiero po zakończeniu jego zimnego startu. Korzystając z tej listy, pamiętaj, aby wyłączyć te aplikacje w ustawieniach FYT i wszędzie indziej, gdzie są ustawione na automatyczny start; w przeciwnym razie uruchomią się dwukrotnie.</string>
     <string name="autostart_apps_summary_other">Aplikacje uruchamiane przez systemowy autostart mogą spowalniać uruchamianie launchera. Opcja wbudowana w launcher uruchomi je dopiero po zakończeniu jego zimnego startu. Korzystając z tej listy, pamiętaj, aby wyłączyć automatyczny start tych aplikacji wszędzie indziej, gdzie jest włączony; w przeciwnym razie uruchomią się dwukrotnie.</string>
     <string name="autostart_apps_by_boot_completed_summary">Dotyczy „Uruchamiaj przy starcie systemu” i „Uruchamiaj po wybudzeniu”</string>
+    <string name="welcome_fyt">Witaj w Launcher Mod!\nUtwórz własny układ w ustawieniach, aby pokazywać nawigację i inne aplikacje w oknach na ekranie głównym. Jeśli aplikacja ciągle otwiera się nad ekranem głównym, wyłącz jej okno w ustawieniach.</string>
+    <string name="welcome_7870">Witaj w Launcher Mod!\nUtwórz własny układ w ustawieniach. Aplikacje można pokazywać w oknach na ekranie głównym tam, gdzie urządzenie to obsługuje; jeśli któraś ciągle otwiera się nad ekranem głównym, wyłącz jej okno w ustawieniach.</string>
+    <string name="welcome_other">Witaj w Launcher Mod!\nUtwórz własny układ w ustawieniach. Pokazywanie aplikacji w oknach na ekranie głównym wymaga roota lub Shizuku; bez nich launcher działa jak zwykły ekran główny.</string>
 </resources>
