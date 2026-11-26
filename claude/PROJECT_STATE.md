@@ -156,7 +156,7 @@ JUnit 5 JVM tests: 110 files, 1011 tests, no instrumented tests. CI runs on GitH
 
 **Round 28 (2026-11-26), waiting for the owner's test (KI-51):** nothing of it was tried on a device. The list is in
 KI-51; the ones to look at first on the A55: the settings of a release build (A3), the black window before the unlock
-(A7), the slider's touch, the accent colour, the gestures and the double tap, the drawer (letters, search, tabs and their
+(A7: it hung the A55 at boot, now off in release and on in debug builds only, KI-54), the slider's touch, the accent colour, the gestures and the double tap, the drawer (letters, search, tabs and their
 creator), the badges. On the 7862: the double tap "Turn off screen" (the tile's command, the same double tap brings the
 screen back), the swipe down (the quick settings panel), and that nothing changed where the round was not about it.
 What was left out (E1 horizontal, E2, E3, G1) needs a device (KI-52).

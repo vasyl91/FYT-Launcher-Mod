@@ -1,6 +1,6 @@
 # Known issues
 
-As of 2026-11-26 (`testBranch` after round 28; none of it tried on a device; the 7870 tester's results are awaited, see `checks/7870.md`). KI-46 closed 2026-11-25 by the 7862's log. One list of what is open today,
+As of 2026-11-26 (`testBranch` after round 28; none of it tried on a device but the A55's boot hang of A7, KI-54; the 7870 tester's results are awaited, see `checks/7870.md`). KI-46 closed 2026-11-25 by the 7862's log. One list of what is open today,
 rewritten on 2026-11-18 at the owner's request. What was fixed or closed has been taken out; it stays in git
 and in the reports (`reports/`, `chat_archive/`). Sources: the code, git, CI, the briefs, the chat reports and
 the owner's results.
@@ -49,6 +49,7 @@ file and named in the round's report.
 | KI-51 | Round 28 on a device: crashes, the black window before the unlock, the settings' look, the gestures, the drawer, the badges | unverified | watching | the owner's test on the A55 and the 7862 (the lists in the round's report) |
 | KI-52 | Round 28's brief only partly built: E1 horizontal, E2, E3, G1 | problem | open | a round with a device to try the bar and the drag on |
 | KI-53 | The release build of the settings' preferences (A3) cannot be tried in a session | unverified | watching | a release build by the owner |
+| KI-54 | Direct boot hung the A55 at boot (round 28, A7) | problem | watching | the owner's A55 test with a debug build, with and without a PIN |
 
 ## Problems
 
@@ -126,6 +127,23 @@ device, and a regression there would be in the 7862's home screen. A round with 
 The second settings screen crashed in the A55's release build (standard release 1.2.1, Android 17, the owner's crash log of 2026-11-25): R8 removed the `(Context, AttributeSet)` constructor of a preference, which the inflater calls by reflection.
 A3 keeps them (`proguard-rules.pro`), but a release cannot be built in a session, so the fix is [V] only by reading the
 rules. The owner opens the settings of a release build to see.
+
+### KI-54 Direct boot hung the A55 at boot (round 28, A7)
+The owner, 2026-11-26 [H]: after installing the round 28 build the A55 stayed on "Powered by Android" at a restart;
+safe mode, which leaves the launcher out, booted. The cause, read in the code [V; no log of the hang]: the Launcher
+activity was direct boot aware (`baa2432fc`), so Android made it before the user's first unlock. Its field initializer
+`helpers = new Helpers()` runs before `onCreate()` and its lock check, and loading `Helpers` opened the credential
+encrypted file `HelpersPrefsSus` in a static field. Android refuses that before the unlock with an
+`IllegalStateException`, so the activity could not be made and the home was started again and again.
+- `e8fc35713`: the attribute taken off at once, so every build starts after the unlock as before round 28.
+- `b21482ef1`: `Helpers` opens the file at the first use; `StorageAtClassLoadTest` scans the sources so that no static
+  field or block reads storage (it catches the old line); `LockedStartViewTest` makes the activity with a locked storage
+  that throws. Direct boot comes from the placeholder `launcherDirectBoot`: **on in debug builds, off in release**, until
+  the owner confirms it.
+- To try on the A55 with a debug build (it installs over a release, the same key): a restart with a PIN and one without.
+  The wallpaper should show before the unlock, the home screen after it, with `Launcher: direct boot, waiting for the
+  user's unlock` and `LauncherApplication: unlocked, starting` in the log. If it hangs again: `adb logcat -b all` during
+  the boot (adb works before the unlock), then safe mode and One UI Home as the home app to get out.
 
 ## Limits
 
