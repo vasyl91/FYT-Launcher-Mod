@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">مصدر منتقي الخلفيات</string>
     <string name="wallpaper_picker_system">منتقي خلفيات النظام</string>
     <string name="wallpaper_picker_launcher">منتقي الخلفيات داخل التطبيق</string>
-    <string name="all_apps_textSize_str">ضبط حجم نص أيقونات قائمة التطبيقات (الحد الأقصى 50)</string>
-    <string name="workspace_textSize_str">ضبط حجم نص أيقونات الشاشة الرئيسية (الحد الأقصى 50)</string>
     <string name="launcher_home_wake">إبقاء الشاشة الرئيسية في المقدمة عند استيقاظ الجهاز</string>
     <string name="launcher_home_cold_start">إبقاء الشاشة الرئيسية في المقدمة عند تشغيل الجهاز</string>
     <string name="cold_start_last_app_delay">تأخير إعادة فتح آخر تطبيق بعد إعادة التشغيل</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">حد خارجي</string>
     <string name="badges_outline_on">حد خارجي رفيع بلون الرقم</string>
     <string name="badges_outline_off">بدون حد خارجي</string>
+    <string name="all_apps_category">قائمة التطبيقات</string>
+    <string name="all_apps_search">شريط البحث</string>
+    <string name="all_apps_search_on">يظهر شريط بحث فوق التطبيقات</string>
+    <string name="all_apps_search_off">بدون شريط بحث</string>
+    <string name="all_apps_scroll">اتجاه التمرير</string>
+    <string name="all_apps_scroll_vertical">عمودي</string>
+    <string name="all_apps_scroll_horizontal">أفقي</string>
+    <string name="drawer_tabs">علامات التبويب</string>
+    <string name="drawer_tabs_summary">أضف علامات تبويب قائمة التطبيقات وأعد تسميتها ورتّبها</string>
+    <string name="icon_text_size">تعيين حجم نص الأيقونات</string>
 </resources>

@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">Bron van agtergrondkieser</string>
     <string name="wallpaper_picker_system">Stelsel-agtergrondkieser</string>
     <string name="wallpaper_picker_launcher">Agtergrondkieser in die program</string>
-    <string name="all_apps_textSize_str">Stel die teksgrootte van ikone in die programlys (maks. 50)</string>
-    <string name="workspace_textSize_str">Stel die teksgrootte van ikone op die tuisskerm (maks. 50)</string>
     <string name="launcher_home_wake">Hou die tuisskerm bo-op wanneer die toestel wakker word</string>
     <string name="launcher_home_cold_start">Hou die tuisskerm bo-op wanneer die toestel begin</string>
     <string name="cold_start_last_app_delay">Vertraag die heropening van die laaste program ná \'n herbegin</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">Buitelyn</string>
     <string name="badges_outline_on">\'n Dun buitelyn in die kleur van die getal</string>
     <string name="badges_outline_off">Geen buitelyn</string>
+    <string name="all_apps_category">Programlys</string>
+    <string name="all_apps_search">Soekbalk</string>
+    <string name="all_apps_search_on">\'n Soekbalk word bo die programme gewys</string>
+    <string name="all_apps_search_off">Geen soekbalk</string>
+    <string name="all_apps_scroll">Rolrigting</string>
+    <string name="all_apps_scroll_vertical">Vertikaal</string>
+    <string name="all_apps_scroll_horizontal">Horisontaal</string>
+    <string name="drawer_tabs">Oortjies</string>
+    <string name="drawer_tabs_summary">Voeg by, hernoem en rangskik die programlys se oortjies</string>
+    <string name="icon_text_size">Stel ikoonteksgrootte</string>
 </resources>

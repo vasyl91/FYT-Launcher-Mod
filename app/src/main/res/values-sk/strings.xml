@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">Zdroj výberu tapety</string>
     <string name="wallpaper_picker_system">Systémový výber tapety</string>
     <string name="wallpaper_picker_launcher">Výber tapety v aplikácii</string>
-    <string name="all_apps_textSize_str">Nastaviť veľkosť textu ikon v zozname aplikácií (max. 50)</string>
-    <string name="workspace_textSize_str">Nastaviť veľkosť textu ikon na domovskej obrazovke (max. 50)</string>
     <string name="launcher_home_wake">Držať domovskú obrazovku navrchu, keď sa zariadenie prebudí</string>
     <string name="launcher_home_cold_start">Držať domovskú obrazovku navrchu, keď sa zariadenie spustí</string>
     <string name="cold_start_last_app_delay">Oneskoriť opätovné otvorenie poslednej aplikácie po reštarte</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">Obrys</string>
     <string name="badges_outline_on">Tenký obrys vo farbe čísla</string>
     <string name="badges_outline_off">Bez obrysu</string>
+    <string name="all_apps_category">Zásuvka aplikácií</string>
+    <string name="all_apps_search">Vyhľadávací panel</string>
+    <string name="all_apps_search_on">Nad aplikáciami sa zobrazí vyhľadávací panel</string>
+    <string name="all_apps_search_off">Bez vyhľadávacieho panela</string>
+    <string name="all_apps_scroll">Smer posúvania</string>
+    <string name="all_apps_scroll_vertical">Zvislo</string>
+    <string name="all_apps_scroll_horizontal">Vodorovne</string>
+    <string name="drawer_tabs">Karty</string>
+    <string name="drawer_tabs_summary">Pridávajte, premenúvajte a usporadúvajte karty zásuvky aplikácií</string>
+    <string name="icon_text_size">Nastaviť veľkosť textu ikon</string>
 </resources>

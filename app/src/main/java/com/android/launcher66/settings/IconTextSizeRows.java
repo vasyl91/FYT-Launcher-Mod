@@ -46,8 +46,8 @@ final class IconTextSizeRows {
 
     /** Shows the stored sizes in the two rows and opens the dialog on a tap. */
     void bind() {
-        bind(Keys.ALL_APPS_TEXT_SIZE, "18", R.string.all_apps_textSize_str, true);
-        bind(Keys.WORKSPACE_TEXT_SIZE, "28", R.string.workspace_textSize_str, false);
+        bind(Keys.ALL_APPS_TEXT_SIZE, "18", R.string.icon_text_size, true);
+        bind(Keys.WORKSPACE_TEXT_SIZE, "28", R.string.icon_text_size, false);
     }
 
     /** The open dialog of the row with that key, kept across a turn of the screen; null when none. */

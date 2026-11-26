@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">壁紙ピッカーの取得元</string>
     <string name="wallpaper_picker_system">システムの壁紙ピッカー</string>
     <string name="wallpaper_picker_launcher">アプリ内の壁紙ピッカー</string>
-    <string name="all_apps_textSize_str">アプリ一覧のアイコン文字サイズを設定（最大50）</string>
-    <string name="workspace_textSize_str">ホーム画面のアイコン文字サイズを設定（最大50）</string>
     <string name="launcher_home_wake">端末の復帰時にホーム画面を最前面に保つ</string>
     <string name="launcher_home_cold_start">端末の起動時にホーム画面を最前面に保つ</string>
     <string name="cold_start_last_app_delay">再起動後の前回アプリの再表示を遅らせる</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">アウトライン</string>
     <string name="badges_outline_on">数字と同じ色の細い輪郭</string>
     <string name="badges_outline_off">輪郭なし</string>
+    <string name="all_apps_category">アプリドロワー</string>
+    <string name="all_apps_search">検索バー</string>
+    <string name="all_apps_search_on">アプリの上に検索バーを表示します</string>
+    <string name="all_apps_search_off">検索バーなし</string>
+    <string name="all_apps_scroll">スクロール方向</string>
+    <string name="all_apps_scroll_vertical">縦</string>
+    <string name="all_apps_scroll_horizontal">横</string>
+    <string name="drawer_tabs">タブ</string>
+    <string name="drawer_tabs_summary">アプリドロワーのタブを追加・名前変更・並べ替えします</string>
+    <string name="icon_text_size">アイコンの文字サイズを設定</string>
 </resources>

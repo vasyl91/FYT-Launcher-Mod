@@ -23,7 +23,7 @@ public final class CreatorKeys {
      */
     static final Set<String> STORED_ELSEWHERE = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
             // "Rows" and "Columns": cells along the long and the short edge (GridSeekBarPreference)
-            "workspace_grid_long", "workspace_grid_short",
+            "workspace_grid_long", "workspace_grid_short", "all_apps_grid_long", "all_apps_grid_short",
             // the colour rows of "Choose background for ..." and "Set ... text and button color"
             "widgets_selected_background", "bar_selected_background", "vertical_bar_selected_background",
             "stats_selected_background",
@@ -44,7 +44,7 @@ public final class CreatorKeys {
             "workspace_grid_rows_title", "workspace_grid_rows", "workspace_grid_rows_note",
             "workspace_grid_columns_title", "workspace_grid_columns", "workspace_grid_columns_note",
             "transparent_statusbar", "start_page", "all_apps_textSize", "workspace_textSize", "workspace_text_color", "theme_accent_color",
-            "swipe_up_app_drawer", "swipe_down_notifications", "double_tap_action", "choose_folders_background", "folder_follow_grid", "widget_freeform", "widget_overlap",
+            "swipe_up_app_drawer", "swipe_down_notifications", "double_tap_action", "choose_folders_background", "folder_follow_grid", "widget_freeform", "widget_overlap", "all_apps_grid_rows_title", "all_apps_grid_rows", "all_apps_grid_columns_title", "all_apps_grid_columns", "all_apps_text_color", "all_apps_search", "all_apps_scroll", "drawer_tabs",
             "display_pip",
             "restart_pip", "fab_overlay_button", "fab_overlay_button_left", "fab_overlay_button_right",
             "extended_divider", "cover_splash_mode", "swipe_detector", "user_date", "user_music", "user_radio",

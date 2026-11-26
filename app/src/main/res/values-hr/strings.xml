@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">Izvor birača pozadine</string>
     <string name="wallpaper_picker_system">Sustavni birač pozadine</string>
     <string name="wallpaper_picker_launcher">Birač pozadine u aplikaciji</string>
-    <string name="all_apps_textSize_str">Postavi veličinu teksta ikona na popisu aplikacija (maks. 50)</string>
-    <string name="workspace_textSize_str">Postavi veličinu teksta ikona na početnom zaslonu (maks. 50)</string>
     <string name="launcher_home_wake">Drži početni zaslon na vrhu kad se uređaj probudi</string>
     <string name="launcher_home_cold_start">Drži početni zaslon na vrhu kad se uređaj pokrene</string>
     <string name="cold_start_last_app_delay">Odgodi ponovno otvaranje zadnje aplikacije nakon ponovnog pokretanja</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">Obrub</string>
     <string name="badges_outline_on">Tanki obrub u boji broja</string>
     <string name="badges_outline_off">Bez obruba</string>
+    <string name="all_apps_category">Ladica aplikacija</string>
+    <string name="all_apps_search">Traka za pretraživanje</string>
+    <string name="all_apps_search_on">Iznad aplikacija prikazuje se traka za pretraživanje</string>
+    <string name="all_apps_search_off">Bez trake za pretraživanje</string>
+    <string name="all_apps_scroll">Smjer pomicanja</string>
+    <string name="all_apps_scroll_vertical">Okomito</string>
+    <string name="all_apps_scroll_horizontal">Vodoravno</string>
+    <string name="drawer_tabs">Kartice</string>
+    <string name="drawer_tabs_summary">Dodajte, preimenujte i složite kartice ladice aplikacija</string>
+    <string name="icon_text_size">Postavi veličinu teksta ikona</string>
 </resources>

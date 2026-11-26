@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">Источник выбора обоев</string>
     <string name="wallpaper_picker_system">Системный выбор обоев</string>
     <string name="wallpaper_picker_launcher">Встроенный выбор обоев</string>
-    <string name="all_apps_textSize_str">Размер текста значков в списке приложений (макс. 50)</string>
-    <string name="workspace_textSize_str">Размер текста значков на главном экране (макс. 50)</string>
     <string name="launcher_home_wake">Держать главный экран поверх остальных при пробуждении устройства</string>
     <string name="launcher_home_cold_start">Держать главный экран поверх остальных при запуске устройства</string>
     <string name="cold_start_last_app_delay">Отложить повторное открытие последнего приложения после перезагрузки</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">Контур</string>
     <string name="badges_outline_on">Тонкий контур цвета цифры</string>
     <string name="badges_outline_off">Без контура</string>
+    <string name="all_apps_category">Меню приложений</string>
+    <string name="all_apps_search">Строка поиска</string>
+    <string name="all_apps_search_on">Над приложениями показывается строка поиска</string>
+    <string name="all_apps_search_off">Без строки поиска</string>
+    <string name="all_apps_scroll">Направление прокрутки</string>
+    <string name="all_apps_scroll_vertical">Вертикально</string>
+    <string name="all_apps_scroll_horizontal">Горизонтально</string>
+    <string name="drawer_tabs">Вкладки</string>
+    <string name="drawer_tabs_summary">Добавляйте, переименовывайте и упорядочивайте вкладки меню приложений</string>
+    <string name="icon_text_size">Задать размер текста значков</string>
 </resources>

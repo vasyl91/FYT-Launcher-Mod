@@ -29,9 +29,19 @@ final class IconTextColor {
 
     /** The chosen colour, opaque, or {@code white} when there is none or the creator is off. */
     static int resolve(CreatorPrefs prefs, int white) {
-        if (!prefs.contains(Keys.WORKSPACE_TEXT_COLOR)) {
+        return resolve(prefs, Keys.WORKSPACE_TEXT_COLOR, white);
+    }
+
+    /** The colour of the names under the app drawer's icons ("App drawer": "Set icon text color"), white without one. */
+    static int drawer(SharedPreferences prefs, int white) {
+        return resolve(CreatorPrefs.of(prefs), Keys.ALL_APPS_TEXT_COLOR, white);
+    }
+
+    /** The colour stored under {@code key}, opaque, or {@code white} when there is none or the creator is off. */
+    static int resolve(CreatorPrefs prefs, String key, int white) {
+        if (!prefs.contains(key)) {
             return white;
         }
-        return 0xff000000 | prefs.getInt(Keys.WORKSPACE_TEXT_COLOR, white);
+        return 0xff000000 | prefs.getInt(key, white);
     }
 }

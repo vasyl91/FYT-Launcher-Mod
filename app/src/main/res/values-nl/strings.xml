@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">Bron van achtergrondkiezer</string>
     <string name="wallpaper_picker_system">Achtergrondkiezer van het systeem</string>
     <string name="wallpaper_picker_launcher">Achtergrondkiezer in de app</string>
-    <string name="all_apps_textSize_str">Tekstgrootte van pictogrammen in de applijst instellen (max. 50)</string>
-    <string name="workspace_textSize_str">Tekstgrootte van pictogrammen op het startscherm instellen (max. 50)</string>
     <string name="launcher_home_wake">Startscherm bovenaan houden wanneer het apparaat ontwaakt</string>
     <string name="launcher_home_cold_start">Startscherm bovenaan houden wanneer het apparaat opstart</string>
     <string name="cold_start_last_app_delay">Heropenen van de laatste app na een herstart vertragen</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">Omtrek</string>
     <string name="badges_outline_on">Een dunne omtrek in de kleur van het getal</string>
     <string name="badges_outline_off">Geen omtrek</string>
+    <string name="all_apps_category">App-lade</string>
+    <string name="all_apps_search">Zoekbalk</string>
+    <string name="all_apps_search_on">Boven de apps wordt een zoekbalk getoond</string>
+    <string name="all_apps_search_off">Geen zoekbalk</string>
+    <string name="all_apps_scroll">Scrollrichting</string>
+    <string name="all_apps_scroll_vertical">Verticaal</string>
+    <string name="all_apps_scroll_horizontal">Horizontaal</string>
+    <string name="drawer_tabs">Tabbladen</string>
+    <string name="drawer_tabs_summary">Voeg tabbladen van de app-lade toe, hernoem ze en rangschik ze</string>
+    <string name="icon_text_size">Tekstgrootte van pictogrammen instellen</string>
 </resources>

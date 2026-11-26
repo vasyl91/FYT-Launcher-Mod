@@ -96,4 +96,13 @@
         <item>medium</item>
         <item>large</item>
     </string-array>
+    <!-- "App drawer: Scrolling direction" (F1) -->
+    <string-array name="all_apps_scroll_entries">
+        <item>@string/all_apps_scroll_vertical</item>
+        <item>@string/all_apps_scroll_horizontal</item>
+    </string-array>
+    <string-array name="all_apps_scroll_values" translatable="false">
+        <item>vertical</item>
+        <item>horizontal</item>
+    </string-array>
 </resources>

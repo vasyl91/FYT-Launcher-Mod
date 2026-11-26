@@ -1378,6 +1378,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 if (WidgetStyler.isLookSetting(key)) {
                     WidgetStyler.apply(Launcher.this, "setting " + key);
                 }
+                // "App drawer: Rows / Columns" (F1): the pages are made again for the new grid
+                if (mAppsCustomizeContent != null && (Keys.ALL_APPS_GRID_LONG.equals(key)
+                        || Keys.ALL_APPS_GRID_SHORT.equals(key) || Keys.USER_LAYOUT.equals(key))) {
+                    mAppsCustomizeContent.refreshGrid();
+                }
                 // "Allow widgets to overlap" and "Free widget placement": the cells taken are counted anew; with the first
                 // turned off the widgets that overlap are put on the grid again
                 if (mWorkspace != null && (Keys.WIDGET_OVERLAP.equals(key) || Keys.WIDGET_FREEFORM.equals(key)

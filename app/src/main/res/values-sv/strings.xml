@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">Källa för bakgrundsväljare</string>
     <string name="wallpaper_picker_system">Systemets bakgrundsväljare</string>
     <string name="wallpaper_picker_launcher">Bakgrundsväljare i appen</string>
-    <string name="all_apps_textSize_str">Ställ in textstorlek för ikoner i applistan (max 50)</string>
-    <string name="workspace_textSize_str">Ställ in textstorlek för ikoner på startskärmen (max 50)</string>
     <string name="launcher_home_wake">Håll startskärmen överst när enheten vaknar</string>
     <string name="launcher_home_cold_start">Håll startskärmen överst när enheten startar</string>
     <string name="cold_start_last_app_delay">Fördröj återöppning av senaste appen efter omstart</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">Kontur</string>
     <string name="badges_outline_on">En tunn kontur i siffrans färg</string>
     <string name="badges_outline_off">Ingen kontur</string>
+    <string name="all_apps_category">Applåda</string>
+    <string name="all_apps_search">Sökfält</string>
+    <string name="all_apps_search_on">Ett sökfält visas ovanför apparna</string>
+    <string name="all_apps_search_off">Inget sökfält</string>
+    <string name="all_apps_scroll">Scrollriktning</string>
+    <string name="all_apps_scroll_vertical">Vertikalt</string>
+    <string name="all_apps_scroll_horizontal">Horisontellt</string>
+    <string name="drawer_tabs">Flikar</string>
+    <string name="drawer_tabs_summary">Lägg till, byt namn på och ordna appladans flikar</string>
+    <string name="icon_text_size">Ange storlek på ikontext</string>
 </resources>

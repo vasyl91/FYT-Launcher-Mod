@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">Nguồn trình chọn hình nền</string>
     <string name="wallpaper_picker_system">Trình chọn hình nền của hệ thống</string>
     <string name="wallpaper_picker_launcher">Trình chọn hình nền trong ứng dụng</string>
-    <string name="all_apps_textSize_str">Đặt cỡ chữ biểu tượng trong danh sách ứng dụng (tối đa 50)</string>
-    <string name="workspace_textSize_str">Đặt cỡ chữ biểu tượng trên màn hình chính (tối đa 50)</string>
     <string name="launcher_home_wake">Luôn giữ màn hình chính ở trên cùng khi thiết bị thức dậy</string>
     <string name="launcher_home_cold_start">Luôn giữ màn hình chính ở trên cùng khi thiết bị khởi động</string>
     <string name="cold_start_last_app_delay">Trì hoãn mở lại ứng dụng cuối cùng sau khi khởi động lại</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">Viền</string>
     <string name="badges_outline_on">Viền mỏng cùng màu với số</string>
     <string name="badges_outline_off">Không có viền</string>
+    <string name="all_apps_category">Ngăn kéo ứng dụng</string>
+    <string name="all_apps_search">Thanh tìm kiếm</string>
+    <string name="all_apps_search_on">Thanh tìm kiếm hiển thị phía trên các ứng dụng</string>
+    <string name="all_apps_search_off">Không có thanh tìm kiếm</string>
+    <string name="all_apps_scroll">Hướng cuộn</string>
+    <string name="all_apps_scroll_vertical">Dọc</string>
+    <string name="all_apps_scroll_horizontal">Ngang</string>
+    <string name="drawer_tabs">Thẻ</string>
+    <string name="drawer_tabs_summary">Thêm, đổi tên và sắp xếp các thẻ của ngăn kéo ứng dụng</string>
+    <string name="icon_text_size">Đặt cỡ chữ của biểu tượng</string>
 </resources>

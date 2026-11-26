@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">Sumber pemilih wallpaper</string>
     <string name="wallpaper_picker_system">Pemilih wallpaper sistem</string>
     <string name="wallpaper_picker_launcher">Pemilih wallpaper dalam aplikasi</string>
-    <string name="all_apps_textSize_str">Setel ukuran teks ikon daftar aplikasi (maks. 50)</string>
-    <string name="workspace_textSize_str">Setel ukuran teks ikon layar utama (maks. 50)</string>
     <string name="launcher_home_wake">Pertahankan layar utama di atas saat perangkat bangun</string>
     <string name="launcher_home_cold_start">Pertahankan layar utama di atas saat perangkat dihidupkan</string>
     <string name="cold_start_last_app_delay">Tunda pembukaan kembali aplikasi terakhir setelah dimulai ulang</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">Garis tepi</string>
     <string name="badges_outline_on">Garis tepi tipis dengan warna angka</string>
     <string name="badges_outline_off">Tanpa garis tepi</string>
+    <string name="all_apps_category">Laci aplikasi</string>
+    <string name="all_apps_search">Bilah pencarian</string>
+    <string name="all_apps_search_on">Bilah pencarian ditampilkan di atas aplikasi</string>
+    <string name="all_apps_search_off">Tanpa bilah pencarian</string>
+    <string name="all_apps_scroll">Arah pengguliran</string>
+    <string name="all_apps_scroll_vertical">Vertikal</string>
+    <string name="all_apps_scroll_horizontal">Horizontal</string>
+    <string name="drawer_tabs">Tab</string>
+    <string name="drawer_tabs_summary">Tambah, ganti nama, dan atur tab laci aplikasi</string>
+    <string name="icon_text_size">Atur ukuran teks ikon</string>
 </resources>

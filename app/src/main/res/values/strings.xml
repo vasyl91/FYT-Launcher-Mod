@@ -131,8 +131,6 @@
     <string name="wallpaper_picker_source">Wallpaper picker source</string> 
     <string name="wallpaper_picker_system">System wallpaper picker</string> 
     <string name="wallpaper_picker_launcher">In-app wallpaper picker</string> 
-    <string name="all_apps_textSize_str">Set app drawer icon text size (max. 50)</string>
-    <string name="workspace_textSize_str">Set Home screen icon text size (max. 50)</string>
     <string name="launcher_home_wake">Keep the Home screen on top when the device wakes up</string>
     <string name="launcher_home_cold_start">Keep the Home screen on top when the device boots</string>
     <string name="cold_start_last_app_delay">Delay reopening the last app after a restart</string>
@@ -628,4 +626,14 @@
     <string name="badges_outline">Outline</string>
     <string name="badges_outline_on">A thin outline in the color of the number</string>
     <string name="badges_outline_off">No outline</string>
+    <string name="all_apps_category">App drawer</string>
+    <string name="all_apps_search">Search bar</string>
+    <string name="all_apps_search_on">A search bar is shown above the apps</string>
+    <string name="all_apps_search_off">No search bar</string>
+    <string name="all_apps_scroll">Scrolling direction</string>
+    <string name="all_apps_scroll_vertical">Vertical</string>
+    <string name="all_apps_scroll_horizontal">Horizontal</string>
+    <string name="drawer_tabs">Tabs</string>
+    <string name="drawer_tabs_summary">Add, rename and arrange the app drawer\'s tabs</string>
+    <string name="icon_text_size">Set icon text size</string>
 </resources>

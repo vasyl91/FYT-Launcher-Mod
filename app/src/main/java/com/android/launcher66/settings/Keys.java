@@ -70,6 +70,19 @@ public final class Keys {
     /** "Allow widgets to overlap": widgets take no cells and lie over other items (FreeformWidgets.overlapOn), off by default. */
     public static final String WIDGET_OVERLAP = "widget_overlap";
     /**
+     * "App drawer" (a creator setting): the cells of its pages along the long and the short edge of the screen (AppsGrid),
+     * the rows and the columns of the sliders that set them, the colour of the names (IconTextColor.drawer), the search
+     * bar, the scrolling direction and the row of the tabs.
+     */
+    public static final String ALL_APPS_GRID_LONG = "all_apps_grid_long";
+    public static final String ALL_APPS_GRID_SHORT = "all_apps_grid_short";
+    public static final String ALL_APPS_GRID_ROWS = "all_apps_grid_rows";
+    public static final String ALL_APPS_GRID_COLUMNS = "all_apps_grid_columns";
+    public static final String ALL_APPS_TEXT_COLOR = "all_apps_text_color";
+    public static final String ALL_APPS_SEARCH = "all_apps_search";
+    public static final String ALL_APPS_SCROLL = "all_apps_scroll";
+    public static final String DRAWER_TABS = "drawer_tabs";
+    /**
      * "Notification badges" (BadgeModel, BadgeStyle): the settings of the number of notifications on an icon. They are
      * the launcher's own, not the creator's (CreatorKeys has none of them): they work with the stock layout too.
      */

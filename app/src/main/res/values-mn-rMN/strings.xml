@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">Ханын зураг сонгогчийн эх сурвалж</string>
     <string name="wallpaper_picker_system">Системийн ханын зураг сонгогч</string>
     <string name="wallpaper_picker_launcher">Аппын доторх ханын зураг сонгогч</string>
-    <string name="all_apps_textSize_str">Аппын жагсаалтын дүрсний бичвэрийн хэмжээг тохируулах (дээд тал нь 50)</string>
-    <string name="workspace_textSize_str">Нүүр дэлгэцийн дүрсний бичвэрийн хэмжээг тохируулах (дээд тал нь 50)</string>
     <string name="launcher_home_wake">Төхөөрөмж сэрэхэд нүүр дэлгэцийг дээр нь байлгах</string>
     <string name="launcher_home_cold_start">Төхөөрөмж асахад нүүр дэлгэцийг дээр нь байлгах</string>
     <string name="cold_start_last_app_delay">Дахин эхлүүлсний дараа сүүлийн аппыг дахин нээхийг хойшлуулах</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">Ирмэг</string>
     <string name="badges_outline_on">Тооны өнгөтэй нимгэн ирмэг</string>
     <string name="badges_outline_off">Ирмэггүй</string>
+    <string name="all_apps_category">Аппын шургуулга</string>
+    <string name="all_apps_search">Хайлтын мөр</string>
+    <string name="all_apps_search_on">Аппуудын дээр хайлтын мөр харагдана</string>
+    <string name="all_apps_search_off">Хайлтын мөргүй</string>
+    <string name="all_apps_scroll">Гүйлгэх чиглэл</string>
+    <string name="all_apps_scroll_vertical">Босоо</string>
+    <string name="all_apps_scroll_horizontal">Хэвтээ</string>
+    <string name="drawer_tabs">Табууд</string>
+    <string name="drawer_tabs_summary">Аппын шургуулгын табуудыг нэмэх, нэрийг өөрчлөх, эрэмбэлэх</string>
+    <string name="icon_text_size">Дүрсний текстийн хэмжээг тохируулах</string>
 </resources>

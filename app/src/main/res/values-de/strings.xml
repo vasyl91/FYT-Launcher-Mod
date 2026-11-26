@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">Quelle der Hintergrundauswahl</string>
     <string name="wallpaper_picker_system">Hintergrundauswahl des Systems</string>
     <string name="wallpaper_picker_launcher">Hintergrundauswahl in der App</string>
-    <string name="all_apps_textSize_str">Textgröße der App-Symbole in der Appübersicht festlegen (max. 50)</string>
-    <string name="workspace_textSize_str">Textgröße der Symbole auf dem Startbildschirm festlegen (max. 50)</string>
     <string name="launcher_home_wake">Startbildschirm im Vordergrund halten, wenn das Gerät aufwacht</string>
     <string name="launcher_home_cold_start">Startbildschirm im Vordergrund halten, wenn das Gerät startet</string>
     <string name="cold_start_last_app_delay">Wiederöffnen der letzten App nach einem Neustart verzögern</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">Umriss</string>
     <string name="badges_outline_on">Ein dünner Umriss in der Farbe der Zahl</string>
     <string name="badges_outline_off">Kein Umriss</string>
+    <string name="all_apps_category">App-Übersicht</string>
+    <string name="all_apps_search">Suchleiste</string>
+    <string name="all_apps_search_on">Über den Apps wird eine Suchleiste angezeigt</string>
+    <string name="all_apps_search_off">Keine Suchleiste</string>
+    <string name="all_apps_scroll">Scrollrichtung</string>
+    <string name="all_apps_scroll_vertical">Vertikal</string>
+    <string name="all_apps_scroll_horizontal">Horizontal</string>
+    <string name="drawer_tabs">Tabs</string>
+    <string name="drawer_tabs_summary">Tabs der App-Übersicht hinzufügen, umbenennen und anordnen</string>
+    <string name="icon_text_size">Symboltextgröße festlegen</string>
 </resources>

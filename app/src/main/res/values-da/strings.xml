@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">Kilde til baggrundsvælger</string>
     <string name="wallpaper_picker_system">Systemets baggrundsvælger</string>
     <string name="wallpaper_picker_launcher">Baggrundsvælger i appen</string>
-    <string name="all_apps_textSize_str">Indstil tekststørrelse for ikoner på applisten (maks. 50)</string>
-    <string name="workspace_textSize_str">Indstil tekststørrelse for ikoner på startskærmen (maks. 50)</string>
     <string name="launcher_home_wake">Hold startskærmen øverst, når enheden vågner</string>
     <string name="launcher_home_cold_start">Hold startskærmen øverst, når enheden starter</string>
     <string name="cold_start_last_app_delay">Forsink genåbning af den sidste app efter genstart</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">Kontur</string>
     <string name="badges_outline_on">En tynd kontur i tallets farve</string>
     <string name="badges_outline_off">Ingen kontur</string>
+    <string name="all_apps_category">App-skuffe</string>
+    <string name="all_apps_search">Søgelinje</string>
+    <string name="all_apps_search_on">En søgelinje vises over apps</string>
+    <string name="all_apps_search_off">Ingen søgelinje</string>
+    <string name="all_apps_scroll">Rulleretning</string>
+    <string name="all_apps_scroll_vertical">Lodret</string>
+    <string name="all_apps_scroll_horizontal">Vandret</string>
+    <string name="drawer_tabs">Faner</string>
+    <string name="drawer_tabs_summary">Tilføj, omdøb og arranger app-skuffens faner</string>
+    <string name="icon_text_size">Indstil ikontekstens størrelse</string>
 </resources>

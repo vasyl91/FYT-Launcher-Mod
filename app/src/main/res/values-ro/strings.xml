@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">Sursa selectorului de imagini de fundal</string>
     <string name="wallpaper_picker_system">Selectorul de imagini de fundal al sistemului</string>
     <string name="wallpaper_picker_launcher">Selector de imagini de fundal din aplicație</string>
-    <string name="all_apps_textSize_str">Setați dimensiunea textului pictogramelor din lista de aplicații (max. 50)</string>
-    <string name="workspace_textSize_str">Setați dimensiunea textului pictogramelor de pe ecranul principal (max. 50)</string>
     <string name="launcher_home_wake">Păstrează ecranul principal deasupra când dispozitivul se trezește</string>
     <string name="launcher_home_cold_start">Păstrează ecranul principal deasupra când dispozitivul pornește</string>
     <string name="cold_start_last_app_delay">Întârzie redeschiderea ultimei aplicații după repornire</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">Contur</string>
     <string name="badges_outline_on">Un contur subțire în culoarea cifrei</string>
     <string name="badges_outline_off">Fără contur</string>
+    <string name="all_apps_category">Sertar aplicații</string>
+    <string name="all_apps_search">Bară de căutare</string>
+    <string name="all_apps_search_on">Deasupra aplicațiilor se afișează o bară de căutare</string>
+    <string name="all_apps_search_off">Fără bară de căutare</string>
+    <string name="all_apps_scroll">Direcția de derulare</string>
+    <string name="all_apps_scroll_vertical">Vertical</string>
+    <string name="all_apps_scroll_horizontal">Orizontal</string>
+    <string name="drawer_tabs">File</string>
+    <string name="drawer_tabs_summary">Adăugați, redenumiți și aranjați filele sertarului de aplicații</string>
+    <string name="icon_text_size">Setați dimensiunea textului pictogramelor</string>
 </resources>

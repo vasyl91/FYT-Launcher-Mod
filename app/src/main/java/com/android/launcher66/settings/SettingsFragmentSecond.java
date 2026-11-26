@@ -459,6 +459,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         Preference widgetsTint = findPreference(Keys.WIDGETS_TINT);
         Preference accentRow = findPreference(ThemeAccent.KEY);
         Preference iconTextRow = findPreference(Keys.WORKSPACE_TEXT_COLOR);
+        Preference drawerTextRow = findPreference(Keys.ALL_APPS_TEXT_COLOR);
         bindDoubleTap();
         bindWidgetOverlap();
         // On an FYT unit the framework shows its panel of quick settings for this swipe, not the notifications
@@ -473,6 +474,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         barOrderDialog.bind();
         bindGridSlider(GridSeekBarPreference.ROWS, "workspace_grid_rows_title", R.string.workspace_grid_rows);
         bindGridSlider(GridSeekBarPreference.COLUMNS, "workspace_grid_columns_title", R.string.workspace_grid_columns);
+        bindAppsGridSlider(Keys.ALL_APPS_GRID_ROWS, "all_apps_grid_rows_title", R.string.workspace_grid_rows);
+        bindAppsGridSlider(Keys.ALL_APPS_GRID_COLUMNS, "all_apps_grid_columns_title", R.string.workspace_grid_columns);
         startPage = findPreference(Keys.START_PAGE);
         // The page that is really used: a stored number that names no page shows as the first page
         String startPageStr = sharedPrefs.getString(Keys.START_PAGE, "1");
@@ -669,6 +672,12 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (iconTextRow != null) {
             iconTextRow.setOnPreferenceClickListener(preference -> {
                 showIconTextPicker();
+                return true;
+            });
+        }
+        if (drawerTextRow != null) {
+            drawerTextRow.setOnPreferenceClickListener(preference -> {
+                showDrawerTextPicker();
                 return true;
             });
         }
@@ -1239,6 +1248,20 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     }
 
     /**
+     * "App drawer": "Set icon text color": the colour picker in its text mode ("Select" stores the opaque colour, "Default"
+     * forgets it and the names are white again). The drawer takes it when its icons are made, at each opening.
+     */
+    private void showDrawerTextPicker() {
+        int current = sharedPrefs.contains(Keys.ALL_APPS_TEXT_COLOR)
+                ? sharedPrefs.getInt(Keys.ALL_APPS_TEXT_COLOR, Color.WHITE) : Color.WHITE;
+        ColorPicker picker = ColorPicker.newTextInstance(current, true);
+        tintPicker = new WeakReference<>(picker);
+        picker.enableAutoClose();
+        ColorPickerTargets.bindTint(picker, sharedPrefs, Keys.ALL_APPS_TEXT_COLOR);
+        picker.show(getParentFragmentManager(), ColorPickerTargets.TAG_DRAWER_TEXT);
+    }
+
+    /**
      * "Allow widgets to overlap": turning it on is as any switch; turning it off asks first, because the widgets that
      * overlap other items are put on the grid again and the ones with no room are removed (Workspace.refitWidgetsToGrid,
      * done by the launcher when the setting changes). Cancel leaves the switch on.
@@ -1798,6 +1821,17 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
      * The row above a slider of the grid shows the number the slider is at: the rows or the columns of a
      * page without bars. The launcher builds its pages for the new grid when the settings are left.
      */
+    /** The sliders of the app drawer's grid: the title says the number, as the home screen's do. */
+    private void bindAppsGridSlider(String sliderKey, String titleKey, int titleRes) {
+        AppsGridSeekBarPreference slider = findPreference(sliderKey);
+        Preference title = findPreference(titleKey);
+        if (slider == null || title == null) {
+            return;
+        }
+        title.setTitle(getString(titleRes, slider.getValue()));
+        slider.setOnValueChangeListener(value -> title.setTitle(getString(titleRes, value)));
+    }
+
     private void bindGridSlider(String sliderKey, String titleKey, int titleRes) {
         GridSeekBarPreference slider = findPreference(sliderKey);
         Preference title = findPreference(titleKey);

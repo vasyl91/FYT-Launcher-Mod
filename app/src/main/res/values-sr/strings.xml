@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">Извор бирача позадине</string>
     <string name="wallpaper_picker_system">Системски бирач позадине</string>
     <string name="wallpaper_picker_launcher">Бирач позадине у апликацији</string>
-    <string name="all_apps_textSize_str">Подеси величину текста икона на листи апликација (макс. 50)</string>
-    <string name="workspace_textSize_str">Подеси величину текста икона на почетном екрану (макс. 50)</string>
     <string name="launcher_home_wake">Држи почетни екран на врху кад се уређај пробуди</string>
     <string name="launcher_home_cold_start">Држи почетни екран на врху кад се уређај покрене</string>
     <string name="cold_start_last_app_delay">Одложи поновно отварање последње апликације после рестарта</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">Контура</string>
     <string name="badges_outline_on">Танка контура у боји броја</string>
     <string name="badges_outline_off">Без контуре</string>
+    <string name="all_apps_category">Фиока апликација</string>
+    <string name="all_apps_search">Трака за претрагу</string>
+    <string name="all_apps_search_on">Изнад апликација се приказује трака за претрагу</string>
+    <string name="all_apps_search_off">Без траке за претрагу</string>
+    <string name="all_apps_scroll">Смер померања</string>
+    <string name="all_apps_scroll_vertical">Вертикално</string>
+    <string name="all_apps_scroll_horizontal">Хоризонтално</string>
+    <string name="drawer_tabs">Картице</string>
+    <string name="drawer_tabs_summary">Додајте, преименујте и сложите картице фиоке апликација</string>
+    <string name="icon_text_size">Подеси величину текста икона</string>
 </resources>

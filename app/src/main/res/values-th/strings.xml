@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">แหล่งที่มาของตัวเลือกวอลเปเปอร์</string>
     <string name="wallpaper_picker_system">ตัวเลือกวอลเปเปอร์ของระบบ</string>
     <string name="wallpaper_picker_launcher">ตัวเลือกวอลเปเปอร์ในแอป</string>
-    <string name="all_apps_textSize_str">ตั้งขนาดข้อความไอคอนในรายการแอป (สูงสุด 50)</string>
-    <string name="workspace_textSize_str">ตั้งขนาดข้อความไอคอนบนหน้าจอหลัก (สูงสุด 50)</string>
     <string name="launcher_home_wake">คงหน้าจอหลักไว้ด้านหน้าเมื่ออุปกรณ์ตื่น</string>
     <string name="launcher_home_cold_start">คงหน้าจอหลักไว้ด้านหน้าเมื่ออุปกรณ์เริ่มทำงาน</string>
     <string name="cold_start_last_app_delay">หน่วงการเปิดแอปล่าสุดอีกครั้งหลังรีสตาร์ท</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">เส้นขอบ</string>
     <string name="badges_outline_on">เส้นขอบบางสีเดียวกับตัวเลข</string>
     <string name="badges_outline_off">ไม่มีเส้นขอบ</string>
+    <string name="all_apps_category">ลิ้นชักแอป</string>
+    <string name="all_apps_search">แถบค้นหา</string>
+    <string name="all_apps_search_on">แสดงแถบค้นหาเหนือแอป</string>
+    <string name="all_apps_search_off">ไม่มีแถบค้นหา</string>
+    <string name="all_apps_scroll">ทิศทางการเลื่อน</string>
+    <string name="all_apps_scroll_vertical">แนวตั้ง</string>
+    <string name="all_apps_scroll_horizontal">แนวนอน</string>
+    <string name="drawer_tabs">แท็บ</string>
+    <string name="drawer_tabs_summary">เพิ่ม เปลี่ยนชื่อ และจัดเรียงแท็บของลิ้นชักแอป</string>
+    <string name="icon_text_size">ตั้งขนาดข้อความไอคอน</string>
 </resources>

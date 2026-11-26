@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">Duvar kâğıdı seçici kaynağı</string>
     <string name="wallpaper_picker_system">Sistem duvar kâğıdı seçici</string>
     <string name="wallpaper_picker_launcher">Uygulama içi duvar kâğıdı seçici</string>
-    <string name="all_apps_textSize_str">Uygulama listesi simge metin boyutunu ayarla (en fazla 50)</string>
-    <string name="workspace_textSize_str">Ana ekran simge metin boyutunu ayarla (en fazla 50)</string>
     <string name="launcher_home_wake">Cihaz uyandığında ana ekranı her zaman üstte tut</string>
     <string name="launcher_home_cold_start">Cihaz başladığında ana ekranı her zaman üstte tut</string>
     <string name="cold_start_last_app_delay">Yeniden başlatmadan sonra son uygulamanın tekrar açılmasını geciktir</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">Kenar çizgisi</string>
     <string name="badges_outline_on">Rakamın renginde ince bir kenar çizgisi</string>
     <string name="badges_outline_off">Kenar çizgisi yok</string>
+    <string name="all_apps_category">Uygulama çekmecesi</string>
+    <string name="all_apps_search">Arama çubuğu</string>
+    <string name="all_apps_search_on">Uygulamaların üstünde bir arama çubuğu gösterilir</string>
+    <string name="all_apps_search_off">Arama çubuğu yok</string>
+    <string name="all_apps_scroll">Kaydırma yönü</string>
+    <string name="all_apps_scroll_vertical">Dikey</string>
+    <string name="all_apps_scroll_horizontal">Yatay</string>
+    <string name="drawer_tabs">Sekmeler</string>
+    <string name="drawer_tabs_summary">Uygulama çekmecesinin sekmelerini ekleyin, yeniden adlandırın ve düzenleyin</string>
+    <string name="icon_text_size">Simge metni boyutunu ayarla</string>
 </resources>

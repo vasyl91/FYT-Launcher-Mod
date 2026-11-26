@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">Taustapildi valija allikas</string>
     <string name="wallpaper_picker_system">Süsteemi taustapildi valija</string>
     <string name="wallpaper_picker_launcher">Rakendusesisene taustapildi valija</string>
-    <string name="all_apps_textSize_str">Määra rakenduste loendi ikoonide teksti suurus (maks 50)</string>
-    <string name="workspace_textSize_str">Määra avaekraani ikoonide teksti suurus (maks 50)</string>
     <string name="launcher_home_wake">Hoia avaekraan ülal, kui seade ärkab</string>
     <string name="launcher_home_cold_start">Hoia avaekraan ülal, kui seade käivitub</string>
     <string name="cold_start_last_app_delay">Viivita viimase rakenduse taasavamist pärast taaskäivitust</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">Kontuur</string>
     <string name="badges_outline_on">Õhuke kontuur numbri värvis</string>
     <string name="badges_outline_off">Kontuuri pole</string>
+    <string name="all_apps_category">Rakenduste sahtel</string>
+    <string name="all_apps_search">Otsinguriba</string>
+    <string name="all_apps_search_on">Rakenduste kohal kuvatakse otsinguriba</string>
+    <string name="all_apps_search_off">Otsinguriba puudub</string>
+    <string name="all_apps_scroll">Kerimissuund</string>
+    <string name="all_apps_scroll_vertical">Vertikaalne</string>
+    <string name="all_apps_scroll_horizontal">Horisontaalne</string>
+    <string name="drawer_tabs">Vahekaardid</string>
+    <string name="drawer_tabs_summary">Lisa, nimeta ümber ja järjesta rakenduste sahtli vahekaarte</string>
+    <string name="icon_text_size">Määra ikoonide teksti suurus</string>
 </resources>

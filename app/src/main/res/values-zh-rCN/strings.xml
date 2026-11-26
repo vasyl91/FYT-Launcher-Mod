@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">壁纸选择器来源</string>
     <string name="wallpaper_picker_system">系统壁纸选择器</string>
     <string name="wallpaper_picker_launcher">应用内壁纸选择器</string>
-    <string name="all_apps_textSize_str">设置应用列表图标文字大小（最大50）</string>
-    <string name="workspace_textSize_str">设置主屏幕图标文字大小（最大50）</string>
     <string name="launcher_home_wake">设备唤醒时始终置顶显示主屏幕</string>
     <string name="launcher_home_cold_start">设备启动时始终置顶显示主屏幕</string>
     <string name="cold_start_last_app_delay">重启后延迟重新打开上次的应用</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">轮廓</string>
     <string name="badges_outline_on">与数字同色的细轮廓</string>
     <string name="badges_outline_off">无轮廓</string>
+    <string name="all_apps_category">应用抽屉</string>
+    <string name="all_apps_search">搜索栏</string>
+    <string name="all_apps_search_on">应用上方显示搜索栏</string>
+    <string name="all_apps_search_off">无搜索栏</string>
+    <string name="all_apps_scroll">滚动方向</string>
+    <string name="all_apps_scroll_vertical">垂直</string>
+    <string name="all_apps_scroll_horizontal">水平</string>
+    <string name="drawer_tabs">标签页</string>
+    <string name="drawer_tabs_summary">添加、重命名和排列应用抽屉的标签页</string>
+    <string name="icon_text_size">设置图标文字大小</string>
 </resources>

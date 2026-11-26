@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">Kilde for bakgrunnsvelger</string>
     <string name="wallpaper_picker_system">Systemets bakgrunnsvelger</string>
     <string name="wallpaper_picker_launcher">Bakgrunnsvelger i appen</string>
-    <string name="all_apps_textSize_str">Angi tekststørrelse for ikoner i applisten (maks. 50)</string>
-    <string name="workspace_textSize_str">Angi tekststørrelse for ikoner på startskjermen (maks. 50)</string>
     <string name="launcher_home_wake">Hold startskjermen øverst når enheten våkner</string>
     <string name="launcher_home_cold_start">Hold startskjermen øverst når enheten starter</string>
     <string name="cold_start_last_app_delay">Utsett gjenåpning av siste app etter omstart</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">Omriss</string>
     <string name="badges_outline_on">En tynn omriss i tallets farge</string>
     <string name="badges_outline_off">Ingen omriss</string>
+    <string name="all_apps_category">Appskuff</string>
+    <string name="all_apps_search">Søkefelt</string>
+    <string name="all_apps_search_on">Et søkefelt vises over appene</string>
+    <string name="all_apps_search_off">Ingen søkefelt</string>
+    <string name="all_apps_scroll">Rulleretning</string>
+    <string name="all_apps_scroll_vertical">Loddrett</string>
+    <string name="all_apps_scroll_horizontal">Vannrett</string>
+    <string name="drawer_tabs">Faner</string>
+    <string name="drawer_tabs_summary">Legg til, gi nytt navn til og ordne appskuffens faner</string>
+    <string name="icon_text_size">Angi størrelse på ikontekst</string>
 </resources>

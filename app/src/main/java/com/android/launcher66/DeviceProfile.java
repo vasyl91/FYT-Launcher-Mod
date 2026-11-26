@@ -181,14 +181,25 @@ public class DeviceProfile {
         this.heightPx = hPx;
         this.availableWidthPx = awPx;
         this.availableHeightPx = ahPx;
-        int orientation = resources.getConfiguration().orientation;
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            this.allAppsNumRows = 7;
-            this.allAppsNumCols = 4;
-        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            this.allAppsNumRows = 4;
-            this.allAppsNumCols = 7;
+        updateAllAppsGrid(resources);
+    }
+
+    /**
+     * The rows and columns of the app drawer's pages from the settings ("Rows" and "Columns" of "App drawer", AppsGrid): 7 by 4
+     * upright and 4 by 7 across unless the user chose others, and always those with "Stock layout" (CreatorPrefs).
+     */
+    void updateAllAppsGrid(Resources resources) {
+        boolean landscape = resources.getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+        int longCells = AppsGrid.DEFAULT_LONG;
+        int shortCells = AppsGrid.DEFAULT_SHORT;
+        android.content.Context app = LauncherApplication.sApp;
+        if (app != null) {
+            CreatorPrefs prefs = CreatorPrefs.of(androidx.preference.PreferenceManager.getDefaultSharedPreferences(app));
+            longCells = prefs.getInt(com.android.launcher66.settings.Keys.ALL_APPS_GRID_LONG, AppsGrid.DEFAULT_LONG);
+            shortCells = prefs.getInt(com.android.launcher66.settings.Keys.ALL_APPS_GRID_SHORT, AppsGrid.DEFAULT_SHORT);
         }
+        this.allAppsNumRows = AppsGrid.rows(landscape, longCells, shortCells);
+        this.allAppsNumCols = AppsGrid.columns(landscape, longCells, shortCells);
     }
 
     public void updateIconTextSize(int iSize) {

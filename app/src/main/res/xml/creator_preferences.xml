@@ -43,12 +43,8 @@
             android:title="@string/start_page"
             android:summary="1" />
         <Preference
-            android:key="all_apps_textSize"
-            android:title="@string/all_apps_textSize_str"
-            android:summary="18" />
-        <Preference
             android:key="workspace_textSize"
-            android:title="@string/workspace_textSize_str"
+            android:title="@string/icon_text_size"
             android:summary="28" />
         <!-- Opens the colour picker (text mode, with "Default"): the colour of the names under the icons, stored under
              workspace_text_color (IconTextColor) -->
@@ -407,6 +403,61 @@
         <Preference
             android:key="choose_vertical_bar_background"
             android:title="@string/vertical_bar_background_preference" />
+
+    </PreferenceCategory>
+
+    <Preference
+        android:layout="@layout/preference_separator"
+        android:selectable="false" />
+
+    <!-- The app drawer (F1): the grid of its pages (the same two sliders as the home screen's, stored per edge of the
+         screen under all_apps_grid_long / _short), the size and the colour of the names, the search bar, the direction of the
+         scrolling and the tabs (the row is hidden until the tab creator exists) -->
+    <PreferenceCategory
+        app:key="all_apps_category"
+        app:title="@string/all_apps_category">
+
+        <Preference
+            android:key="all_apps_grid_rows_title"
+            android:title="@string/workspace_grid_rows"
+            android:selectable="false" />
+        <com.android.launcher66.settings.AppsGridSeekBarPreference
+            android:key="all_apps_grid_rows" />
+        <Preference
+            android:key="all_apps_grid_columns_title"
+            android:title="@string/workspace_grid_columns"
+            android:selectable="false" />
+        <com.android.launcher66.settings.AppsGridSeekBarPreference
+            android:key="all_apps_grid_columns" />
+        <Preference
+            android:key="all_apps_textSize"
+            android:title="@string/icon_text_size"
+            android:summary="18" />
+        <!-- Opens the colour picker (text mode, with "Default"): the colour of the names under the drawer's icons -->
+        <Preference
+            android:key="all_apps_text_color"
+            android:title="@string/icon_text_color" />
+        <com.android.launcher66.settings.CustomSwitchPreference
+            android:key="all_apps_search"
+            android:defaultValue="false"
+            android:title="@string/all_apps_search"
+            android:summaryOn="@string/all_apps_search_on"
+            android:summaryOff="@string/all_apps_search_off"
+            app:layout="@layout/nested_preference_category_switch" />
+        <!-- A tap steps through the two directions; the summary is the one chosen -->
+        <com.android.launcher66.settings.CustomNestedThreePreference
+            android:key="all_apps_scroll"
+            android:defaultValue="vertical"
+            android:title="@string/all_apps_scroll"
+            android:entries="@array/all_apps_scroll_entries"
+            android:entryValues="@array/all_apps_scroll_values"
+            app:layout="@layout/nested_preference_category_no_switch" />
+        <!-- The tab creator: the row shows when the screen exists (F5) -->
+        <Preference
+            android:key="drawer_tabs"
+            android:title="@string/drawer_tabs"
+            android:summary="@string/drawer_tabs_summary"
+            app:isPreferenceVisible="false" />
 
     </PreferenceCategory>
 

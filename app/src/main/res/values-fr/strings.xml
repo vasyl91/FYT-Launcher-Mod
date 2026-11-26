@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">Source du sélecteur de fond d\'écran</string>
     <string name="wallpaper_picker_system">Sélecteur de fond d\'écran du système</string>
     <string name="wallpaper_picker_launcher">Sélecteur de fond d\'écran intégré à l\'application</string>
-    <string name="all_apps_textSize_str">Définir la taille du texte des icônes de la liste des applications (50 max.)</string>
-    <string name="workspace_textSize_str">Définir la taille du texte des icônes de l\'écran d\'accueil (50 max.)</string>
     <string name="launcher_home_wake">Garder l\'écran d\'accueil au premier plan lorsque l\'appareil se réveille</string>
     <string name="launcher_home_cold_start">Garder l\'écran d\'accueil au premier plan lorsque l\'appareil démarre</string>
     <string name="cold_start_last_app_delay">Retarder la réouverture de la dernière application après un redémarrage</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">Contour</string>
     <string name="badges_outline_on">Un fin contour de la couleur du nombre</string>
     <string name="badges_outline_off">Pas de contour</string>
+    <string name="all_apps_category">Tiroir d\'applications</string>
+    <string name="all_apps_search">Barre de recherche</string>
+    <string name="all_apps_search_on">Une barre de recherche s\'affiche au-dessus des applications</string>
+    <string name="all_apps_search_off">Pas de barre de recherche</string>
+    <string name="all_apps_scroll">Sens de défilement</string>
+    <string name="all_apps_scroll_vertical">Vertical</string>
+    <string name="all_apps_scroll_horizontal">Horizontal</string>
+    <string name="drawer_tabs">Onglets</string>
+    <string name="drawer_tabs_summary">Ajoutez, renommez et organisez les onglets du tiroir d\'applications</string>
+    <string name="icon_text_size">Définir la taille du texte des icônes</string>
 </resources>

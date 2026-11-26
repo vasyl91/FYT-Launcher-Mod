@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">Ekrano fono parinkiklio šaltinis</string>
     <string name="wallpaper_picker_system">Sistemos ekrano fono parinkiklis</string>
     <string name="wallpaper_picker_launcher">Programos ekrano fono parinkiklis</string>
-    <string name="all_apps_textSize_str">Nustatyti programų sąrašo piktogramų teksto dydį (daugiausia 50)</string>
-    <string name="workspace_textSize_str">Nustatyti pagrindinio ekrano piktogramų teksto dydį (daugiausia 50)</string>
     <string name="launcher_home_wake">Laikyti pagrindinį ekraną viršuje, kai įrenginys pažadinamas</string>
     <string name="launcher_home_cold_start">Laikyti pagrindinį ekraną viršuje, kai įrenginys paleidžiamas</string>
     <string name="cold_start_last_app_delay">Atidėti paskutinės programos atidarymą iš naujo po perkrovimo</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">Kontūras</string>
     <string name="badges_outline_on">Plonas kontūras skaičiaus spalva</string>
     <string name="badges_outline_off">Be kontūro</string>
+    <string name="all_apps_category">Programų stalčius</string>
+    <string name="all_apps_search">Paieškos juosta</string>
+    <string name="all_apps_search_on">Virš programų rodoma paieškos juosta</string>
+    <string name="all_apps_search_off">Be paieškos juostos</string>
+    <string name="all_apps_scroll">Slinkimo kryptis</string>
+    <string name="all_apps_scroll_vertical">Vertikaliai</string>
+    <string name="all_apps_scroll_horizontal">Horizontaliai</string>
+    <string name="drawer_tabs">Skirtukai</string>
+    <string name="drawer_tabs_summary">Pridėkite, pervadinkite ir išdėstykite programų stalčiaus skirtukus</string>
+    <string name="icon_text_size">Nustatyti piktogramų teksto dydį</string>
 </resources>

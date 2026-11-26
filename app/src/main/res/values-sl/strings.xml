@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">Vir izbirnika ozadij</string>
     <string name="wallpaper_picker_system">Sistemski izbirnik ozadij</string>
     <string name="wallpaper_picker_launcher">Izbirnik ozadij v aplikaciji</string>
-    <string name="all_apps_textSize_str">Nastavi velikost besedila ikon na seznamu aplikacij (največ 50)</string>
-    <string name="workspace_textSize_str">Nastavi velikost besedila ikon na začetnem zaslonu (največ 50)</string>
     <string name="launcher_home_wake">Obdrži začetni zaslon na vrhu, ko se naprava prebudi</string>
     <string name="launcher_home_cold_start">Obdrži začetni zaslon na vrhu, ko se naprava zažene</string>
     <string name="cold_start_last_app_delay">Zakasni ponovno odpiranje zadnje aplikacije po vnovičnem zagonu</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">Obris</string>
     <string name="badges_outline_on">Tanek obris v barvi številke</string>
     <string name="badges_outline_off">Brez obrisa</string>
+    <string name="all_apps_category">Predal z aplikacijami</string>
+    <string name="all_apps_search">Iskalna vrstica</string>
+    <string name="all_apps_search_on">Nad aplikacijami je prikazana iskalna vrstica</string>
+    <string name="all_apps_search_off">Brez iskalne vrstice</string>
+    <string name="all_apps_scroll">Smer pomikanja</string>
+    <string name="all_apps_scroll_vertical">Navpično</string>
+    <string name="all_apps_scroll_horizontal">Vodoravno</string>
+    <string name="drawer_tabs">Zavihki</string>
+    <string name="drawer_tabs_summary">Dodajte, preimenujte in razporedite zavihke predala z aplikacijami</string>
+    <string name="icon_text_size">Nastavi velikost besedila ikon</string>
 </resources>

@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">Chanzo cha kichagua mandhari</string>
     <string name="wallpaper_picker_system">Kichagua mandhari cha mfumo</string>
     <string name="wallpaper_picker_launcher">Kichagua mandhari ndani ya programu</string>
-    <string name="all_apps_textSize_str">Weka ukubwa wa maandishi ya aikoni za orodha ya programu (juu zaidi 50)</string>
-    <string name="workspace_textSize_str">Weka ukubwa wa maandishi ya aikoni za skrini ya kwanza (juu zaidi 50)</string>
     <string name="launcher_home_wake">Weka skrini ya kwanza juu kifaa kinapoamka</string>
     <string name="launcher_home_cold_start">Weka skrini ya kwanza juu kifaa kinapowashwa</string>
     <string name="cold_start_last_app_delay">Chelewesha kufungua tena programu ya mwisho baada ya kuwasha upya</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">Muhtasari</string>
     <string name="badges_outline_on">Muhtasari mwembamba wa rangi ya nambari</string>
     <string name="badges_outline_off">Bila muhtasari</string>
+    <string name="all_apps_category">Droo la programu</string>
+    <string name="all_apps_search">Upau wa kutafuta</string>
+    <string name="all_apps_search_on">Upau wa kutafuta unaonyeshwa juu ya programu</string>
+    <string name="all_apps_search_off">Hakuna upau wa kutafuta</string>
+    <string name="all_apps_scroll">Mwelekeo wa kusogeza</string>
+    <string name="all_apps_scroll_vertical">Wima</string>
+    <string name="all_apps_scroll_horizontal">Mlalo</string>
+    <string name="drawer_tabs">Vichupo</string>
+    <string name="drawer_tabs_summary">Ongeza, badilisha jina na panga vichupo vya droo ya programu</string>
+    <string name="icon_text_size">Weka ukubwa wa maandishi ya aikoni</string>
 </resources>

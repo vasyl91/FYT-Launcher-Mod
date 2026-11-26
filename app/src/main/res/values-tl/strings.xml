@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">Pinagmulan ng tagapili ng wallpaper</string>
     <string name="wallpaper_picker_system">Tagapili ng wallpaper ng system</string>
     <string name="wallpaper_picker_launcher">Tagapili ng wallpaper sa loob ng app</string>
-    <string name="all_apps_textSize_str">Itakda ang laki ng text ng mga icon sa listahan ng app (max. 50)</string>
-    <string name="workspace_textSize_str">Itakda ang laki ng text ng mga icon sa home screen (max. 50)</string>
     <string name="launcher_home_wake">Panatilihin ang home screen sa itaas kapag nagising ang device</string>
     <string name="launcher_home_cold_start">Panatilihin ang home screen sa itaas kapag nagsimula ang device</string>
     <string name="cold_start_last_app_delay">Ipagpaliban ang muling pagbubukas ng huling app pagkatapos ng restart</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">Outline</string>
     <string name="badges_outline_on">Manipis na outline sa kulay ng numero</string>
     <string name="badges_outline_off">Walang outline</string>
+    <string name="all_apps_category">Drawer ng app</string>
+    <string name="all_apps_search">Search bar</string>
+    <string name="all_apps_search_on">Ipinapakita ang search bar sa itaas ng mga app</string>
+    <string name="all_apps_search_off">Walang search bar</string>
+    <string name="all_apps_scroll">Direksyon ng pag-scroll</string>
+    <string name="all_apps_scroll_vertical">Patayo</string>
+    <string name="all_apps_scroll_horizontal">Pahalang</string>
+    <string name="drawer_tabs">Mga tab</string>
+    <string name="drawer_tabs_summary">Magdagdag, palitan ang pangalan at ayusin ang mga tab ng app drawer</string>
+    <string name="icon_text_size">Itakda ang laki ng text ng icon</string>
 </resources>

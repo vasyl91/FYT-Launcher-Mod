@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">Джерело вибору шпалер</string>
     <string name="wallpaper_picker_system">Системний вибір шпалер</string>
     <string name="wallpaper_picker_launcher">Вбудований вибір шпалер</string>
-    <string name="all_apps_textSize_str">Розмір тексту піктограм у списку застосунків (макс. 50)</string>
-    <string name="workspace_textSize_str">Розмір тексту піктограм на головному екрані (макс. 50)</string>
     <string name="launcher_home_wake">Утримувати головний екран поверх інших, коли пристрій прокидається</string>
     <string name="launcher_home_cold_start">Утримувати головний екран поверх інших, коли пристрій запускається</string>
     <string name="cold_start_last_app_delay">Відкласти повторне відкриття останнього застосунку після перезавантаження</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">Контур</string>
     <string name="badges_outline_on">Тонкий контур кольору цифри</string>
     <string name="badges_outline_off">Без контуру</string>
+    <string name="all_apps_category">Меню програм</string>
+    <string name="all_apps_search">Рядок пошуку</string>
+    <string name="all_apps_search_on">Над програмами показується рядок пошуку</string>
+    <string name="all_apps_search_off">Без рядка пошуку</string>
+    <string name="all_apps_scroll">Напрямок прокручування</string>
+    <string name="all_apps_scroll_vertical">Вертикально</string>
+    <string name="all_apps_scroll_horizontal">Горизонтально</string>
+    <string name="drawer_tabs">Вкладки</string>
+    <string name="drawer_tabs_summary">Додавайте, перейменовуйте й впорядковуйте вкладки меню програм</string>
+    <string name="icon_text_size">Задати розмір тексту значків</string>
 </resources>

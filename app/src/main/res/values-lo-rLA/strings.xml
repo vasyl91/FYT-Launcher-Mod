@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">ແຫຼ່ງຕົວເລືອກພາບພື້ນຫຼັງ</string>
     <string name="wallpaper_picker_system">ຕົວເລືອກພາບພື້ນຫຼັງຂອງລະບົບ</string>
     <string name="wallpaper_picker_launcher">ຕົວເລືອກພາບພື້ນຫຼັງໃນແອັບ</string>
-    <string name="all_apps_textSize_str">ຕັ້ງຂະໜາດຕົວອັກສອນຂອງໄອຄອນໃນລາຍການແອັບ (ສູງສຸດ 50)</string>
-    <string name="workspace_textSize_str">ຕັ້ງຂະໜາດຕົວອັກສອນຂອງໄອຄອນໃນໜ້າຫຼັກ (ສູງສຸດ 50)</string>
     <string name="launcher_home_wake">ຮັກສາໜ້າຫຼັກໄວ້ເທິງສຸດເມື່ອອຸປະກອນຕື່ນ</string>
     <string name="launcher_home_cold_start">ຮັກສາໜ້າຫຼັກໄວ້ເທິງສຸດເມື່ອອຸປະກອນເປີດເຄື່ອງ</string>
     <string name="cold_start_last_app_delay">ຖ່ວງເວລາການເປີດແອັບສຸດທ້າຍຄືນໃໝ່ຫຼັງຈາກເປີດເຄື່ອງຄືນໃໝ່</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">ເສັ້ນຂອບ</string>
     <string name="badges_outline_on">ເສັ້ນຂອບບາງໆສີດຽວກັບຕົວເລກ</string>
     <string name="badges_outline_off">ບໍ່ມີເສັ້ນຂອບ</string>
+    <string name="all_apps_category">ລິ້ນຊັກແອັບ</string>
+    <string name="all_apps_search">ແຖບຄົ້ນຫາ</string>
+    <string name="all_apps_search_on">ແຖບຄົ້ນຫາສະແດງຢູ່ເໜືອແອັບ</string>
+    <string name="all_apps_search_off">ບໍ່ມີແຖບຄົ້ນຫາ</string>
+    <string name="all_apps_scroll">ທິດທາງການເລື່ອນ</string>
+    <string name="all_apps_scroll_vertical">ແນວຕັ້ງ</string>
+    <string name="all_apps_scroll_horizontal">ແນວນອນ</string>
+    <string name="drawer_tabs">ແຖບ</string>
+    <string name="drawer_tabs_summary">ເພີ່ມ, ປ່ຽນຊື່ ແລະ ຈັດລຽງແຖບຂອງລິ້ນຊັກແອັບ</string>
+    <string name="icon_text_size">ຕັ້ງຂະໜາດຕົວອັກສອນໄອຄອນ</string>
 </resources>

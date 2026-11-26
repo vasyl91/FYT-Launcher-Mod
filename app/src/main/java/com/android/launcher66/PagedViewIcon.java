@@ -56,6 +56,9 @@ public class PagedViewIcon extends androidx.appcompat.widget.AppCompatTextView {
                 null, null);
         setText(info.title);
         setTag(info);
+        // White, or the colour of "App drawer: Set icon text color" (a creator setting: not with the stock layout)
+        setTextColor(IconTextColor.drawer(androidx.preference.PreferenceManager.getDefaultSharedPreferences(getContext()),
+                0xffffffff));
     }
 
     public void lockDrawableState() {

@@ -368,6 +368,21 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         mNumAppsPages = (int) Math.ceil((float) mApps.size() / (mCellCountX * mCellCountY));
     }
 
+    /**
+     * "Rows" or "Columns" of "App drawer" changed (F1): the pages are made again for the new grid, when it is another one.
+     */
+    void refreshGrid() {
+        LauncherAppState app = LauncherAppState.getInstanceNoCreate();
+        if (app == null || app.getDynamicGrid() == null || mWidgetSpacingLayout == null) {
+            return;
+        }
+        DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
+        grid.updateAllAppsGrid(getResources());
+        if ((int) grid.allAppsNumCols != mCellCountX || (int) grid.allAppsNumRows != mCellCountY) {
+            onDataReady(getMeasuredWidth(), getMeasuredHeight());
+        }
+    }
+
     protected void onDataReady(int width, int height) {
         if (mWidgetPreviewLoader == null) {
             mWidgetPreviewLoader = new WidgetPreviewLoader(mLauncher);

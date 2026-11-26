@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">桌布選擇器來源</string>
     <string name="wallpaper_picker_system">系統桌布選擇器</string>
     <string name="wallpaper_picker_launcher">應用程式內桌布選擇器</string>
-    <string name="all_apps_textSize_str">設定應用程式列表圖示文字大小（最大50）</string>
-    <string name="workspace_textSize_str">設定主螢幕圖示文字大小（最大50）</string>
     <string name="launcher_home_wake">裝置喚醒時始終置頂顯示主螢幕</string>
     <string name="launcher_home_cold_start">裝置啟動時始終置頂顯示主螢幕</string>
     <string name="cold_start_last_app_delay">重新啟動後延遲重新開啟上次的應用程式</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">外框</string>
     <string name="badges_outline_on">與數字同色的細外框</string>
     <string name="badges_outline_off">無外框</string>
+    <string name="all_apps_category">應用程式抽屜</string>
+    <string name="all_apps_search">搜尋列</string>
+    <string name="all_apps_search_on">應用程式上方顯示搜尋列</string>
+    <string name="all_apps_search_off">無搜尋列</string>
+    <string name="all_apps_scroll">捲動方向</string>
+    <string name="all_apps_scroll_vertical">垂直</string>
+    <string name="all_apps_scroll_horizontal">水平</string>
+    <string name="drawer_tabs">分頁</string>
+    <string name="drawer_tabs_summary">新增、重新命名及排列應用程式抽屜的分頁</string>
+    <string name="icon_text_size">設定圖示文字大小</string>
 </resources>

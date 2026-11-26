@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">ប្រភពកម្មវិធីជ្រើសរើសផ្ទាំងរូបភាព</string>
     <string name="wallpaper_picker_system">កម្មវិធីជ្រើសរើសផ្ទាំងរូបភាពរបស់ប្រព័ន្ធ</string>
     <string name="wallpaper_picker_launcher">កម្មវិធីជ្រើសរើសផ្ទាំងរូបភាពក្នុងកម្មវិធី</string>
-    <string name="all_apps_textSize_str">កំណត់ទំហំអក្សរនៃរូបតំណាងក្នុងបញ្ជីកម្មវិធី (អតិបរមា 50)</string>
-    <string name="workspace_textSize_str">កំណត់ទំហំអក្សរនៃរូបតំណាងលើអេក្រង់ដើម (អតិបរមា 50)</string>
     <string name="launcher_home_wake">រក្សាអេក្រង់ដើមនៅខាងលើ នៅពេលឧបករណ៍ភ្ញាក់</string>
     <string name="launcher_home_cold_start">រក្សាអេក្រង់ដើមនៅខាងលើ នៅពេលឧបករណ៍ចាប់ផ្តើម</string>
     <string name="cold_start_last_app_delay">ពន្យារពេលបើកកម្មវិធីចុងក្រោយឡើងវិញ បន្ទាប់ពីចាប់ផ្តើមឡើងវិញ</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">គ្រោង</string>
     <string name="badges_outline_on">គ្រោងស្តើងដែលមានពណ៌ដូចលេខ</string>
     <string name="badges_outline_off">គ្មានគ្រោង</string>
+    <string name="all_apps_category">ថតកម្មវិធី</string>
+    <string name="all_apps_search">របារស្វែងរក</string>
+    <string name="all_apps_search_on">របារស្វែងរកត្រូវបានបង្ហាញនៅលើកម្មវិធី</string>
+    <string name="all_apps_search_off">គ្មានរបារស្វែងរក</string>
+    <string name="all_apps_scroll">ទិសដៅរមូរ</string>
+    <string name="all_apps_scroll_vertical">បញ្ឈរ</string>
+    <string name="all_apps_scroll_horizontal">ផ្តេក</string>
+    <string name="drawer_tabs">ផ្ទាំង</string>
+    <string name="drawer_tabs_summary">បន្ថែម ប្តូរឈ្មោះ និងរៀបចំផ្ទាំងនៃថតកម្មវិធី</string>
+    <string name="icon_text_size">កំណត់ទំហំអក្សររូបតំណាង</string>
 </resources>

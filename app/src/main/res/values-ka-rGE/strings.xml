@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">ფონის ამრჩევის წყარო</string>
     <string name="wallpaper_picker_system">სისტემის ფონის ამრჩევი</string>
     <string name="wallpaper_picker_launcher">აპის შიდა ფონის ამრჩევი</string>
-    <string name="all_apps_textSize_str">აპების სიის ხატულების ტექსტის ზომის დაყენება (მაქს. 50)</string>
-    <string name="workspace_textSize_str">მთავარი ეკრანის ხატულების ტექსტის ზომის დაყენება (მაქს. 50)</string>
     <string name="launcher_home_wake">მთავარი ეკრანის შენარჩუნება ზემოთ, როცა მოწყობილობა იღვიძებს</string>
     <string name="launcher_home_cold_start">მთავარი ეკრანის შენარჩუნება ზემოთ, როცა მოწყობილობა ირთვება</string>
     <string name="cold_start_last_app_delay">ბოლო აპის ხელახლა გახსნის დაგვიანება გადატვირთვის შემდეგ</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">კონტური</string>
     <string name="badges_outline_on">თხელი კონტური ციფრის ფერში</string>
     <string name="badges_outline_off">კონტურის გარეშე</string>
+    <string name="all_apps_category">აპების უჯრა</string>
+    <string name="all_apps_search">ძიების ზოლი</string>
+    <string name="all_apps_search_on">აპების ზემოთ ჩანს ძიების ზოლი</string>
+    <string name="all_apps_search_off">ძიების ზოლის გარეშე</string>
+    <string name="all_apps_scroll">გადახვევის მიმართულება</string>
+    <string name="all_apps_scroll_vertical">ვერტიკალური</string>
+    <string name="all_apps_scroll_horizontal">ჰორიზონტალური</string>
+    <string name="drawer_tabs">ჩანართები</string>
+    <string name="drawer_tabs_summary">დაამატეთ, გადაარქვით სახელი და დაალაგეთ აპების უჯრის ჩანართები</string>
+    <string name="icon_text_size">ხატულების ტექსტის ზომის დაყენება</string>
 </resources>

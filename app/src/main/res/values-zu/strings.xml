@@ -126,8 +126,6 @@
     <string name="wallpaper_picker_source">Umthombo wesikhethi sezithombe zangemuva</string>
     <string name="wallpaper_picker_system">Isikhethi sezithombe zangemuva sesistimu</string>
     <string name="wallpaper_picker_launcher">Isikhethi sezithombe zangemuva ngaphakathi kohlelo lokusebenza</string>
-    <string name="all_apps_textSize_str">Setha usayizi wombhalo wezithonjana zohlu lwezinhlelo zokusebenza (kuze kube ngu-50)</string>
-    <string name="workspace_textSize_str">Setha usayizi wombhalo wezithonjana zesikrini sasekhaya (kuze kube ngu-50)</string>
     <string name="launcher_home_wake">Gcina isikrini sasekhaya phezulu lapho idivayisi iphapha</string>
     <string name="launcher_home_cold_start">Gcina isikrini sasekhaya phezulu lapho idivayisi iqala</string>
     <string name="cold_start_last_app_delay">Dambisa ukuvula kabusha uhlelo lokusebenza lokugcina ngemuva kokuqalisa kabusha</string>
@@ -616,4 +614,14 @@
     <string name="badges_outline">Umbhalo wangaphandle</string>
     <string name="badges_outline_on">Umumo omncane ngombala wenombolo</string>
     <string name="badges_outline_off">Akukho umumo</string>
+    <string name="all_apps_category">Ifolda yezinhlelo zokusebenza</string>
+    <string name="all_apps_search">Ibha yokusesha</string>
+    <string name="all_apps_search_on">Ibha yokusesha ibonakala ngenhla kwezinhlelo zokusebenza</string>
+    <string name="all_apps_search_off">Ayikho ibha yokusesha</string>
+    <string name="all_apps_scroll">Isiqondiso sokunyakazisa</string>
+    <string name="all_apps_scroll_vertical">Ukuqonda</string>
+    <string name="all_apps_scroll_horizontal">Okuvundlile</string>
+    <string name="drawer_tabs">Amathebhu</string>
+    <string name="drawer_tabs_summary">Engeza, qamba kabusha futhi uhlele amathebhu efolda yezinhlelo zokusebenza</string>
+    <string name="icon_text_size">Setha usayizi wombhalo wesithonjana</string>
 </resources>
