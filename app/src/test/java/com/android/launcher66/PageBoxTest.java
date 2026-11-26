@@ -24,6 +24,26 @@ class PageBoxTest {
     }
 
     @Test
+    void thePageIsNotAtRestWhileThePagesMoveAreTouchedTurnedOrShifted() {
+        // standing still: the normal state, full size, no move, no finger, no turn, no shift
+        assertTrue(PageBox.atRest(true, false, 1f, 1f, false, true, 0f, 0f));
+        // a swipe has begun (A55, 2026-11-24 15:43): the pages move
+        assertFalse(PageBox.atRest(true, false, 1f, 1f, true, true, 0f, 0f));
+        // a finger is scrolling or dragging them
+        assertFalse(PageBox.atRest(true, false, 1f, 1f, false, false, 0f, 0f));
+        // the overscroll of the first page turns it, and a shift moves it
+        assertFalse(PageBox.atRest(true, false, 1f, 1f, false, true, 3.5f, 0f));
+        assertFalse(PageBox.atRest(true, false, 1f, 1f, false, true, -3.5f, 0f));
+        assertFalse(PageBox.atRest(true, false, 1f, 1f, false, true, 0f, 12f));
+        // a hair off zero is still rest
+        assertTrue(PageBox.atRest(true, false, 1f, 1f, false, true, 0.001f, 0.1f));
+        // and the old conditions still hold
+        assertFalse(PageBox.atRest(true, true, 1f, 1f, false, true, 0f, 0f));
+        assertFalse(PageBox.atRest(false, false, 1f, 1f, false, true, 0f, 0f));
+        assertFalse(PageBox.atRest(true, false, 0.8f, 0.8f, false, true, 0f, 0f));
+    }
+
+    @Test
     void theHeadUnitInLandscapeStartsBelowTheStatusBarWithNoSideInset() {
         PageBox.Box box = PageBox.of(0, 48, 1920, 0);
         assertEquals(0, box.left);

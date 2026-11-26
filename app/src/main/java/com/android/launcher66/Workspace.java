@@ -1652,7 +1652,8 @@ public class Workspace extends SmoothPagedView
         boolean measurable = isAttachedToWindow() && root != null && page != null && root.isAttachedToWindow()
                 && page.isAttachedToWindow() && root.getWidth() > 0 && root.getHeight() > 0
                 && PageBox.atRest(mState == State.NORMAL, mIsSwitchingState, getScaleX() * page.getScaleX(),
-                        getScaleY() * page.getScaleY());
+                        getScaleY() * page.getScaleY(), isPageMoving(), mTouchState == TOUCH_STATE_REST,
+                        page.getRotationY(), page.getTranslationX());
         if (measurable) {
             root.getLocationOnScreen(mBarRootAt);
             page.getLocationOnScreen(mBarBoxPageAt);
@@ -3571,7 +3572,10 @@ public class Workspace extends SmoothPagedView
                 break;
             }
             default:
-                if (mVerticalWindow != null && mVerticalWindow.exists()) {
+                // Not while the pages move: the window stays where it was put, and is placed again when they settle
+                // (onPageEndMoving -> updateEdgeHandle) - a frame worked out from the page of a swipe lay a bar's
+                // width inside the screen (A55, 2026-11-24)
+                if (mVerticalWindow != null && mVerticalWindow.exists() && !isPageMoving()) {
                     placeVerticalWindow();   // the page's shape may have changed (a horizontal bar, the button)
                 }
                 break;

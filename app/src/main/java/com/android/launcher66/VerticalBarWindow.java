@@ -58,9 +58,11 @@ final class VerticalBarWindow {
     /** {x, y, w, h} the window was put at, on the screen, and whether that is the right edge. */
     private int[] expected;
     private boolean expectedRight;
-    private boolean placementChecked;
-    /** The shift applied once because the window lay elsewhere than put (see checkPlacement()). */
+    /** Decides, after each layout and each move, whether the window lies where it was put (WindowPlacement). */
+    private final WindowPlacement placement = new WindowPlacement();
+    /** The shift added to the x and y because the window lay elsewhere than put (see checkPlacement()). */
     private int correction;
+    private int correctionY;
     private boolean cornerOnTop;
     /** The bar's own view and the picture of the corner, kept to give them a new background (BarBackground). */
     private View barView;
@@ -176,13 +178,15 @@ final class VerticalBarWindow {
         // From the edge the bar is on: the side is kept whatever the other edge's arithmetic is
         params.gravity = Gravity.TOP | (right ? Gravity.RIGHT : Gravity.LEFT);
         params.x = VerticalWindowFrame.offset(new VerticalWindowFrame.Frame(frame[0], frame[1], frame[2], frame[3]),
-                displayWidth, right);
+                realWidth(displayWidth), right);
         params.y = frame[1];
         params.windowAnimations = 0;
         expected = frame.clone();
         expectedRight = right;
-        placementChecked = false;
+        placement.frameChanged();
+        // After every layout of the window, not once: the system may move it later (a swipe of the pages on the A55)
         root.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> checkPlacement());
+        root.getViewTreeObserver().addOnGlobalLayoutListener(this::checkPlacement);
         params.setTitle(TAG);
         root.setAlpha(standby ? 0f : 1f);
         shown = !standby;
@@ -375,43 +379,82 @@ final class VerticalBarWindow {
         }
         int gravity = Gravity.TOP | (right ? Gravity.RIGHT : Gravity.LEFT);
         int x = VerticalWindowFrame.offset(new VerticalWindowFrame.Frame(frame[0], frame[1], frame[2], frame[3]),
-                displayWidth, right);
+                realWidth(displayWidth), right);
+        if (expected == null || expected[0] != frame[0] || expected[1] != frame[1] || expected[2] != frame[2]
+                || expected[3] != frame[3] || expectedRight != right) {
+            // A new frame: what was learned about the old one (the shift, the reports) is not valid for it
+            correction = 0;
+            correctionY = 0;
+            placement.frameChanged();
+        }
         expected = frame.clone();
         expectedRight = right;
-        if (params.gravity == gravity && params.x == x + correction && params.y == frame[1]
+        if (params.gravity == gravity && params.x == x + correction && params.y == frame[1] + correctionY
                 && params.width == frame[2] && params.height == frame[3]) {
+            checkPlacementSoon();
             return;
         }
         params.gravity = gravity;
         params.x = x + correction;
-        params.y = frame[1];
+        params.y = frame[1] + correctionY;
         params.width = frame[2];
         params.height = frame[3];
         update();
     }
 
     /**
-     * Once, after the first layout: where the window really is on the screen, against where it was put. A window
-     * that lies elsewhere (on the other side, say) is moved by the difference, once, and the log says so.
+     * The width the offset from the right edge is counted against: the launcher's window as it is now, not the
+     * static {@code Launcher.screenWidth}, which {@code pipOverview()} overwrites with the metrics' width.
+     */
+    private int realWidth(int fallback) {
+        int width = 0;
+        try {
+            if (windowManager != null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    width = windowManager.getCurrentWindowMetrics().getBounds().width();
+                } else {
+                    android.graphics.Point size = new android.graphics.Point();
+                    windowManager.getDefaultDisplay().getRealSize(size);
+                    width = size.x;
+                }
+            }
+        } catch (RuntimeException e) {
+            Log.w(TAG, "The width of the launcher's window is unknown, using " + fallback, e);
+        }
+        return width > 0 ? width : fallback;
+    }
+
+    /**
+     * Where the window really is on the screen, against where it was put, after every layout of the window and
+     * after every move of it (WindowPlacement). A window that lies elsewhere (on the other side, say, or a bar's
+     * width inside the screen after a swipe of the pages) is moved by the difference, and the log says so.
      */
     private void checkPlacement() {
-        if (placementChecked || root == null || params == null || expected == null || !root.isAttachedToWindow()
+        if (root == null || params == null || expected == null || !root.isAttachedToWindow()
                 || root.getWidth() <= 0) {
             return;
         }
-        placementChecked = true;
         int[] at = new int[2];
         root.getLocationOnScreen(at);
-        int dx = expected[0] - at[0];
-        int dy = expected[1] - at[1];
-        Log.i(TAG, "Persistent vertical bar window is at " + at[0] + "," + at[1] + " on the screen");
-        if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
-            Log.w(TAG, "Persistent vertical bar window placed at " + at[0] + "," + at[1] + " instead of "
-                    + expected[0] + "," + expected[1] + ", moved by " + dx + "," + dy);
-            correction += expectedRight ? -dx : dx;
-            params.x += expectedRight ? -dx : dx;
-            params.y += dy;
-            update();
+        int[] shift = placement.check(at[0], at[1], expected[0], expected[1], expectedRight);
+        if (shift == null) {
+            return;
+        }
+        Log.w(TAG, "Persistent vertical bar window moved by the system to " + at[0] + "," + at[1]
+                + " (launcher window at " + params.x + "," + params.y + ", width " + root.getWidth()
+                + "), put back at " + expected[0] + "," + expected[1] + " (shift " + shift[0] + "," + shift[1]
+                + ", attempt " + placement.attempts() + ")");
+        correction += shift[0];
+        correctionY += shift[1];
+        params.x += shift[0];
+        params.y += shift[1];
+        update();
+    }
+
+    /** A check after the window has been laid out for the frame that was just put. */
+    private void checkPlacementSoon() {
+        if (root != null) {
+            root.post(this::checkPlacement);
         }
     }
 
@@ -544,6 +587,9 @@ final class VerticalBarWindow {
             windowManager.updateViewLayout(root, params);
         } catch (RuntimeException e) {
             Log.w(TAG, "Updating the vertical bar window failed", e);
+            return;
         }
+        // The system lays the window out after this call: where it lies is looked at once that is done
+        checkPlacementSoon();
     }
 }

@@ -50,7 +50,25 @@ final class PageBox {
                 && Math.abs(scaleY - 1f) < FULL_SIZE_TOLERANCE;
     }
 
+    /**
+     * {@link #atRest(boolean, boolean, float, float)} and the pages themselves standing still: not moving
+     * ({@code PagedView.isPageMoving()}), no finger scrolling or dragging them (touch state REST), and the first
+     * page neither turned (its {@code rotationY}, set by the overscroll in {@code Workspace.screenScrolled}) nor
+     * shifted ({@code translationX}). A bar measured on such a page lies elsewhere than where it lies at rest:
+     * on the A55 the vertical bar's window was put one bar's width inside the screen from a measurement made
+     * at the start of a swipe (log of 2026-11-24 15:43), and stayed there.
+     */
+    static boolean atRest(boolean normalState, boolean switchingState, float scaleX, float scaleY,
+                          boolean pagesMoving, boolean touchResting, float rotationY, float translationX) {
+        return atRest(normalState, switchingState, scaleX, scaleY)
+                && !pagesMoving && touchResting
+                && Math.abs(rotationY) < ROTATION_TOLERANCE_DEG
+                && Math.abs(translationX) < TRANSLATION_TOLERANCE_PX;
+    }
+
     private static final float FULL_SIZE_TOLERANCE = 0.001f;
+    private static final float ROTATION_TOLERANCE_DEG = 0.01f;
+    private static final float TRANSLATION_TOLERANCE_PX = 0.5f;
 
     /**
      * The left edge a page has on the screen when the pager rests on it.
