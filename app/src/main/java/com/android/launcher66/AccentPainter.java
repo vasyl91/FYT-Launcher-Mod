@@ -34,8 +34,9 @@ import androidx.recyclerview.widget.RecyclerView;
  *       (also inside a layer list) that is that colour, a view tagged {@code @string/tag_accent}. The colour a view
  *       was painted with is kept in it ({@code R.id.accent_painted}), so that a later change finds what the
  *       last one painted: a colour counts as the accent when it is the default or the last painted one.</li>
- *   <li>Check boxes and radio buttons have the mark in the accent when checked. A switch is not one of them:
- *       it has colours of its own.</li>
+ *   <li>Every switch of the settings is in the accent ({@link #paintSwitch}): the thumb when on, a lighter tone of
+ *       it, half transparent, for the track; off, a light grey thumb on a grey track. Check boxes and radio buttons
+ *       have the mark in the accent when checked.</li>
  *   <li>The colour is the user's only with the creator on ({@link ThemeAccent#color}); with "Stock layout" the
  *       default comes back.</li>
  * </ul>
@@ -176,7 +177,10 @@ public final class AccentPainter {
             }
         }
 
-        if (view instanceof CompoundButton && !(view instanceof SwitchCompat)) {
+        if (view instanceof SwitchCompat) {
+            paintSwitch((SwitchCompat) view, accent);
+            painted = true;
+        } else if (view instanceof CompoundButton) {
             CompoundButton button = (CompoundButton) view;
             // A check box or a radio button has no tint of its own, the theme gives it its colours: the mark of one
             // that is checked is the accent
@@ -271,5 +275,30 @@ public final class AccentPainter {
         return new ColorStateList(
                 new int[][] {new int[] {android.R.attr.state_checked}, new int[0]},
                 new int[] {accent, unchecked});
+    }
+
+    // ------------------------------------------------------------------ switches (C2)
+
+    /** The thumb of a switch that is off: a light grey. */
+    static final int THUMB_OFF = 0xffececec;
+    /** The track of a switch that is off: grey, translucent. */
+    static final int TRACK_OFF = ThemeAccent.withAlpha(0xff808080, 0x60);
+    /** The alpha of the track of a switch that is on, the accent made lighter. */
+    static final int TRACK_ON_ALPHA = 0x80;
+
+    /** The tints of a switch for an accent: {thumb on, thumb off, track on, track off}. */
+    static int[] switchColors(int accent) {
+        return new int[] {accent, THUMB_OFF, ThemeAccent.withAlpha(ThemeAccent.lighter(accent), TRACK_ON_ALPHA),
+                TRACK_OFF};
+    }
+
+    /** Colours one switch: on in the accent, off grey. */
+    public static void paintSwitch(SwitchCompat view, int accent) {
+        int[] c = switchColors(accent);
+        int[][] states = {new int[] {android.R.attr.state_checked}, new int[0]};
+        view.setThumbTintList(new ColorStateList(states, new int[] {c[0], c[1]}));
+        view.setThumbTintMode(PorterDuff.Mode.SRC_IN);
+        view.setTrackTintList(new ColorStateList(states, new int[] {c[2], c[3]}));
+        view.setTrackTintMode(PorterDuff.Mode.SRC_IN);
     }
 }

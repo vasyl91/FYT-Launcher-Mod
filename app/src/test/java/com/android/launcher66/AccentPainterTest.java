@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.settings.Keys;
@@ -78,6 +79,27 @@ public class AccentPainterTest {
         tagged.setTag(RuntimeEnvironment.getApplication().getString(R.string.tag_accent));
         AccentPainter.paint(tagged, RED);
         assertEquals(RED, tagged.getCurrentTextColor());
+    }
+
+    @Test
+    public void everySwitchIsInTheAccentOnAndGreyOff() {
+        Context context = context();
+        SwitchCompat toggle = new SwitchCompat(context);
+        AccentPainter.paintSwitch(toggle, RED);
+        assertEquals(RED, checkedColor(toggle.getThumbTintList()));
+        assertEquals(0xffececec, uncheckedColor(toggle.getThumbTintList()));
+        int trackOn = checkedColor(toggle.getTrackTintList());
+        assertEquals("the track on is the accent lighter, half transparent", 0x80, trackOn >>> 24);
+        assertEquals(ThemeAccent.lighter(RED) & 0x00ffffff, trackOn & 0x00ffffff);
+        assertEquals(0x60808080, uncheckedColor(toggle.getTrackTintList()));
+        // a switch anywhere in a tree is painted, whatever its colours are
+        FrameLayout root = new FrameLayout(context);
+        SwitchCompat inner = new SwitchCompat(context);
+        root.addView(inner);
+        AccentPainter.paint(root, GREEN);
+        assertEquals(GREEN, checkedColor(inner.getThumbTintList()));
+        AccentPainter.paint(root, RED);
+        assertEquals(RED, checkedColor(inner.getThumbTintList()));
     }
 
     @Test
