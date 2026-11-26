@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">Käytä aloitusnäytön ruudukkoa kansioissa</string>
     <string name="folder_follow_grid_on">Kansiot käyttävät aloitusnäytön sarakkeita ja tarvitsemansa määrän rivejä</string>
     <string name="folder_follow_grid_off">Kansiot kasvavat lähes neliöksi aloitusnäytön kokoon asti</string>
+    <string name="widget_freeform">Widgetien vapaa sijoittelu</string>
+    <string name="widget_freeform_on">Widgetit pysyvät siellä, mihin ne laitat, ja saavat antamasi koon</string>
+    <string name="widget_freeform_off">Widgetit sijoitetaan aloitusnäytön ruutuihin</string>
 </resources>

@@ -123,11 +123,36 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
         }
     }
 
+    /**
+     * The pixels {x, y, width, height} that the cells {cellX, cellY} spanning spanX x spanY have in this container, as an item
+     * in those cells is laid out (the area a freely placed widget is limited to, FreeformWidgets).
+     */
+    int[] cellAreaRect(int cellX, int cellY, int spanX, int spanY) {
+        CellLayout.LayoutParams lp = new CellLayout.LayoutParams(cellX, cellY, spanX, spanY);
+        lp.rowPadding = mRowPadding;
+        lp.setup(this.mCellWidth, this.mCellHeight, this.mWidthGap, this.mHeightGap, invertLayoutHorizontally(), this.mCountX);
+        keepInGrid(lp);
+        offsetToGrid(lp);
+        return new int[] {lp.x, lp.y, lp.width, lp.height};
+    }
+
+    /** A widget placed freely has the pixels of its frame, whatever its cells are (FreeformWidgets). */
+    private void applyFreeform(CellLayout parent, View child, CellLayout.LayoutParams lp) {
+        int[] rect = parent == null ? null : parent.freeformRect(child);
+        if (rect != null) {
+            lp.x = rect[0];
+            lp.y = rect[1];
+            lp.width = rect[2];
+            lp.height = rect[3];
+        }
+    }
+
     public void setupLp(CellLayout.LayoutParams lp, View child) {
         CellLayout parent = (CellLayout) getParent();
-        
+        applyFreeform(parent, child, lp);
+
         // Check if this is a user widget - preserve exact positioning
-        if (parent != null && parent.isUserWidget(child)) {
+        if (parent != null && parent.isPixelPlaced(child)) {
             // For user widgets, preserve the exact position and size
             int[] position = parent.getUserWidgetPosition(child);
             if (position != null) {
@@ -204,9 +229,10 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
     public void measureChild(View child) {
         CellLayout.LayoutParams lp = (CellLayout.LayoutParams) child.getLayoutParams();
         CellLayout parent = (CellLayout) getParent();
-        
-        // Check if this is a user widget - preserve exact sizing
-        if (parent != null && parent.isUserWidget(child)) {
+        applyFreeform(parent, child, lp);
+
+        // Check if this is a user widget (or one placed freely) - preserve exact sizing
+        if (parent != null && parent.isPixelPlaced(child)) {
             // Use the exact width and height already set
             int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(lp.width, MeasureSpec.EXACTLY);
             int childheightMeasureSpec = MeasureSpec.makeMeasureSpec(lp.height, MeasureSpec.EXACTLY);
@@ -263,7 +289,8 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
                 CellLayout.LayoutParams lp = (CellLayout.LayoutParams) child.getLayoutParams();
 
                 CellLayout parent = (CellLayout) getParent();
-                if (parent != null && parent.isUserWidget(child)) {
+                applyFreeform(parent, child, lp);
+                if (parent != null && parent.isPixelPlaced(child)) {
                     // Use the exact stored position
                     int childLeft = lp.x;
                     int childTop = lp.y;

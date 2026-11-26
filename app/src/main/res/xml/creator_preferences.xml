@@ -97,6 +97,13 @@
             android:summaryOn="@string/folder_follow_grid_on"
             android:summaryOff="@string/folder_follow_grid_off"
             app:layout="@layout/nested_preference_category_switch" />
+        <com.android.launcher66.settings.CustomSwitchPreference
+            android:key="widget_freeform"
+            android:defaultValue="false"
+            android:title="@string/widget_freeform"
+            android:summaryOn="@string/widget_freeform_on"
+            android:summaryOff="@string/widget_freeform_off"
+            app:layout="@layout/nested_preference_category_switch" />
 
     </PreferenceCategory>
 

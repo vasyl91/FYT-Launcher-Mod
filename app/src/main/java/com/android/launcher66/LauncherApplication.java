@@ -517,6 +517,7 @@ public class LauncherApplication extends Application {
                         MODE_MULTI_PROCESS);
                 getSharedPreferences(PendingUpdateStore.PREFS, MODE_PRIVATE);
                 getSharedPreferences(com.syu.util.WindowHostDualPane.PREFS, MODE_PRIVATE);
+                WidgetFrames.load(this);
                 getSharedPreferences(com.android.launcher66.settings.CanbusService.APP_STATS_PREFS,
                         MODE_PRIVATE);
                 BaselineProfileCompiler.warmUp(this);

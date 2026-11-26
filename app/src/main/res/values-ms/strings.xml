@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">Ikut grid skrin utama dalam folder</string>
     <string name="folder_follow_grid_on">Folder menggunakan lajur skrin utama dan baris mengikut keperluan</string>
     <string name="folder_follow_grid_off">Folder membesar hampir segi empat sama, sehingga saiz skrin utama</string>
+    <string name="widget_freeform">Penempatan widget bebas</string>
+    <string name="widget_freeform_on">Widget kekal di tempat anda letak dan mengambil saiz yang anda beri</string>
+    <string name="widget_freeform_off">Widget diletakkan dalam sel skrin utama</string>
 </resources>

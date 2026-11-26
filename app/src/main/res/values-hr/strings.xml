@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">Koristi mrežu početnog zaslona u mapama</string>
     <string name="folder_follow_grid_on">Mape koriste stupce početnog zaslona i onoliko redaka koliko im treba</string>
     <string name="folder_follow_grid_off">Mape rastu gotovo kvadratno, do veličine početnog zaslona</string>
+    <string name="widget_freeform">Slobodan smještaj widgeta</string>
+    <string name="widget_freeform_on">Widgeti ostaju gdje ih postavite i poprimaju zadanu veličinu</string>
+    <string name="widget_freeform_off">Widgeti se postavljaju u ćelije početnog zaslona</string>
 </resources>

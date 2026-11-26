@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">Raster des Startbildschirms in Ordnern verwenden</string>
     <string name="folder_follow_grid_on">Ordner nutzen die Spalten des Startbildschirms und so viele Zeilen wie nötig</string>
     <string name="folder_follow_grid_off">Ordner wachsen annähernd quadratisch bis zur Größe des Startbildschirms</string>
+    <string name="widget_freeform">Widgets frei platzieren</string>
+    <string name="widget_freeform_on">Widgets bleiben, wo Sie sie ablegen, und behalten die gewählte Größe</string>
+    <string name="widget_freeform_off">Widgets werden in den Zellen des Startbildschirms platziert</string>
 </resources>

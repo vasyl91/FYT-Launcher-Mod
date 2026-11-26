@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">Сетка главного экрана внутри папок</string>
     <string name="folder_follow_grid_on">Папки используют столбцы главного экрана и столько строк, сколько нужно</string>
     <string name="folder_follow_grid_off">Папки растут почти квадратом, до размера главного экрана</string>
+    <string name="widget_freeform">Свободное размещение виджетов</string>
+    <string name="widget_freeform_on">Виджеты остаются там, где вы их поставили, и имеют заданный размер</string>
+    <string name="widget_freeform_off">Виджеты размещаются в ячейках главного экрана</string>
 </resources>

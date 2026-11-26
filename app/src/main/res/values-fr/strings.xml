@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">Suivre la grille de l\'écran d\'accueil dans les dossiers</string>
     <string name="folder_follow_grid_on">Les dossiers utilisent les colonnes de l\'écran d\'accueil et autant de lignes que nécessaire</string>
     <string name="folder_follow_grid_off">Les dossiers grandissent presque en carré, jusqu\'à la taille de l\'écran d\'accueil</string>
+    <string name="widget_freeform">Placement libre des widgets</string>
+    <string name="widget_freeform_on">Les widgets restent où vous les posez et prennent la taille que vous leur donnez</string>
+    <string name="widget_freeform_off">Les widgets sont placés dans les cellules de l\'écran d\'accueil</string>
 </resources>

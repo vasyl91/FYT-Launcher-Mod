@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">फ़ोल्डर में होम स्क्रीन की ग्रिड अपनाएँ</string>
     <string name="folder_follow_grid_on">फ़ोल्डर होम स्क्रीन के कॉलम और ज़रूरत भर की पंक्तियाँ इस्तेमाल करते हैं</string>
     <string name="folder_follow_grid_off">फ़ोल्डर लगभग वर्गाकार बढ़ते हैं, होम स्क्रीन के आकार तक</string>
+    <string name="widget_freeform">विजेट की मनचाही जगह</string>
+    <string name="widget_freeform_on">विजेट वहीं रहते हैं जहाँ आप रखते हैं और आपका दिया आकार लेते हैं</string>
+    <string name="widget_freeform_off">विजेट होम स्क्रीन के खानों में रखे जाते हैं</string>
 </resources>

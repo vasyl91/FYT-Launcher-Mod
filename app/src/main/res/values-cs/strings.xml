@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">Mřížka domovské obrazovky ve složkách</string>
     <string name="folder_follow_grid_on">Složky mají sloupce domovské obrazovky a tolik řádků, kolik potřebují</string>
     <string name="folder_follow_grid_off">Složky rostou téměř do čtverce, až do velikosti domovské obrazovky</string>
+    <string name="widget_freeform">Volné umístění widgetů</string>
+    <string name="widget_freeform_on">Widgety zůstanou tam, kam je dáte, a mají velikost, kterou jim nastavíte</string>
+    <string name="widget_freeform_off">Widgety se umísťují do buněk domovské obrazovky</string>
 </resources>

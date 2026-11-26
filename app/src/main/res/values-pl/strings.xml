@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">Siatka ekranu głównego w folderach</string>
     <string name="folder_follow_grid_on">Foldery używają kolumn ekranu głównego i tylu wierszy, ile potrzeba</string>
     <string name="folder_follow_grid_off">Foldery rosną niemal do kwadratu, do rozmiaru ekranu głównego</string>
+    <string name="widget_freeform">Swobodne rozmieszczanie widżetów</string>
+    <string name="widget_freeform_on">Widżety zostają tam, gdzie je położysz, i mają ustawiony rozmiar</string>
+    <string name="widget_freeform_off">Widżety są umieszczane w komórkach ekranu głównego</string>
 </resources>

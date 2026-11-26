@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">フォルダ内でホーム画面のグリッドに合わせる</string>
     <string name="folder_follow_grid_on">フォルダはホーム画面の列数を使い、必要な数の行になります</string>
     <string name="folder_follow_grid_off">フォルダはほぼ正方形に広がり、ホーム画面の大きさが上限です</string>
+    <string name="widget_freeform">ウィジェットの自由配置</string>
+    <string name="widget_freeform_on">ウィジェットは置いた場所に留まり、指定した大きさになります</string>
+    <string name="widget_freeform_off">ウィジェットはホーム画面のマスに配置されます</string>
 </resources>

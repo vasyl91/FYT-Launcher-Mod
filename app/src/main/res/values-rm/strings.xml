@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">Suandar la rasté da la surfatscha da partenza en las cartellas</string>
     <string name="folder_follow_grid_on">Las cartellas utiliseschan las colonnas da la surfatscha da partenza e las lingias necessarias</string>
     <string name="folder_follow_grid_off">Las cartellas creschan memia quadraticamain, fin a la grondezza da la surfatscha da partenza</string>
+    <string name="widget_freeform">Placazion libra dals widgets</string>
+    <string name="widget_freeform_on">Ils widgets restan nua che ti als metta e prendan la grondezza che ti dastgas</string>
+    <string name="widget_freeform_off">Ils widgets vegnan messas en las cellas da la surfatscha da partenza</string>
 </resources>

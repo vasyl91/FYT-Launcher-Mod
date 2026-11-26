@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">Landela igridi yesikrini sasekhaya ngaphakathi kwamafolda</string>
     <string name="folder_follow_grid_on">Amafolda asebenzisa amakholomu esikrini sasekhaya nemigqa edingekayo</string>
     <string name="folder_follow_grid_off">Amafolda akhula cishe abe yisikwele, kuze kufike osayizi wesikrini sasekhaya</string>
+    <string name="widget_freeform">Ukubeka amawijethi ngokukhululeka</string>
+    <string name="widget_freeform_on">Amawijethi ahlala lapho uwabeka khona futhi athatha usayizi owunikezayo</string>
+    <string name="widget_freeform_off">Amawijethi abekwa kumaseli esikrini sasekhaya</string>
 </resources>

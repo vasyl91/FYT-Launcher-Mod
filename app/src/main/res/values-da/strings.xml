@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">Følg startskærmens gitter i mapper</string>
     <string name="folder_follow_grid_on">Mapper bruger startskærmens kolonner og så mange rækker, de har brug for</string>
     <string name="folder_follow_grid_off">Mapper vokser næsten kvadratisk op til startskærmens størrelse</string>
+    <string name="widget_freeform">Fri placering af widgets</string>
+    <string name="widget_freeform_on">Widgets bliver, hvor du placerer dem, og får den størrelse, du giver dem</string>
+    <string name="widget_freeform_off">Widgets placeres i startskærmens felter</string>
 </resources>

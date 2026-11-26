@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">Aplankuose naudoti pagrindinio ekrano tinklelį</string>
     <string name="folder_follow_grid_on">Aplankai naudoja pagrindinio ekrano stulpelius ir tiek eilučių, kiek reikia</string>
     <string name="folder_follow_grid_off">Aplankai auga beveik kvadratu iki pagrindinio ekrano dydžio</string>
+    <string name="widget_freeform">Laisva valdiklių išdėstymas</string>
+    <string name="widget_freeform_on">Valdikliai lieka ten, kur juos padedate, ir turi jūsų nurodytą dydį</string>
+    <string name="widget_freeform_off">Valdikliai dedami į pagrindinio ekrano langelius</string>
 </resources>

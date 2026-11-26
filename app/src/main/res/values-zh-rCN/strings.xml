@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">文件夹内沿用主屏幕网格</string>
     <string name="folder_follow_grid_on">文件夹使用主屏幕的列数，并按需增加行数</string>
     <string name="folder_follow_grid_off">文件夹近似正方形增长，最大为主屏幕大小</string>
+    <string name="widget_freeform">自由放置小部件</string>
+    <string name="widget_freeform_on">小部件停留在您放置的位置，并采用您设定的大小</string>
+    <string name="widget_freeform_off">小部件放置在主屏幕的网格中</string>
 </resources>

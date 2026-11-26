@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">資料夾內沿用主畫面格線</string>
     <string name="folder_follow_grid_on">資料夾使用主畫面的欄數，並視需要增加列數</string>
     <string name="folder_follow_grid_off">資料夾近似正方形增長，最大為主畫面大小</string>
+    <string name="widget_freeform">自由放置小工具</string>
+    <string name="widget_freeform_on">小工具停留在您放置的位置，並採用您設定的大小</string>
+    <string name="widget_freeform_off">小工具放置在主畫面的格線中</string>
 </resources>

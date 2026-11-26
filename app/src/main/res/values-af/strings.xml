@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">Volg tuisskerm-rooster binne vouers</string>
     <string name="folder_follow_grid_on">Vouers gebruik die tuisskerm se kolomme en soveel rye as wat hulle nodig het</string>
     <string name="folder_follow_grid_off">Vouers groei amper vierkantig, tot die grootte van die tuisskerm</string>
+    <string name="widget_freeform">Vrye plasing van legstukke</string>
+    <string name="widget_freeform_on">Legstukke bly waar jy hulle sit en kry die grootte wat jy gee</string>
+    <string name="widget_freeform_off">Legstukke word in die selle van die tuisskerm geplaas</string>
 </resources>

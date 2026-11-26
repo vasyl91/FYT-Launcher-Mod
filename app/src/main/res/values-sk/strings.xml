@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">Mriežka domovskej obrazovky v priečinkoch</string>
     <string name="folder_follow_grid_on">Priečinky používajú stĺpce domovskej obrazovky a toľko riadkov, koľko potrebujú</string>
     <string name="folder_follow_grid_off">Priečinky rastú takmer do štvorca až do veľkosti domovskej obrazovky</string>
+    <string name="widget_freeform">Voľné umiestnenie widgetov</string>
+    <string name="widget_freeform_on">Widgety zostanú tam, kam ich dáte, a majú veľkosť, ktorú im nastavíte</string>
+    <string name="widget_freeform_off">Widgety sa umiestňujú do buniek domovskej obrazovky</string>
 </resources>

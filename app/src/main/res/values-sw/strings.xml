@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">Fuata gridi ya skrini ya kwanza ndani ya folda</string>
     <string name="folder_follow_grid_on">Folda hutumia safu wima za skrini ya kwanza na safu mlalo zinazohitajika</string>
     <string name="folder_follow_grid_off">Folda hukua karibu mraba, hadi ukubwa wa skrini ya kwanza</string>
+    <string name="widget_freeform">Uwekaji huru wa wijeti</string>
+    <string name="widget_freeform_on">Wijeti hubaki mahali unapoziweka na huchukua ukubwa unaoupa</string>
+    <string name="widget_freeform_off">Wijeti huwekwa kwenye seli za skrini ya kwanza</string>
 </resources>

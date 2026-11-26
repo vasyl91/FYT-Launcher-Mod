@@ -7158,6 +7158,7 @@ public class Workspace extends SmoothPagedView
 
         int snapScreen = -1;
         boolean resizeOnDrop = false;
+        boolean freeformDrop = false;
         if (d.dragSource != this) {
             Log.d(TAG,"onDrop()  d.dragSource = " + d.dragSource);
             final int[] touchXY = new int[] { (int) mDragViewVisualCenter[0],
@@ -7268,6 +7269,14 @@ public class Workspace extends SmoothPagedView
                     cell.setId(LauncherModel.getCellLayoutChildId(container, mDragInfo.screenId,
                             mTargetCell[0], mTargetCell[1], mDragInfo.spanX, mDragInfo.spanY));
 
+                    // "Free widget placement": the widget keeps the pixels it was dropped at, inside the cells found for it
+                    if (container != LauncherSettings.Favorites.CONTAINER_HOTSEAT
+                            && cell instanceof LauncherAppWidgetHostView && FreeformWidgets.enabled(mLauncher)) {
+                        FreeformWidgets.placeOnDrop(dropTargetLayout, (LauncherAppWidgetHostView) cell,
+                                mDragViewVisualCenter, mTargetCell, item.spanX, item.spanY, !resizeOnDrop);
+                        freeformDrop = true;
+                    }
+
                     if (container != LauncherSettings.Favorites.CONTAINER_HOTSEAT &&
                             cell instanceof LauncherAppWidgetHostView) {
                         final CellLayout cellLayout = dropTargetLayout;
@@ -7342,7 +7351,12 @@ public class Workspace extends SmoothPagedView
                 }
             };
             mAnimatingViewIntoPlace = true;
-            if (d.dragView.hasDrawn()) {
+            if (freeformDrop) {
+                // The animation goes to the cells; the widget is where the user put it: it simply appears there
+                d.deferDragViewCleanupPostAnimation = false;
+                cell.setVisibility(VISIBLE);
+                onCompleteRunnable.run();
+            } else if (d.dragView.hasDrawn()) {
                 final ItemInfo info = (ItemInfo) cell.getTag();
                 if (info.itemType == LauncherSettings.Favorites.ITEM_TYPE_APPWIDGET) {
                     int animationType = resizeOnDrop ? ANIMATE_INTO_POSITION_AND_RESIZE :

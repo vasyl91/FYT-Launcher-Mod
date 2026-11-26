@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">پیروی از شبکهٔ صفحهٔ اصلی در پوشه‌ها</string>
     <string name="folder_follow_grid_on">پوشه‌ها از ستون‌های صفحهٔ اصلی و به تعداد لازم ردیف استفاده می‌کنند</string>
     <string name="folder_follow_grid_off">پوشه‌ها تقریباً مربعی تا اندازهٔ صفحهٔ اصلی بزرگ می‌شوند</string>
+    <string name="widget_freeform">قرار دادن آزاد ویجت‌ها</string>
+    <string name="widget_freeform_on">ویجت‌ها همان‌جا که می‌گذارید می‌مانند و اندازهٔ دلخواه را می‌گیرند</string>
+    <string name="widget_freeform_off">ویجت‌ها در خانه‌های صفحهٔ اصلی قرار می‌گیرند</string>
 </resources>

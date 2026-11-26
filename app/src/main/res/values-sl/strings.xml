@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">Mreža domačega zaslona v mapah</string>
     <string name="folder_follow_grid_on">Mape uporabljajo stolpce domačega zaslona in toliko vrstic, kolikor jih potrebujejo</string>
     <string name="folder_follow_grid_off">Mape rastejo skoraj kvadratno do velikosti domačega zaslona</string>
+    <string name="widget_freeform">Prosta razporeditev pripomočkov</string>
+    <string name="widget_freeform_on">Pripomočki ostanejo, kamor jih postavite, in imajo velikost, ki jo določite</string>
+    <string name="widget_freeform_off">Pripomočki so postavljeni v celice domačega zaslona</string>
 </resources>

@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">ใช้ตารางหน้าจอหลักในโฟลเดอร์</string>
     <string name="folder_follow_grid_on">โฟลเดอร์ใช้จำนวนคอลัมน์ของหน้าจอหลักและแถวเท่าที่จำเป็น</string>
     <string name="folder_follow_grid_off">โฟลเดอร์ขยายเกือบเป็นสี่เหลี่ยมจัตุรัส ไม่เกินขนาดหน้าจอหลัก</string>
+    <string name="widget_freeform">วางวิดเจ็ตได้อิสระ</string>
+    <string name="widget_freeform_on">วิดเจ็ตอยู่ตรงที่คุณวางและมีขนาดตามที่คุณกำหนด</string>
+    <string name="widget_freeform_off">วิดเจ็ตวางอยู่ในช่องของหน้าจอหลัก</string>
 </resources>

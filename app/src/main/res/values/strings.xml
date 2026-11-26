@@ -599,4 +599,7 @@
     <string name="folder_follow_grid">Follow home screen grid inside folders</string>
     <string name="folder_follow_grid_on">Folders use the home screen\'s columns and as many rows as they need</string>
     <string name="folder_follow_grid_off">Folders grow nearly square, up to the home screen\'s size</string>
+    <string name="widget_freeform">Free widget placement</string>
+    <string name="widget_freeform_on">Widgets stay where you put them and take the size you give them</string>
+    <string name="widget_freeform_off">Widgets are placed in the cells of the home screen</string>
 </resources>

@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">Klasörlerde ana ekran ızgarasını izle</string>
     <string name="folder_follow_grid_on">Klasörler ana ekranın sütunlarını ve gereken sayıda satırı kullanır</string>
     <string name="folder_follow_grid_off">Klasörler ana ekranın boyutuna kadar neredeyse kare büyür</string>
+    <string name="widget_freeform">Widget\'ların serbest yerleşimi</string>
+    <string name="widget_freeform_on">Widget\'lar bıraktığınız yerde kalır ve verdiğiniz boyutu alır</string>
+    <string name="widget_freeform_off">Widget\'lar ana ekranın hücrelerine yerleştirilir</string>
 </resources>

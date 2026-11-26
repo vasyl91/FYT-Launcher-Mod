@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">ធ្វើតាមក្រឡាចត្រង្គអេក្រង់ដើមក្នុងថត</string>
     <string name="folder_follow_grid_on">ថតប្រើជួរឈរនៃអេក្រង់ដើម និងជួរដេកតាមតម្រូវការ</string>
     <string name="folder_follow_grid_off">ថតលូតលាស់ស្ទើរតែការ៉េ រហូតដល់ទំហំអេក្រង់ដើម</string>
+    <string name="widget_freeform">ការដាក់ធាតុក្រាហ្វិកដោយសេរី</string>
+    <string name="widget_freeform_on">ធាតុក្រាហ្វិកនៅកន្លែងដែលអ្នកដាក់ ហើយមានទំហំតាមដែលអ្នកកំណត់</string>
+    <string name="widget_freeform_off">ធាតុក្រាហ្វិកត្រូវបានដាក់ក្នុងក្រឡានៃអេក្រង់ដើម</string>
 </resources>

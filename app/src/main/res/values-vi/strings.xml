@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">Dùng lưới màn hình chính trong thư mục</string>
     <string name="folder_follow_grid_on">Thư mục dùng số cột của màn hình chính và đủ số hàng cần thiết</string>
     <string name="folder_follow_grid_off">Thư mục lớn dần gần như vuông, tối đa bằng cỡ màn hình chính</string>
+    <string name="widget_freeform">Đặt widget tự do</string>
+    <string name="widget_freeform_on">Widget ở đúng chỗ bạn đặt và có kích thước bạn chọn</string>
+    <string name="widget_freeform_off">Widget được đặt trong các ô của màn hình chính</string>
 </resources>

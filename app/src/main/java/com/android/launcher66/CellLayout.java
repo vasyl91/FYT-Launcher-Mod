@@ -4771,6 +4771,74 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         return mUserWidgetPositions.get(userWidget);
     }
 
+    /**
+     * The pixels {x, y, width, height} of a widget placed freely (FreeformWidgets) in the container of the page, from its
+     * frame; null for any other view, while the setting is off, and for a widget that has no frame (it is in its cells).
+     */
+    int[] freeformRect(View child) {
+        if (!(child instanceof LauncherAppWidgetHostView) || !FreeformWidgets.enabled(getContext())) {
+            return null;
+        }
+        WidgetFrame frame = WidgetFrames.get(getContext(), ((LauncherAppWidgetHostView) child).getAppWidgetId());
+        if (frame == null) {
+            return null;
+        }
+        int w = mShortcutsAndWidgets.getMeasuredWidth() > 0 ? mShortcutsAndWidgets.getMeasuredWidth()
+                : mShortcutsAndWidgets.getWidth();
+        int h = mShortcutsAndWidgets.getMeasuredHeight() > 0 ? mShortcutsAndWidgets.getMeasuredHeight()
+                : mShortcutsAndWidgets.getHeight();
+        if (w <= 0 || h <= 0) {
+            return null;
+        }
+        int[] px = frame.toPixels(w, h);
+        return new int[] {px[0], px[1], Math.max(1, px[2] - px[0]), Math.max(1, px[3] - px[1])};
+    }
+
+    /** Whether a child is placed by pixels: an element of the creator or a widget placed freely. */
+    boolean isPixelPlaced(View view) {
+        return isUserWidget(view) || freeformRect(view) != null;
+    }
+
+    /**
+     * The cells {cellX, cellY, spanX, spanY} that a pixel rectangle {x, y, width, height} of the container touches, however
+     * little; null when it touches none.
+     */
+    int[] cellsCovering(int[] rect) {
+        int minX = Integer.MAX_VALUE;
+        int minY = Integer.MAX_VALUE;
+        int maxX = -1;
+        int maxY = -1;
+        for (int x = 0; x < mCountX; x++) {
+            for (int y = 0; y < mCountY; y++) {
+                int[] c = mShortcutsAndWidgets.cellAreaRect(x, y, 1, 1);
+                boolean touches = c[0] < rect[0] + rect[2] && rect[0] < c[0] + c[2]
+                        && c[1] < rect[1] + rect[3] && rect[1] < c[1] + c[3];
+                if (touches) {
+                    minX = Math.min(minX, x);
+                    minY = Math.min(minY, y);
+                    maxX = Math.max(maxX, x);
+                    maxY = Math.max(maxY, y);
+                }
+            }
+        }
+        return maxX < 0 ? null : new int[] {minX, minY, maxX - minX + 1, maxY - minY + 1};
+    }
+
+    /** Whether no item holds a cell of the area (a widget in the middle of a resize has given its own cells up). */
+    boolean cellsVacant(int cellX, int cellY, int spanX, int spanY) {
+        if (!PageFit.inGrid(cellX, cellY, spanX, spanY, mCountX, mCountY)) {
+            return false;
+        }
+        for (int x = cellX; x < cellX + spanX; x++) {
+            for (int y = cellY; y < cellY + spanY; y++) {
+                if (mOccupied[x][y]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public boolean isUserWidget(View view) {
         return view == mUserDateWidget || view == mUserMusicWidget || view == mUserRadioWidget
             || view == mDualPipPlaceholder || view == mFirstPipPlaceholder

@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">ໃຊ້ຕາຕະລາງໜ້າຈໍຫຼັກໃນແຟ້ມ</string>
     <string name="folder_follow_grid_on">ແຟ້ມໃຊ້ຖັນຂອງໜ້າຈໍຫຼັກ ແລະ ແຖວຕາມທີ່ຈຳເປັນ</string>
     <string name="folder_follow_grid_off">ແຟ້ມຂະຫຍາຍເກືອບເປັນສີ່ຫຼ່ຽມ ຈົນເຖິງຂະໜາດໜ້າຈໍຫຼັກ</string>
+    <string name="widget_freeform">ການວາງວິດເຈັດແບບອິດສະຫຼະ</string>
+    <string name="widget_freeform_on">ວິດເຈັດຢູ່ບ່ອນທີ່ທ່ານວາງ ແລະ ມີຂະໜາດຕາມທີ່ທ່ານກຳນົດ</string>
+    <string name="widget_freeform_off">ວິດເຈັດຖືກວາງໃນຊ່ອງຂອງໜ້າຈໍຫຼັກ</string>
 </resources>

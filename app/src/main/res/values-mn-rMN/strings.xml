@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">Хавтас дотор нүүр дэлгэцийн торыг дагах</string>
     <string name="folder_follow_grid_on">Хавтсууд нүүр дэлгэцийн баганыг ашиглаж, шаардлагатай мөртэй байна</string>
     <string name="folder_follow_grid_off">Хавтсууд нүүр дэлгэцийн хэмжээ хүртэл дөрвөлжин хэлбэртэй томорно</string>
+    <string name="widget_freeform">Виджетийг чөлөөтэй байрлуулах</string>
+    <string name="widget_freeform_on">Виджетүүд таны тавьсан газраа үлдэж, таны өгсөн хэмжээтэй болно</string>
+    <string name="widget_freeform_off">Виджетүүд нүүр дэлгэцийн нүднүүдэд байрлана</string>
 </resources>

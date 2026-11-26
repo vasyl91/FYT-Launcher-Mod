@@ -208,7 +208,46 @@ public class AppWidgetResizeFrame extends FrameLayout {
         requestLayout();
     }
 
+    /**
+     * "Free widget placement": the widget follows the frame's pixels instead of stepping from cell to cell. The frame
+     * lies round the widget by its padding and the widget's own padding (snapToWidget); this is the same, the other way.
+     *
+     * @return whether the widget is placed freely and this took care of the resize
+     */
+    private boolean resizeFreeform(boolean onDismiss) {
+        if (!FreeformWidgets.enabled(getContext()) || mCellLayout.freeformRect(this.mWidgetView) == null) {
+            return false;
+        }
+        DragLayer.LayoutParams frame = (DragLayer.LayoutParams) getLayoutParams();
+        this.mTmpPt[0] = 0;
+        this.mTmpPt[1] = 0;
+        this.mDragLayer.getDescendantCoordRelativeToSelf(this.mCellLayout.getShortcutsAndWidgets(), this.mTmpPt);
+        int left = frame.x + this.mBackgroundPadding - this.mWidgetPaddingLeft - this.mTmpPt[0];
+        int top = frame.y + this.mBackgroundPadding - this.mWidgetPaddingTop - this.mTmpPt[1];
+        int width = frame.width - 2 * this.mBackgroundPadding + this.mWidgetPaddingLeft + this.mWidgetPaddingRight;
+        int height = frame.height - 2 * this.mBackgroundPadding + this.mWidgetPaddingTop + this.mWidgetPaddingBottom;
+        FreeformWidgets.resizeTo(this.mCellLayout, this.mWidgetView, left, top, width, height, onDismiss);
+        if (onDismiss) {
+            this.mCellLayout.markCellsAsOccupiedForView(this.mWidgetView);
+            ItemInfo info = (ItemInfo) this.mWidgetView.getTag();
+            CellLayout.LayoutParams lp = (CellLayout.LayoutParams) this.mWidgetView.getLayoutParams();
+            if (info != null) {
+                info.cellX = lp.cellX;
+                info.cellY = lp.cellY;
+                info.spanX = lp.cellHSpan;
+                info.spanY = lp.cellVSpan;
+                LauncherModel.modifyItemInDatabase(this.mLauncher, info, info.container, info.screenId, lp.cellX,
+                        lp.cellY, lp.cellHSpan, lp.cellVSpan);
+            }
+        }
+        this.mWidgetView.requestLayout();
+        return true;
+    }
+
     private void resizeWidgetIfNeeded(boolean onDismiss) {
+        if (resizeFreeform(onDismiss)) {
+            return;
+        }
         int xThreshold = this.mCellLayout.getCellWidth() + this.mCellLayout.getWidthGap();
         int yThreshold = this.mCellLayout.getCellHeight() + this.mCellLayout.getHeightGap();
         int deltaX = this.mDeltaX + this.mDeltaXAddOn;

@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">Сітка головного екрана всередині папок</string>
     <string name="folder_follow_grid_on">Папки використовують стовпці головного екрана й стільки рядків, скільки потрібно</string>
     <string name="folder_follow_grid_off">Папки ростуть майже квадратом, до розміру головного екрана</string>
+    <string name="widget_freeform">Вільне розміщення віджетів</string>
+    <string name="widget_freeform_on">Віджети залишаються там, де ви їх поставили, і мають задані розміри</string>
+    <string name="widget_freeform_off">Віджети розміщуються в клітинках головного екрана</string>
 </resources>

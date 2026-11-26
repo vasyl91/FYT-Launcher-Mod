@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">Segueix la quadrícula de la pantalla d\'inici dins les carpetes</string>
     <string name="folder_follow_grid_on">Les carpetes usen les columnes de la pantalla d\'inici i les files que necessitin</string>
     <string name="folder_follow_grid_off">Les carpetes creixen gairebé quadrades, fins a la mida de la pantalla d\'inici</string>
+    <string name="widget_freeform">Col·locació lliure dels ginys</string>
+    <string name="widget_freeform_on">Els ginys es queden on els poses i prenen la mida que els dónes</string>
+    <string name="widget_freeform_off">Els ginys es col·loquen a les cel·les de la pantalla d\'inici</string>
 </resources>

@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">Seguir a grelha do ecrã principal nas pastas</string>
     <string name="folder_follow_grid_on">As pastas usam as colunas do ecrã principal e as linhas de que precisarem</string>
     <string name="folder_follow_grid_off">As pastas crescem quase quadradas, até ao tamanho do ecrã principal</string>
+    <string name="widget_freeform">Colocação livre de widgets</string>
+    <string name="widget_freeform_on">Os widgets ficam onde os coloca e têm o tamanho que lhes der</string>
+    <string name="widget_freeform_off">Os widgets são colocados nas células do ecrã principal</string>
 </resources>

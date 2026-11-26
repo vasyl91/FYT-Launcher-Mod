@@ -587,4 +587,7 @@
     <string name="folder_follow_grid">Выкарыстоўваць сетку галоўнага экрана ў папках</string>
     <string name="folder_follow_grid_on">Папкі выкарыстоўваюць слупкі галоўнага экрана і столькі радкоў, колькі трэба</string>
     <string name="folder_follow_grid_off">Папкі растуць амаль квадратам, да памераў галоўнага экрана</string>
+    <string name="widget_freeform">Свабоднае размяшчэнне віджэтаў</string>
+    <string name="widget_freeform_on">Віджэты застаюцца там, дзе вы іх паставілі, і маюць зададзены памер</string>
+    <string name="widget_freeform_off">Віджэты размяшчаюцца ў ячэйках галоўнага экрана</string>
 </resources>
