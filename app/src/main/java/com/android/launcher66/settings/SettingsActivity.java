@@ -204,9 +204,15 @@ public class SettingsActivity extends AppCompatActivity {
             // Opened afresh: from the top (SettingsScrollMemory), and no dialog of an earlier one (SettingsDialogMemory)
             SettingsScrollMemory.forget();
             SettingsDialogMemory.forget();
+            // The drawer opens the list of a tab's apps, or of the hidden ones, on its own (DrawerAppsFragment.intent)
+            Intent opened = getIntent();
+            androidx.fragment.app.Fragment first = opened != null && opened.hasExtra(DrawerAppsFragment.EXTRA_TAB)
+                    ? DrawerAppsFragment.newInstance(opened.getIntExtra(DrawerAppsFragment.EXTRA_TAB,
+                            com.android.launcher66.DrawerAppList.HIDDEN), true)
+                    : new SettingsFragmentFirst();
             getSupportFragmentManager()
                 .beginTransaction()
-                .replace(android.R.id.content, new SettingsFragmentFirst())
+                .replace(android.R.id.content, first)
                 .commit();
         }     
     }   

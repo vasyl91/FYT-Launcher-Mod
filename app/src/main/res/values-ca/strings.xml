@@ -625,4 +625,8 @@
     <string name="drawer_tabs_summary">Afegeix, canvia el nom i ordena les pestanyes del calaix d\'aplicacions</string>
     <string name="icon_text_size">Defineix la mida del text de les icones</string>
     <string name="search_apps_hint">Cerca aplicacions</string>
+    <string name="hide_apps">Amaga aplicacions</string>
+    <string name="show_hidden_apps">Mostra les aplicacions amagades</string>
+    <string name="drawer_tab_main">Aplicacions</string>
+    <string name="drawer_tab_default">Pestanya%1$d</string>
 </resources>

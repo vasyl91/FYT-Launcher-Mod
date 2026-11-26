@@ -625,4 +625,8 @@
     <string name="drawer_tabs_summary">Pridėkite, pervadinkite ir išdėstykite programų stalčiaus skirtukus</string>
     <string name="icon_text_size">Nustatyti piktogramų teksto dydį</string>
     <string name="search_apps_hint">Ieškoti programų</string>
+    <string name="hide_apps">Slėpti programas</string>
+    <string name="show_hidden_apps">Rodyti paslėptas programas</string>
+    <string name="drawer_tab_main">Programos</string>
+    <string name="drawer_tab_default">Skirtukas%1$d</string>
 </resources>

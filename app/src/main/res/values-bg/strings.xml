@@ -625,4 +625,8 @@
     <string name="drawer_tabs_summary">Добавяйте, преименувайте и подреждайте разделите на менюто с приложения</string>
     <string name="icon_text_size">Задаване на размера на текста на иконите</string>
     <string name="search_apps_hint">Търсене на приложения</string>
+    <string name="hide_apps">Скриване на приложения</string>
+    <string name="show_hidden_apps">Показване на скритите приложения</string>
+    <string name="drawer_tab_main">Приложения</string>
+    <string name="drawer_tab_default">Раздел%1$d</string>
 </resources>

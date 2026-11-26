@@ -625,4 +625,8 @@
     <string name="drawer_tabs_summary">Lisa, nimeta ümber ja järjesta rakenduste sahtli vahekaarte</string>
     <string name="icon_text_size">Määra ikoonide teksti suurus</string>
     <string name="search_apps_hint">Otsi rakendusi</string>
+    <string name="hide_apps">Peida rakendused</string>
+    <string name="show_hidden_apps">Näita peidetud rakendusi</string>
+    <string name="drawer_tab_main">Rakendused</string>
+    <string name="drawer_tab_default">Vaheleht%1$d</string>
 </resources>

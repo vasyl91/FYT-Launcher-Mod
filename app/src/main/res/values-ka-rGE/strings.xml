@@ -625,4 +625,8 @@
     <string name="drawer_tabs_summary">დაამატეთ, გადაარქვით სახელი და დაალაგეთ აპების უჯრის ჩანართები</string>
     <string name="icon_text_size">ხატულების ტექსტის ზომის დაყენება</string>
     <string name="search_apps_hint">აპების ძიება</string>
+    <string name="hide_apps">აპების დამალვა</string>
+    <string name="show_hidden_apps">დამალული აპების ჩვენება</string>
+    <string name="drawer_tab_main">აპები</string>
+    <string name="drawer_tab_default">ჩანართი%1$d</string>
 </resources>

@@ -625,4 +625,8 @@
     <string name="drawer_tabs_summary">Ajoutez, renommez et organisez les onglets du tiroir d\'applications</string>
     <string name="icon_text_size">Définir la taille du texte des icônes</string>
     <string name="search_apps_hint">Rechercher des applications</string>
+    <string name="hide_apps">Masquer les applications</string>
+    <string name="show_hidden_apps">Afficher les applications masquées</string>
+    <string name="drawer_tab_main">Applications</string>
+    <string name="drawer_tab_default">Onglet%1$d</string>
 </resources>

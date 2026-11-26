@@ -625,4 +625,8 @@
     <string name="drawer_tabs_summary">Ավելացրեք, վերանվանեք և դասավորեք հավելվածների դարակի ներդիրները</string>
     <string name="icon_text_size">Սահմանել պատկերակների տեքստի չափը</string>
     <string name="search_apps_hint">Որոնել հավելվածներ</string>
+    <string name="hide_apps">Թաքցնել հավելվածները</string>
+    <string name="show_hidden_apps">Ցուցադրել թաքնված հավելվածները</string>
+    <string name="drawer_tab_main">Հավելվածներ</string>
+    <string name="drawer_tab_default">Ներդիր%1$d</string>
 </resources>

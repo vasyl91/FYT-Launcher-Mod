@@ -625,4 +625,8 @@
     <string name="drawer_tabs_summary">Añade, renombra y ordena las pestañas del cajón de aplicaciones</string>
     <string name="icon_text_size">Establecer el tamaño del texto de los iconos</string>
     <string name="search_apps_hint">Buscar aplicaciones</string>
+    <string name="hide_apps">Ocultar aplicaciones</string>
+    <string name="show_hidden_apps">Mostrar aplicaciones ocultas</string>
+    <string name="drawer_tab_main">Aplicaciones</string>
+    <string name="drawer_tab_default">Pestaña%1$d</string>
 </resources>

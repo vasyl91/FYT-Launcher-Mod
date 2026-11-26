@@ -625,4 +625,8 @@
     <string name="drawer_tabs_summary">Agiuntar, rebattegiar ed urdinar las file dal chaschun d\'applicaziuns</string>
     <string name="icon_text_size">Fixar la grondezza dal text dals simbols</string>
     <string name="search_apps_hint">Tschertgar applicaziuns</string>
+    <string name="hide_apps">Zuppentar applicaziuns</string>
+    <string name="show_hidden_apps">Mussar applicaziuns zuppadas</string>
+    <string name="drawer_tab_main">Applicaziuns</string>
+    <string name="drawer_tab_default">Tab%1$d</string>
 </resources>

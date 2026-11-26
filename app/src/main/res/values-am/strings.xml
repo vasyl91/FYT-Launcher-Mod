@@ -625,4 +625,8 @@
     <string name="drawer_tabs_summary">የመተግበሪያ መሳቢያውን ትሮች ያክሉ፣ ስም ይቀይሩ እና ያደራጁ</string>
     <string name="icon_text_size">የአዶ ጽሑፍ መጠን አዘጋጅ</string>
     <string name="search_apps_hint">መተግበሪያዎችን ይፈልጉ</string>
+    <string name="hide_apps">መተግበሪያዎችን ደብቅ</string>
+    <string name="show_hidden_apps">የተደበቁ መተግበሪያዎችን አሳይ</string>
+    <string name="drawer_tab_main">መተግበሪያዎች</string>
+    <string name="drawer_tab_default">ትር%1$d</string>
 </resources>

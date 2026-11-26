@@ -625,4 +625,8 @@
     <string name="drawer_tabs_summary">ऐप ड्रॉअर के टैब जोड़ें, उनके नाम बदलें और उन्हें व्यवस्थित करें</string>
     <string name="icon_text_size">आइकन के टेक्स्ट का आकार सेट करें</string>
     <string name="search_apps_hint">ऐप खोजें</string>
+    <string name="hide_apps">ऐप छिपाएं</string>
+    <string name="show_hidden_apps">छिपे हुए ऐप दिखाएं</string>
+    <string name="drawer_tab_main">ऐप्स</string>
+    <string name="drawer_tab_default">टैब%1$d</string>
 </resources>

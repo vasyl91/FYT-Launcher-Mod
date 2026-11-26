@@ -625,4 +625,8 @@
     <string name="drawer_tabs_summary">Tabs der App-Übersicht hinzufügen, umbenennen und anordnen</string>
     <string name="icon_text_size">Symboltextgröße festlegen</string>
     <string name="search_apps_hint">Apps durchsuchen</string>
+    <string name="hide_apps">Apps ausblenden</string>
+    <string name="show_hidden_apps">Ausgeblendete Apps anzeigen</string>
+    <string name="drawer_tab_main">Apps</string>
+    <string name="drawer_tab_default">Tab%1$d</string>
 </resources>

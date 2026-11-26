@@ -625,4 +625,8 @@
     <string name="drawer_tabs_summary">Dodawaj, zmieniaj nazwy i porządkuj karty szuflady aplikacji</string>
     <string name="icon_text_size">Ustaw rozmiar tekstu ikon</string>
     <string name="search_apps_hint">Szukaj aplikacji</string>
+    <string name="hide_apps">Ukryj aplikacje</string>
+    <string name="show_hidden_apps">Pokaż ukryte aplikacje</string>
+    <string name="drawer_tab_main">Aplikacje</string>
+    <string name="drawer_tab_default">Karta%1$d</string>
 </resources>

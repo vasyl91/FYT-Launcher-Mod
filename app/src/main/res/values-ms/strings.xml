@@ -625,4 +625,8 @@
     <string name="drawer_tabs_summary">Tambah, namakan semula dan susun tab laci aplikasi</string>
     <string name="icon_text_size">Tetapkan saiz teks ikon</string>
     <string name="search_apps_hint">Cari aplikasi</string>
+    <string name="hide_apps">Sembunyikan apl</string>
+    <string name="show_hidden_apps">Tunjukkan apl tersembunyi</string>
+    <string name="drawer_tab_main">Apl</string>
+    <string name="drawer_tab_default">Tab%1$d</string>
 </resources>

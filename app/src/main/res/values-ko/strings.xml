@@ -625,4 +625,8 @@
     <string name="drawer_tabs_summary">앱 서랍의 탭을 추가하고 이름을 바꾸고 정렬합니다</string>
     <string name="icon_text_size">아이콘 글자 크기 설정</string>
     <string name="search_apps_hint">앱 검색</string>
+    <string name="hide_apps">앱 숨기기</string>
+    <string name="show_hidden_apps">숨긴 앱 표시</string>
+    <string name="drawer_tab_main">앱</string>
+    <string name="drawer_tab_default">탭%1$d</string>
 </resources>

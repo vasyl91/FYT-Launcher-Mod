@@ -625,4 +625,8 @@
     <string name="drawer_tabs_summary">Legg til, gi nytt navn til og ordne appskuffens faner</string>
     <string name="icon_text_size">Angi størrelse på ikontekst</string>
     <string name="search_apps_hint">Søk i apper</string>
+    <string name="hide_apps">Skjul apper</string>
+    <string name="show_hidden_apps">Vis skjulte apper</string>
+    <string name="drawer_tab_main">Apper</string>
+    <string name="drawer_tab_default">Fane%1$d</string>
 </resources>

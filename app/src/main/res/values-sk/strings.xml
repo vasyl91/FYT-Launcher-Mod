@@ -625,4 +625,8 @@
     <string name="drawer_tabs_summary">Pridávajte, premenúvajte a usporadúvajte karty zásuvky aplikácií</string>
     <string name="icon_text_size">Nastaviť veľkosť textu ikon</string>
     <string name="search_apps_hint">Hľadať aplikácie</string>
+    <string name="hide_apps">Skryť aplikácie</string>
+    <string name="show_hidden_apps">Zobraziť skryté aplikácie</string>
+    <string name="drawer_tab_main">Aplikácie</string>
+    <string name="drawer_tab_default">Karta%1$d</string>
 </resources>

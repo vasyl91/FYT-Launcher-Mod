@@ -625,4 +625,8 @@
     <string name="drawer_tabs_summary">新增、重新命名及排列應用程式抽屜的分頁</string>
     <string name="icon_text_size">設定圖示文字大小</string>
     <string name="search_apps_hint">搜尋應用程式</string>
+    <string name="hide_apps">隱藏應用程式</string>
+    <string name="show_hidden_apps">顯示隱藏的應用程式</string>
+    <string name="drawer_tab_main">應用程式</string>
+    <string name="drawer_tab_default">分頁%1$d</string>
 </resources>

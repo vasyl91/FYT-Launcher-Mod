@@ -625,4 +625,8 @@
     <string name="drawer_tabs_summary">Voeg by, hernoem en rangskik die programlys se oortjies</string>
     <string name="icon_text_size">Stel ikoonteksgrootte</string>
     <string name="search_apps_hint">Soek programme</string>
+    <string name="hide_apps">Versteek programme</string>
+    <string name="show_hidden_apps">Wys versteekte programme</string>
+    <string name="drawer_tab_main">Programme</string>
+    <string name="drawer_tab_default">Oortjie%1$d</string>
 </resources>

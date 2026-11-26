@@ -625,4 +625,8 @@
     <string name="drawer_tabs_summary">Додајте, преименујте и сложите картице фиоке апликација</string>
     <string name="icon_text_size">Подеси величину текста икона</string>
     <string name="search_apps_hint">Претражи апликације</string>
+    <string name="hide_apps">Сакриј апликације</string>
+    <string name="show_hidden_apps">Прикажи скривене апликације</string>
+    <string name="drawer_tab_main">Апликације</string>
+    <string name="drawer_tab_default">Картица%1$d</string>
 </resources>

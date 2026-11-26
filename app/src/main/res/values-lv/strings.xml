@@ -625,4 +625,8 @@
     <string name="drawer_tabs_summary">Pievienojiet, pārdēvējiet un sakārtojiet lietotņu atvilktnes cilnes</string>
     <string name="icon_text_size">Iestatīt ikonu teksta izmēru</string>
     <string name="search_apps_hint">Meklēt lietotnes</string>
+    <string name="hide_apps">Paslēpt lietotnes</string>
+    <string name="show_hidden_apps">Rādīt paslēptās lietotnes</string>
+    <string name="drawer_tab_main">Lietotnes</string>
+    <string name="drawer_tab_default">Cilne%1$d</string>
 </resources>

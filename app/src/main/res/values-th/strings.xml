@@ -625,4 +625,8 @@
     <string name="drawer_tabs_summary">เพิ่ม เปลี่ยนชื่อ และจัดเรียงแท็บของลิ้นชักแอป</string>
     <string name="icon_text_size">ตั้งขนาดข้อความไอคอน</string>
     <string name="search_apps_hint">ค้นหาแอป</string>
+    <string name="hide_apps">ซ่อนแอป</string>
+    <string name="show_hidden_apps">แสดงแอปที่ซ่อน</string>
+    <string name="drawer_tab_main">แอป</string>
+    <string name="drawer_tab_default">แท็บ%1$d</string>
 </resources>
