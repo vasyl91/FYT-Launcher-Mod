@@ -567,4 +567,5 @@
     <string name="openweather_key_title">Kendi OpenWeather API anahtarınız (isteğe bağlı)</string>
     <string name="openweather_key_summary">Boş: yerleşik anahtar kullanılır. openweathermap.org\'dan alacağınız kendi ücretsiz anahtarınızla hava durumu ortak anahtara bağlı kalmaz.</string>
     <string name="openweather_key_invalid">Bu bir OpenWeather anahtarı değil (32 harf ve rakam).</string>
+    <string name="theme_accent_color">Genel tema rengini ayarla</string>
 </resources>

@@ -567,4 +567,5 @@
     <string name="openweather_key_title">내 OpenWeather API 키(선택 사항)</string>
     <string name="openweather_key_summary">비워 두면 내장 키를 사용합니다. openweathermap.org에서 받은 내 무료 키를 쓰면 날씨가 공유 키에 좌우되지 않습니다.</string>
     <string name="openweather_key_invalid">OpenWeather 키가 아닙니다(영문자와 숫자 32자).</string>
+    <string name="theme_accent_color">전체 테마 색상 설정</string>
 </resources>

@@ -567,4 +567,5 @@
     <string name="openweather_key_title">Chiave API OpenWeather personale (facoltativa)</string>
     <string name="openweather_key_summary">Vuoto: viene usata la chiave integrata. Con una chiave gratuita personale di openweathermap.org il meteo non dipende da quella condivisa.</string>
     <string name="openweather_key_invalid">Non è una chiave OpenWeather (32 lettere e cifre).</string>
+    <string name="theme_accent_color">Imposta il colore globale del tema</string>
 </resources>

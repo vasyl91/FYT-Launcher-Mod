@@ -203,6 +203,8 @@ class ColorPicker : DialogFragment(), OnSeekBarChangeListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // The picker's frames and buttons in the accent of the settings
+        com.android.launcher66.AccentPainter.paint(view)
 
         var textSize = 0
         var padding = 0

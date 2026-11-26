@@ -567,4 +567,5 @@
     <string name="openweather_key_title">自己的 OpenWeather API 密钥（可选）</string>
     <string name="openweather_key_summary">留空：使用内置密钥。使用您在 openweathermap.org 免费申请的密钥后，天气不再依赖共用密钥。</string>
     <string name="openweather_key_invalid">这不是 OpenWeather 密钥（32 位字母和数字）。</string>
+    <string name="theme_accent_color">设置全局主题颜色</string>
 </resources>

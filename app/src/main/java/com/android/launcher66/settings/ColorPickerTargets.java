@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceManager;
 
 import com.android.launcher66.BackgroundChoice;
+import com.android.launcher66.ThemeAccent;
 import com.android.launcher66.colorpicker.ColorPicker;
 
 /**
@@ -29,6 +30,8 @@ final class ColorPickerTargets {
     static final String TAG_STATS = "ColorPicker";
     /** "Widget text and button color" / "Horizontal bar text and button color". */
     static final String TAG_TINT = "TintPicker";
+    /** "Set global theme color": the accent of the settings (ThemeAccent). */
+    static final String TAG_ACCENT = "AccentPicker";
     /** A background's own colour, from the background selector. */
     static final String TAG_BACKGROUND = "BackgroundColorPicker";
 
@@ -52,6 +55,15 @@ final class ColorPickerTargets {
         picker.setDefaultCallback(() -> prefs.edit().remove(colorKey).apply());
     }
 
+    /**
+     * The accent of the settings: "Select" stores the opaque colour, "Default" forgets it (the blue comes back). Whatever
+     * shows the accent follows the stored colour through a preference listener, so that a picker brought back after a turn of
+     * the screen needs nothing more than this (SettingsFragmentSecond.bindAccentChange).
+     */
+    static void bindAccent(ColorPicker picker, SharedPreferences prefs) {
+        bindTint(picker, prefs, ThemeAccent.KEY);
+    }
+
     /** A background's own colour: the colour with its transparency, and the choice of an own colour. */
     static void bindBackground(ColorPicker picker, Context app, String colorKey, String choiceKey) {
         picker.storesUnder(colorKey, choiceKey);
@@ -73,6 +85,10 @@ final class ColorPickerTargets {
         ColorPicker tint = find(fragments, TAG_TINT);
         if (tint != null && tint.storeKey() != null) {
             bindTint(tint, prefs, tint.storeKey());
+        }
+        ColorPicker accent = find(fragments, TAG_ACCENT);
+        if (accent != null) {
+            bindAccent(accent, prefs);
         }
         ColorPicker background = find(fragments, TAG_BACKGROUND);
         if (background != null && background.storeKey() != null && background.storeExtra() != null) {

@@ -567,4 +567,5 @@
     <string name="openweather_key_title">Vlastný kľúč OpenWeather API (voliteľné)</string>
     <string name="openweather_key_summary">Prázdne: použije sa vstavaný kľúč. S vlastným bezplatným kľúčom z openweathermap.org počasie nezávisí od zdieľaného.</string>
     <string name="openweather_key_invalid">To nie je kľúč OpenWeather (32 písmen a číslic).</string>
+    <string name="theme_accent_color">Nastaviť globálnu farbu motívu</string>
 </resources>

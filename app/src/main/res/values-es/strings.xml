@@ -567,4 +567,5 @@
     <string name="openweather_key_title">Clave propia de la API de OpenWeather (opcional)</string>
     <string name="openweather_key_summary">Vacío: se usa la clave integrada. Con tu propia clave gratuita de openweathermap.org, el tiempo no depende de la compartida.</string>
     <string name="openweather_key_invalid">Eso no es una clave de OpenWeather (32 letras y cifras).</string>
+    <string name="theme_accent_color">Establecer el color global del tema</string>
 </resources>

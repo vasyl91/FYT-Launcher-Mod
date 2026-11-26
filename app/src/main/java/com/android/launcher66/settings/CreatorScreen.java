@@ -28,6 +28,7 @@ import com.android.launcher66.BarConstraints;
 import com.android.launcher66.CreatorBars;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.R;
+import com.android.launcher66.ThemeAccent;
 
 /**
  * The fragment of the layout creator, for every page of the home screen (see {@link DrawViewScreen} for what
@@ -172,7 +173,7 @@ public class CreatorScreen extends Fragment {
                         "#55FFFFFF", true);
                 break;
             case "date":
-                canvas.addRectangle("Date", key, "#ff4285f4", true);
+                canvas.addRectangle("Date", key, String.format("#%08x", ThemeAccent.color(context)), true);
                 break;
             case "music":
                 canvas.addRectangle("Music", key, "#FFBB86FC", true);

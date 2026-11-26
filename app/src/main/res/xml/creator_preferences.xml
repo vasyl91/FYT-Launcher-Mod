@@ -50,6 +50,11 @@
             android:key="workspace_textSize"
             android:title="@string/workspace_textSize_str"
             android:summary="28" />
+        <!-- Opens the colour picker (text mode, with "Default"): the colour of the settings' accent (ThemeAccent),
+             stored under theme_accent_color -->
+        <Preference
+            android:key="theme_accent_color"
+            android:title="@string/theme_accent_color" />
 
     </PreferenceCategory>
 

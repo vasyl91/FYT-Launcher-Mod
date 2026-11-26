@@ -567,4 +567,5 @@
     <string name="openweather_key_title">自分の OpenWeather API キー（任意）</string>
     <string name="openweather_key_summary">空欄の場合は内蔵キーを使います。openweathermap.org で取得した自分の無料キーを使えば、天気は共有キーに左右されません。</string>
     <string name="openweather_key_invalid">OpenWeather のキーではありません（英数字32文字）。</string>
+    <string name="theme_accent_color">テーマ全体の色を設定</string>
 </resources>

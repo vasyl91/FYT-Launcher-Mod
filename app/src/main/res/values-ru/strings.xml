@@ -567,4 +567,5 @@
     <string name="openweather_key_title">Свой ключ OpenWeather API (необязательно)</string>
     <string name="openweather_key_summary">Пусто: используется встроенный ключ. Со своим бесплатным ключом с openweathermap.org погода не зависит от общего.</string>
     <string name="openweather_key_invalid">Это не ключ OpenWeather (32 буквы и цифры).</string>
+    <string name="theme_accent_color">Задать общий цвет темы</string>
 </resources>

@@ -567,4 +567,5 @@
     <string name="openweather_key_title">Egen OpenWeather API-nøgle (valgfri)</string>
     <string name="openweather_key_summary">Tom: den indbyggede nøgle bruges. Med din egen gratis nøgle fra openweathermap.org afhænger vejret ikke af den delte.</string>
     <string name="openweather_key_invalid">Det er ikke en OpenWeather-nøgle (32 bogstaver og cifre).</string>
+    <string name="theme_accent_color">Angiv global temafarve</string>
 </resources>

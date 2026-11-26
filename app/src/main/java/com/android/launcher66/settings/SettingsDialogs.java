@@ -7,7 +7,9 @@ import android.widget.EditText;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 
+import com.android.launcher66.AccentPainter;
 import com.android.launcher66.R;
+import com.android.launcher66.ThemeAccent;
 
 /**
  * The look of the settings' dialogs.
@@ -31,7 +33,21 @@ public final class SettingsDialogs {
 
     /** A builder of a settings dialog; inflate its views with {@code builder.getContext()}. */
     public static AlertDialog.Builder builder(Context context) {
-        return new AlertDialog.Builder(context, THEME);
+        return new AccentBuilder(context);
+    }
+
+    /** The builder of a settings dialog: the dialog it makes is painted with the accent when it is shown (AccentPainter). */
+    private static final class AccentBuilder extends AlertDialog.Builder {
+        AccentBuilder(Context context) {
+            super(context, THEME);
+        }
+
+        @Override
+        public AlertDialog create() {
+            AlertDialog dialog = super.create();
+            AccentPainter.watch(dialog);
+            return dialog;
+        }
     }
 
     /** A field of a settings dialog: white text, grey hint, the settings' blue for its line. */
@@ -39,6 +55,6 @@ public final class SettingsDialogs {
         Context context = field.getContext();
         field.setTextColor(ContextCompat.getColor(context, R.color.white));
         field.setHintTextColor(ContextCompat.getColor(context, R.color.gray_medium));
-        field.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.colorAccent)));
+        field.setBackgroundTintList(ColorStateList.valueOf(ThemeAccent.color(context)));
     }
 }

@@ -567,4 +567,5 @@
     <string name="openweather_key_title">Własny klucz OpenWeather API (opcjonalnie)</string>
     <string name="openweather_key_summary">Puste: używany jest klucz wbudowany. Z własnym darmowym kluczem z openweathermap.org pogoda nie zależy od klucza wspólnego.</string>
     <string name="openweather_key_invalid">To nie jest klucz OpenWeather (32 litery i cyfry).</string>
+    <string name="theme_accent_color">Ustaw globalny kolor motywu</string>
 </resources>

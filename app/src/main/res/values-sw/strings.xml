@@ -567,4 +567,5 @@
     <string name="openweather_key_title">Ufunguo wako wa OpenWeather API (si lazima)</string>
     <string name="openweather_key_summary">Tupu: ufunguo uliojengewa ndani hutumika. Kwa ufunguo wako wa bure kutoka openweathermap.org, hali ya hewa haitegemei ule unaoshirikiwa.</string>
     <string name="openweather_key_invalid">Huo si ufunguo wa OpenWeather (herufi na tarakimu 32).</string>
+    <string name="theme_accent_color">Weka rangi ya jumla ya mandhari</string>
 </resources>

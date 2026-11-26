@@ -62,6 +62,7 @@ import com.android.launcher66.CustomElement;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.LauncherModel;
 import com.android.launcher66.R;
+import com.android.launcher66.ThemeAccent;
 import com.android.launcher66.ServiceIntentGate;
 import com.android.launcher66.WidgetBarPlan;
 import com.android.launcher66.WorkspaceScreenPlan;
@@ -327,6 +328,9 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // The accent of the settings (ThemeAccent) on every row as it is attached, and again when it is changed
+        com.android.launcher66.AccentPainter.attach(getListView());
+        bindAccentChange();
         // Back from a window this screen was left for: where it was (SettingsScrollMemory)
         SettingsScroll.restore(this, 2);
         // Created again for a turn of the screen: the dialog that was open is open again (SettingsDialogMemory),
@@ -451,6 +455,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         Preference widgetsBackground = findPreference(Keys.WIDGETS_BACKGROUND);
         Preference barBackground = findPreference(Keys.BAR_BACKGROUND);
         Preference widgetsTint = findPreference(Keys.WIDGETS_TINT);
+        Preference accentRow = findPreference(ThemeAccent.KEY);
         Preference barTint = findPreference(Keys.BAR_TINT);
         iconTextSizeRows = new IconTextSizeRows(this, sharedPrefs, helpers);
         iconTextSizeRows.bind();
@@ -636,6 +641,12 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (widgetsTint != null) {
             widgetsTint.setOnPreferenceClickListener(preference -> {
                 showTintPicker(Keys.WIDGETS_TINT_COLOR);
+                return true;
+            });
+        }
+        if (accentRow != null) {
+            accentRow.setOnPreferenceClickListener(preference -> {
+                showAccentPicker();
                 return true;
             });
         }
@@ -1178,6 +1189,31 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         picker.show(getParentFragmentManager(), ColorPickerTargets.TAG_TINT);
     }
 
+    /**
+     * "Set global theme color": the colour picker in its text mode. "Select" stores the colour, "Default" forgets it, a
+     * picker closed another way changes nothing. The settings are painted again at once (accentListener), the
+     * launcher's views when the settings are left (Helpers.setBarSettingsChanged).
+     */
+    private void showAccentPicker() {
+        ColorPicker picker = ColorPicker.newTextInstance(ThemeAccent.color(requireContext()), true);
+        tintPicker = new WeakReference<>(picker);
+        picker.enableAutoClose();
+        ColorPickerTargets.bindAccent(picker, sharedPrefs);
+        picker.show(getParentFragmentManager(), ColorPickerTargets.TAG_ACCENT);
+    }
+
+    /** The settings follow every change of the accent, or of the stock layout that turns it off. */
+    private final SharedPreferences.OnSharedPreferenceChangeListener accentListener = (prefs, key) -> {
+        if (ThemeAccent.KEY.equals(key) || Keys.USER_LAYOUT.equals(key)) {
+            com.android.launcher66.AccentPainter.repaint(getListView());
+            helpers.setBarSettingsChanged(true);
+        }
+    };
+
+    private void bindAccentChange() {
+        sharedPrefs.registerOnSharedPreferenceChangeListener(accentListener);
+    }
+
     private void checkAndShowWidgetsBackgroundSelector() {
         List<String> perms = getMissingReadWallpaperPermissions(requireContext());
         if (perms.isEmpty()) {
@@ -1288,6 +1324,9 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
     @Override
     public void onDestroyView() {
+        if (sharedPrefs != null) {
+            sharedPrefs.unregisterOnSharedPreferenceChangeListener(accentListener);
+        }
         // Gone for a turn of the screen: the dialog that is open comes back with the new screen
         DialogTurn.keep(this, 2, TURN_DIALOGS, this::turnDialog, this::turnArg);
         // An import goes on: for the new screen after a turn, else in the background (its result as a toast)

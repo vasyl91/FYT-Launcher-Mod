@@ -567,4 +567,5 @@
     <string name="openweather_key_title">Kunci API OpenWeather sendiri (opsional)</string>
     <string name="openweather_key_summary">Kosong: kunci bawaan dipakai. Dengan kunci gratis Anda sendiri dari openweathermap.org, cuaca tidak bergantung pada kunci bersama.</string>
     <string name="openweather_key_invalid">Itu bukan kunci OpenWeather (32 huruf dan angka).</string>
+    <string name="theme_accent_color">Setel warna tema global</string>
 </resources>

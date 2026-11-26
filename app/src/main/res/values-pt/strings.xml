@@ -567,4 +567,5 @@
     <string name="openweather_key_title">Chave própria da API OpenWeather (opcional)</string>
     <string name="openweather_key_summary">Vazio: a chave integrada é usada. Com sua própria chave gratuita do openweathermap.org, o clima não depende da chave compartilhada.</string>
     <string name="openweather_key_invalid">Isso não é uma chave do OpenWeather (32 letras e dígitos).</string>
+    <string name="theme_accent_color">Definir a cor global do tema</string>
 </resources>

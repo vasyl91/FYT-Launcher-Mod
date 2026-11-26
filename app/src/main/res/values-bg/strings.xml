@@ -567,4 +567,5 @@
     <string name="openweather_key_title">Собствен ключ за OpenWeather API (по избор)</string>
     <string name="openweather_key_summary">Празно: използва се вграденият ключ. Със собствен безплатен ключ от openweathermap.org времето не зависи от споделения.</string>
     <string name="openweather_key_invalid">Това не е ключ за OpenWeather (32 букви и цифри).</string>
+    <string name="theme_accent_color">Задаване на общ цвят на темата</string>
 </resources>

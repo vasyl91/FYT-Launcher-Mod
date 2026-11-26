@@ -567,4 +567,5 @@
     <string name="openweather_key_title">Lasten ključ OpenWeather API (izbirno)</string>
     <string name="openweather_key_summary">Prazno: uporabi se vgrajeni ključ. Z lastnim brezplačnim ključem z openweathermap.org vreme ni odvisno od skupnega.</string>
     <string name="openweather_key_invalid">To ni ključ OpenWeather (32 črk in števk).</string>
+    <string name="theme_accent_color">Nastavi globalno barvo teme</string>
 </resources>

@@ -567,4 +567,5 @@
     <string name="openweather_key_title">Sava OpenWeather API atslēga (neobligāti)</string>
     <string name="openweather_key_summary">Tukšs: tiek izmantota iebūvētā atslēga. Ar savu bezmaksas atslēgu no openweathermap.org laikapstākļi nav atkarīgi no kopīgās.</string>
     <string name="openweather_key_invalid">Tā nav OpenWeather atslēga (32 burti un cipari).</string>
+    <string name="theme_accent_color">Iestatīt globālo motīva krāsu</string>
 </resources>

@@ -233,6 +233,8 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        // The accent of the settings (ThemeAccent) on every row as it is attached
+        com.android.launcher66.AccentPainter.attach(getListView());
         // Back from a window this screen was left for: where it was (SettingsScrollMemory)
         SettingsScroll.restore(this, 1);
         // Created again for a turn of the screen: the dialog that was open is open again (SettingsDialogMemory),

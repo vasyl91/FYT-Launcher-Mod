@@ -567,4 +567,5 @@
     <string name="openweather_key_title">Սեփական OpenWeather API բանալի (ոչ պարտադիր)</string>
     <string name="openweather_key_summary">Դատարկ՝ օգտագործվում է ներկառուցված բանալին։ openweathermap.org-ի ձեր անվճար բանալիով եղանակը կախված չէ ընդհանուր բանալուց։</string>
     <string name="openweather_key_invalid">Սա OpenWeather բանալի չէ (32 տառ և թվանշան)։</string>
+    <string name="theme_accent_color">Սահմանել թեմայի ընդհանուր գույնը</string>
 </resources>

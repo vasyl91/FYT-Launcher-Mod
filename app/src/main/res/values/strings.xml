@@ -577,4 +577,7 @@
     <string name="openweather_key_title">Own OpenWeather API key (optional)</string>
     <string name="openweather_key_summary">Empty: the built-in key is used. With your own free key from openweathermap.org the weather does not depend on the shared one.</string>
     <string name="openweather_key_invalid">That is not an OpenWeather key (32 letters and digits).</string>
+    <!-- The tag of a view that AccentPainter colours with the accent whatever its colour is now -->
+    <string name="tag_accent" translatable="false">accent</string>
+    <string name="theme_accent_color">Set global theme color</string>
 </resources>

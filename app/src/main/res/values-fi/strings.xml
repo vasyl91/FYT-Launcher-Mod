@@ -567,4 +567,5 @@
     <string name="openweather_key_title">Oma OpenWeather API -avain (valinnainen)</string>
     <string name="openweather_key_summary">Tyhjä: käytetään sisäänrakennettua avainta. Omalla ilmaisella avaimella osoitteesta openweathermap.org sää ei riipu jaetusta avaimesta.</string>
     <string name="openweather_key_invalid">Tämä ei ole OpenWeather-avain (32 kirjainta ja numeroa).</string>
+    <string name="theme_accent_color">Aseta yleinen teemaväri</string>
 </resources>

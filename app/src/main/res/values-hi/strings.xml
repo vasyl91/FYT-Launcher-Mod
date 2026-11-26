@@ -567,4 +567,5 @@
     <string name="openweather_key_title">अपनी OpenWeather API कुंजी (वैकल्पिक)</string>
     <string name="openweather_key_summary">खाली: बिल्ट-इन कुंजी इस्तेमाल होती है। openweathermap.org की अपनी मुफ़्त कुंजी से मौसम साझा कुंजी पर निर्भर नहीं रहता।</string>
     <string name="openweather_key_invalid">यह OpenWeather कुंजी नहीं है (32 अक्षर और अंक)।</string>
+    <string name="theme_accent_color">वैश्विक थीम रंग सेट करें</string>
 </resources>

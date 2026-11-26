@@ -567,4 +567,5 @@
     <string name="openweather_key_title">សោ OpenWeather API ផ្ទាល់ខ្លួន (ជម្រើស)</string>
     <string name="openweather_key_summary">ទទេ៖ ប្រើសោដែលភ្ជាប់មកស្រាប់។ ជាមួយសោឥតគិតថ្លៃផ្ទាល់ខ្លួនពី openweathermap.org អាកាសធាតុមិនអាស្រ័យលើសោរួមទេ។</string>
     <string name="openweather_key_invalid">នេះមិនមែនជាសោ OpenWeather ទេ (អក្សរ និងលេខ 32 តួ)។</string>
+    <string name="theme_accent_color">កំណត់ពណ៌ស្បែកសកល</string>
 </resources>

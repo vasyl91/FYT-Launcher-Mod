@@ -567,4 +567,5 @@
     <string name="openweather_key_title">ຄີ OpenWeather API ຂອງຕົນເອງ (ບໍ່ບັງຄັບ)</string>
     <string name="openweather_key_summary">ຫວ່າງ: ໃຊ້ຄີທີ່ມີມາພ້ອມ. ດ້ວຍຄີຟຣີຂອງທ່ານເອງຈາກ openweathermap.org ສະພາບອາກາດຈະບໍ່ຂຶ້ນກັບຄີທີ່ໃຊ້ຮ່ວມກັນ.</string>
     <string name="openweather_key_invalid">ນີ້ບໍ່ແມ່ນຄີ OpenWeather (ຕົວອັກສອນ ແລະ ຕົວເລກ 32 ຕົວ).</string>
+    <string name="theme_accent_color">ຕັ້ງສີຊຸດຮູບແບບທົ່ວໄປ</string>
 </resources>

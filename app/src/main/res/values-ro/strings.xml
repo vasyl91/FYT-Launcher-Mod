@@ -567,4 +567,5 @@
     <string name="openweather_key_title">Cheie proprie OpenWeather API (opțional)</string>
     <string name="openweather_key_summary">Gol: se folosește cheia încorporată. Cu propria cheie gratuită de la openweathermap.org, vremea nu depinde de cea partajată.</string>
     <string name="openweather_key_invalid">Aceasta nu este o cheie OpenWeather (32 de litere și cifre).</string>
+    <string name="theme_accent_color">Setează culoarea globală a temei</string>
 </resources>

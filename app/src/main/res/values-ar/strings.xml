@@ -567,4 +567,5 @@
     <string name="openweather_key_title">مفتاح OpenWeather API خاص (اختياري)</string>
     <string name="openweather_key_summary">فارغ: يُستخدم المفتاح المدمج. بمفتاحك المجاني من openweathermap.org لا يعتمد الطقس على المفتاح المشترك.</string>
     <string name="openweather_key_invalid">هذا ليس مفتاح OpenWeather (32 حرفًا ورقمًا).</string>
+    <string name="theme_accent_color">تعيين لون السمة العام</string>
 </resources>

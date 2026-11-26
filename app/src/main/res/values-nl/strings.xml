@@ -567,4 +567,5 @@
     <string name="openweather_key_title">Eigen OpenWeather API-sleutel (optioneel)</string>
     <string name="openweather_key_summary">Leeg: de ingebouwde sleutel wordt gebruikt. Met je eigen gratis sleutel van openweathermap.org hangt het weer niet af van de gedeelde.</string>
     <string name="openweather_key_invalid">Dat is geen OpenWeather-sleutel (32 letters en cijfers).</string>
+    <string name="theme_accent_color">Globale themakleur instellen</string>
 </resources>

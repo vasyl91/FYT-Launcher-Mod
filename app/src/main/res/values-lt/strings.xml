@@ -567,4 +567,5 @@
     <string name="openweather_key_title">Nuosavas OpenWeather API raktas (neprivaloma)</string>
     <string name="openweather_key_summary">Tuščia: naudojamas integruotas raktas. Su savo nemokamu raktu iš openweathermap.org orai nepriklauso nuo bendro rakto.</string>
     <string name="openweather_key_invalid">Tai ne OpenWeather raktas (32 raidės ir skaitmenys).</string>
+    <string name="theme_accent_color">Nustatyti bendrą temos spalvą</string>
 </resources>

@@ -567,4 +567,5 @@
     <string name="openweather_key_title">Khóa OpenWeather API riêng (tùy chọn)</string>
     <string name="openweather_key_summary">Để trống: dùng khóa có sẵn. Với khóa miễn phí của riêng bạn từ openweathermap.org, thời tiết không phụ thuộc vào khóa dùng chung.</string>
     <string name="openweather_key_invalid">Đó không phải là khóa OpenWeather (32 chữ cái và chữ số).</string>
+    <string name="theme_accent_color">Đặt màu chủ đề chung</string>
 </resources>

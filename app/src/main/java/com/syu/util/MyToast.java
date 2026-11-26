@@ -17,6 +17,7 @@ public class MyToast {
     public MyToast(Context context) {
         this.textView = new TextView(context);
         this.textView.setBackground(ContextCompat.getDrawable(context, R.drawable.toast_bg));
+        com.android.launcher66.AccentPainter.paint(this.textView);
         this.textView.setMaxWidth(600);
         this.textView.setMaxHeight(360);
         this.textView.setGravity(17);
@@ -28,6 +29,7 @@ public class MyToast {
     public MyToast(Context context, CharSequence text, int duration, int textColor, int textSize) {
         this.textView = new TextView(context);
         this.textView.setBackground(ContextCompat.getDrawable(context, R.drawable.toast_bg));
+        com.android.launcher66.AccentPainter.paint(this.textView);
         this.textView.setMaxWidth(600);
         this.textView.setMaxHeight(360);
         this.textView.setGravity(17);
