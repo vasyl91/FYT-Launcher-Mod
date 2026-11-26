@@ -52,8 +52,32 @@ public class PositionSeekBarTest {
     private int stoppedTracking;
 
     @After
-    public void clean() {
+    public void clean() throws Exception {
         TouchOwner.reset();
+        setAppState(null, null);
+    }
+
+    /**
+     * A PagedView asks LauncherAppState for the preferences it listens to when it is made. The tests never make a real
+     * LauncherAppState (it opens the databases and registers receivers): this puts an empty one in place, and takes it
+     * away again after the test.
+     */
+    private static void installBareAppState(Context app) throws Exception {
+        Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
+        java.lang.reflect.Field theUnsafe = unsafeClass.getDeclaredField("theUnsafe");
+        theUnsafe.setAccessible(true);
+        Object bare = unsafeClass.getMethod("allocateInstance", Class.class)
+                .invoke(theUnsafe.get(null), LauncherAppState.class);
+        setAppState(bare, app);
+    }
+
+    private static void setAppState(Object instance, Context app) throws Exception {
+        java.lang.reflect.Field instanceField = LauncherAppState.class.getDeclaredField("INSTANCE");
+        instanceField.setAccessible(true);
+        instanceField.set(null, instance);
+        java.lang.reflect.Field contextField = LauncherAppState.class.getDeclaredField("sContext");
+        contextField.setAccessible(true);
+        contextField.set(null, app);
     }
 
     private PositionSeekBar slider(Parent parent) {
@@ -141,7 +165,8 @@ public class PositionSeekBarTest {
     }
 
     @Test
-    public void thePagerLeavesAnyTouchAloneWhileTheSliderHasIt() {
+    public void thePagerLeavesAnyTouchAloneWhileTheSliderHasIt() throws Exception {
+        installBareAppState(RuntimeEnvironment.getApplication());
         PagerForTest pager = new PagerForTest(RuntimeEnvironment.getApplication());
         pager.addView(new View(pager.getContext()), new ViewGroup.LayoutParams(W, H));
         pager.setScrolling();
