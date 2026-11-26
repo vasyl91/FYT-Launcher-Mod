@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">화면 끄기</string>
     <string name="double_tap_screen_off_hint">화면을 다시 두 번 탭하면 켜집니다</string>
     <string name="double_tap_needs_accessibility">두 번 탭하여 화면을 잠그려면 런처의 접근성 서비스를 켜세요.</string>
+    <string name="folders_background_preference">폴더 배경 선택</string>
+    <string name="folders_background_dialog_title">폴더 배경을 선택하세요:</string>
 </resources>

@@ -594,4 +594,6 @@
     <string name="double_tap_screen_off">Turn off screen</string>
     <string name="double_tap_screen_off_hint">Double-tap the screen again to turn it back on</string>
     <string name="double_tap_needs_accessibility">To lock the screen with a double tap, turn on the launcher\'s accessibility service.</string>
+    <string name="folders_background_preference">Choose background for folders</string>
+    <string name="folders_background_dialog_title">Select background for folders:</string>
 </resources>

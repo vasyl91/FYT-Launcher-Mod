@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">إيقاف تشغيل الشاشة</string>
     <string name="double_tap_screen_off_hint">انقر على الشاشة نقرًا مزدوجًا مرة أخرى لتشغيلها</string>
     <string name="double_tap_needs_accessibility">لقفل الشاشة بالنقر المزدوج، فعّل خدمة إمكانية الوصول الخاصة بالمشغّل.</string>
+    <string name="folders_background_preference">اختر خلفية للمجلدات</string>
+    <string name="folders_background_dialog_title">اختر خلفية للمجلدات:</string>
 </resources>

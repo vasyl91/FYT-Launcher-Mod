@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">ປິດໜ້າຈໍ</string>
     <string name="double_tap_screen_off_hint">ແຕະສອງຄັ້ງໃສ່ໜ້າຈໍອີກເທື່ອເພື່ອເປີດຄືນ</string>
     <string name="double_tap_needs_accessibility">ເພື່ອລັອກໜ້າຈໍດ້ວຍການແຕະສອງຄັ້ງ, ກະລຸນາເປີດບໍລິການການຊ່ວຍເຂົ້າເຖິງຂອງ launcher.</string>
+    <string name="folders_background_preference">ເລືອກພື້ນຫຼັງສຳລັບແຟ້ມ</string>
+    <string name="folders_background_dialog_title">ເລືອກພື້ນຫຼັງສຳລັບແຟ້ມ:</string>
 </resources>

@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Дэлгэцийг унтраах</string>
     <string name="double_tap_screen_off_hint">Дахин асаахын тулд дэлгэцийг дахин хоёр товшино уу</string>
     <string name="double_tap_needs_accessibility">Дэлгэцийг хоёр товшиж түгжихийн тулд лаунчерын хандалтын үйлчилгээг асаана уу.</string>
+    <string name="folders_background_preference">Хавтасны дэвсгэр сонгох</string>
+    <string name="folders_background_dialog_title">Хавтасны дэвсгэрийг сонгоно уу:</string>
 </resources>

@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">خاموش کردن صفحه</string>
     <string name="double_tap_screen_off_hint">برای روشن کردن دوباره صفحه، دوباره دو بار روی آن ضربه بزنید</string>
     <string name="double_tap_needs_accessibility">برای قفل کردن صفحه با ضربه دوبل، سرویس دسترسی‌پذیری لانچر را روشن کنید.</string>
+    <string name="folders_background_preference">پس‌زمینه پوشه‌ها را انتخاب کنید</string>
+    <string name="folders_background_dialog_title">پس‌زمینهٔ پوشه‌ها را انتخاب کنید:</string>
 </resources>

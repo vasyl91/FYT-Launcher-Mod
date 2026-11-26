@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Scherm uitschakelen</string>
     <string name="double_tap_screen_off_hint">Tik nogmaals twee keer op het scherm om het weer in te schakelen</string>
     <string name="double_tap_needs_accessibility">Schakel de toegankelijkheidsservice van de launcher in om het scherm te vergrendelen met dubbeltikken.</string>
+    <string name="folders_background_preference">Kies achtergrond voor mappen</string>
+    <string name="folders_background_dialog_title">Selecteer de achtergrond voor mappen:</string>
 </resources>

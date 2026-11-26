@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Вимкнути екран</string>
     <string name="double_tap_screen_off_hint">Торкніться екрана двічі ще раз, щоб увімкнути його</string>
     <string name="double_tap_needs_accessibility">Щоб блокувати екран подвійним дотиком, увімкніть службу спеціальних можливостей лаунчера.</string>
+    <string name="folders_background_preference">Виберіть тло для папок</string>
+    <string name="folders_background_dialog_title">Виберіть тло для папок:</string>
 </resources>

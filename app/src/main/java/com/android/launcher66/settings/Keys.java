@@ -204,6 +204,9 @@ public final class Keys {
     public static final String BAR_SELECTED_BACKGROUND = "bar_selected_background";
     public static final String VERTICAL_BAR_BACKGROUND = "choose_vertical_bar_background";
     public static final String VERTICAL_BAR_SELECTED_BACKGROUND = "vertical_bar_selected_background";
+    /** "Choose background for folders": the open folder's own background (BarBackground.folders). */
+    public static final String FOLDERS_BACKGROUND = "choose_folders_background";
+    public static final String FOLDERS_SELECTED_BACKGROUND = "folders_selected_background";
     /**
      * The user's own background colour of each component, with its transparency (an int, ARGB). Stored beside the
      * choice and never shared: BackgroundChoice.colorKey() gives exactly these names from the keys above.
@@ -211,6 +214,7 @@ public final class Keys {
     public static final String WIDGETS_CUSTOM_BACKGROUND_COLOR = "widgets_custom_background_color";
     public static final String BAR_CUSTOM_BACKGROUND_COLOR = "bar_custom_background_color";
     public static final String VERTICAL_BAR_CUSTOM_BACKGROUND_COLOR = "vertical_bar_custom_background_color";
+    public static final String FOLDERS_CUSTOM_BACKGROUND_COLOR = "folders_custom_background_color";
     /**
      * The old on/off settings of the text and button colour ("Black" / "White"). Read only once, at the start,
      * to become the colours below (LauncherApplication); nothing else may read them.

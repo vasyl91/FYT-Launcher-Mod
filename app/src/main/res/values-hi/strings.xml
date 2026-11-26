@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">स्क्रीन बंद करें</string>
     <string name="double_tap_screen_off_hint">स्क्रीन को फिर से चालू करने के लिए उस पर दोबारा डबल-टैप करें</string>
     <string name="double_tap_needs_accessibility">डबल टैप से स्क्रीन लॉक करने के लिए, लॉन्चर की सुलभता सेवा चालू करें।</string>
+    <string name="folders_background_preference">फ़ोल्डर के लिए पृष्ठभूमि चुनें</string>
+    <string name="folders_background_dialog_title">फ़ोल्डर के लिए पृष्ठभूमि चुनें:</string>
 </resources>

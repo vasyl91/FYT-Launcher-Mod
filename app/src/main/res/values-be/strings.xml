@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Выключыць экран</string>
     <string name="double_tap_screen_off_hint">Двойчы націсніце на экран яшчэ раз, каб уключыць яго</string>
     <string name="double_tap_needs_accessibility">Каб блакіраваць экран падвойным націскам, уключыце службу спецыяльных магчымасцей лаўнчара.</string>
+    <string name="folders_background_preference">Выберыце фон для папак</string>
+    <string name="folders_background_dialog_title">Выберыце фон для папак:</string>
 </resources>

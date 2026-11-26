@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Vypnúť obrazovku</string>
     <string name="double_tap_screen_off_hint">Opätovným dvojitým klepnutím na obrazovku ju znova zapnete</string>
     <string name="double_tap_needs_accessibility">Ak chcete zamykať obrazovku dvojitým klepnutím, zapnite službu dostupnosti launchera.</string>
+    <string name="folders_background_preference">Vyberte pozadie priečinkov</string>
+    <string name="folders_background_dialog_title">Vyberte pozadie priečinkov:</string>
 </resources>

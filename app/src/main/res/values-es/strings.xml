@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Apagar pantalla</string>
     <string name="double_tap_screen_off_hint">Toca dos veces la pantalla de nuevo para volver a encenderla</string>
     <string name="double_tap_needs_accessibility">Para bloquear la pantalla con un doble toque, activa el servicio de accesibilidad del launcher.</string>
+    <string name="folders_background_preference">Elegir fondo para carpetas</string>
+    <string name="folders_background_dialog_title">Selecciona el fondo de las carpetas:</string>
 </resources>

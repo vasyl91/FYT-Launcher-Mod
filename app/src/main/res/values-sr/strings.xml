@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Isključi ekran</string>
     <string name="double_tap_screen_off_hint">Ponovo dvaput dodirnite ekran da biste ga ponovo uključili</string>
     <string name="double_tap_needs_accessibility">Da biste zaključavali ekran dvostrukim dodirom, uključite uslugu pristupačnosti pokretača.</string>
+    <string name="folders_background_preference">Изаберите позадину за фасцикле</string>
+    <string name="folders_background_dialog_title">Изаберите позадину за фасцикле:</string>
 </resources>

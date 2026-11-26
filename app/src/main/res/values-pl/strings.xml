@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Wyłącz ekran</string>
     <string name="double_tap_screen_off_hint">Dotknij ekranu dwukrotnie jeszcze raz, aby go ponownie włączyć</string>
     <string name="double_tap_needs_accessibility">Aby blokować ekran dwukrotnym dotknięciem, włącz usługę dostępności launchera.</string>
+    <string name="folders_background_preference">Wybierz tło folderów</string>
+    <string name="folders_background_dialog_title">Wybierz tło dla folderów:</string>
 </resources>

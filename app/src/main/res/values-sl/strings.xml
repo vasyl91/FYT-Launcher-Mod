@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Izklopi zaslon</string>
     <string name="double_tap_screen_off_hint">Znova se dvakrat dotaknite zaslona, da ga spet vklopite</string>
     <string name="double_tap_needs_accessibility">Če želite zaslon zakleniti z dvojnim dotikom, vklopite storitev za dostopnost zaganjalnika.</string>
+    <string name="folders_background_preference">Izberite ozadje map</string>
+    <string name="folders_background_dialog_title">Izberite ozadje za mape:</string>
 </resources>

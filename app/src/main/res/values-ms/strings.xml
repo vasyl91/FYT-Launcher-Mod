@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Matikan skrin</string>
     <string name="double_tap_screen_off_hint">Ketik dua kali skrin sekali lagi untuk menghidupkannya semula</string>
     <string name="double_tap_needs_accessibility">Untuk mengunci skrin dengan ketik dua kali, hidupkan perkhidmatan kebolehcapaian pelancar.</string>
+    <string name="folders_background_preference">Pilih latar belakang folder</string>
+    <string name="folders_background_dialog_title">Pilih latar belakang untuk folder:</string>
 </resources>

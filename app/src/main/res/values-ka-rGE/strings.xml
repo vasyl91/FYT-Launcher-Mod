@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">ეკრანის გამორთვა</string>
     <string name="double_tap_screen_off_hint">ხელახლა ორჯერ შეეხეთ ეკრანს მის ჩასართავად</string>
     <string name="double_tap_needs_accessibility">ეკრანის ორმაგი შეხებით დასაბლოკად ჩართეთ ლაუნჩერის მისაწვდომობის სერვისი.</string>
+    <string name="folders_background_preference">აირჩიეთ საქაღალდეების ფონი</string>
+    <string name="folders_background_dialog_title">აირჩიეთ საქაღალდეების ფონი:</string>
 </resources>

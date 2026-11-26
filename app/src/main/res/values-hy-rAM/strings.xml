@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Անջատել էկրանը</string>
     <string name="double_tap_screen_off_hint">Նորից երկու անգամ հպեք էկրանին՝ այն կրկին միացնելու համար</string>
     <string name="double_tap_needs_accessibility">Էկրանը կրկնակի հպումով արգելափակելու համար միացրեք լաունչերի հասանելիության ծառայությունը։</string>
+    <string name="folders_background_preference">Ընտրեք թղթապանակների ֆոնը</string>
+    <string name="folders_background_dialog_title">Ընտրեք թղթապանակների ֆոնը՝</string>
 </resources>

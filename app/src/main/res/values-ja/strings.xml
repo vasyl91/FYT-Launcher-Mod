@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">画面をオフにする</string>
     <string name="double_tap_screen_off_hint">もう一度画面をダブルタップすると、画面がオンに戻ります</string>
     <string name="double_tap_needs_accessibility">ダブルタップで画面をロックするには、ランチャーのユーザー補助サービスをオンにしてください。</string>
+    <string name="folders_background_preference">フォルダの背景を選択</string>
+    <string name="folders_background_dialog_title">フォルダの背景を選んでください:</string>
 </resources>

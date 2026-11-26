@@ -36,7 +36,10 @@ public final class WidgetStyler {
                 || Keys.BAR_CUSTOM_BACKGROUND_COLOR.equals(key)
                 || Keys.VERTICAL_BAR_SELECTED_BACKGROUND.equals(key)
                 || Keys.VERTICAL_BAR_CUSTOM_BACKGROUND_COLOR.equals(key)
-                || Keys.WORKSPACE_TEXT_COLOR.equals(key) || Keys.USER_LAYOUT.equals(key);
+                || Keys.WORKSPACE_TEXT_COLOR.equals(key)
+                || Keys.FOLDERS_SELECTED_BACKGROUND.equals(key)
+                || Keys.FOLDERS_CUSTOM_BACKGROUND_COLOR.equals(key)
+                || Keys.USER_LAYOUT.equals(key);
     }
 
     /** "Widget text and button color": the chosen colour, or ViewTint.NONE while none was chosen. */

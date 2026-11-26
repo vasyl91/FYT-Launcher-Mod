@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Apaga la pantalla</string>
     <string name="double_tap_screen_off_hint">Toca dues vegades la pantalla un altre cop per tornar-la a encendre</string>
     <string name="double_tap_needs_accessibility">Per bloquejar la pantalla amb un doble toc, activa el servei d\'accessibilitat de l\'iniciador.</string>
+    <string name="folders_background_preference">Tria el fons de les carpetes</string>
+    <string name="folders_background_dialog_title">Tria el fons de les carpetes:</string>
 </resources>

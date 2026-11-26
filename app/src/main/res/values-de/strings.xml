@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Bildschirm ausschalten</string>
     <string name="double_tap_screen_off_hint">Tippen Sie erneut doppelt auf den Bildschirm, um ihn wieder einzuschalten</string>
     <string name="double_tap_needs_accessibility">Aktivieren Sie den Bedienungshilfendienst des Launchers, um den Bildschirm mit doppeltem Tippen zu sperren.</string>
+    <string name="folders_background_preference">Hintergrund für Ordner wählen</string>
+    <string name="folders_background_dialog_title">Hintergrund für Ordner auswählen:</string>
 </resources>

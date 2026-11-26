@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Izslēgt ekrānu</string>
     <string name="double_tap_screen_off_hint">Vēlreiz divreiz pieskarieties ekrānam, lai to atkal ieslēgtu</string>
     <string name="double_tap_needs_accessibility">Lai bloķētu ekrānu ar dubulto pieskārienu, ieslēdziet palaidēja pieejamības pakalpojumu.</string>
+    <string name="folders_background_preference">Izvēlieties mapju fonu</string>
+    <string name="folders_background_dialog_title">Izvēlieties mapju fonu:</string>
 </resources>

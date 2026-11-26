@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">បិទអេក្រង់</string>
     <string name="double_tap_screen_off_hint">ប៉ះអេក្រង់ពីរដងម្ដងទៀតដើម្បីបើកវាឡើងវិញ</string>
     <string name="double_tap_needs_accessibility">ដើម្បីចាក់សោអេក្រង់ដោយប៉ះពីរដង សូមបើកសេវាកម្មភាពងាយស្រួលរបស់ឡុនឆឺ។</string>
+    <string name="folders_background_preference">ជ្រើសរើសផ្ទៃខាងក្រោយសម្រាប់ថត</string>
+    <string name="folders_background_dialog_title">ជ្រើសរើសផ្ទៃខាងក្រោយសម្រាប់ថត៖</string>
 </resources>

@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Zima skrini</string>
     <string name="double_tap_screen_off_hint">Gusa skrini mara mbili tena ili kuiwasha upya</string>
     <string name="double_tap_needs_accessibility">Ili kufunga skrini kwa kugusa mara mbili, washa huduma ya ufikivu ya kizindua.</string>
+    <string name="folders_background_preference">Chagua mandharinyuma ya folda</string>
+    <string name="folders_background_dialog_title">Chagua mandharinyuma ya folda:</string>
 </resources>

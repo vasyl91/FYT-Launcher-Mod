@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">I-off ang screen</string>
     <string name="double_tap_screen_off_hint">I-double-tap muli ang screen para i-on ito ulit</string>
     <string name="double_tap_needs_accessibility">Para i-lock ang screen gamit ang double tap, i-on ang accessibility service ng launcher.</string>
+    <string name="folders_background_preference">Pumili ng background para sa mga folder</string>
+    <string name="folders_background_dialog_title">Pumili ng background para sa mga folder:</string>
 </resources>

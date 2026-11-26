@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">关闭屏幕</string>
     <string name="double_tap_screen_off_hint">再次双击屏幕即可重新开启</string>
     <string name="double_tap_needs_accessibility">要通过双击锁定屏幕，请开启启动器的无障碍服务。</string>
+    <string name="folders_background_preference">选择文件夹背景</string>
+    <string name="folders_background_dialog_title">选择文件夹的背景：</string>
 </resources>

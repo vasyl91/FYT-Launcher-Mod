@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Desligar tela</string>
     <string name="double_tap_screen_off_hint">Toque duas vezes na tela novamente para ligá-la de novo</string>
     <string name="double_tap_needs_accessibility">Para bloquear a tela com um toque duplo, ative o serviço de acessibilidade do launcher.</string>
+    <string name="folders_background_preference">Escolher fundo das pastas</string>
+    <string name="folders_background_dialog_title">Selecione o fundo das pastas:</string>
 </resources>

@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Выключить экран</string>
     <string name="double_tap_screen_off_hint">Коснитесь экрана дважды ещё раз, чтобы включить его</string>
     <string name="double_tap_needs_accessibility">Чтобы блокировать экран двойным касанием, включите службу специальных возможностей лаунчера.</string>
+    <string name="folders_background_preference">Выберите фон для папок</string>
+    <string name="folders_background_dialog_title">Выберите фон для папок:</string>
 </resources>

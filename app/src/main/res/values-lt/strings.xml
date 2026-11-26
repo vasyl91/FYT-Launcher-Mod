@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Išjungti ekraną</string>
     <string name="double_tap_screen_off_hint">Dar kartą du kartus palieskite ekraną, kad jį vėl įjungtumėte</string>
     <string name="double_tap_needs_accessibility">Kad užrakintumėte ekraną dvigubu palietimu, įjunkite paleidimo priemonės pritaikymo neįgaliesiems paslaugą.</string>
+    <string name="folders_background_preference">Pasirinkite aplankų foną</string>
+    <string name="folders_background_dialog_title">Pasirinkite aplankų foną:</string>
 </resources>

@@ -85,6 +85,11 @@
             android:entries="@array/double_tap_entries"
             android:entryValues="@array/double_tap_values"
             app:layout="@layout/nested_preference_category_no_switch" />
+        <!-- The background selector, as for the widgets: the picture of the folder, the pictures of the widgets and the
+             user's own colour; stored under folders_selected_background (BarBackground.folders) -->
+        <Preference
+            android:key="choose_folders_background"
+            android:title="@string/folders_background_preference" />
 
     </PreferenceCategory>
 

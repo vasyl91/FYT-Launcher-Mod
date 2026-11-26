@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Изключване на екрана</string>
     <string name="double_tap_screen_off_hint">Докоснете екрана два пъти отново, за да го включите</string>
     <string name="double_tap_needs_accessibility">За да заключвате екрана с двукратно докосване, включете услугата за достъпност на лаунчъра.</string>
+    <string name="folders_background_preference">Изберете фон за папките</string>
+    <string name="folders_background_dialog_title">Изберете фон за папките:</string>
 </resources>

@@ -29,7 +29,7 @@ public final class CreatorKeys {
             "stats_selected_background",
             "widgets_custom_background_color", "bar_custom_background_color",
             "vertical_bar_custom_background_color", "stats_custom_background_color",
-            "widgets_tint_color", "bar_tint_color",
+            "widgets_tint_color", "bar_tint_color", "folders_selected_background", "folders_custom_background_color",
             // the horizontal bar's height and the vertical bar's width, the icons on the bars, the order of the
             // horizontal bar's elements: each stored per orientation
             "bottom_bar_height_port", "bottom_bar_height_land",
@@ -44,7 +44,7 @@ public final class CreatorKeys {
             "workspace_grid_rows_title", "workspace_grid_rows", "workspace_grid_rows_note",
             "workspace_grid_columns_title", "workspace_grid_columns", "workspace_grid_columns_note",
             "transparent_statusbar", "start_page", "all_apps_textSize", "workspace_textSize", "workspace_text_color", "theme_accent_color",
-            "swipe_up_app_drawer", "swipe_down_notifications", "double_tap_action",
+            "swipe_up_app_drawer", "swipe_down_notifications", "double_tap_action", "choose_folders_background",
             "display_pip",
             "restart_pip", "fab_overlay_button", "fab_overlay_button_left", "fab_overlay_button_right",
             "extended_divider", "cover_splash_mode", "swipe_detector", "user_date", "user_music", "user_radio",

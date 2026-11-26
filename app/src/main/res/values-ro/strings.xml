@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Oprește ecranul</string>
     <string name="double_tap_screen_off_hint">Atingeți din nou de două ori ecranul pentru a-l porni la loc</string>
     <string name="double_tap_needs_accessibility">Pentru a bloca ecranul cu o atingere dublă, activați serviciul de accesibilitate al launcherului.</string>
+    <string name="folders_background_preference">Alegeți fundalul pentru dosare</string>
+    <string name="folders_background_dialog_title">Selectați fundalul pentru dosare:</string>
 </resources>

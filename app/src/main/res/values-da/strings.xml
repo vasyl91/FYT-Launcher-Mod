@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Sluk skærm</string>
     <string name="double_tap_screen_off_hint">Tryk to gange på skærmen igen for at tænde den igen</string>
     <string name="double_tap_needs_accessibility">Slå launcherens hjælpefunktion til for at låse skærmen med et dobbelttryk.</string>
+    <string name="folders_background_preference">Vælg baggrund til mapper</string>
+    <string name="folders_background_dialog_title">Vælg baggrund til mapper:</string>
 </resources>

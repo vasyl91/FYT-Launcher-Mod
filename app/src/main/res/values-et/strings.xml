@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Lülita ekraan välja</string>
     <string name="double_tap_screen_off_hint">Puudutage ekraani uuesti kaks korda, et see tagasi sisse lülitada</string>
     <string name="double_tap_needs_accessibility">Ekraani topeltpuudutusega lukustamiseks lülitage sisse käivitaja juurdepääsetavusteenus.</string>
+    <string name="folders_background_preference">Vali kaustade taust</string>
+    <string name="folders_background_dialog_title">Valige kaustade taust:</string>
 </resources>

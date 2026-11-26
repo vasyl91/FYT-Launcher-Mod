@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Ekranı kapat</string>
     <string name="double_tap_screen_off_hint">Ekranı yeniden açmak için üzerine tekrar çift dokunun</string>
     <string name="double_tap_needs_accessibility">Ekranı çift dokunuşla kilitlemek için başlatıcının erişilebilirlik hizmetini açın.</string>
+    <string name="folders_background_preference">Klasörler için arka plan seçin</string>
+    <string name="folders_background_dialog_title">Klasörler için arka planı seçin:</string>
 </resources>

@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Sammuta näyttö</string>
     <string name="double_tap_screen_off_hint">Napauta näyttöä kahdesti uudelleen kytkeäksesi sen takaisin päälle</string>
     <string name="double_tap_needs_accessibility">Jos haluat lukita näytön kaksoisnapautuksella, ota käyttöön käynnistysnäkymän esteettömyyspalvelu.</string>
+    <string name="folders_background_preference">Valitse kansioiden tausta</string>
+    <string name="folders_background_dialog_title">Valitse kansioiden tausta:</string>
 </resources>

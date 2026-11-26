@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Stäng av skärmen</string>
     <string name="double_tap_screen_off_hint">Tryck två gånger på skärmen igen för att slå på den igen</string>
     <string name="double_tap_needs_accessibility">Aktivera startskärmens tillgänglighetstjänst för att låsa skärmen med dubbeltryck.</string>
+    <string name="folders_background_preference">Välj bakgrund för mappar</string>
+    <string name="folders_background_dialog_title">Välj bakgrund för mappar:</string>
 </resources>

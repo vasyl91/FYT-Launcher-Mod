@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Képernyő kikapcsolása</string>
     <string name="double_tap_screen_off_hint">Koppintson duplán újra a képernyőre a visszakapcsoláshoz</string>
     <string name="double_tap_needs_accessibility">A képernyő dupla koppintással történő zárolásához kapcsolja be a kezdőképernyő-kezelő kisegítő szolgáltatását.</string>
+    <string name="folders_background_preference">Mappák hátterének kiválasztása</string>
+    <string name="folders_background_dialog_title">Válassza ki a mappák hátterét:</string>
 </resources>

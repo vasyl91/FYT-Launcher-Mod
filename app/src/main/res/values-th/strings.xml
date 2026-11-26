@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">ปิดหน้าจอ</string>
     <string name="double_tap_screen_off_hint">แตะหน้าจอสองครั้งอีกครั้งเพื่อเปิดหน้าจออีกครั้ง</string>
     <string name="double_tap_needs_accessibility">หากต้องการล็อกหน้าจอด้วยการแตะสองครั้ง ให้เปิดบริการการเข้าถึงของแลนเชอร์</string>
+    <string name="folders_background_preference">เลือกพื้นหลังของโฟลเดอร์</string>
+    <string name="folders_background_dialog_title">เลือกพื้นหลังของโฟลเดอร์:</string>
 </resources>

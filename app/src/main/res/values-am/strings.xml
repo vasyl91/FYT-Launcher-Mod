@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">ማያ ገጽን አጥፋ</string>
     <string name="double_tap_screen_off_hint">መልሶ ለማብራት ማያ ገጹን እንደገና ሁለቴ መታ ያድርጉ</string>
     <string name="double_tap_needs_accessibility">ማያ ገጹን በሁለቴ መታ ለመቆለፍ የማስጀመሪያውን የተደራሽነት አገልግሎት ያብሩ።</string>
+    <string name="folders_background_preference">ለአቃፊዎች ዳራ ይምረጡ</string>
+    <string name="folders_background_dialog_title">ለአቃፊዎች ዳራ ይምረጡ፦</string>
 </resources>

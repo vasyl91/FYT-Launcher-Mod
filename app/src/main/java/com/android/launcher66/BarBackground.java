@@ -26,6 +26,8 @@ public final class BarBackground {
     public static final String HORIZONTAL_DEFAULT = "app_list_bg";
     public static final String VERTICAL_DEFAULT = "hotseat_bg";
     public static final String WIDGETS_DEFAULT = "bg_custom";
+    /** The picture an open folder has when nothing was chosen (res/layout/user_folder.xml). */
+    public static final String FOLDERS_DEFAULT = "portal_container_holo";
 
     private BarBackground() {
     }
@@ -87,6 +89,21 @@ public final class BarBackground {
     public static Drawable widgets(Context context, SharedPreferences prefs) {
         return drawable(context, choice(prefs, Keys.WIDGETS_SELECTED_BACKGROUND, WIDGETS_DEFAULT),
                 R.drawable.bg_custom, RoundedColorDrawable.WIDGET_CORNERS);
+    }
+
+    /** The background of an open folder: the chosen one, or the picture the folder's layout has. */
+    public static Drawable folders(Context context, SharedPreferences prefs) {
+        return drawable(context, choice(prefs, Keys.FOLDERS_SELECTED_BACKGROUND, FOLDERS_DEFAULT),
+                R.drawable.portal_container_holo, RoundedColorDrawable.WIDGET_CORNERS);
+    }
+
+    /**
+     * Whether the folders have a background of their own (not the picture the layout gives): their text then follows
+     * "Set icon text color" and not the dark grey made for the light default.
+     */
+    public static boolean foldersOwn(SharedPreferences prefs) {
+        BackgroundChoice choice = choice(prefs, Keys.FOLDERS_SELECTED_BACKGROUND, FOLDERS_DEFAULT);
+        return choice.kind != BackgroundChoice.Kind.PICTURE || !FOLDERS_DEFAULT.equals(choice.picture);
     }
 
     /**

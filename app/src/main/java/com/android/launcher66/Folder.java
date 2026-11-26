@@ -6,6 +6,7 @@ import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.PointF;
@@ -36,6 +37,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
 import androidx.core.widget.AutoScrollHelper;
 
 import com.android.launcher66.FolderInfo.FolderListener;
@@ -189,6 +191,37 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         mFolderName.setInputType(mFolderName.getInputType() |
                 InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
         mAutoScrollHelper = new FolderAutoScrollHelper(mScrollView);
+        applyOwnBackground();
+    }
+
+    /**
+     * The folder's background: the picture of the layout, or the one chosen in "Choose background for folders"
+     * (BarBackground.folders; a creator setting, so the stock layout has the picture). With a background of its own
+     * the names and the labels take the colour of "Set icon text color", as the dark grey made for the light picture
+     * would not be read on it. Asked when the folder is made and each time it opens, so a change shows at once.
+     */
+    private void applyOwnBackground() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        setBackground(BarBackground.folders(getContext(), prefs));
+        int text = itemTextColor();
+        if (mFolderName != null) {
+            mFolderName.setTextColor(text);
+        }
+        if (mContent != null) {
+            for (int i = 0; i < mContent.getShortcutsAndWidgets().getChildCount(); i++) {
+                View child = mContent.getShortcutsAndWidgets().getChildAt(i);
+                if (child instanceof BubbleTextView) {
+                    ((BubbleTextView) child).setTextColor(text);
+                }
+            }
+        }
+    }
+
+    /** The colour of the labels in the folder: the dark grey of the light default background, or the icon text colour. */
+    private int itemTextColor() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        return BarBackground.foldersOwn(prefs) ? IconTextColor.workspace(prefs, getContext())
+                : ContextCompat.getColor(getContext(), R.color.folder_items_text_color);
     }
 
     /**
@@ -477,6 +510,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
     }
 
     public void animateOpen() {
+        applyOwnBackground();
         positionAndSizeAsIcon();
 
         if (!(getParent() instanceof DragLayer)) return;
@@ -585,7 +619,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
                 Utilities.createIconDrawable(item.getIcon(mIconCache)), null, null);
         textView.setText(item.title);
         textView.setTag(item);
-        textView.setTextColor(ContextCompat.getColor(getContext(), R.color.folder_items_text_color));
+        textView.setTextColor(itemTextColor());
         textView.setShadowsEnabled(false);
 
         textView.setOnClickListener(this);

@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Vala isikrini</string>
     <string name="double_tap_screen_off_hint">Thinta isikrini kabili futhi ukuze usivule kabusha</string>
     <string name="double_tap_needs_accessibility">Ukuze ukhiye isikrini ngokuthinta kabili, vula isevisi yokufinyeleleka ye-launcher.</string>
+    <string name="folders_background_preference">Khetha ingemuva yamafolda</string>
+    <string name="folders_background_dialog_title">Khetha ingemuva yamafolda:</string>
 </resources>

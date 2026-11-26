@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Skakel skerm af</string>
     <string name="double_tap_screen_off_hint">Dubbeltik weer op die skerm om dit weer aan te skakel</string>
     <string name="double_tap_needs_accessibility">Skakel die lanseerder se toeganklikheidsdiens aan om die skerm met \'n dubbeltik te sluit.</string>
+    <string name="folders_background_preference">Kies agtergrond vir vouers</string>
+    <string name="folders_background_dialog_title">Kies agtergrond vir vouers:</string>
 </resources>

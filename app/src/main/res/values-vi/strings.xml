@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Tắt màn hình</string>
     <string name="double_tap_screen_off_hint">Chạm đúp vào màn hình lần nữa để bật lại</string>
     <string name="double_tap_needs_accessibility">Để khóa màn hình bằng cách chạm đúp, hãy bật dịch vụ hỗ trợ tiếp cận của trình khởi chạy.</string>
+    <string name="folders_background_preference">Chọn nền cho thư mục</string>
+    <string name="folders_background_dialog_title">Chọn nền cho thư mục:</string>
 </resources>

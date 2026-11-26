@@ -91,6 +91,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
     private enum PendingDialog {
         NONE,
         WIDGETS,
+        FOLDERS,
         BAR,
         VERTICAL_BAR
     }
@@ -454,6 +455,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
 
         Preference widgetsBackground = findPreference(Keys.WIDGETS_BACKGROUND);
         Preference barBackground = findPreference(Keys.BAR_BACKGROUND);
+        Preference foldersBackground = findPreference(Keys.FOLDERS_BACKGROUND);
         Preference widgetsTint = findPreference(Keys.WIDGETS_TINT);
         Preference accentRow = findPreference(ThemeAccent.KEY);
         Preference iconTextRow = findPreference(Keys.WORKSPACE_TEXT_COLOR);
@@ -642,6 +644,12 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (widgetsBackground != null) {
             widgetsBackground.setOnPreferenceClickListener(preference -> {
                 checkAndShowWidgetsBackgroundSelector();
+                return true;
+            });
+        }
+        if (foldersBackground != null) {
+            foldersBackground.setOnPreferenceClickListener(preference -> {
+                checkAndShowFoldersBackgroundSelector();
                 return true;
             });
         }
@@ -1278,6 +1286,17 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         }
     }
 
+    private void checkAndShowFoldersBackgroundSelector() {
+        List<String> perms = getMissingReadWallpaperPermissions(requireContext());
+        if (perms.isEmpty()) {
+            BackgroundSelectorDialog.showWithLoadedBackground(getParentFragmentManager(), requireContext(), "folders", "bg_custom");
+            pendingDialog = PendingDialog.NONE;
+        } else {
+            pendingDialog = PendingDialog.FOLDERS;
+            requestPermissions(perms.toArray(new String[0]), REQ_READ_WALLPAPER);
+        }
+    }
+
     private void checkAndShowBarBackgroundSelector() {
         List<String> perms = getMissingReadWallpaperPermissions(requireContext());
         if (perms.isEmpty()) {
@@ -1338,6 +1357,9 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         switch (pendingDialog) {
             case WIDGETS:
                 BackgroundSelectorDialog.showWithLoadedBackground(getParentFragmentManager(), requireContext(), "widgets", "bg_custom");
+                break;
+            case FOLDERS:
+                BackgroundSelectorDialog.showWithLoadedBackground(getParentFragmentManager(), requireContext(), "folders", "bg_custom");
                 break;
             case BAR:
                 BackgroundSelectorDialog.showWithLoadedBackground(getParentFragmentManager(), requireContext(), "bar", "app_list_bg");

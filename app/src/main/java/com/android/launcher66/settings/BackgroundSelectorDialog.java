@@ -117,13 +117,17 @@ public class BackgroundSelectorDialog extends DialogFragment {
         });
     }
 
-    /** The selector for one of the settings' backgrounds ("widgets", "stats", "bar", "vertical_bar"). */
+    /** The selector for one of the settings' backgrounds ("widgets", "folders", "stats", "bar", "vertical_bar"). */
     static BackgroundSelectorDialog create(@NonNull String tag, @NonNull String bgs) {
         final String choiceKey;
         final String choiceDefault;
         if (tag.equals("widgets")) {
             choiceKey = Keys.WIDGETS_SELECTED_BACKGROUND;
             choiceDefault = null;
+        } else if (tag.equals("folders")) {
+            // the open folder's background: the pictures of the widgets, the user's colour, and the one the folder has
+            choiceKey = Keys.FOLDERS_SELECTED_BACKGROUND;
+            choiceDefault = BarBackground.FOLDERS_DEFAULT;
         } else if (tag.equals("stats")) {
             // the statistics window: the widgets' pictures, and a tile for no background (what it starts from)
             choiceKey = Keys.STATS_SELECTED_BACKGROUND;

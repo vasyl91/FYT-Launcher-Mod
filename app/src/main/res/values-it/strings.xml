@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Spegni schermo</string>
     <string name="double_tap_screen_off_hint">Tocca di nuovo due volte lo schermo per riaccenderlo</string>
     <string name="double_tap_needs_accessibility">Per bloccare lo schermo con un doppio tocco, attiva il servizio di accessibilità del launcher.</string>
+    <string name="folders_background_preference">Scegli lo sfondo per le cartelle</string>
+    <string name="folders_background_dialog_title">Seleziona lo sfondo per le cartelle:</string>
 </resources>

@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Éteindre l\'écran</string>
     <string name="double_tap_screen_off_hint">Appuyez de nouveau deux fois sur l\'écran pour le rallumer</string>
     <string name="double_tap_needs_accessibility">Pour verrouiller l\'écran par un double appui, activez le service d\'accessibilité du lanceur.</string>
+    <string name="folders_background_preference">Choisir l\'arrière-plan des dossiers</string>
+    <string name="folders_background_dialog_title">Sélectionnez l\'arrière-plan des dossiers :</string>
 </resources>

@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Matikan layar</string>
     <string name="double_tap_screen_off_hint">Ketuk dua kali layar lagi untuk menyalakannya kembali</string>
     <string name="double_tap_needs_accessibility">Untuk mengunci layar dengan ketuk dua kali, aktifkan layanan aksesibilitas launcher.</string>
+    <string name="folders_background_preference">Pilih latar belakang folder</string>
+    <string name="folders_background_dialog_title">Pilih latar belakang untuk folder:</string>
 </resources>

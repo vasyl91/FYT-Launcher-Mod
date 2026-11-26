@@ -582,4 +582,6 @@
     <string name="double_tap_screen_off">Stizzar la visur</string>
     <string name="double_tap_screen_off_hint">Tutga puspè duas giadas la visur per l\'envidar danovamain</string>
     <string name="double_tap_needs_accessibility">Per bloccar la visur cun in dubel clic, activescha il servetsch d\'accessibilitad dal launcher.</string>
+    <string name="folders_background_preference">Tscherner il fund da las cartellas</string>
+    <string name="folders_background_dialog_title">Tscherner il fund per las cartellas:</string>
 </resources>
