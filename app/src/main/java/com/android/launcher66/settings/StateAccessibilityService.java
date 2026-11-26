@@ -23,8 +23,12 @@ public class StateAccessibilityService extends AccessibilityService {
         return sInstance != null;
     }
 
-    /** Does a global action ({@code GLOBAL_ACTION_*}) through the running service; false when it is off or refuses. */
-    public static boolean performGlobalAction(int action) {
+    /**
+     * Does a global action ({@code GLOBAL_ACTION_*}) through the running service; false when it is off or refuses.
+     * Not called {@code performGlobalAction}: a static method cannot have the name and the parameters of the framework's
+     * instance method of {@code AccessibilityService}, which the compiler refuses as an override.
+     */
+    public static boolean perform(int action) {
         StateAccessibilityService service = sInstance;
         return service != null && service.performGlobalActionNow(action);
     }

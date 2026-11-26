@@ -39,7 +39,7 @@ final class StatusBarPanel {
         } catch (Throwable t) {
             Log.w(TAG, "StatusBarManager did not open the shade: " + t);
         }
-        if (StateAccessibilityService.performGlobalAction(
+        if (StateAccessibilityService.perform(
                 android.accessibilityservice.AccessibilityService.GLOBAL_ACTION_NOTIFICATIONS)) {
             Log.i(TAG, "Home swipe down: the shade opened through the accessibility service");
             return true;
