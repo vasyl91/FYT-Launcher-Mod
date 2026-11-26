@@ -89,6 +89,8 @@ public class CanbusService extends Service implements PropertyChangeListener {
     private DeviceLocation.Handle locationUpdates;
     private AccessibilityManager.AccessibilityStateChangeListener accessibilityListener;
     private SharedPreferences prefs;
+    /** The window's class of the last such broadcast, when the accessibility service sent it (for the log only). */
+    private String mLastReportedClass;
     /** The last package of a Keys.ACCESIBILITY_SERVICE broadcast; see getCurrentActivityName(). */
     private String mLastReportedPackage;
     private Helpers helpers = new Helpers();
@@ -649,6 +651,7 @@ public class CanbusService extends Service implements PropertyChangeListener {
                                 break;
                             }
                             mLastReportedPackage = packageName;
+                            mLastReportedClass = intent.getStringExtra("class_name");
                             if (packageName.equals("com.android.launcher3")) {
                                 helpers.setInRecent(true);
                                 helpers.setInAllApps(false);
@@ -681,6 +684,11 @@ public class CanbusService extends Service implements PropertyChangeListener {
             if (packageName.contains(":")) {
                 packageName = packageName.substring(0, packageName.indexOf(":"));
             }
+            if (apps.contains(packageName)) {
+                // The first app of the list reported in front since the process started: what was in front
+                // before a restart was not known, and an app's window waited for this (StatsWindowRule)
+                mForegroundKnown = true;
+            }
             if (packageName.contains("com.android.launcher66") && !helpers.isForegroundAppOpened()) {
                 curForegroundApp = "com.android.launcher66";
             } 
@@ -695,6 +703,19 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 }
             }
             
+            // An app that is not in the list is in front for real: the app of the list that was in front before
+            // it is not (it was left in curForegroundApp, and nothing took it out)
+            Launcher front = Launcher.getLauncher();
+            boolean frontResumed = front != null
+                    && front.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED);
+            if (StatsWindowRule.forgetForeground(frontResumed,
+                    StatsWindowRule.isOwn(packageName, getPackageName(), appPackageName),
+                    apps.contains(packageName), isApp(packageName)) && !curForegroundApp.isEmpty()) {
+                Log.i(TAG, "Stats window: " + packageName + " is in front, the app of the list ("
+                        + curForegroundApp + ") is not");
+                curForegroundApp = "";
+            }
+
             Launcher launcher = Launcher.getLauncher();
             if (launcher != null && launcher.mAppsCustomizeTabHost != null) {
                 if (helpers.userWasInRecents() && !getCurrentActivityName().equals("com.android.launcher66")) {
@@ -727,6 +748,11 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 break;
             case Keys.FUELSTATS:
                 Log.i("fuelStatsChange", "\t(" + evt.getOldValue() + " -> " + evt.getNewValue() + ")");
+                if (String.valueOf(evt.getNewValue()).isEmpty()) {
+                    // No app of the list in front (an app outside it is): nothing to show, nothing to put up
+                    removeView();
+                    break;
+                }
                 if (String.valueOf(evt.getNewValue()).contains("com.android.launcher")) {
                     helpers.setForegroundAppOpened(false);
                 }
@@ -801,9 +827,16 @@ public class CanbusService extends Service implements PropertyChangeListener {
         }, 200);
     }
 
+    /** An app of the list has been reported in front since the process started (StatsWindowRule.mayShowAppWindow). */
+    private boolean mForegroundKnown;
+
     private void addStatsView(boolean mapApp) {
         if ((mapApp && prevView.equals("app"))
          || (!mapApp && prevView.equals("main"))) {
+            return;
+        }
+        if (mapApp && !StatsWindowRule.mayShowAppWindow(mForegroundKnown)) {
+            Log.i(TAG, "Stats window: no app of the list reported in front yet, an app's window waits");
             return;
         }
         removeView();
@@ -1423,6 +1456,30 @@ public class CanbusService extends Service implements PropertyChangeListener {
         });
     }
 
+    /**
+     * A screen of the launcher's own that is not its home screen has come to the front (SettingsActivity.onResume):
+     * the windows over it go at once, without waiting for a report of the accessibility service or the task
+     * tracker, which are silent for a while after a restart (StatsWindowRule). Any thread.
+     */
+    public static void onLauncherOwnScreen(String screen) {
+        new Handler(Looper.getMainLooper()).post(() -> {
+            CanbusService service = sInstance;
+            if (service == null) {
+                return;
+            }
+            Launcher launcher = Launcher.getLauncher();
+            boolean resumed = launcher != null
+                    && launcher.getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED);
+            StatsWindowRule.Shown shown = StatsWindowRule.shown(service.prevView);
+            if (StatsWindowRule.removeForOwnScreen(shown, true, resumed)) {
+                Log.i(TAG, "Stats window: " + (shown == StatsWindowRule.Shown.HOME ? "the home screen's" : "an app's")
+                        + " window removed, " + screen + " is in front");
+                service.mAppStatsRemovedForOtherApp = shown == StatsWindowRule.Shown.APP;
+                service.removeView();
+            }
+        });
+    }
+
     /** An app's window was taken away because an app outside the list came to the front (StatsWindowRule). */
     private boolean mAppStatsRemovedForOtherApp;
     /** Whether a package is an app (has something to open, or is a launcher), remembered per package. */
@@ -1448,6 +1505,18 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 .getStringSet("stats_apps", new HashSet<>());
         boolean inList = apps != null && apps.contains(packageName);
         StatsWindowRule.Shown shown = StatsWindowRule.shown(prevView);
+        // An overlay window of the launcher's own (these statistics, a bar's window) is reported with its package too,
+        // as a view: it is no screen of the launcher (StatsWindowRule.isScreenOf)
+        if (StatsWindowRule.isScreenOf(mLastReportedClass, packageName)
+                && StatsWindowRule.removeForOwnScreen(shown, own, resumed)) {
+            // The launcher's settings or another screen of its own, not its home screen: no window over it
+            Log.i(TAG, "Stats window: " + (shown == StatsWindowRule.Shown.HOME ? "the home screen's" : "an app's")
+                    + " window removed, a screen of the launcher itself is in front (" + packageName
+                    + (mLastReportedClass == null ? "" : "/" + mLastReportedClass) + ")");
+            mAppStatsRemovedForOtherApp = shown == StatsWindowRule.Shown.APP;
+            removeView();
+            return;
+        }
         if (shown != StatsWindowRule.Shown.NONE
                 && StatsWindowRule.removeForForeground(shown, resumed, own, inList, isApp(packageName))) {
             Log.i(TAG, "Stats window: " + (shown == StatsWindowRule.Shown.HOME ? "the home screen's" : "an app's")

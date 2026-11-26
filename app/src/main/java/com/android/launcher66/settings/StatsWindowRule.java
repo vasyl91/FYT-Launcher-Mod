@@ -12,8 +12,15 @@ package com.android.launcher66.settings;
  *       is reported in front while the launcher is not;</li>
  *   <li>an app's window belongs to the apps of the list. It goes when an app that is not in the list comes to
  *       the front, another launcher included, and comes back when a listed app is in front again;</li>
- *   <li>while this launcher is in front nothing is taken away here: its own code decides (the panes' apps are
- *       reported as "in front" by some sources while the home screen is shown);</li>
+ *   <li>while this launcher's home screen is in front nothing is taken away here: its own code decides (the
+ *       panes' apps are reported as "in front" by some sources while the home screen is shown);</li>
+ *   <li>the launcher's own other screens (its settings, a dialog activity) are not its home screen, though they
+ *       report the same package: while one of them is in front, with the launcher's activity not resumed, no
+ *       window is shown over it. The window of an app, shown after a restart over the settings (A55, 2026-11-25),
+ *       and the home screen's window go; an app's window comes back when an app of the list is reported
+ *       again ({@link #ownScreen}, {@link #removeForOwnScreen});</li>
+ *   <li>after the process starts nothing is known about the app in front: an app's window waits for the first
+ *       report of an app of the list ({@link #mayShowAppWindow});</li>
  *   <li>only an app counts as "in front": a package with nothing to open (the system's volume panel, a
  *       service's dialog) is no reason to take a window away.</li>
  * </ul>
@@ -70,6 +77,51 @@ final class StatsWindowRule {
             return true;   // another app, or another launcher, is in front of the home screen's window
         }
         return !foregroundInList;
+    }
+
+    /**
+     * A screen of this launcher that is not its home screen: the package reported is the launcher's own (or the
+     * firmware's launcher) and the launcher's activity is not resumed. The settings share the package of the
+     * home screen, so the package alone cannot tell them apart.
+     */
+    static boolean ownScreen(boolean foregroundIsOwn, boolean launcherResumed) {
+        return foregroundIsOwn && !launcherResumed;
+    }
+
+    /** Whether the window that is shown goes because the launcher's own screen, not its home screen, is in front. */
+    static boolean removeForOwnScreen(Shown shown, boolean foregroundIsOwn, boolean launcherResumed) {
+        return shown != Shown.NONE && ownScreen(foregroundIsOwn, launcherResumed);
+    }
+
+    /**
+     * Whether a report names a screen (an activity) of the package, not a window that the package's overlay put up. The
+     * accessibility service reports the windows of this launcher's overlays (the statistics window, the bars' windows,
+     * the edge handle) with its package too, as views: their class is a view class. An activity's class begins with the
+     * package's name. A report without a class (the task tracker's, which sees activities only) is an activity.
+     */
+    static boolean isScreenOf(String className, String packageName) {
+        if (className == null || className.isEmpty() || packageName == null) {
+            return true;
+        }
+        return className.startsWith(packageName + ".") || className.startsWith(packageName + "/");
+    }
+
+    /**
+     * Whether the package of the app that was last reported in front is forgotten: an app that is not in the list
+     * is in front for real (the launcher is not resumed, it is not this launcher), so the app of the list that was
+     * in front before it is not in front any more.
+     */
+    static boolean forgetForeground(boolean launcherResumed, boolean foregroundIsOwn, boolean foregroundInList,
+                                    boolean foregroundIsApp) {
+        return !launcherResumed && !foregroundIsOwn && !foregroundInList && foregroundIsApp;
+    }
+
+    /**
+     * Whether an app's window may be put up: not before an app of the list has been reported in front since the
+     * process started, because what was in front before a restart is not known.
+     */
+    static boolean mayShowAppWindow(boolean foregroundKnown) {
+        return foregroundKnown;
     }
 
     /**

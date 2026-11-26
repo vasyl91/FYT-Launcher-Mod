@@ -521,6 +521,13 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        // Same package as the home screen: tell the statistics window at once that this is not the home screen
+        CanbusService.onLauncherOwnScreen(getClass().getSimpleName());
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         // Not for a turn of the screen: the lists come back with the new settings, as the other DialogFragments do.

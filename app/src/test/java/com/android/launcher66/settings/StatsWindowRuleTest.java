@@ -96,4 +96,66 @@ class StatsWindowRuleTest {
         assertFalse(StatsWindowRule.isOwn("com.sec.android.app.launcher", OWN, null));
         assertFalse(StatsWindowRule.isOwn(null, OWN, OWN));
     }
+
+    @Test
+    void theLauncherSettingsAreItsOwnScreenNotTheHomeScreen() {
+        // the settings report the launcher's package while its activity is not resumed
+        assertTrue(StatsWindowRule.ownScreen(true, false));
+        // the home screen: the same package, the activity resumed
+        assertFalse(StatsWindowRule.ownScreen(true, true));
+        // another app is not the launcher's screen
+        assertFalse(StatsWindowRule.ownScreen(false, false));
+    }
+
+    @Test
+    void anAppsWindowOverTheSettingsAfterARestartGoesAndSoDoesTheHomeScreensWindow() {
+        assertTrue(StatsWindowRule.removeForOwnScreen(APP, true, false));
+        assertTrue(StatsWindowRule.removeForOwnScreen(HOME, true, false));
+        // nothing shown: nothing to take away
+        assertFalse(StatsWindowRule.removeForOwnScreen(NONE, true, false));
+        // the home screen in front: its own code decides, as before
+        assertFalse(StatsWindowRule.removeForOwnScreen(HOME, true, true));
+        assertFalse(StatsWindowRule.removeForOwnScreen(APP, true, true));
+        // an app that is not the launcher is the other rule's
+        assertFalse(StatsWindowRule.removeForOwnScreen(APP, false, false));
+    }
+
+    @Test
+    void anAppOfTheListComesBackAfterTheSettingsAreLeft() {
+        // the settings took the window away (and noted it); the listed app is reported in front again
+        assertTrue(StatsWindowRule.restoreForForeground(NONE, false, true, true));
+    }
+
+    @Test
+    void theAppOfTheListIsForgottenOnlyWhenAnotherAppIsInFrontForReal() {
+        // another app, the launcher not resumed
+        assertTrue(StatsWindowRule.forgetForeground(false, false, false, true));
+        // the panes' apps are reported while the home screen is in front: the launcher is resumed, nothing is forgotten
+        assertFalse(StatsWindowRule.forgetForeground(true, false, false, true));
+        // the launcher's own screens and apps of the list are not "another app"
+        assertFalse(StatsWindowRule.forgetForeground(false, true, false, true));
+        assertFalse(StatsWindowRule.forgetForeground(false, false, true, true));
+        // a package with nothing to open (a volume panel) is not in front
+        assertFalse(StatsWindowRule.forgetForeground(false, false, false, false));
+    }
+
+    @Test
+    void anAppsWindowWaitsForTheFirstReportOfAnAppOfTheListAfterTheStart() {
+        assertFalse(StatsWindowRule.mayShowAppWindow(false));
+        assertTrue(StatsWindowRule.mayShowAppWindow(true));
+    }
+
+    @Test
+    void anOverlayWindowOfTheLauncherIsNoScreenOfIt() {
+        // the activities of the launcher begin with its package's name
+        assertTrue(StatsWindowRule.isScreenOf("com.android.launcher66.settings.SettingsActivity", OWN));
+        assertTrue(StatsWindowRule.isScreenOf("com.android.launcher66.Launcher", OWN));
+        // its overlays (the statistics window, the bars' windows) are reported as views
+        assertFalse(StatsWindowRule.isScreenOf("android.widget.FrameLayout", OWN));
+        assertFalse(StatsWindowRule.isScreenOf("android.widget.LinearLayout", OWN));
+        // a report without a class is the task tracker's: activities only
+        assertTrue(StatsWindowRule.isScreenOf(null, OWN));
+        assertTrue(StatsWindowRule.isScreenOf("", OWN));
+        assertTrue(StatsWindowRule.isScreenOf("com.fyt.launcher.Home", "com.fyt.launcher"));
+    }
 }

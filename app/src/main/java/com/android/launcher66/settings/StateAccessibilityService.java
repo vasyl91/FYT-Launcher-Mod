@@ -47,6 +47,11 @@ public class StateAccessibilityService extends AccessibilityService {
             Intent intent = new Intent(Keys.ACCESIBILITY_SERVICE);
             Bundle extras = new Bundle();
             extras.putString("package_name", packageName);
+            // The window's class, for the log: the launcher's settings and its home screen share a package
+            CharSequence className = event.getClassName();
+            if (className != null) {
+                extras.putString("class_name", className.toString());
+            }
             intent.putExtras(extras);
             SysCalls.sendBroadcast(this, intent);
         }
