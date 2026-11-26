@@ -450,7 +450,7 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
     private static int iconLabelHeight(SharedPreferences p) {
         float textPx;
         try {
-            textPx = Integer.parseInt(p.getString(Keys.WORKSPACE_TEXT_SIZE, String.valueOf(Launcher.textSizeWorkspace)));
+            textPx = Integer.parseInt(CreatorPrefs.of(p).getString(Keys.WORKSPACE_TEXT_SIZE, String.valueOf(Launcher.textSizeWorkspace)));
         } catch (NumberFormatException e) {
             textPx = Launcher.textSizeWorkspace;
         }

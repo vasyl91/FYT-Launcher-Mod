@@ -35,18 +35,21 @@ public final class WidgetStyler {
                 || Keys.BAR_SELECTED_BACKGROUND.equals(key)
                 || Keys.BAR_CUSTOM_BACKGROUND_COLOR.equals(key)
                 || Keys.VERTICAL_BAR_SELECTED_BACKGROUND.equals(key)
-                || Keys.VERTICAL_BAR_CUSTOM_BACKGROUND_COLOR.equals(key);
+                || Keys.VERTICAL_BAR_CUSTOM_BACKGROUND_COLOR.equals(key)
+                || Keys.USER_LAYOUT.equals(key);
     }
 
     /** "Widget text and button color": the chosen colour, or ViewTint.NONE while none was chosen. */
     public static int widgetsTint(SharedPreferences prefs) {
-        return prefs.contains(Keys.WIDGETS_TINT_COLOR) ? prefs.getInt(Keys.WIDGETS_TINT_COLOR, ViewTint.NONE)
+        CreatorPrefs creator = CreatorPrefs.of(prefs);
+        return creator.contains(Keys.WIDGETS_TINT_COLOR) ? creator.getInt(Keys.WIDGETS_TINT_COLOR, ViewTint.NONE)
                 : ViewTint.NONE;
     }
 
     /** "Horizontal bar text and button color": the chosen colour, or ViewTint.NONE while none was chosen. */
     public static int barTint(SharedPreferences prefs) {
-        return prefs.contains(Keys.BAR_TINT_COLOR) ? prefs.getInt(Keys.BAR_TINT_COLOR, ViewTint.NONE)
+        CreatorPrefs creator = CreatorPrefs.of(prefs);
+        return creator.contains(Keys.BAR_TINT_COLOR) ? creator.getInt(Keys.BAR_TINT_COLOR, ViewTint.NONE)
                 : ViewTint.NONE;
     }
 

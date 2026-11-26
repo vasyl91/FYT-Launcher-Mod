@@ -32,10 +32,12 @@ public final class BarBackground {
 
     /** The choice stored under a component's key, with the colour stored beside it. */
     public static BackgroundChoice choice(SharedPreferences prefs, String choiceKey, String defaultPicture) {
+        // "Stock layout" gives the pictures the components have when nothing was chosen (CreatorPrefs)
+        CreatorPrefs creator = CreatorPrefs.of(prefs);
         String colorKey = BackgroundChoice.colorKey(choiceKey);
-        boolean hasColor = prefs.contains(colorKey);
-        return BackgroundChoice.of(prefs.getString(choiceKey, null), defaultPicture, hasColor,
-                hasColor ? prefs.getInt(colorKey, 0) : 0);
+        boolean hasColor = creator.contains(colorKey);
+        return BackgroundChoice.of(creator.getString(choiceKey, null), defaultPicture, hasColor,
+                hasColor ? creator.getInt(colorKey, 0) : 0);
     }
 
     /**
@@ -74,10 +76,11 @@ public final class BarBackground {
      * the window had before it got a selector, for everyone who never chose one.
      */
     public static BackgroundChoice statsChoice(SharedPreferences prefs) {
+        CreatorPrefs creator = CreatorPrefs.of(prefs);
         String colorKey = BackgroundChoice.colorKey(Keys.STATS_SELECTED_BACKGROUND);
-        boolean hasColor = prefs.contains(colorKey);
-        return BackgroundChoice.of(prefs.getString(Keys.STATS_SELECTED_BACKGROUND, BackgroundChoice.NONE),
-                WIDGETS_DEFAULT, hasColor, hasColor ? prefs.getInt(colorKey, 0) : 0);
+        boolean hasColor = creator.contains(colorKey);
+        return BackgroundChoice.of(creator.getString(Keys.STATS_SELECTED_BACKGROUND, BackgroundChoice.NONE),
+                WIDGETS_DEFAULT, hasColor, hasColor ? creator.getInt(colorKey, 0) : 0);
     }
 
     /** The background of a widget or of a PiP's placeholder. */

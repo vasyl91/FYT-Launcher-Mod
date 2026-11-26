@@ -74,7 +74,7 @@ public class BubbleTextView extends androidx.appcompat.widget.AppCompatTextView 
     public void onFinishInflate() {
         super.onFinishInflate();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        int iWorkspaceTextSize = Integer.parseInt(prefs.getString("workspace_textSize", String.valueOf(Launcher.textSizeWorkspace)));
+        int iWorkspaceTextSize = Integer.parseInt(CreatorPrefs.of(prefs).getString("workspace_textSize", String.valueOf(Launcher.textSizeWorkspace)));
         setTextSize(0, iWorkspaceTextSize);
         setTextColor(ContextCompat.getColor(getContext(), R.color.workspace_icon_text_color));
     }

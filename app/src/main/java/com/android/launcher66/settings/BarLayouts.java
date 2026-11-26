@@ -3,6 +3,7 @@ package com.android.launcher66.settings;
 import android.content.SharedPreferences;
 
 import com.android.launcher66.BarLayout;
+import com.android.launcher66.CreatorPrefs;
 import com.android.launcher66.HorizontalBarPlacement;
 import com.android.launcher66.VerticalBarPlacement;
 
@@ -24,7 +25,9 @@ public final class BarLayouts {
 
     /** The preferences as the rules read them. */
     public static BarPrefs prefs(SharedPreferences prefs) {
-        return key -> prefs.getBoolean(key, false);
+        // "Stock layout" gives every creator key its default: the bars on their usual sides (CreatorPrefs)
+        CreatorPrefs creator = CreatorPrefs.of(prefs);
+        return key -> creator.getBoolean(key, false);
     }
 
     /**

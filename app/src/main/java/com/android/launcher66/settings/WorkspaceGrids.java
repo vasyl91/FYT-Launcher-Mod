@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 
 import com.android.launcher66.BarLayout;
+import com.android.launcher66.CreatorPrefs;
 import com.android.launcher66.HorizontalBarPlacement;
 import com.android.launcher66.WorkspaceGrid;
 
@@ -28,12 +29,12 @@ public final class WorkspaceGrids {
 
     /** Cells along the long edge of the screen, as chosen. */
     public static int longCells(SharedPreferences prefs) {
-        return WorkspaceGrid.clampLong(prefs.getInt(Keys.WORKSPACE_GRID_LONG, WorkspaceGrid.DEFAULT_LONG));
+        return WorkspaceGrid.clampLong(CreatorPrefs.of(prefs).getInt(Keys.WORKSPACE_GRID_LONG, WorkspaceGrid.DEFAULT_LONG));
     }
 
     /** Cells along the short edge of the screen, as chosen. */
     public static int shortCells(SharedPreferences prefs) {
-        return WorkspaceGrid.clampShort(prefs.getInt(Keys.WORKSPACE_GRID_SHORT, WorkspaceGrid.DEFAULT_SHORT));
+        return WorkspaceGrid.clampShort(CreatorPrefs.of(prefs).getInt(Keys.WORKSPACE_GRID_SHORT, WorkspaceGrid.DEFAULT_SHORT));
     }
 
     /** The columns of a page without bars. */

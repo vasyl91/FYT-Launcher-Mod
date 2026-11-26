@@ -955,7 +955,7 @@ public class Workspace extends SmoothPagedView
             horizontalBarBg = workspaceView.findViewById(R.id.iv_list_bg);
             // Always set, the default too: the bar that is on screen then follows a choice back to it (BarBackground)
             horizontalBarBg.setImageDrawable(BarBackground.horizontal(getContext(), mPrefs,
-                    mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false)));
+                    CreatorPrefs.of(mPrefs).getBoolean(Keys.HORIZONTAL_BAR_TOP, false)));
             applyVerticalBarBackground(workspaceView);
 
             // Resizable horizontal bar (no-op when Keys.RESIZABLE_HORIZONTAL_BAR is off). Has to run before
@@ -1150,7 +1150,7 @@ public class Workspace extends SmoothPagedView
         if (mPrefs == null) {
             return;
         }
-        final boolean top = mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
+        final boolean top = CreatorPrefs.of(mPrefs).getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
         if (horizontalBarBg != null) {
             horizontalBarBg.setImageDrawable(BarBackground.horizontal(getContext(), mPrefs, top));
             count[0]++;
@@ -1747,7 +1747,7 @@ public class Workspace extends SmoothPagedView
             return;
         }
         mBarBoxApplied.set(box);
-        if (mPrefs == null || !mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false)) {
+        if (mPrefs == null || !CreatorPrefs.of(mPrefs).getBoolean(Keys.HORIZONTAL_BAR_TOP, false)) {
             return;
         }
         Log.i(TAG, "Horizontal bar at the top: box " + box.left + "," + box.top + "," + box.right + ","
@@ -1792,7 +1792,7 @@ public class Workspace extends SmoothPagedView
         if (!(layoutRoot instanceof androidx.constraintlayout.widget.ConstraintLayout)) {
             return;
         }
-        boolean top = mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
+        boolean top = CreatorPrefs.of(mPrefs).getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
         boolean right = verticalBarOn && BarLayouts.sides(mPrefs, true).right;
         // An auto-hide bar with no button in the corner leaves it free: the vertical bar fills it
         boolean fullHeight = verticalBarOn && autoHideApplies && !BarLayouts.sides(mPrefs, true).cornerTaken();
@@ -1969,7 +1969,7 @@ public class Workspace extends SmoothPagedView
             final int horizontalBarHeight = getHorizontalBarHeight(screenWidth, screenHeight);
             // The content is sized from the width of the window: at the top that is the box, which a
             // cut-out at the side makes narrower than the screen.
-            final boolean topBar = mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
+            final boolean topBar = CreatorPrefs.of(mPrefs).getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
             final int barWidth = topBar ? Math.max(1, barBoxOnScreen().width()) : screenWidth;
 
             // Create overlay window parameters
@@ -1995,7 +1995,7 @@ public class Workspace extends SmoothPagedView
             }
 
             // At the top the bar sits below the status bar (the inset listener moves the window)
-            boolean barAtTop = mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
+            boolean barAtTop = CreatorPrefs.of(mPrefs).getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
             if (barAtTop) {
                 // From the top of the box the pages fill, and as wide as it: not under the status bar
                 // and not in the cut-out at the side (TopBarFrame)
@@ -2035,7 +2035,7 @@ public class Workspace extends SmoothPagedView
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             overlayHorizontalBar = barFrame;
 
-            final boolean barOnTop = mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
+            final boolean barOnTop = CreatorPrefs.of(mPrefs).getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
             overlayHorizontalBar.setOnApplyWindowInsetsListener((v, insets) -> {
                 if (barOnTop) {
                     // Below the status bar: the window starts at the top of the box (TopBarFrame), nothing to extend
@@ -2153,7 +2153,7 @@ public class Workspace extends SmoothPagedView
      * they are not.
      */
     private void logTopBarRects(View windowRoot) {
-        if (mTopBarRectsLogged || workspaceView == null || !mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false)) {
+        if (mTopBarRectsLogged || workspaceView == null || !CreatorPrefs.of(mPrefs).getBoolean(Keys.HORIZONTAL_BAR_TOP, false)) {
             return;
         }
         final View windowBg = windowRoot.findViewById(R.id.iv_list_bg);
@@ -2191,7 +2191,7 @@ public class Workspace extends SmoothPagedView
         ImageView overlayBg = overlayHorizontalBar.findViewById(R.id.iv_list_bg);
 
         overlayBg.setImageDrawable(BarBackground.horizontal(getContext(), mPrefs,
-                mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false)));
+                CreatorPrefs.of(mPrefs).getBoolean(Keys.HORIZONTAL_BAR_TOP, false)));
         
         forceOriginalSizes(screenWidth, horizontalBarHeight);
         
@@ -2656,7 +2656,7 @@ public class Workspace extends SmoothPagedView
                 }
 
                 // This frame is drawn below the edge; the slide starts from there.
-                bar.setTranslationY(mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false) ? -bar.getHeight() : bar.getHeight());
+                bar.setTranslationY(CreatorPrefs.of(mPrefs).getBoolean(Keys.HORIZONTAL_BAR_TOP, false) ? -bar.getHeight() : bar.getHeight());
                 bar.setAlpha(1f);
                 bar.animate()
                         .translationY(0f)
@@ -2778,7 +2778,7 @@ public class Workspace extends SmoothPagedView
                 } else {
                     restoreDurationMs = BAR_HIDE_DURATION_MS;
                     bar.animate()
-                            .translationY(mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false) ? -distance : distance)
+                            .translationY(CreatorPrefs.of(mPrefs).getBoolean(Keys.HORIZONTAL_BAR_TOP, false) ? -distance : distance)
                             .setDuration(BAR_HIDE_DURATION_MS)
                             .setInterpolator(new AccelerateInterpolator(1.5f))
                             .withEndAction(() -> onOverlaySlideOutEnded(bar, windowManager))
@@ -3065,7 +3065,7 @@ public class Workspace extends SmoothPagedView
                 ? Launcher.calculatedVerticalBarWidth
                 : PipEdgeTrim.computeVerticalBarWidth(portrait, screenWidth, screenHeight, barHeight);
         int touchWidth = EdgeHandleGeometry.touchWidth(stripWidth, verticalBarWidth);
-        final boolean handleOnTop = mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
+        final boolean handleOnTop = CreatorPrefs.of(mPrefs).getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
         final boolean handleOnRight = BarLayouts.sides(mPrefs, mVerticalBar).handleRight;
         if (stripWidth != mEdgeHandleStripLogged || touchWidth != mEdgeHandleTouchLogged
                 || handleOnTop != mEdgeHandleTopLogged || handleOnRight != mEdgeHandleRightLogged) {
@@ -3689,7 +3689,7 @@ public class Workspace extends SmoothPagedView
         int shift = VerticalBarCorner.shift(getScrollForPage(page), getScrollX());
         boolean covered = VerticalBarCorner.covered(box.left + shift, box.right + shift, edges[0], edges[1]);
         int inset = covered ? verticalCornerHeight(box) : 0;
-        boolean top = mPrefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
+        boolean top = CreatorPrefs.of(mPrefs).getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
         if (mVerticalWindow.setCornerInset(inset, top, animate)
                 && (mVerticalCornerCoveredLogged == null || mVerticalCornerCoveredLogged != covered)) {
             mVerticalCornerCoveredLogged = covered;

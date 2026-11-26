@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
+import com.android.launcher66.CreatorPrefs;
 import com.android.launcher66.CustomElement;
 import com.android.launcher66.CustomElementPrefs;
 import com.android.launcher66.CustomLayoutDb;
@@ -1382,7 +1383,7 @@ public class Helpers {
         int rootWidth = HorizontalBarDimensions.getBarRootWidth(Launcher.screenWidth);
         int rootHeight = HorizontalBarDimensions.getBarRootHeight(Launcher.screenHeight, statusBarHeight);
         int barHeight = getHorizontalBarHeight(prefs, orientation, rootWidth, rootHeight);
-        return new BarGeometry(rootWidth, rootHeight, barHeight, prefs.getBoolean(Keys.HORIZONTAL_BAR_TOP, false));
+        return new BarGeometry(rootWidth, rootHeight, barHeight, CreatorPrefs.of(prefs).getBoolean(Keys.HORIZONTAL_BAR_TOP, false));
     }
 
     /** Whether a rectangle of this height at y reaches into the horizontal bar's band. */
