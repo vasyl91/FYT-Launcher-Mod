@@ -85,16 +85,23 @@ public class AppsVerticalViewTest {
 
     @Test
     public void theScrollerPutsTheListAtTheFirstAppOfALetter() {
-        // 18 apps in three columns are six rows and three of them are in view, so the list has room to scroll. (With six
-        // rows in view the whole list fits and a list that fits does not move: the scroll would end where it began.)
-        AppsVerticalView view = view(3, 3);
+        // 18 apps in three columns are six rows and two of them are in view (700 px each of the 1400), so the list has room
+        // to scroll and its rows fill it exactly. Both matter: a list whose rows all fit does not move, and rows that do
+        // not divide the height (3 rows of 466 px in 1400 px) leave a gap of a few pixels at the end, which the layout
+        // closes by pulling the list back, so that a sliver of the row before shows at the top and is the first in view.
+        AppsVerticalView view = view(3, 2);
         view.scrollToLetter("M");
         view.measure(View.MeasureSpec.makeMeasureSpec(800, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(1400, View.MeasureSpec.EXACTLY));
         view.layout(0, 0, 800, 1400);
-        // the list starts at the row of "Maps", the first of the M (the 12th app), which in three columns begins at the 10th
+        // The list starts at the row of "Maps", the first of the M (the 12th app, position 11), which in three columns
+        // holds the positions 9, 10 and 11. Each condition is its own assertion, so that the line of a failure on CI
+        // (which does not print the message) tells which way it failed.
         int first = view.firstVisible();
-        assertTrue("the row of the first M is at the top, but the first in view is " + first, first <= 11 && first > 11 - 3);
+        assertTrue("some row is in view, but the first is " + first, first >= 0);
+        assertTrue("the list moved, but the first in view is " + first, first > 0);
+        assertTrue("the list is not past the row of the first M, but the first in view is " + first, first <= 11);
+        assertTrue("the list is not before the row of the first M, but the first in view is " + first, first > 8);
     }
 
     @Test
