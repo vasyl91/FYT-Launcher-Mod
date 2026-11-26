@@ -59,3 +59,8 @@
 
 # Loaded by name via reflection in LauncherAppState (AppFilter class from resources).
 -keep class com.syu.car.CustomFilter { <init>(...); }
+
+# Preferences are created from XML by reflection (androidx PreferenceInflater): crash on the A55, 2026-11-23
+-keep public class * extends androidx.preference.Preference {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
