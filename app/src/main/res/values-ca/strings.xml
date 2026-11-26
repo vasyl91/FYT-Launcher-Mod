@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Mostra les aplicacions amagades</string>
     <string name="drawer_tab_main">Aplicacions</string>
     <string name="drawer_tab_default">Pestanya%1$d</string>
+    <string name="select_apps">Selecciona aplicacions</string>
+    <string name="edit_drawer_tab">Edita la pestanya del calaix</string>
+    <string name="add_drawer_tab">Afegeix una pestanya al calaix</string>
+    <string name="drawer_tab_name_hint">Nom de la pestanya</string>
+    <string name="keep_in_main_tab">Mantén les aplicacions a la pestanya principal</string>
+    <string name="keep_in_main_inactive">No s\'aplica amb el paràmetre actual «Aplicacions en diverses pestanyes»</string>
+    <string name="delete_drawer_tab_title">Vols suprimir la pestanya?</string>
+    <string name="delete_drawer_tab_message">S\'eliminarà «%1$s». Les seves aplicacions tornen a la pestanya principal, tret que siguin en una altra pestanya.</string>
+    <string name="delete_drawer_tab_button">Suprimeix</string>
+    <string name="drawer_tabs_repeat">Aplicacions en diverses pestanyes</string>
+    <string name="drawer_tabs_repeat_all">Permet en totes les pestanyes</string>
+    <string name="drawer_tabs_repeat_except_main">Permet en totes les pestanyes tret de la principal</string>
+    <string name="drawer_tabs_repeat_none">No permetis</string>
+    <string name="drawer_tabs_keep_line">«%1$s» també manté les seves aplicacions a la pestanya principal</string>
+    <string name="drawer_tab_bar_position">Ubicació de la barra de pestanyes</string>
+    <string name="drawer_tab_bar_top">A dalt</string>
+    <string name="drawer_tab_bar_bottom">A baix</string>
 </resources>

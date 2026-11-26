@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">დამალული აპების ჩვენება</string>
     <string name="drawer_tab_main">აპები</string>
     <string name="drawer_tab_default">ჩანართი%1$d</string>
+    <string name="select_apps">აპების არჩევა</string>
+    <string name="edit_drawer_tab">უჯრის ჩანართის რედაქტირება</string>
+    <string name="add_drawer_tab">უჯრის ჩანართის დამატება</string>
+    <string name="drawer_tab_name_hint">ჩანართის სახელი</string>
+    <string name="keep_in_main_tab">აპების დატოვება მთავარ ჩანართში</string>
+    <string name="keep_in_main_inactive">არ გამოიყენება მიმდინარე პარამეტრით „აპები რამდენიმე ჩანართში“</string>
+    <string name="delete_drawer_tab_title">წაიშალოს ჩანართი?</string>
+    <string name="delete_drawer_tab_message">„%1$s“ წაიშლება. მისი აპები დაბრუნდება მთავარ ჩანართში, თუ ისინი სხვა ჩანართში არ არის.</string>
+    <string name="delete_drawer_tab_button">წაშლა</string>
+    <string name="drawer_tabs_repeat">აპები რამდენიმე ჩანართში</string>
+    <string name="drawer_tabs_repeat_all">ყველა ჩანართში დაშვება</string>
+    <string name="drawer_tabs_repeat_except_main">ყველა ჩანართში დაშვება, მთავარის გარდა</string>
+    <string name="drawer_tabs_repeat_none">არ დაშვება</string>
+    <string name="drawer_tabs_keep_line">„%1$s“ თავის აპებს მთავარ ჩანართშიც ტოვებს</string>
+    <string name="drawer_tab_bar_position">ჩანართების ზოლის განლაგება</string>
+    <string name="drawer_tab_bar_top">ზემოთ</string>
+    <string name="drawer_tab_bar_bottom">ქვემოთ</string>
 </resources>

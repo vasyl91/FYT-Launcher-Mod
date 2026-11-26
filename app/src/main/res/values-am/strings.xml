@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">የተደበቁ መተግበሪያዎችን አሳይ</string>
     <string name="drawer_tab_main">መተግበሪያዎች</string>
     <string name="drawer_tab_default">ትር%1$d</string>
+    <string name="select_apps">መተግበሪያዎችን ምረጥ</string>
+    <string name="edit_drawer_tab">የመሳቢያ ትርን አርትዕ</string>
+    <string name="add_drawer_tab">የመሳቢያ ትር ጨምር</string>
+    <string name="drawer_tab_name_hint">የትር ስም</string>
+    <string name="keep_in_main_tab">መተግበሪያዎችን በዋናው የመተግበሪያ ትር ውስጥ አቆይ</string>
+    <string name="keep_in_main_inactive">በአሁኑ “መተግበሪያዎች በበርካታ ትሮች” ቅንብር አይተገበርም</string>
+    <string name="delete_drawer_tab_title">ትሩ ይሰረዝ?</string>
+    <string name="delete_drawer_tab_message">“%1$s” ይሰረዛል። መተግበሪያዎቹ በሌላ ትር ውስጥ ካልሆኑ በስተቀር ወደ ዋናው ትር ይመለሳሉ።</string>
+    <string name="delete_drawer_tab_button">ሰርዝ</string>
+    <string name="drawer_tabs_repeat">መተግበሪያዎች በበርካታ ትሮች</string>
+    <string name="drawer_tabs_repeat_all">በሁሉም ትሮች ፍቀድ</string>
+    <string name="drawer_tabs_repeat_except_main">ከዋናው ትር በስተቀር በሁሉም ትሮች ፍቀድ</string>
+    <string name="drawer_tabs_repeat_none">አትፍቀድ</string>
+    <string name="drawer_tabs_keep_line">“%1$s” መተግበሪያዎቹን በዋናው ትር ውስጥም ያቆያል</string>
+    <string name="drawer_tab_bar_position">የትር አሞሌ አቀማመጥ</string>
+    <string name="drawer_tab_bar_top">ላይ</string>
+    <string name="drawer_tab_bar_bottom">ታች</string>
 </resources>

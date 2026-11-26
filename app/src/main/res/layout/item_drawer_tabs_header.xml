@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A category of the tab creator, in the style of the settings' categories; "Tabs" has the "+" button at the right,
+     its top at the top of the title -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="top"
+    android:orientation="horizontal"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp">
+
+    <TextView
+        android:id="@+id/drawer_tabs_header_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:paddingTop="20dp"
+        android:paddingBottom="8dp"
+        android:textColor="@color/colorAccent"
+        android:textStyle="bold" />
+
+    <ImageButton
+        android:id="@+id/drawer_tabs_add"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/bar_order_tile"
+        android:src="@drawable/ic_add_tile" />
+</LinearLayout>

@@ -3,7 +3,6 @@ package com.android.launcher66.settings;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -19,12 +18,12 @@ import android.widget.TextView;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.widget.CompoundButtonCompat;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.launcher66.AccentPainter;
 import com.android.launcher66.AllAppsList;
 import com.android.launcher66.AppInfo;
 import com.android.launcher66.DrawerAppList;
@@ -33,7 +32,6 @@ import com.android.launcher66.DrawerTabsStore;
 import com.android.launcher66.LauncherApplication;
 import com.android.launcher66.LauncherModel;
 import com.android.launcher66.R;
-import com.android.launcher66.ThemeAccent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,8 +46,8 @@ import java.util.Set;
  * ticks it. The rules of what is listed and what a tick does are those of {@link DrawerAppList}; every tick is stored
  * at once ({@link DrawerTabsStore#save}, {@code apply()}).
  *
- * <p>Back goes to where the list was opened from: the tab creator's screen, or, when the settings were opened by the
- * drawer for this list alone ({@link #intent}), the drawer: the activity is closed.
+ * <p>Back goes to where the list was opened from: the tab creator ({@link DrawerTabsFragment}), or, when the settings
+ * were opened by the drawer for this list alone ({@link #intent}), the drawer: the activity is closed.
  */
 public class DrawerAppsFragment extends Fragment {
 
@@ -64,7 +62,6 @@ public class DrawerAppsFragment extends Fragment {
     private DrawerAppList list;
     private RowsAdapter adapter;
     private PopupWindow menu;
-    private int accent;
 
     /** The list of one tab ({@code tab}), or of the hidden apps ({@link DrawerAppList#HIDDEN}). */
     public static DrawerAppsFragment newInstance(int tab, boolean fromDrawer) {
@@ -106,9 +103,8 @@ public class DrawerAppsFragment extends Fragment {
             requireActivity().finish();
             return;
         }
-        SettingsScrollMemory.betweenScreens();
         requireActivity().getSupportFragmentManager().beginTransaction()
-                .replace(android.R.id.content, new SettingsFragmentSecond()).commit();
+                .replace(android.R.id.content, new DrawerTabsFragment()).commit();
     }
 
     @Nullable
@@ -123,7 +119,6 @@ public class DrawerAppsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         Context context = requireContext();
         prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        accent = ThemeAccent.color(context);
         List<DrawerAppList.App> apps = installedApps();
         List<String> packages = new ArrayList<>();
         for (DrawerAppList.App app : apps) {
@@ -144,24 +139,11 @@ public class DrawerAppsFragment extends Fragment {
         rows.setLayoutManager(new LinearLayoutManager(context));
         adapter = new RowsAdapter();
         rows.setAdapter(adapter);
+        // the accent of the settings on every row as it is attached (AccentPainter)
+        AccentPainter.attach(rows);
         rows.setClipToPadding(false);
         if (!LauncherApplication.isFytDevice()) {
-            applyInsets(view);
-        }
-    }
-
-    /** As the other screens of the settings: the room of the status bar and the navigation bar (not on a FYT unit). */
-    private static void applyInsets(View root) {
-        SettingsActivity activity = SettingsActivity.getSettingsActivity();
-        if (activity == null) {
-            return;
-        }
-        int top = activity.getStatusBarHeight() + activity.getActionBarHeight();
-        int navigation = activity.getNavigationBarHeight();
-        if (SettingsActivity.isPortrait) {
-            root.setPadding(root.getPaddingLeft(), top, root.getPaddingRight(), navigation);
-        } else {
-            root.setPadding(root.getPaddingLeft(), top, root.getPaddingRight() + navigation, root.getPaddingBottom());
+            SettingsSystemBars.pad(view);
         }
     }
 
@@ -212,7 +194,7 @@ public class DrawerAppsFragment extends Fragment {
         View content = LayoutInflater.from(context).inflate(R.layout.popup_drawer_apps_menu, null);
         CheckBox check = content.findViewById(R.id.drawer_menu_check);
         check.setChecked(list.showHidden());
-        CompoundButtonCompat.setButtonTintList(check, ColorStateList.valueOf(accent));
+        AccentPainter.paint(content);
         PopupWindow popup = new PopupWindow(content, ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT, true);
         GradientDrawable surface = new GradientDrawable();
@@ -255,15 +237,11 @@ public class DrawerAppsFragment extends Fragment {
                 holder.name.setTextSize(TypedValue.COMPLEX_UNIT_SP, SettingsActivity.dialogTextView);
             }
             holder.check.setChecked(list.isChecked(app.pkg));
-            CompoundButtonCompat.setButtonTintList(holder.check, ColorStateList.valueOf(accent));
             holder.itemView.setOnClickListener(v -> {
-                int at = holder.getBindingAdapterPosition();
-                if (at == RecyclerView.NO_POSITION) {
-                    return;
-                }
-                list.toggle(rows.get(at).pkg);
+                list.toggle(app.pkg);
                 DrawerTabsStore.save(prefs, model);
-                notifyItemChanged(at);
+                // the row keeps its place; only its checkbox changes
+                holder.check.setChecked(list.isChecked(app.pkg));
             });
         }
 

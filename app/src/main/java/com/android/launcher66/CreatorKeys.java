@@ -24,6 +24,9 @@ public final class CreatorKeys {
     static final Set<String> STORED_ELSEWHERE = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
             // "Rows" and "Columns": cells along the long and the short edge (GridSeekBarPreference)
             "workspace_grid_long", "workspace_grid_short", "all_apps_grid_long", "all_apps_grid_short",
+            // the tab creator's own screen (DrawerTabsFragment): where the strip of tabs is; the tabs themselves are
+            // the key of the row that opens it, drawer_tabs
+            "drawer_tab_bar_position",
             // the colour rows of "Choose background for ..." and "Set ... text and button color"
             "widgets_selected_background", "bar_selected_background", "vertical_bar_selected_background",
             "stats_selected_background",

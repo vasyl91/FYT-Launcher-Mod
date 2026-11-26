@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Показать скрытые приложения</string>
     <string name="drawer_tab_main">Приложения</string>
     <string name="drawer_tab_default">Вкладка%1$d</string>
+    <string name="select_apps">Выбрать приложения</string>
+    <string name="edit_drawer_tab">Изменить вкладку панели приложений</string>
+    <string name="add_drawer_tab">Добавить вкладку панели приложений</string>
+    <string name="drawer_tab_name_hint">Название вкладки</string>
+    <string name="keep_in_main_tab">Оставлять приложения на основной вкладке</string>
+    <string name="keep_in_main_inactive">Не применяется при текущей настройке «Приложения в нескольких вкладках»</string>
+    <string name="delete_drawer_tab_title">Удалить вкладку?</string>
+    <string name="delete_drawer_tab_message">Вкладка «%1$s» будет удалена. Её приложения вернутся на основную вкладку, если их нет в другой вкладке.</string>
+    <string name="delete_drawer_tab_button">Удалить</string>
+    <string name="drawer_tabs_repeat">Приложения в нескольких вкладках</string>
+    <string name="drawer_tabs_repeat_all">Разрешить во всех вкладках</string>
+    <string name="drawer_tabs_repeat_except_main">Разрешить во всех вкладках, кроме основной</string>
+    <string name="drawer_tabs_repeat_none">Не разрешать</string>
+    <string name="drawer_tabs_keep_line">«%1$s» оставляет свои приложения и на основной вкладке</string>
+    <string name="drawer_tab_bar_position">Расположение панели вкладок</string>
+    <string name="drawer_tab_bar_top">Сверху</string>
+    <string name="drawer_tab_bar_bottom">Снизу</string>
 </resources>

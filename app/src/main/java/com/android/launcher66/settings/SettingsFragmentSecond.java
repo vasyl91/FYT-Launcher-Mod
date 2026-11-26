@@ -461,6 +461,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         Preference iconTextRow = findPreference(Keys.WORKSPACE_TEXT_COLOR);
         Preference drawerTextRow = findPreference(Keys.ALL_APPS_TEXT_COLOR);
         bindDoubleTap();
+        bindDrawerTabs();
         bindWidgetOverlap();
         // On an FYT unit the framework shows its panel of quick settings for this swipe, not the notifications
         androidx.preference.SwitchPreferenceCompat swipeDown = findPreference(Keys.SWIPE_DOWN_NOTIFICATIONS);
@@ -1282,6 +1283,23 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                     .setPositiveButton(android.R.string.ok, (dialog, which) -> row.setChecked(false))
                     .show();
             return false;
+        });
+    }
+
+    /**
+     * "App drawer": "Tabs" opens the tab creator (DrawerTabsFragment). The screen keeps the place this list was at, as it
+     * does for the other screens that are left for a window to come back from (SettingsScrollMemory).
+     */
+    private void bindDrawerTabs() {
+        Preference row = findPreference(Keys.DRAWER_TABS);
+        if (row == null) {
+            return;
+        }
+        row.setVisible(true);
+        row.setOnPreferenceClickListener(preference -> {
+            requireActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(android.R.id.content, new DrawerTabsFragment()).commit();
+            return true;
         });
     }
 

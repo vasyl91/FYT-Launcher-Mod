@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Zobrazit skryté aplikace</string>
     <string name="drawer_tab_main">Aplikace</string>
     <string name="drawer_tab_default">Karta%1$d</string>
+    <string name="select_apps">Vybrat aplikace</string>
+    <string name="edit_drawer_tab">Upravit kartu zásuvky</string>
+    <string name="add_drawer_tab">Přidat kartu zásuvky</string>
+    <string name="drawer_tab_name_hint">Název karty</string>
+    <string name="keep_in_main_tab">Ponechat aplikace na hlavní kartě</string>
+    <string name="keep_in_main_inactive">Při současném nastavení „Aplikace na více kartách“ se neuplatní</string>
+    <string name="delete_drawer_tab_title">Smazat kartu?</string>
+    <string name="delete_drawer_tab_message">Karta „%1$s“ bude smazána. Její aplikace se vrátí na hlavní kartu, pokud nejsou na jiné kartě.</string>
+    <string name="delete_drawer_tab_button">Smazat</string>
+    <string name="drawer_tabs_repeat">Aplikace na více kartách</string>
+    <string name="drawer_tabs_repeat_all">Povolit na všech kartách</string>
+    <string name="drawer_tabs_repeat_except_main">Povolit na všech kartách kromě hlavní</string>
+    <string name="drawer_tabs_repeat_none">Nepovolit</string>
+    <string name="drawer_tabs_keep_line">„%1$s“ ponechává své aplikace i na hlavní kartě</string>
+    <string name="drawer_tab_bar_position">Umístění panelu karet</string>
+    <string name="drawer_tab_bar_top">Nahoře</string>
+    <string name="drawer_tab_bar_bottom">Dole</string>
 </resources>

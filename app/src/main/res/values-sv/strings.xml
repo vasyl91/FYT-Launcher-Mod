@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Visa dolda appar</string>
     <string name="drawer_tab_main">Appar</string>
     <string name="drawer_tab_default">Flik%1$d</string>
+    <string name="select_apps">Välj appar</string>
+    <string name="edit_drawer_tab">Redigera lådans flik</string>
+    <string name="add_drawer_tab">Lägg till flik i lådan</string>
+    <string name="drawer_tab_name_hint">Flikens namn</string>
+    <string name="keep_in_main_tab">Behåll appar i huvudfliken</string>
+    <string name="keep_in_main_inactive">Tillämpas inte med nuvarande inställning ”Appar i flera flikar”</string>
+    <string name="delete_drawer_tab_title">Ta bort fliken?</string>
+    <string name="delete_drawer_tab_message">”%1$s” tas bort. Dess appar går tillbaka till huvudfliken, om de inte finns i en annan flik.</string>
+    <string name="delete_drawer_tab_button">Ta bort</string>
+    <string name="drawer_tabs_repeat">Appar i flera flikar</string>
+    <string name="drawer_tabs_repeat_all">Tillåt i alla flikar</string>
+    <string name="drawer_tabs_repeat_except_main">Tillåt i alla flikar utom huvudfliken</string>
+    <string name="drawer_tabs_repeat_none">Tillåt inte</string>
+    <string name="drawer_tabs_keep_line">”%1$s” behåller även sina appar i huvudfliken</string>
+    <string name="drawer_tab_bar_position">Placering av flikfältet</string>
+    <string name="drawer_tab_bar_top">Överst</string>
+    <string name="drawer_tab_bar_bottom">Nederst</string>
 </resources>

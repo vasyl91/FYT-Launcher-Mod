@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Rejtett alkalmazások megjelenítése</string>
     <string name="drawer_tab_main">Alkalmazások</string>
     <string name="drawer_tab_default">Lap%1$d</string>
+    <string name="select_apps">Alkalmazások kiválasztása</string>
+    <string name="edit_drawer_tab">Fiók lapjának szerkesztése</string>
+    <string name="add_drawer_tab">Fiók lapjának hozzáadása</string>
+    <string name="drawer_tab_name_hint">Lap neve</string>
+    <string name="keep_in_main_tab">Alkalmazások megtartása a fő lapon</string>
+    <string name="keep_in_main_inactive">Az aktuális „Alkalmazások több lapon” beállítással nem érvényesül</string>
+    <string name="delete_drawer_tab_title">Törli a lapot?</string>
+    <string name="delete_drawer_tab_message">A(z) „%1$s” törlődik. Az alkalmazásai visszakerülnek a fő lapra, hacsak nincsenek másik lapon.</string>
+    <string name="delete_drawer_tab_button">Törlés</string>
+    <string name="drawer_tabs_repeat">Alkalmazások több lapon</string>
+    <string name="drawer_tabs_repeat_all">Engedélyezés minden lapon</string>
+    <string name="drawer_tabs_repeat_except_main">Engedélyezés minden lapon a fő lap kivételével</string>
+    <string name="drawer_tabs_repeat_none">Nem engedélyezett</string>
+    <string name="drawer_tabs_keep_line">A(z) „%1$s” az alkalmazásait a fő lapon is megtartja</string>
+    <string name="drawer_tab_bar_position">Lapsáv elhelyezése</string>
+    <string name="drawer_tab_bar_top">Fent</string>
+    <string name="drawer_tab_bar_bottom">Lent</string>
 </resources>

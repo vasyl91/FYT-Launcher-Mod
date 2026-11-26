@@ -82,6 +82,8 @@ public final class Keys {
     public static final String ALL_APPS_SEARCH = "all_apps_search";
     public static final String ALL_APPS_SCROLL = "all_apps_scroll";
     public static final String DRAWER_TABS = "drawer_tabs";
+    /** Where the drawer's strip of tabs is: "top" (the default) or "bottom" (the tab creator, DrawerTabsFragment). */
+    public static final String DRAWER_TAB_BAR_POSITION = "drawer_tab_bar_position";
     /**
      * "Notification badges" (BadgeModel, BadgeStyle): the settings of the number of notifications on an icon. They are
      * the launcher's own, not the creator's (CreatorKeys has none of them): they work with the stock layout too.

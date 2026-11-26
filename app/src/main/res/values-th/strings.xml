@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">แสดงแอปที่ซ่อน</string>
     <string name="drawer_tab_main">แอป</string>
     <string name="drawer_tab_default">แท็บ%1$d</string>
+    <string name="select_apps">เลือกแอป</string>
+    <string name="edit_drawer_tab">แก้ไขแท็บลิ้นชัก</string>
+    <string name="add_drawer_tab">เพิ่มแท็บลิ้นชัก</string>
+    <string name="drawer_tab_name_hint">ชื่อแท็บ</string>
+    <string name="keep_in_main_tab">เก็บแอปไว้ในแท็บแอปหลัก</string>
+    <string name="keep_in_main_inactive">ไม่มีผลกับการตั้งค่า “แอปในหลายแท็บ” ปัจจุบัน</string>
+    <string name="delete_drawer_tab_title">ลบแท็บหรือไม่</string>
+    <string name="delete_drawer_tab_message">“%1$s” จะถูกลบ แอปของแท็บนี้จะกลับไปที่แท็บหลัก เว้นแต่จะอยู่ในแท็บอื่น</string>
+    <string name="delete_drawer_tab_button">ลบ</string>
+    <string name="drawer_tabs_repeat">แอปในหลายแท็บ</string>
+    <string name="drawer_tabs_repeat_all">อนุญาตในทุกแท็บ</string>
+    <string name="drawer_tabs_repeat_except_main">อนุญาตในทุกแท็บยกเว้นแท็บหลัก</string>
+    <string name="drawer_tabs_repeat_none">ไม่อนุญาต</string>
+    <string name="drawer_tabs_keep_line">“%1$s” เก็บแอปของตนไว้ในแท็บหลักด้วย</string>
+    <string name="drawer_tab_bar_position">ตำแหน่งแถบแท็บ</string>
+    <string name="drawer_tab_bar_top">ด้านบน</string>
+    <string name="drawer_tab_bar_bottom">ด้านล่าง</string>
 </resources>

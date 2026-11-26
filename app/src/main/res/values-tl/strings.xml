@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Ipakita ang mga nakatagong app</string>
     <string name="drawer_tab_main">Mga app</string>
     <string name="drawer_tab_default">Tab%1$d</string>
+    <string name="select_apps">Pumili ng mga app</string>
+    <string name="edit_drawer_tab">I-edit ang tab ng drawer</string>
+    <string name="add_drawer_tab">Magdagdag ng tab ng drawer</string>
+    <string name="drawer_tab_name_hint">Pangalan ng tab</string>
+    <string name="keep_in_main_tab">Panatilihin ang mga app sa pangunahing tab</string>
+    <string name="keep_in_main_inactive">Hindi nalalapat sa kasalukuyang setting na “Mga app sa maraming tab”</string>
+    <string name="delete_drawer_tab_title">Tanggalin ang tab?</string>
+    <string name="delete_drawer_tab_message">Tatanggalin ang “%1$s”. Babalik ang mga app nito sa pangunahing tab maliban kung nasa ibang tab ang mga ito.</string>
+    <string name="delete_drawer_tab_button">Tanggalin</string>
+    <string name="drawer_tabs_repeat">Mga app sa maraming tab</string>
+    <string name="drawer_tabs_repeat_all">Payagan sa lahat ng tab</string>
+    <string name="drawer_tabs_repeat_except_main">Payagan sa lahat ng tab maliban sa pangunahing tab</string>
+    <string name="drawer_tabs_repeat_none">Huwag payagan</string>
+    <string name="drawer_tabs_keep_line">Pinapanatili rin ng “%1$s” ang mga app nito sa pangunahing tab</string>
+    <string name="drawer_tab_bar_position">Lokasyon ng tab bar</string>
+    <string name="drawer_tab_bar_top">Itaas</string>
+    <string name="drawer_tab_bar_bottom">Ibaba</string>
 </resources>

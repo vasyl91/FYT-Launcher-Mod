@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Rādīt paslēptās lietotnes</string>
     <string name="drawer_tab_main">Lietotnes</string>
     <string name="drawer_tab_default">Cilne%1$d</string>
+    <string name="select_apps">Izvēlēties lietotnes</string>
+    <string name="edit_drawer_tab">Rediģēt atvilktnes cilni</string>
+    <string name="add_drawer_tab">Pievienot atvilktnes cilni</string>
+    <string name="drawer_tab_name_hint">Cilnes nosaukums</string>
+    <string name="keep_in_main_tab">Paturēt lietotnes galvenajā cilnē</string>
+    <string name="keep_in_main_inactive">Netiek piemērots pašreizējam iestatījumam “Lietotnes vairākās cilnēs”</string>
+    <string name="delete_drawer_tab_title">Vai dzēst cilni?</string>
+    <string name="delete_drawer_tab_message">Cilne “%1$s” tiks dzēsta. Tās lietotnes atgriežas galvenajā cilnē, ja vien tās nav citā cilnē.</string>
+    <string name="delete_drawer_tab_button">Dzēst</string>
+    <string name="drawer_tabs_repeat">Lietotnes vairākās cilnēs</string>
+    <string name="drawer_tabs_repeat_all">Atļaut visās cilnēs</string>
+    <string name="drawer_tabs_repeat_except_main">Atļaut visās cilnēs, izņemot galveno</string>
+    <string name="drawer_tabs_repeat_none">Neatļaut</string>
+    <string name="drawer_tabs_keep_line">“%1$s” savas lietotnes patur arī galvenajā cilnē</string>
+    <string name="drawer_tab_bar_position">Cilņu joslas novietojums</string>
+    <string name="drawer_tab_bar_top">Augšā</string>
+    <string name="drawer_tab_bar_bottom">Apakšā</string>
 </resources>

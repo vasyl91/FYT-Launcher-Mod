@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Näita peidetud rakendusi</string>
     <string name="drawer_tab_main">Rakendused</string>
     <string name="drawer_tab_default">Vaheleht%1$d</string>
+    <string name="select_apps">Vali rakendused</string>
+    <string name="edit_drawer_tab">Muuda sahtli vahelehte</string>
+    <string name="add_drawer_tab">Lisa sahtli vaheleht</string>
+    <string name="drawer_tab_name_hint">Vahelehe nimi</string>
+    <string name="keep_in_main_tab">Hoia rakendused põhivahelehel</string>
+    <string name="keep_in_main_inactive">Ei kehti praeguse seadega „Rakendused mitmel vahelehel“</string>
+    <string name="delete_drawer_tab_title">Kas kustutada vaheleht?</string>
+    <string name="delete_drawer_tab_message">„%1$s“ kustutatakse. Selle rakendused naasevad põhivahelehele, kui need pole mõnel teisel vahelehel.</string>
+    <string name="delete_drawer_tab_button">Kustuta</string>
+    <string name="drawer_tabs_repeat">Rakendused mitmel vahelehel</string>
+    <string name="drawer_tabs_repeat_all">Luba kõigil vahelehtedel</string>
+    <string name="drawer_tabs_repeat_except_main">Luba kõigil vahelehtedel peale põhivahelehe</string>
+    <string name="drawer_tabs_repeat_none">Ära luba</string>
+    <string name="drawer_tabs_keep_line">„%1$s“ hoiab oma rakendusi ka põhivahelehel</string>
+    <string name="drawer_tab_bar_position">Vahelehtede riba asukoht</string>
+    <string name="drawer_tab_bar_top">Ülal</string>
+    <string name="drawer_tab_bar_bottom">All</string>
 </resources>

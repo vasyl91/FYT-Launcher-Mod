@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Gizli uygulamaları göster</string>
     <string name="drawer_tab_main">Uygulamalar</string>
     <string name="drawer_tab_default">Sekme%1$d</string>
+    <string name="select_apps">Uygulamaları seç</string>
+    <string name="edit_drawer_tab">Çekmece sekmesini düzenle</string>
+    <string name="add_drawer_tab">Çekmece sekmesi ekle</string>
+    <string name="drawer_tab_name_hint">Sekme adı</string>
+    <string name="keep_in_main_tab">Uygulamaları ana sekmede tut</string>
+    <string name="keep_in_main_inactive">Geçerli “Birden çok sekmedeki uygulamalar” ayarıyla uygulanmaz</string>
+    <string name="delete_drawer_tab_title">Sekme silinsin mi?</string>
+    <string name="delete_drawer_tab_message">“%1$s” silinecek. Uygulamaları, başka bir sekmede değilse ana sekmeye döner.</string>
+    <string name="delete_drawer_tab_button">Sil</string>
+    <string name="drawer_tabs_repeat">Birden çok sekmedeki uygulamalar</string>
+    <string name="drawer_tabs_repeat_all">Tüm sekmelerde izin ver</string>
+    <string name="drawer_tabs_repeat_except_main">Ana sekme dışındaki tüm sekmelerde izin ver</string>
+    <string name="drawer_tabs_repeat_none">İzin verme</string>
+    <string name="drawer_tabs_keep_line">“%1$s” uygulamalarını ana sekmede de tutar</string>
+    <string name="drawer_tab_bar_position">Sekme çubuğu konumu</string>
+    <string name="drawer_tab_bar_top">Üstte</string>
+    <string name="drawer_tab_bar_bottom">Altta</string>
 </resources>

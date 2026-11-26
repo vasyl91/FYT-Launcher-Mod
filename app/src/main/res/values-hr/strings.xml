@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Prikaži skrivene aplikacije</string>
     <string name="drawer_tab_main">Aplikacije</string>
     <string name="drawer_tab_default">Kartica%1$d</string>
+    <string name="select_apps">Odaberi aplikacije</string>
+    <string name="edit_drawer_tab">Uredi karticu ladice</string>
+    <string name="add_drawer_tab">Dodaj karticu ladice</string>
+    <string name="drawer_tab_name_hint">Naziv kartice</string>
+    <string name="keep_in_main_tab">Zadrži aplikacije na glavnoj kartici</string>
+    <string name="keep_in_main_inactive">Ne primjenjuje se uz trenutačnu postavku „Aplikacije na više kartica”</string>
+    <string name="delete_drawer_tab_title">Izbrisati karticu?</string>
+    <string name="delete_drawer_tab_message">„%1$s” bit će izbrisana. Njezine se aplikacije vraćaju na glavnu karticu, osim ako su na drugoj kartici.</string>
+    <string name="delete_drawer_tab_button">Izbriši</string>
+    <string name="drawer_tabs_repeat">Aplikacije na više kartica</string>
+    <string name="drawer_tabs_repeat_all">Dopusti na svim karticama</string>
+    <string name="drawer_tabs_repeat_except_main">Dopusti na svim karticama osim glavne</string>
+    <string name="drawer_tabs_repeat_none">Ne dopusti</string>
+    <string name="drawer_tabs_keep_line">„%1$s” zadržava svoje aplikacije i na glavnoj kartici</string>
+    <string name="drawer_tab_bar_position">Položaj trake s karticama</string>
+    <string name="drawer_tab_bar_top">Gore</string>
+    <string name="drawer_tab_bar_bottom">Dolje</string>
 </resources>

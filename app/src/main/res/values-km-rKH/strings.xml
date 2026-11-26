@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">បង្ហាញកម្មវិធីដែលបានលាក់</string>
     <string name="drawer_tab_main">កម្មវិធី</string>
     <string name="drawer_tab_default">ផ្ទាំង%1$d</string>
+    <string name="select_apps">ជ្រើសរើសកម្មវិធី</string>
+    <string name="edit_drawer_tab">កែសម្រួលផ្ទាំងថត</string>
+    <string name="add_drawer_tab">បន្ថែមផ្ទាំងថត</string>
+    <string name="drawer_tab_name_hint">ឈ្មោះផ្ទាំង</string>
+    <string name="keep_in_main_tab">រក្សាកម្មវិធីនៅក្នុងផ្ទាំងកម្មវិធីមេ</string>
+    <string name="keep_in_main_inactive">មិនអនុវត្តជាមួយការកំណត់បច្ចុប្បន្ន “កម្មវិធីក្នុងផ្ទាំងច្រើន” ទេ</string>
+    <string name="delete_drawer_tab_title">លុបផ្ទាំងឬ?</string>
+    <string name="delete_drawer_tab_message">“%1$s” នឹងត្រូវបានលុប។ កម្មវិធីរបស់វាត្រឡប់ទៅផ្ទាំងមេវិញ លើកលែងតែវាស្ថិតនៅក្នុងផ្ទាំងផ្សេង។</string>
+    <string name="delete_drawer_tab_button">លុប</string>
+    <string name="drawer_tabs_repeat">កម្មវិធីក្នុងផ្ទាំងច្រើន</string>
+    <string name="drawer_tabs_repeat_all">អនុញ្ញាតក្នុងគ្រប់ផ្ទាំង</string>
+    <string name="drawer_tabs_repeat_except_main">អនុញ្ញាតក្នុងគ្រប់ផ្ទាំង លើកលែងផ្ទាំងមេ</string>
+    <string name="drawer_tabs_repeat_none">កុំអនុញ្ញាត</string>
+    <string name="drawer_tabs_keep_line">“%1$s” ក៏រក្សាកម្មវិធីរបស់វានៅក្នុងផ្ទាំងមេដែរ</string>
+    <string name="drawer_tab_bar_position">ទីតាំងរបារផ្ទាំង</string>
+    <string name="drawer_tab_bar_top">ខាងលើ</string>
+    <string name="drawer_tab_bar_bottom">ខាងក្រោម</string>
 </resources>

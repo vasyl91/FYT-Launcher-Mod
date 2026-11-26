@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">숨긴 앱 표시</string>
     <string name="drawer_tab_main">앱</string>
     <string name="drawer_tab_default">탭%1$d</string>
+    <string name="select_apps">앱 선택</string>
+    <string name="edit_drawer_tab">서랍 탭 편집</string>
+    <string name="add_drawer_tab">서랍 탭 추가</string>
+    <string name="drawer_tab_name_hint">탭 이름</string>
+    <string name="keep_in_main_tab">앱을 기본 앱 탭에 유지</string>
+    <string name="keep_in_main_inactive">현재 “여러 탭의 앱” 설정에서는 적용되지 않습니다</string>
+    <string name="delete_drawer_tab_title">탭을 삭제할까요?</string>
+    <string name="delete_drawer_tab_message">“%1$s” 탭이 삭제됩니다. 이 탭의 앱은 다른 탭에 없으면 기본 탭으로 돌아갑니다.</string>
+    <string name="delete_drawer_tab_button">삭제</string>
+    <string name="drawer_tabs_repeat">여러 탭의 앱</string>
+    <string name="drawer_tabs_repeat_all">모든 탭에서 허용</string>
+    <string name="drawer_tabs_repeat_except_main">기본 탭을 제외한 모든 탭에서 허용</string>
+    <string name="drawer_tabs_repeat_none">허용 안 함</string>
+    <string name="drawer_tabs_keep_line">“%1$s” 탭의 앱은 기본 탭에도 유지됩니다</string>
+    <string name="drawer_tab_bar_position">탭 바 위치</string>
+    <string name="drawer_tab_bar_top">위쪽</string>
+    <string name="drawer_tab_bar_bottom">아래쪽</string>
 </resources>

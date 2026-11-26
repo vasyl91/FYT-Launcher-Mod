@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Verborgen apps tonen</string>
     <string name="drawer_tab_main">Apps</string>
     <string name="drawer_tab_default">Tab%1$d</string>
+    <string name="select_apps">Apps selecteren</string>
+    <string name="edit_drawer_tab">Lade-tab bewerken</string>
+    <string name="add_drawer_tab">Lade-tab toevoegen</string>
+    <string name="drawer_tab_name_hint">Tabnaam</string>
+    <string name="keep_in_main_tab">Apps in het hoofdtabblad houden</string>
+    <string name="keep_in_main_inactive">Niet toegepast met de huidige instelling “Apps in meerdere tabbladen”</string>
+    <string name="delete_drawer_tab_title">Tab verwijderen?</string>
+    <string name="delete_drawer_tab_message">“%1$s” wordt verwijderd. De apps gaan terug naar het hoofdtabblad, tenzij ze in een ander tabblad staan.</string>
+    <string name="delete_drawer_tab_button">Verwijderen</string>
+    <string name="drawer_tabs_repeat">Apps in meerdere tabbladen</string>
+    <string name="drawer_tabs_repeat_all">Toestaan in alle tabbladen</string>
+    <string name="drawer_tabs_repeat_except_main">Toestaan in alle tabbladen behalve het hoofdtabblad</string>
+    <string name="drawer_tabs_repeat_none">Niet toestaan</string>
+    <string name="drawer_tabs_keep_line">“%1$s” houdt zijn apps ook in het hoofdtabblad</string>
+    <string name="drawer_tab_bar_position">Plaatsing van de tabbalk</string>
+    <string name="drawer_tab_bar_top">Boven</string>
+    <string name="drawer_tab_bar_bottom">Onder</string>
 </resources>

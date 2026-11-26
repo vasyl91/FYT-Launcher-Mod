@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Hiện ứng dụng đã ẩn</string>
     <string name="drawer_tab_main">Ứng dụng</string>
     <string name="drawer_tab_default">Tab%1$d</string>
+    <string name="select_apps">Chọn ứng dụng</string>
+    <string name="edit_drawer_tab">Sửa tab ngăn kéo</string>
+    <string name="add_drawer_tab">Thêm tab ngăn kéo</string>
+    <string name="drawer_tab_name_hint">Tên tab</string>
+    <string name="keep_in_main_tab">Giữ ứng dụng trong tab ứng dụng chính</string>
+    <string name="keep_in_main_inactive">Không áp dụng với cài đặt “Ứng dụng trong nhiều tab” hiện tại</string>
+    <string name="delete_drawer_tab_title">Xóa tab?</string>
+    <string name="delete_drawer_tab_message">“%1$s” sẽ bị xóa. Ứng dụng của tab này quay lại tab chính trừ khi chúng ở tab khác.</string>
+    <string name="delete_drawer_tab_button">Xóa</string>
+    <string name="drawer_tabs_repeat">Ứng dụng trong nhiều tab</string>
+    <string name="drawer_tabs_repeat_all">Cho phép trong mọi tab</string>
+    <string name="drawer_tabs_repeat_except_main">Cho phép trong mọi tab trừ tab chính</string>
+    <string name="drawer_tabs_repeat_none">Không cho phép</string>
+    <string name="drawer_tabs_keep_line">“%1$s” cũng giữ ứng dụng của nó trong tab chính</string>
+    <string name="drawer_tab_bar_position">Vị trí thanh tab</string>
+    <string name="drawer_tab_bar_top">Trên cùng</string>
+    <string name="drawer_tab_bar_bottom">Dưới cùng</string>
 </resources>

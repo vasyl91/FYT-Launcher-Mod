@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Прикажи скривене апликације</string>
     <string name="drawer_tab_main">Апликације</string>
     <string name="drawer_tab_default">Картица%1$d</string>
+    <string name="select_apps">Изабери апликације</string>
+    <string name="edit_drawer_tab">Уреди картицу фиоке</string>
+    <string name="add_drawer_tab">Додај картицу фиоке</string>
+    <string name="drawer_tab_name_hint">Назив картице</string>
+    <string name="keep_in_main_tab">Задржи апликације на главној картици</string>
+    <string name="keep_in_main_inactive">Не примењује се уз тренутно подешавање „Апликације у више картица“</string>
+    <string name="delete_drawer_tab_title">Обрисати картицу?</string>
+    <string name="delete_drawer_tab_message">Картица „%1$s“ биће обрисана. Њене апликације се враћају на главну картицу, осим ако су на другој картици.</string>
+    <string name="delete_drawer_tab_button">Обриши</string>
+    <string name="drawer_tabs_repeat">Апликације у више картица</string>
+    <string name="drawer_tabs_repeat_all">Дозволи у свим картицама</string>
+    <string name="drawer_tabs_repeat_except_main">Дозволи у свим картицама осим главне</string>
+    <string name="drawer_tabs_repeat_none">Не дозволи</string>
+    <string name="drawer_tabs_keep_line">„%1$s“ задржава своје апликације и на главној картици</string>
+    <string name="drawer_tab_bar_position">Положај траке картица</string>
+    <string name="drawer_tab_bar_top">Горе</string>
+    <string name="drawer_tab_bar_bottom">Доле</string>
 </resources>

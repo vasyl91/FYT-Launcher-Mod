@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Mostrar aplicações ocultas</string>
     <string name="drawer_tab_main">Aplicações</string>
     <string name="drawer_tab_default">Separador%1$d</string>
+    <string name="select_apps">Selecionar aplicações</string>
+    <string name="edit_drawer_tab">Editar separador da gaveta</string>
+    <string name="add_drawer_tab">Adicionar separador à gaveta</string>
+    <string name="drawer_tab_name_hint">Nome do separador</string>
+    <string name="keep_in_main_tab">Manter aplicações no separador principal</string>
+    <string name="keep_in_main_inactive">Não se aplica com a definição atual «Aplicações em vários separadores»</string>
+    <string name="delete_drawer_tab_title">Eliminar separador?</string>
+    <string name="delete_drawer_tab_message">«%1$s» será eliminado. As suas aplicações regressam ao separador principal, a menos que estejam noutro separador.</string>
+    <string name="delete_drawer_tab_button">Eliminar</string>
+    <string name="drawer_tabs_repeat">Aplicações em vários separadores</string>
+    <string name="drawer_tabs_repeat_all">Permitir em todos os separadores</string>
+    <string name="drawer_tabs_repeat_except_main">Permitir em todos os separadores exceto o principal</string>
+    <string name="drawer_tabs_repeat_none">Não permitir</string>
+    <string name="drawer_tabs_keep_line">«%1$s» também mantém as suas aplicações no separador principal</string>
+    <string name="drawer_tab_bar_position">Posição da barra de separadores</string>
+    <string name="drawer_tab_bar_top">Em cima</string>
+    <string name="drawer_tab_bar_bottom">Em baixo</string>
 </resources>

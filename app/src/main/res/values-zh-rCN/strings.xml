@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">显示隐藏的应用</string>
     <string name="drawer_tab_main">应用</string>
     <string name="drawer_tab_default">标签页%1$d</string>
+    <string name="select_apps">选择应用</string>
+    <string name="edit_drawer_tab">编辑抽屉标签页</string>
+    <string name="add_drawer_tab">添加抽屉标签页</string>
+    <string name="drawer_tab_name_hint">标签页名称</string>
+    <string name="keep_in_main_tab">将应用保留在主应用标签页</string>
+    <string name="keep_in_main_inactive">当前“多个标签页中的应用”设置下不适用</string>
+    <string name="delete_drawer_tab_title">删除标签页？</string>
+    <string name="delete_drawer_tab_message">将删除“%1$s”。其中的应用会回到主标签页，除非它们在其他标签页中。</string>
+    <string name="delete_drawer_tab_button">删除</string>
+    <string name="drawer_tabs_repeat">多个标签页中的应用</string>
+    <string name="drawer_tabs_repeat_all">允许出现在所有标签页</string>
+    <string name="drawer_tabs_repeat_except_main">允许出现在除主标签页外的所有标签页</string>
+    <string name="drawer_tabs_repeat_none">不允许</string>
+    <string name="drawer_tabs_keep_line">“%1$s”的应用也保留在主标签页</string>
+    <string name="drawer_tab_bar_position">标签栏位置</string>
+    <string name="drawer_tab_bar_top">顶部</string>
+    <string name="drawer_tab_bar_bottom">底部</string>
 </resources>

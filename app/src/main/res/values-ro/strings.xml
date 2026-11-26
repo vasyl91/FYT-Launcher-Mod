@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Afișați aplicațiile ascunse</string>
     <string name="drawer_tab_main">Aplicații</string>
     <string name="drawer_tab_default">Fila%1$d</string>
+    <string name="select_apps">Selectați aplicațiile</string>
+    <string name="edit_drawer_tab">Editați fila sertarului</string>
+    <string name="add_drawer_tab">Adăugați o filă în sertar</string>
+    <string name="drawer_tab_name_hint">Numele filei</string>
+    <string name="keep_in_main_tab">Păstrați aplicațiile în fila principală</string>
+    <string name="keep_in_main_inactive">Nu se aplică cu setarea curentă „Aplicații în mai multe file”</string>
+    <string name="delete_drawer_tab_title">Ștergeți fila?</string>
+    <string name="delete_drawer_tab_message">„%1$s” va fi ștearsă. Aplicațiile ei revin în fila principală, dacă nu sunt într-o altă filă.</string>
+    <string name="delete_drawer_tab_button">Ștergeți</string>
+    <string name="drawer_tabs_repeat">Aplicații în mai multe file</string>
+    <string name="drawer_tabs_repeat_all">Permiteți în toate filele</string>
+    <string name="drawer_tabs_repeat_except_main">Permiteți în toate filele, în afară de cea principală</string>
+    <string name="drawer_tabs_repeat_none">Nu permiteți</string>
+    <string name="drawer_tabs_keep_line">„%1$s” își păstrează aplicațiile și în fila principală</string>
+    <string name="drawer_tab_bar_position">Poziția barei de file</string>
+    <string name="drawer_tab_bar_top">Sus</string>
+    <string name="drawer_tab_bar_bottom">Jos</string>
 </resources>

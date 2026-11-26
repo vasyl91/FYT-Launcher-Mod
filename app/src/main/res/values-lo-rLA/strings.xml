@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">ສະແດງແອັບທີ່ເຊື່ອງໄວ້</string>
     <string name="drawer_tab_main">ແອັບ</string>
     <string name="drawer_tab_default">ແຖບ%1$d</string>
+    <string name="select_apps">ເລືອກແອັບ</string>
+    <string name="edit_drawer_tab">ແກ້ໄຂແຖບລິ້ນຊັກ</string>
+    <string name="add_drawer_tab">ເພີ່ມແຖບລິ້ນຊັກ</string>
+    <string name="drawer_tab_name_hint">ຊື່ແຖບ</string>
+    <string name="keep_in_main_tab">ເກັບແອັບໄວ້ໃນແຖບແອັບຫຼັກ</string>
+    <string name="keep_in_main_inactive">ບໍ່ໃຊ້ກັບການຕັ້ງຄ່າ “ແອັບໃນຫຼາຍແຖບ” ປັດຈຸບັນ</string>
+    <string name="delete_drawer_tab_title">ລຶບແຖບບໍ?</string>
+    <string name="delete_drawer_tab_message">“%1$s” ຈະຖືກລຶບ. ແອັບຂອງມັນຈະກັບໄປແຖບຫຼັກ ເວັ້ນແຕ່ຢູ່ໃນແຖບອື່ນ.</string>
+    <string name="delete_drawer_tab_button">ລຶບ</string>
+    <string name="drawer_tabs_repeat">ແອັບໃນຫຼາຍແຖບ</string>
+    <string name="drawer_tabs_repeat_all">ອະນຸຍາດໃນທຸກແຖບ</string>
+    <string name="drawer_tabs_repeat_except_main">ອະນຸຍາດໃນທຸກແຖບຍົກເວັ້ນແຖບຫຼັກ</string>
+    <string name="drawer_tabs_repeat_none">ບໍ່ອະນຸຍາດ</string>
+    <string name="drawer_tabs_keep_line">“%1$s” ເກັບແອັບຂອງມັນໄວ້ໃນແຖບຫຼັກນຳ</string>
+    <string name="drawer_tab_bar_position">ຕຳແໜ່ງແຖບແຖບ</string>
+    <string name="drawer_tab_bar_top">ເທິງ</string>
+    <string name="drawer_tab_bar_bottom">ລຸ່ມ</string>
 </resources>

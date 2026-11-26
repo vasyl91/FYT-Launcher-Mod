@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Mostra applicazioni nascoste</string>
     <string name="drawer_tab_main">Applicazioni</string>
     <string name="drawer_tab_default">Scheda%1$d</string>
+    <string name="select_apps">Seleziona applicazioni</string>
+    <string name="edit_drawer_tab">Modifica scheda del drawer</string>
+    <string name="add_drawer_tab">Aggiungi scheda al drawer</string>
+    <string name="drawer_tab_name_hint">Nome della scheda</string>
+    <string name="keep_in_main_tab">Mantieni le applicazioni nella scheda principale</string>
+    <string name="keep_in_main_inactive">Non applicato con l\'impostazione attuale «Applicazioni in più schede»</string>
+    <string name="delete_drawer_tab_title">Eliminare la scheda?</string>
+    <string name="delete_drawer_tab_message">«%1$s» verrà eliminata. Le sue applicazioni tornano nella scheda principale, a meno che non siano in un\'altra scheda.</string>
+    <string name="delete_drawer_tab_button">Elimina</string>
+    <string name="drawer_tabs_repeat">Applicazioni in più schede</string>
+    <string name="drawer_tabs_repeat_all">Consenti in tutte le schede</string>
+    <string name="drawer_tabs_repeat_except_main">Consenti in tutte le schede tranne la principale</string>
+    <string name="drawer_tabs_repeat_none">Non consentire</string>
+    <string name="drawer_tabs_keep_line">«%1$s» mantiene le sue applicazioni anche nella scheda principale</string>
+    <string name="drawer_tab_bar_position">Posizione della barra delle schede</string>
+    <string name="drawer_tab_bar_top">In alto</string>
+    <string name="drawer_tab_bar_bottom">In basso</string>
 </resources>

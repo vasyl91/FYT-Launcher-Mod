@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Vis skjulte apps</string>
     <string name="drawer_tab_main">Apps</string>
     <string name="drawer_tab_default">Fane%1$d</string>
+    <string name="select_apps">Vælg apps</string>
+    <string name="edit_drawer_tab">Rediger skuffefane</string>
+    <string name="add_drawer_tab">Tilføj skuffefane</string>
+    <string name="drawer_tab_name_hint">Fanenavn</string>
+    <string name="keep_in_main_tab">Behold apps på hovedfanen</string>
+    <string name="keep_in_main_inactive">Anvendes ikke med den nuværende indstilling “Apps i flere faner”</string>
+    <string name="delete_drawer_tab_title">Slet fane?</string>
+    <string name="delete_drawer_tab_message">“%1$s” slettes. Dens apps vender tilbage til hovedfanen, medmindre de er i en anden fane.</string>
+    <string name="delete_drawer_tab_button">Slet</string>
+    <string name="drawer_tabs_repeat">Apps i flere faner</string>
+    <string name="drawer_tabs_repeat_all">Tillad i alle faner</string>
+    <string name="drawer_tabs_repeat_except_main">Tillad i alle faner undtagen hovedfanen</string>
+    <string name="drawer_tabs_repeat_none">Tillad ikke</string>
+    <string name="drawer_tabs_keep_line">“%1$s” beholder også sine apps på hovedfanen</string>
+    <string name="drawer_tab_bar_position">Placering af fanelinjen</string>
+    <string name="drawer_tab_bar_top">Øverst</string>
+    <string name="drawer_tab_bar_bottom">Nederst</string>
 </resources>

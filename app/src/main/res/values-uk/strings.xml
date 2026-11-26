@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Показати приховані програми</string>
     <string name="drawer_tab_main">Програми</string>
     <string name="drawer_tab_default">Вкладка%1$d</string>
+    <string name="select_apps">Вибрати програми</string>
+    <string name="edit_drawer_tab">Редагувати вкладку шухляди</string>
+    <string name="add_drawer_tab">Додати вкладку шухляди</string>
+    <string name="drawer_tab_name_hint">Назва вкладки</string>
+    <string name="keep_in_main_tab">Залишати програми на основній вкладці</string>
+    <string name="keep_in_main_inactive">Не застосовується за поточного налаштування «Програми в кількох вкладках»</string>
+    <string name="delete_drawer_tab_title">Видалити вкладку?</string>
+    <string name="delete_drawer_tab_message">Вкладку «%1$s» буде видалено. Її програми повернуться на основну вкладку, якщо їх немає в іншій вкладці.</string>
+    <string name="delete_drawer_tab_button">Видалити</string>
+    <string name="drawer_tabs_repeat">Програми в кількох вкладках</string>
+    <string name="drawer_tabs_repeat_all">Дозволити в усіх вкладках</string>
+    <string name="drawer_tabs_repeat_except_main">Дозволити в усіх вкладках, крім основної</string>
+    <string name="drawer_tabs_repeat_none">Не дозволяти</string>
+    <string name="drawer_tabs_keep_line">«%1$s» залишає свої програми також на основній вкладці</string>
+    <string name="drawer_tab_bar_position">Розташування панелі вкладок</string>
+    <string name="drawer_tab_bar_top">Угорі</string>
+    <string name="drawer_tab_bar_bottom">Унизу</string>
 </resources>

@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Afficher les applications masquées</string>
     <string name="drawer_tab_main">Applications</string>
     <string name="drawer_tab_default">Onglet%1$d</string>
+    <string name="select_apps">Sélectionner des applications</string>
+    <string name="edit_drawer_tab">Modifier l\'onglet du tiroir</string>
+    <string name="add_drawer_tab">Ajouter un onglet au tiroir</string>
+    <string name="drawer_tab_name_hint">Nom de l\'onglet</string>
+    <string name="keep_in_main_tab">Garder les applications dans l\'onglet principal</string>
+    <string name="keep_in_main_inactive">Non appliqué avec le réglage actuel « Applications dans plusieurs onglets »</string>
+    <string name="delete_drawer_tab_title">Supprimer l\'onglet ?</string>
+    <string name="delete_drawer_tab_message">« %1$s » sera supprimé. Ses applications retournent dans l\'onglet principal, sauf si elles sont dans un autre onglet.</string>
+    <string name="delete_drawer_tab_button">Supprimer</string>
+    <string name="drawer_tabs_repeat">Applications dans plusieurs onglets</string>
+    <string name="drawer_tabs_repeat_all">Autoriser dans tous les onglets</string>
+    <string name="drawer_tabs_repeat_except_main">Autoriser dans tous les onglets sauf l\'onglet principal</string>
+    <string name="drawer_tabs_repeat_none">Ne pas autoriser</string>
+    <string name="drawer_tabs_keep_line">« %1$s » garde aussi ses applications dans l\'onglet principal</string>
+    <string name="drawer_tab_bar_position">Emplacement de la barre d\'onglets</string>
+    <string name="drawer_tab_bar_top">En haut</string>
+    <string name="drawer_tab_bar_bottom">En bas</string>
 </resources>

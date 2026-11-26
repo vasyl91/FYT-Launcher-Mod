@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Vis skjulte apper</string>
     <string name="drawer_tab_main">Apper</string>
     <string name="drawer_tab_default">Fane%1$d</string>
+    <string name="select_apps">Velg apper</string>
+    <string name="edit_drawer_tab">Rediger skuffefane</string>
+    <string name="add_drawer_tab">Legg til skuffefane</string>
+    <string name="drawer_tab_name_hint">Fanenavn</string>
+    <string name="keep_in_main_tab">Behold apper i hovedfanen</string>
+    <string name="keep_in_main_inactive">Brukes ikke med gjeldende innstilling «Apper i flere faner»</string>
+    <string name="delete_drawer_tab_title">Slette fanen?</string>
+    <string name="delete_drawer_tab_message">«%1$s» slettes. Appene går tilbake til hovedfanen, med mindre de er i en annen fane.</string>
+    <string name="delete_drawer_tab_button">Slett</string>
+    <string name="drawer_tabs_repeat">Apper i flere faner</string>
+    <string name="drawer_tabs_repeat_all">Tillat i alle faner</string>
+    <string name="drawer_tabs_repeat_except_main">Tillat i alle faner unntatt hovedfanen</string>
+    <string name="drawer_tabs_repeat_none">Ikke tillat</string>
+    <string name="drawer_tabs_keep_line">«%1$s» beholder også appene sine i hovedfanen</string>
+    <string name="drawer_tab_bar_position">Plassering av fanelinjen</string>
+    <string name="drawer_tab_bar_top">Øverst</string>
+    <string name="drawer_tab_bar_bottom">Nederst</string>
 </resources>

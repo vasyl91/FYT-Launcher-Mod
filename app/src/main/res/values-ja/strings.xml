@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">非表示のアプリを表示</string>
     <string name="drawer_tab_main">アプリ</string>
     <string name="drawer_tab_default">タブ%1$d</string>
+    <string name="select_apps">アプリを選択</string>
+    <string name="edit_drawer_tab">ドロワーのタブを編集</string>
+    <string name="add_drawer_tab">ドロワーのタブを追加</string>
+    <string name="drawer_tab_name_hint">タブ名</string>
+    <string name="keep_in_main_tab">アプリをメインタブにも残す</string>
+    <string name="keep_in_main_inactive">現在の「複数のタブのアプリ」設定では適用されません</string>
+    <string name="delete_drawer_tab_title">タブを削除しますか？</string>
+    <string name="delete_drawer_tab_message">「%1$s」を削除します。このタブのアプリは、他のタブにない限りメインタブに戻ります。</string>
+    <string name="delete_drawer_tab_button">削除</string>
+    <string name="drawer_tabs_repeat">複数のタブのアプリ</string>
+    <string name="drawer_tabs_repeat_all">すべてのタブで許可</string>
+    <string name="drawer_tabs_repeat_except_main">メインタブ以外のすべてのタブで許可</string>
+    <string name="drawer_tabs_repeat_none">許可しない</string>
+    <string name="drawer_tabs_keep_line">「%1$s」はアプリをメインタブにも残します</string>
+    <string name="drawer_tab_bar_position">タブバーの位置</string>
+    <string name="drawer_tab_bar_top">上</string>
+    <string name="drawer_tab_bar_bottom">下</string>
 </resources>

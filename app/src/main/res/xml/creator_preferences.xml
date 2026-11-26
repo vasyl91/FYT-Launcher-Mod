@@ -452,12 +452,11 @@
             android:entries="@array/all_apps_scroll_entries"
             android:entryValues="@array/all_apps_scroll_values"
             app:layout="@layout/nested_preference_category_no_switch" />
-        <!-- The tab creator: the row shows when the screen exists (F5) -->
+        <!-- Opens the tab creator (DrawerTabsFragment) -->
         <Preference
             android:key="drawer_tabs"
             android:title="@string/drawer_tabs"
-            android:summary="@string/drawer_tabs_summary"
-            app:isPreferenceVisible="false" />
+            android:summary="@string/drawer_tabs_summary" />
 
     </PreferenceCategory>
 

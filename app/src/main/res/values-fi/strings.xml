@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Näytä piilotetut sovellukset</string>
     <string name="drawer_tab_main">Sovellukset</string>
     <string name="drawer_tab_default">Välilehti%1$d</string>
+    <string name="select_apps">Valitse sovellukset</string>
+    <string name="edit_drawer_tab">Muokkaa laatikon välilehteä</string>
+    <string name="add_drawer_tab">Lisää laatikon välilehti</string>
+    <string name="drawer_tab_name_hint">Välilehden nimi</string>
+    <string name="keep_in_main_tab">Pidä sovellukset päävälilehdellä</string>
+    <string name="keep_in_main_inactive">Ei käytössä nykyisellä asetuksella ”Sovellukset useilla välilehdillä”</string>
+    <string name="delete_drawer_tab_title">Poistetaanko välilehti?</string>
+    <string name="delete_drawer_tab_message">”%1$s” poistetaan. Sen sovellukset palaavat päävälilehdelle, ellei niitä ole toisella välilehdellä.</string>
+    <string name="delete_drawer_tab_button">Poista</string>
+    <string name="drawer_tabs_repeat">Sovellukset useilla välilehdillä</string>
+    <string name="drawer_tabs_repeat_all">Salli kaikilla välilehdillä</string>
+    <string name="drawer_tabs_repeat_except_main">Salli kaikilla välilehdillä paitsi päävälilehdellä</string>
+    <string name="drawer_tabs_repeat_none">Älä salli</string>
+    <string name="drawer_tabs_keep_line">”%1$s” pitää sovelluksensa myös päävälilehdellä</string>
+    <string name="drawer_tab_bar_position">Välilehtipalkin sijainti</string>
+    <string name="drawer_tab_bar_top">Ylhäällä</string>
+    <string name="drawer_tab_bar_bottom">Alhaalla</string>
 </resources>

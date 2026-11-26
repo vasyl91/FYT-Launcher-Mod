@@ -641,4 +641,21 @@
     <string name="show_hidden_apps">Show hidden apps</string>
     <string name="drawer_tab_main">Apps</string>
     <string name="drawer_tab_default">Tab%1$d</string>
+    <string name="select_apps">Select apps</string>
+    <string name="edit_drawer_tab">Edit drawer tab</string>
+    <string name="add_drawer_tab">Add drawer tab</string>
+    <string name="drawer_tab_name_hint">Tab name</string>
+    <string name="keep_in_main_tab">Keep apps in main app tab</string>
+    <string name="keep_in_main_inactive">Not applied with the current “Apps in several tabs” setting</string>
+    <string name="delete_drawer_tab_title">Delete tab?</string>
+    <string name="delete_drawer_tab_message">“%1$s” will be deleted. Its apps return to the main tab unless they are in another tab.</string>
+    <string name="delete_drawer_tab_button">Delete</string>
+    <string name="drawer_tabs_repeat">Apps in several tabs</string>
+    <string name="drawer_tabs_repeat_all">Allow in all tabs</string>
+    <string name="drawer_tabs_repeat_except_main">Allow in all tabs except the main tab</string>
+    <string name="drawer_tabs_repeat_none">Do not allow</string>
+    <string name="drawer_tabs_keep_line">“%1$s” also keeps its apps in the main tab</string>
+    <string name="drawer_tab_bar_position">Tab bar placement</string>
+    <string name="drawer_tab_bar_top">Top</string>
+    <string name="drawer_tab_bar_bottom">Bottom</string>
 </resources>

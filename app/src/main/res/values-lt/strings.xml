@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Rodyti paslėptas programas</string>
     <string name="drawer_tab_main">Programos</string>
     <string name="drawer_tab_default">Skirtukas%1$d</string>
+    <string name="select_apps">Pasirinkti programas</string>
+    <string name="edit_drawer_tab">Redaguoti stalčiaus skirtuką</string>
+    <string name="add_drawer_tab">Pridėti stalčiaus skirtuką</string>
+    <string name="drawer_tab_name_hint">Skirtuko pavadinimas</string>
+    <string name="keep_in_main_tab">Palikti programas pagrindiniame skirtuke</string>
+    <string name="keep_in_main_inactive">Netaikoma esant dabartiniam nustatymui „Programos keliuose skirtukuose“</string>
+    <string name="delete_drawer_tab_title">Ištrinti skirtuką?</string>
+    <string name="delete_drawer_tab_message">„%1$s“ bus ištrintas. Jo programos grįžta į pagrindinį skirtuką, nebent jos yra kitame skirtuke.</string>
+    <string name="delete_drawer_tab_button">Ištrinti</string>
+    <string name="drawer_tabs_repeat">Programos keliuose skirtukuose</string>
+    <string name="drawer_tabs_repeat_all">Leisti visuose skirtukuose</string>
+    <string name="drawer_tabs_repeat_except_main">Leisti visuose skirtukuose, išskyrus pagrindinį</string>
+    <string name="drawer_tabs_repeat_none">Neleisti</string>
+    <string name="drawer_tabs_keep_line">„%1$s“ savo programas palieka ir pagrindiniame skirtuke</string>
+    <string name="drawer_tab_bar_position">Skirtukų juostos vieta</string>
+    <string name="drawer_tab_bar_top">Viršuje</string>
+    <string name="drawer_tab_bar_bottom">Apačioje</string>
 </resources>

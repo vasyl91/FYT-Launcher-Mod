@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Mussar applicaziuns zuppadas</string>
     <string name="drawer_tab_main">Applicaziuns</string>
     <string name="drawer_tab_default">Tab%1$d</string>
+    <string name="select_apps">Tscherner applicaziuns</string>
+    <string name="edit_drawer_tab">Modifitgar il tab dal tirader</string>
+    <string name="add_drawer_tab">Agiuntar in tab al tirader</string>
+    <string name="drawer_tab_name_hint">Num dal tab</string>
+    <string name="keep_in_main_tab">Mantegnair las applicaziuns en il tab principal</string>
+    <string name="keep_in_main_inactive">Betg applitgà cun la configuraziun actuala «Applicaziuns en plirs tabs»</string>
+    <string name="delete_drawer_tab_title">Stizzar il tab?</string>
+    <string name="delete_drawer_tab_message">«%1$s» vegn stizzà. Las applicaziuns turnan en il tab principal, nun ch\'ellas sajan en in auter tab.</string>
+    <string name="delete_drawer_tab_button">Stizzar</string>
+    <string name="drawer_tabs_repeat">Applicaziuns en plirs tabs</string>
+    <string name="drawer_tabs_repeat_all">Permetter en tut ils tabs</string>
+    <string name="drawer_tabs_repeat_except_main">Permetter en tut ils tabs ordaifer il tab principal</string>
+    <string name="drawer_tabs_repeat_none">Betg permetter</string>
+    <string name="drawer_tabs_keep_line">«%1$s» mantegna er las atgnas applicaziuns en il tab principal</string>
+    <string name="drawer_tab_bar_position">Posiziun da la bara dals tabs</string>
+    <string name="drawer_tab_bar_top">Sura</string>
+    <string name="drawer_tab_bar_bottom">Sut</string>
 </resources>

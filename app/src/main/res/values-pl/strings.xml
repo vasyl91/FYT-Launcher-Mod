@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Pokaż ukryte aplikacje</string>
     <string name="drawer_tab_main">Aplikacje</string>
     <string name="drawer_tab_default">Karta%1$d</string>
+    <string name="select_apps">Wybierz aplikacje</string>
+    <string name="edit_drawer_tab">Edytuj kartę szuflady</string>
+    <string name="add_drawer_tab">Dodaj kartę szuflady</string>
+    <string name="drawer_tab_name_hint">Nazwa karty</string>
+    <string name="keep_in_main_tab">Zachowaj aplikacje na karcie głównej</string>
+    <string name="keep_in_main_inactive">Nie ma zastosowania przy obecnym ustawieniu „Aplikacje na kilku kartach”</string>
+    <string name="delete_drawer_tab_title">Usunąć kartę?</string>
+    <string name="delete_drawer_tab_message">Karta „%1$s” zostanie usunięta. Jej aplikacje wrócą na kartę główną, o ile nie są na innej karcie.</string>
+    <string name="delete_drawer_tab_button">Usuń</string>
+    <string name="drawer_tabs_repeat">Aplikacje na kilku kartach</string>
+    <string name="drawer_tabs_repeat_all">Zezwól na wszystkich kartach</string>
+    <string name="drawer_tabs_repeat_except_main">Zezwól na wszystkich kartach oprócz głównej</string>
+    <string name="drawer_tabs_repeat_none">Nie zezwalaj</string>
+    <string name="drawer_tabs_keep_line">Karta „%1$s” zachowuje swoje aplikacje także na karcie głównej</string>
+    <string name="drawer_tab_bar_position">Położenie paska kart</string>
+    <string name="drawer_tab_bar_top">Na górze</string>
+    <string name="drawer_tab_bar_bottom">Na dole</string>
 </resources>

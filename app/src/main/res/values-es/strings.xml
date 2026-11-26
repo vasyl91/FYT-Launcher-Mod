@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Mostrar aplicaciones ocultas</string>
     <string name="drawer_tab_main">Aplicaciones</string>
     <string name="drawer_tab_default">Pestaña%1$d</string>
+    <string name="select_apps">Seleccionar aplicaciones</string>
+    <string name="edit_drawer_tab">Editar pestaña del cajón</string>
+    <string name="add_drawer_tab">Añadir pestaña al cajón</string>
+    <string name="drawer_tab_name_hint">Nombre de la pestaña</string>
+    <string name="keep_in_main_tab">Mantener las aplicaciones en la pestaña principal</string>
+    <string name="keep_in_main_inactive">No se aplica con el ajuste actual «Aplicaciones en varias pestañas»</string>
+    <string name="delete_drawer_tab_title">¿Eliminar pestaña?</string>
+    <string name="delete_drawer_tab_message">Se eliminará «%1$s». Sus aplicaciones vuelven a la pestaña principal, salvo que estén en otra pestaña.</string>
+    <string name="delete_drawer_tab_button">Eliminar</string>
+    <string name="drawer_tabs_repeat">Aplicaciones en varias pestañas</string>
+    <string name="drawer_tabs_repeat_all">Permitir en todas las pestañas</string>
+    <string name="drawer_tabs_repeat_except_main">Permitir en todas las pestañas excepto la principal</string>
+    <string name="drawer_tabs_repeat_none">No permitir</string>
+    <string name="drawer_tabs_keep_line">«%1$s» también mantiene sus aplicaciones en la pestaña principal</string>
+    <string name="drawer_tab_bar_position">Ubicación de la barra de pestañas</string>
+    <string name="drawer_tab_bar_top">Arriba</string>
+    <string name="drawer_tab_bar_bottom">Abajo</string>
 </resources>

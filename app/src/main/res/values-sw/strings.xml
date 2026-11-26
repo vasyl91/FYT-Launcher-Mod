@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Onyesha programu zilizofichwa</string>
     <string name="drawer_tab_main">Programu</string>
     <string name="drawer_tab_default">Kichupo%1$d</string>
+    <string name="select_apps">Chagua programu</string>
+    <string name="edit_drawer_tab">Hariri kichupo cha droo</string>
+    <string name="add_drawer_tab">Ongeza kichupo cha droo</string>
+    <string name="drawer_tab_name_hint">Jina la kichupo</string>
+    <string name="keep_in_main_tab">Weka programu kwenye kichupo kikuu</string>
+    <string name="keep_in_main_inactive">Haitumiki na mpangilio wa sasa wa “Programu katika vichupo kadhaa”</string>
+    <string name="delete_drawer_tab_title">Futa kichupo?</string>
+    <string name="delete_drawer_tab_message">“%1$s” itafutwa. Programu zake zitarudi kwenye kichupo kikuu isipokuwa ziko kwenye kichupo kingine.</string>
+    <string name="delete_drawer_tab_button">Futa</string>
+    <string name="drawer_tabs_repeat">Programu katika vichupo kadhaa</string>
+    <string name="drawer_tabs_repeat_all">Ruhusu katika vichupo vyote</string>
+    <string name="drawer_tabs_repeat_except_main">Ruhusu katika vichupo vyote isipokuwa kichupo kikuu</string>
+    <string name="drawer_tabs_repeat_none">Usiruhusu</string>
+    <string name="drawer_tabs_keep_line">“%1$s” pia huweka programu zake kwenye kichupo kikuu</string>
+    <string name="drawer_tab_bar_position">Mahali pa upau wa vichupo</string>
+    <string name="drawer_tab_bar_top">Juu</string>
+    <string name="drawer_tab_bar_bottom">Chini</string>
 </resources>

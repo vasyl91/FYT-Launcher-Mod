@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Нуусан аппуудыг харуулах</string>
     <string name="drawer_tab_main">Апп</string>
     <string name="drawer_tab_default">Таб%1$d</string>
+    <string name="select_apps">Апп сонгох</string>
+    <string name="edit_drawer_tab">Шургуулганы табыг засах</string>
+    <string name="add_drawer_tab">Шургуулганы таб нэмэх</string>
+    <string name="drawer_tab_name_hint">Табын нэр</string>
+    <string name="keep_in_main_tab">Аппуудыг үндсэн табд үлдээх</string>
+    <string name="keep_in_main_inactive">Одоогийн “Олон табын аппууд” тохиргоотой үед үйлчлэхгүй</string>
+    <string name="delete_drawer_tab_title">Табыг устгах уу?</string>
+    <string name="delete_drawer_tab_message">“%1$s” устгагдана. Түүний аппууд өөр табд байхгүй бол үндсэн таб руу буцна.</string>
+    <string name="delete_drawer_tab_button">Устгах</string>
+    <string name="drawer_tabs_repeat">Олон табын аппууд</string>
+    <string name="drawer_tabs_repeat_all">Бүх табд зөвшөөрөх</string>
+    <string name="drawer_tabs_repeat_except_main">Үндсэн табаас бусад бүх табд зөвшөөрөх</string>
+    <string name="drawer_tabs_repeat_none">Зөвшөөрөхгүй</string>
+    <string name="drawer_tabs_keep_line">“%1$s” аппуудаа үндсэн табд мөн үлдээнэ</string>
+    <string name="drawer_tab_bar_position">Табын самбарын байрлал</string>
+    <string name="drawer_tab_bar_top">Дээд</string>
+    <string name="drawer_tab_bar_bottom">Доод</string>
 </resources>

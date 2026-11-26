@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">छिपे हुए ऐप दिखाएं</string>
     <string name="drawer_tab_main">ऐप्स</string>
     <string name="drawer_tab_default">टैब%1$d</string>
+    <string name="select_apps">ऐप चुनें</string>
+    <string name="edit_drawer_tab">ड्रॉअर टैब संपादित करें</string>
+    <string name="add_drawer_tab">ड्रॉअर टैब जोड़ें</string>
+    <string name="drawer_tab_name_hint">टैब का नाम</string>
+    <string name="keep_in_main_tab">ऐप्स को मुख्य ऐप टैब में रखें</string>
+    <string name="keep_in_main_inactive">वर्तमान “कई टैब में ऐप्स” सेटिंग के साथ लागू नहीं होता</string>
+    <string name="delete_drawer_tab_title">टैब हटाएं?</string>
+    <string name="delete_drawer_tab_message">“%1$s” हटा दिया जाएगा। इसके ऐप्स मुख्य टैब में लौट जाएंगे, जब तक वे किसी अन्य टैब में न हों।</string>
+    <string name="delete_drawer_tab_button">हटाएं</string>
+    <string name="drawer_tabs_repeat">कई टैब में ऐप्स</string>
+    <string name="drawer_tabs_repeat_all">सभी टैब में अनुमति दें</string>
+    <string name="drawer_tabs_repeat_except_main">मुख्य टैब को छोड़कर सभी टैब में अनुमति दें</string>
+    <string name="drawer_tabs_repeat_none">अनुमति न दें</string>
+    <string name="drawer_tabs_keep_line">“%1$s” अपने ऐप्स को मुख्य टैब में भी रखता है</string>
+    <string name="drawer_tab_bar_position">टैब बार की स्थिति</string>
+    <string name="drawer_tab_bar_top">ऊपर</string>
+    <string name="drawer_tab_bar_bottom">नीचे</string>
 </resources>

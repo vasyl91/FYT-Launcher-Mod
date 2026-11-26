@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Wys versteekte programme</string>
     <string name="drawer_tab_main">Programme</string>
     <string name="drawer_tab_default">Oortjie%1$d</string>
+    <string name="select_apps">Kies programme</string>
+    <string name="edit_drawer_tab">Wysig laai-oortjie</string>
+    <string name="add_drawer_tab">Voeg laai-oortjie by</string>
+    <string name="drawer_tab_name_hint">Oortjie-naam</string>
+    <string name="keep_in_main_tab">Hou programme in die hoofprogram-oortjie</string>
+    <string name="keep_in_main_inactive">Nie toegepas met die huidige instelling “Programme in verskeie oortjies” nie</string>
+    <string name="delete_drawer_tab_title">Skrap oortjie?</string>
+    <string name="delete_drawer_tab_message">“%1$s” sal geskrap word. Die programme daarvan keer terug na die hoofoortjie, tensy hulle in \'n ander oortjie is.</string>
+    <string name="delete_drawer_tab_button">Skrap</string>
+    <string name="drawer_tabs_repeat">Programme in verskeie oortjies</string>
+    <string name="drawer_tabs_repeat_all">Laat toe in alle oortjies</string>
+    <string name="drawer_tabs_repeat_except_main">Laat toe in alle oortjies behalwe die hoofoortjie</string>
+    <string name="drawer_tabs_repeat_none">Moenie toelaat nie</string>
+    <string name="drawer_tabs_keep_line">“%1$s” hou sy programme ook in die hoofoortjie</string>
+    <string name="drawer_tab_bar_position">Plasing van oortjiebalk</string>
+    <string name="drawer_tab_bar_top">Bo</string>
+    <string name="drawer_tab_bar_bottom">Onder</string>
 </resources>

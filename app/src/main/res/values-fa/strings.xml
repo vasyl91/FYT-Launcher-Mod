@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">نمایش برنامه‌های پنهان</string>
     <string name="drawer_tab_main">برنامه‌ها</string>
     <string name="drawer_tab_default">زبانه%1$d</string>
+    <string name="select_apps">انتخاب برنامه‌ها</string>
+    <string name="edit_drawer_tab">ویرایش زبانه کشو</string>
+    <string name="add_drawer_tab">افزودن زبانه کشو</string>
+    <string name="drawer_tab_name_hint">نام زبانه</string>
+    <string name="keep_in_main_tab">نگه داشتن برنامه‌ها در زبانه اصلی</string>
+    <string name="keep_in_main_inactive">با تنظیم فعلی «برنامه‌ها در چند زبانه» اعمال نمی‌شود</string>
+    <string name="delete_drawer_tab_title">زبانه حذف شود؟</string>
+    <string name="delete_drawer_tab_message">«%1$s» حذف خواهد شد. برنامه‌های آن به زبانه اصلی برمی‌گردند، مگر اینکه در زبانه دیگری باشند.</string>
+    <string name="delete_drawer_tab_button">حذف</string>
+    <string name="drawer_tabs_repeat">برنامه‌ها در چند زبانه</string>
+    <string name="drawer_tabs_repeat_all">مجاز در همه زبانه‌ها</string>
+    <string name="drawer_tabs_repeat_except_main">مجاز در همه زبانه‌ها به جز زبانه اصلی</string>
+    <string name="drawer_tabs_repeat_none">مجاز نیست</string>
+    <string name="drawer_tabs_keep_line">«%1$s» برنامه‌های خود را در زبانه اصلی هم نگه می‌دارد</string>
+    <string name="drawer_tab_bar_position">جای نوار زبانه‌ها</string>
+    <string name="drawer_tab_bar_top">بالا</string>
+    <string name="drawer_tab_bar_bottom">پایین</string>
 </resources>

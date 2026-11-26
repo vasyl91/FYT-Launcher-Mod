@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">إظهار التطبيقات المخفية</string>
     <string name="drawer_tab_main">التطبيقات</string>
     <string name="drawer_tab_default">علامة التبويب %1$d</string>
+    <string name="select_apps">اختيار التطبيقات</string>
+    <string name="edit_drawer_tab">تعديل علامة تبويب الدرج</string>
+    <string name="add_drawer_tab">إضافة علامة تبويب للدرج</string>
+    <string name="drawer_tab_name_hint">اسم علامة التبويب</string>
+    <string name="keep_in_main_tab">إبقاء التطبيقات في علامة تبويب التطبيقات الرئيسية</string>
+    <string name="keep_in_main_inactive">لا يُطبَّق مع إعداد «التطبيقات في عدة علامات تبويب» الحالي</string>
+    <string name="delete_drawer_tab_title">حذف علامة التبويب؟</string>
+    <string name="delete_drawer_tab_message">سيتم حذف «%1$s». تعود تطبيقاته إلى علامة التبويب الرئيسية ما لم تكن في علامة تبويب أخرى.</string>
+    <string name="delete_drawer_tab_button">حذف</string>
+    <string name="drawer_tabs_repeat">التطبيقات في عدة علامات تبويب</string>
+    <string name="drawer_tabs_repeat_all">السماح في جميع علامات التبويب</string>
+    <string name="drawer_tabs_repeat_except_main">السماح في جميع علامات التبويب باستثناء الرئيسية</string>
+    <string name="drawer_tabs_repeat_none">عدم السماح</string>
+    <string name="drawer_tabs_keep_line">«%1$s» تُبقي تطبيقاتها أيضًا في علامة التبويب الرئيسية</string>
+    <string name="drawer_tab_bar_position">موضع شريط علامات التبويب</string>
+    <string name="drawer_tab_bar_top">أعلى</string>
+    <string name="drawer_tab_bar_bottom">أسفل</string>
 </resources>

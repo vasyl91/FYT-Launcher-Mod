@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Паказаць схаваныя праграмы</string>
     <string name="drawer_tab_main">Праграмы</string>
     <string name="drawer_tab_default">Укладка%1$d</string>
+    <string name="select_apps">Выбраць праграмы</string>
+    <string name="edit_drawer_tab">Рэдагаваць укладку шуфляды</string>
+    <string name="add_drawer_tab">Дадаць укладку шуфляды</string>
+    <string name="drawer_tab_name_hint">Назва ўкладкі</string>
+    <string name="keep_in_main_tab">Пакідаць праграмы ў асноўнай укладцы</string>
+    <string name="keep_in_main_inactive">Не ўжываецца пры бягучым наладжванні «Праграмы ў некалькіх укладках»</string>
+    <string name="delete_drawer_tab_title">Выдаліць укладку?</string>
+    <string name="delete_drawer_tab_message">«%1$s» будзе выдалена. Яе праграмы вернуцца ў асноўную ўкладку, калі іх няма ў іншай укладцы.</string>
+    <string name="delete_drawer_tab_button">Выдаліць</string>
+    <string name="drawer_tabs_repeat">Праграмы ў некалькіх укладках</string>
+    <string name="drawer_tabs_repeat_all">Дазволіць ва ўсіх укладках</string>
+    <string name="drawer_tabs_repeat_except_main">Дазволіць ва ўсіх укладках, акрамя асноўнай</string>
+    <string name="drawer_tabs_repeat_none">Не дазваляць</string>
+    <string name="drawer_tabs_keep_line">«%1$s» таксама пакідае свае праграмы ў асноўнай укладцы</string>
+    <string name="drawer_tab_bar_position">Размяшчэнне панэлі ўкладак</string>
+    <string name="drawer_tab_bar_top">Уверсе</string>
+    <string name="drawer_tab_bar_bottom">Унізе</string>
 </resources>

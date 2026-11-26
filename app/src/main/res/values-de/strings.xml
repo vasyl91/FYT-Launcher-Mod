@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Ausgeblendete Apps anzeigen</string>
     <string name="drawer_tab_main">Apps</string>
     <string name="drawer_tab_default">Tab%1$d</string>
+    <string name="select_apps">Apps auswählen</string>
+    <string name="edit_drawer_tab">Schubladen-Tab bearbeiten</string>
+    <string name="add_drawer_tab">Schubladen-Tab hinzufügen</string>
+    <string name="drawer_tab_name_hint">Tab-Name</string>
+    <string name="keep_in_main_tab">Apps im Haupt-Tab behalten</string>
+    <string name="keep_in_main_inactive">Wird mit der aktuellen Einstellung „Apps in mehreren Tabs“ nicht angewendet</string>
+    <string name="delete_drawer_tab_title">Tab löschen?</string>
+    <string name="delete_drawer_tab_message">„%1$s“ wird gelöscht. Die Apps kehren in den Haupt-Tab zurück, sofern sie nicht in einem anderen Tab sind.</string>
+    <string name="delete_drawer_tab_button">Löschen</string>
+    <string name="drawer_tabs_repeat">Apps in mehreren Tabs</string>
+    <string name="drawer_tabs_repeat_all">In allen Tabs erlauben</string>
+    <string name="drawer_tabs_repeat_except_main">In allen Tabs außer dem Haupt-Tab erlauben</string>
+    <string name="drawer_tabs_repeat_none">Nicht erlauben</string>
+    <string name="drawer_tabs_keep_line">„%1$s“ behält seine Apps auch im Haupt-Tab</string>
+    <string name="drawer_tab_bar_position">Position der Tab-Leiste</string>
+    <string name="drawer_tab_bar_top">Oben</string>
+    <string name="drawer_tab_bar_bottom">Unten</string>
 </resources>

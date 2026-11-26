@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Показване на скритите приложения</string>
     <string name="drawer_tab_main">Приложения</string>
     <string name="drawer_tab_default">Раздел%1$d</string>
+    <string name="select_apps">Избор на приложения</string>
+    <string name="edit_drawer_tab">Редактиране на раздел на чекмеджето</string>
+    <string name="add_drawer_tab">Добавяне на раздел на чекмеджето</string>
+    <string name="drawer_tab_name_hint">Име на раздела</string>
+    <string name="keep_in_main_tab">Запазване на приложенията в основния раздел</string>
+    <string name="keep_in_main_inactive">Не се прилага при текущата настройка „Приложения в няколко раздела“</string>
+    <string name="delete_drawer_tab_title">Изтриване на раздела?</string>
+    <string name="delete_drawer_tab_message">„%1$s“ ще бъде изтрит. Приложенията му се връщат в основния раздел, освен ако не са в друг раздел.</string>
+    <string name="delete_drawer_tab_button">Изтриване</string>
+    <string name="drawer_tabs_repeat">Приложения в няколко раздела</string>
+    <string name="drawer_tabs_repeat_all">Разрешаване във всички раздели</string>
+    <string name="drawer_tabs_repeat_except_main">Разрешаване във всички раздели освен основния</string>
+    <string name="drawer_tabs_repeat_none">Без разрешаване</string>
+    <string name="drawer_tabs_keep_line">„%1$s“ запазва приложенията си и в основния раздел</string>
+    <string name="drawer_tab_bar_position">Разположение на лентата с раздели</string>
+    <string name="drawer_tab_bar_top">Горе</string>
+    <string name="drawer_tab_bar_bottom">Долу</string>
 </resources>

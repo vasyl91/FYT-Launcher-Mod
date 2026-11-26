@@ -629,4 +629,21 @@
     <string name="show_hidden_apps">Pokaži skrite aplikacije</string>
     <string name="drawer_tab_main">Aplikacije</string>
     <string name="drawer_tab_default">Zavihek%1$d</string>
+    <string name="select_apps">Izberi aplikacije</string>
+    <string name="edit_drawer_tab">Uredi zavihek predala</string>
+    <string name="add_drawer_tab">Dodaj zavihek predala</string>
+    <string name="drawer_tab_name_hint">Ime zavihka</string>
+    <string name="keep_in_main_tab">Obdrži aplikacije na glavnem zavihku</string>
+    <string name="keep_in_main_inactive">Ne velja pri trenutni nastavitvi »Aplikacije v več zavihkih«</string>
+    <string name="delete_drawer_tab_title">Izbrišem zavihek?</string>
+    <string name="delete_drawer_tab_message">Zavihek »%1$s« bo izbrisan. Njegove aplikacije se vrnejo na glavni zavihek, razen če so na drugem zavihku.</string>
+    <string name="delete_drawer_tab_button">Izbriši</string>
+    <string name="drawer_tabs_repeat">Aplikacije v več zavihkih</string>
+    <string name="drawer_tabs_repeat_all">Dovoli v vseh zavihkih</string>
+    <string name="drawer_tabs_repeat_except_main">Dovoli v vseh zavihkih razen glavnega</string>
+    <string name="drawer_tabs_repeat_none">Ne dovoli</string>
+    <string name="drawer_tabs_keep_line">»%1$s« obdrži svoje aplikacije tudi na glavnem zavihku</string>
+    <string name="drawer_tab_bar_position">Mesto vrstice zavihkov</string>
+    <string name="drawer_tab_bar_top">Zgoraj</string>
+    <string name="drawer_tab_bar_bottom">Spodaj</string>
 </resources>
