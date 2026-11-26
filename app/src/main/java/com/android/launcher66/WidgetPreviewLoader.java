@@ -359,20 +359,30 @@ public class WidgetPreviewLoader {
         db.insert(CacheDb.TABLE_NAME, null, values);
     }
 
+    /**
+     * Deletes the cached previews of one package. It opens the database, so it runs off the main
+     * thread: {@link #removePackageFromDb} does that for the launcher's own instance, and
+     * {@link PackageChangedReceiver} calls it on a worker thread of its own when the process was
+     * started for the broadcast alone and there is no launcher state to ask for the database.
+     */
+    static void deletePackageRows(android.database.sqlite.SQLiteOpenHelper cacheDb, String packageName) {
+        SQLiteDatabase db = cacheDb.getWritableDatabase();
+        db.delete(CacheDb.TABLE_NAME,
+                CacheDb.COLUMN_NAME + " LIKE ? OR " +
+                CacheDb.COLUMN_NAME + " LIKE ?", // SELECT query
+                new String[] {
+                    WIDGET_PREFIX + packageName + "/%",
+                    SHORTCUT_PREFIX + packageName + "/%"} // args to SELECT query
+                    );
+    }
+
     public static void removePackageFromDb(final CacheDb cacheDb, final String packageName) {
         synchronized(sInvalidPackages) {
             sInvalidPackages.add(packageName);
         }
         new AsyncTask<Void, Void, Void>() {
             public Void doInBackground(Void[] args) {
-                SQLiteDatabase db = cacheDb.getWritableDatabase();
-                db.delete(CacheDb.TABLE_NAME,
-                        CacheDb.COLUMN_NAME + " LIKE ? OR " +
-                        CacheDb.COLUMN_NAME + " LIKE ?", // SELECT query
-                        new String[] {
-                            WIDGET_PREFIX + packageName + "/%",
-                            SHORTCUT_PREFIX + packageName + "/%"} // args to SELECT query
-                            );
+                deletePackageRows(cacheDb, packageName);
                 synchronized(sInvalidPackages) {
                     sInvalidPackages.remove(packageName);
                 }

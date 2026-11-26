@@ -415,7 +415,10 @@ public final class Utilities {
         final float density = metrics.density;
 
         sIconSize = Launcher.icon_size;
-        sIconWidth = sIconHeight = Launcher.app_icon_size;
+        // Launcher.app_icon_size is set by the launcher activity: 0 in a process started for a broadcast.
+        int appIconSize = IconTextureSize.or(Launcher.app_icon_size,
+                IconTextureSize.fallbackPx(metrics.widthPixels, metrics.heightPixels));
+        sIconWidth = sIconHeight = appIconSize;
         sIconTextureWidth = sIconTextureHeight = sIconWidth;
 
         sBlurPaint.setMaskFilter(new BlurMaskFilter(5 * density, BlurMaskFilter.Blur.NORMAL));
@@ -429,6 +432,9 @@ public final class Utilities {
     }
 
     public static void setIconSize(int widthPx) {
+        if (widthPx <= 0) {
+            return; // the activity has not calculated its size yet: keep the last good one
+        }
         sIconWidth = sIconHeight = widthPx;
         sIconTextureWidth = sIconTextureHeight = widthPx;
     }
