@@ -147,7 +147,6 @@
     <string name="baseline_reset_failed">Ukusetha kabusha kuhlulekile. Zama futhi kamuva.</string>
     <string name="baseline_reset_unavailable">Ayitholakali kule divayisi.</string>
     <string name="autostart_apps">Qala ekuqaleni</string>
-    <string name="autostart_apps_summary">Izinhlelo zokusebenza ezethulwa isici sokuqalisa ngokuzenzakalelayo sesistimu zingase zehlise ukuqala kwesiqalisi. Inketho eyakhelwe-ngaphakathi yesiqalisi izethula kuphela ngemuva kokuba isiqalisi siqede ukuqala kwaso okubandayo. Uma usebenzisa lolu hlu, khumbula ukukhubaza lezi zinhlelo zokusebenza ezilungiselelweni ze-FYT; ngaphandle kwalokho zizethulwa kabili.</string>
     <string name="autostart_apps_by_boot_completed">Zama ukusebenzisa ukusakaza kwe-BOOT_COMPLETED uma uhlelo lokusebenza olukhethiwe seluyibhalisile</string>
     <string name="wake_autostart_apps">Qala ekuvukeni</string>
     <string name="wake_autostart_apps_summary">Kuvulwa ngamunye imizuzwana embalwa ngemuva kokuvuka ngakunye ekulaleni; bese isiqalisi, noma uhlelo lokusebenza olwangaphambi kokulala, lubuyela phambili. I-\"Qala ekuqaleni\" iqala izinhlelo zayo kuphela ngemuva kokuqala kabusha idivayisi.</string>
@@ -595,4 +594,7 @@
     <string name="widget_overlap_off">Amawijethi ahlala emaseli awo</string>
     <string name="widget_overlap_off_title">Vala ukugcwalisana?</string>
     <string name="widget_overlap_off_message">Amawijethi aphezu kwezinye izinto ashintshela endaweni ekhululekile eseduze ngosayizi wawo; iwijethi engenayo indawo iyasuswa.</string>
+    <string name="autostart_apps_summary_fyt">Izinhlelo zokusebenza eziqalwa isici sokuziqalela sesistimu zingehlisa ukuqala komqalisi. Inketho eyakhelwe ngaphakathi yomqalisi izoziqala kuphela ngemva kokuba umqalisi eqede ukuqala kwakhe okubandayo. Uma usebenzisa lolu hlu, khumbula ukukhubaza lezi zinhlelo zokusebenza kumasethingi e-FYT nakwenye indawo yonke ezisethelwe ukuqala ngokuzenzakalelayo; ngaphandle kwalokho ziyaqalwa kabili.</string>
+    <string name="autostart_apps_summary_other">Izinhlelo zokusebenza eziqalwa isici sokuziqalela sesistimu zingehlisa ukuqala komqalisi. Inketho eyakhelwe ngaphakathi yomqalisi izoziqala kuphela ngemva kokuba umqalisi eqede ukuqala kwakhe okubandayo. Uma usebenzisa lolu hlu, khumbula ukucisha ukuqala ngokuzenzakalelayo kwalezi zinhlelo zokusebenza kwenye indawo yonke okuvuliwe kuyo; ngaphandle kwalokho ziyaqalwa kabili.</string>
+    <string name="autostart_apps_by_boot_completed_summary">Isebenza ku-“Qala lapho kuqala” nasku-“Qala lapho kuvuka”</string>
 </resources>

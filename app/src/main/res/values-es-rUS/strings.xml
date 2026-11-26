@@ -36,7 +36,6 @@
     <string name="launcher_home_wake">Mantener la pantalla principal en primer plano cuando el dispositivo se reactiva</string>
     <string name="launcher_home_cold_start">Mantener la pantalla principal en primer plano cuando el dispositivo arranca</string>
     <string name="cold_start_last_app_delay_summary">Con la opción anterior desactivada, la aplicación que estaba en primer plano se vuelve a abrir tras reiniciar el dispositivo, en cuanto aparece la pantalla principal. Con esta activada, espera 5 s hasta que se inicien los servicios de la unidad principal y, si la aplicación se cierra a los 2 s de abrirse, se abre una vez más. Las aplicaciones originales de SYU y FYT (com.syu.*, com.fyt.*) siempre lo reciben; esta opción lo agrega a todas las demás aplicaciones. No se usa tras reactivarse desde la suspensión.</string>
-    <string name="autostart_apps_summary">Las aplicaciones que inicia la función de inicio automático del sistema pueden ralentizar el arranque del launcher. La opción integrada del launcher las inicia solo después de que este termine su arranque en frío. Si usas esta lista, recuerda desactivar estas aplicaciones en la configuración de FYT; de lo contrario, se iniciarán dos veces.</string>
 
     <string name="spotify_client_id_dialog">Crea una aplicación en developer.spotify.com, agrega launcher66://spotify-callback como URI de redirección y pega aquí el ID de cliente.</string>
 

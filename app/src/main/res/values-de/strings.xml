@@ -147,7 +147,6 @@
     <string name="baseline_reset_failed">Zurücksetzen fehlgeschlagen. Versuchen Sie es später erneut.</string>
     <string name="baseline_reset_unavailable">Auf diesem Gerät nicht verfügbar.</string>
     <string name="autostart_apps">Beim Start öffnen</string>
-    <string name="autostart_apps_summary">Apps, die über die Autostart-Funktion des Systems gestartet werden, können den Start des Launchers verlangsamen. Die integrierte Option des Launchers startet sie erst, nachdem der Launcher seinen Kaltstart abgeschlossen hat. Wenn Sie diese Liste verwenden, deaktivieren Sie diese Apps in den FYT-Einstellungen, sonst werden sie doppelt gestartet.</string>
     <string name="autostart_apps_by_boot_completed">Den BOOT_COMPLETED-Broadcast verwenden, falls die ausgewählte App ihn registriert hat</string>
     <string name="wake_autostart_apps">Beim Aufwachen öffnen</string>
     <string name="wake_autostart_apps_summary">Nacheinander einige Sekunden nach jedem Aufwachen aus dem Ruhezustand geöffnet; danach kommt der Launcher oder die App von vor dem Ruhezustand wieder nach vorn. \"Beim Start öffnen\" startet seine Apps nur nach einem Neustart des Geräts.</string>
@@ -595,4 +594,7 @@
     <string name="widget_overlap_off">Widgets bleiben in ihren eigenen Zellen</string>
     <string name="widget_overlap_off_title">Überlappung ausschalten?</string>
     <string name="widget_overlap_off_message">Widgets über anderen Elementen wandern an die nächste freie Stelle ihrer Größe; ein Widget ohne Platz wird entfernt.</string>
+    <string name="autostart_apps_summary_fyt">Apps, die über die Autostart-Funktion des Systems gestartet werden, können den Start des Launchers verlangsamen. Die integrierte Option des Launchers startet sie erst, nachdem der Launcher seinen Kaltstart abgeschlossen hat. Wenn Sie diese Liste verwenden, deaktivieren Sie diese Apps in den FYT-Einstellungen und überall sonst, wo sie automatisch starten sollen; sonst werden sie doppelt gestartet.</string>
+    <string name="autostart_apps_summary_other">Apps, die über die Autostart-Funktion des Systems gestartet werden, können den Start des Launchers verlangsamen. Die integrierte Option des Launchers startet sie erst, nachdem der Launcher seinen Kaltstart abgeschlossen hat. Wenn Sie diese Liste verwenden, schalten Sie den automatischen Start dieser Apps überall sonst aus, wo er aktiviert ist; sonst werden sie doppelt gestartet.</string>
+    <string name="autostart_apps_by_boot_completed_summary">Gilt für „Beim Start öffnen“ und „Beim Aufwachen öffnen“</string>
 </resources>

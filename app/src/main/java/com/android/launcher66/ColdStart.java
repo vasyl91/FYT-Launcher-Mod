@@ -337,9 +337,11 @@ public final class ColdStart {
     // "Start on wake" (WakeDetection, WakeAutostartPlan has the rule)
     //
     // The apps of the second list, opened after a wake from sleep one by one, as those of the boot
-    // list are: Display Media Titles and JamesDSP by their own broadcasts, the others by their launch
-    // activity. Not by BOOT_COMPLETED: that is the broadcast of a boot, and the apps usually run
-    // already. Then what the wake itself would show comes back to the front.
+    // list are, by the same ways (WakeAutostartPlan.route): Display Media Titles and JamesDSP by
+    // their own broadcasts, the others with a BOOT_COMPLETED receiver by that broadcast while the
+    // switch "Try to use the BOOT_COMPLETED broadcast" is on and it can be sent (the owner,
+    // 2026-11-25), the rest by their launch activity. Then what the wake itself would show comes
+    // back to the front.
     // =============================================================================================
 
     /**
@@ -370,6 +372,9 @@ public final class ColdStart {
         }
         Log.i(TAG, "Wake autostart of " + packages + ", " + WakeAutostartPlan.GAP_MS + " ms apart");
         PackageManager pm = app.getPackageManager();
+        // The switch as it is now, not as it was at the boot: a wake can come hours after it was changed
+        final boolean bootSetting = androidx.preference.PreferenceManager.getDefaultSharedPreferences(app)
+                .getBoolean(Keys.AUTOSTART_APPS_BY_BOOT_COMPLETED, true);
         List<String> started = new ArrayList<>();
         for (String pkg : packages) {
             if (!awake.getAsBoolean()) {
@@ -380,8 +385,11 @@ public final class ColdStart {
                 boolean titles = isDisplayMediaTitles(pm, pkg);
                 boolean james = pkg.equals("james.dsp");
                 Intent launch = titles || james ? null : pm.getLaunchIntentForPackage(pkg);
-                if (!titles && !james && launch == null) {
-                    Log.w(TAG, "Wake autostart: " + pkg + " has no launch activity");
+                boolean boot = !titles && !james && bootSetting && hasBootCompletedReceiver(pkg);
+                WakeAutostartPlan.Route route = WakeAutostartPlan.route(titles, james, boot, bootSetting,
+                        canSendBootCompleted(), launch != null);
+                if (route == WakeAutostartPlan.Route.SKIP) {
+                    Log.w(TAG, "Wake autostart: " + pkg + " has no launch activity and no BOOT_COMPLETED receiver to use");
                     continue;
                 }
                 if (!started.isEmpty()) {
@@ -391,16 +399,22 @@ public final class ColdStart {
                         return;
                     }
                 }
-                if (titles) {
-                    wakeDisplayMediaTitles(pkg, false);
-                } else if (james) {
-                    wakeJamesDSP(pkg, false);
-                } else {
+                boolean bootSent = false;
+                if (route == WakeAutostartPlan.Route.TITLES_BROADCAST) {
+                    wakeDisplayMediaTitles(pkg, true);
+                } else if (route == WakeAutostartPlan.Route.JAMES_BROADCAST) {
+                    wakeJamesDSP(pkg, true);
+                } else if (route == WakeAutostartPlan.Route.BOOT_COMPLETED && (bootSent = sendBootCompleted(pkg))) {
+                    // as at a boot: the broadcast wakes the app without opening it
+                } else if (launch != null) {
                     app.startActivity(launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                } else {
+                    Log.w(TAG, "Wake autostart: " + pkg + " could not be woken and has no launch activity");
+                    continue;
                 }
                 started.add(pkg);
-                Log.i(TAG, "Wake autostart: " + (titles || james ? "woke " : "opened ") + pkg
-                        + " (" + started.size() + "/" + packages.size() + ")");
+                Log.i(TAG, "Wake autostart: " + (titles || james ? "woke " : bootSent ? "woke by BOOT_COMPLETED " : "opened ")
+                        + pkg + " (" + started.size() + "/" + packages.size() + ")");
             } catch (RuntimeException e) {
                 Log.w(TAG, "Wake autostart of " + pkg + " failed", e);
             }

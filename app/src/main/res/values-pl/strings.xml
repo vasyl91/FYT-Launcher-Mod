@@ -147,7 +147,6 @@
     <string name="baseline_reset_failed">Reset nie powiódł się. Spróbuj ponownie później.</string>
     <string name="baseline_reset_unavailable">Funkcja niedostępna na tym urządzeniu.</string>
     <string name="autostart_apps">Uruchamiaj przy starcie systemu</string>
-    <string name="autostart_apps_summary">Aplikacje uruchamiane przez systemowy autostart mogą spowalniać uruchamianie launchera. Opcja wbudowana w launcher uruchomi je dopiero po zakończeniu jego zimnego startu. Korzystając z tej listy, pamiętaj, aby odznaczyć te aplikacje w ustawieniach FYT — w przeciwnym razie uruchomią się dwukrotnie.</string>
     <string name="autostart_apps_by_boot_completed">Spróbuj uruchomić wybraną aplikację za pomocą broadcastu BOOT_COMPLETED, jeśli jest zarejestrowany</string>
     <string name="wake_autostart_apps">Uruchamiaj po wybudzeniu</string>
     <string name="wake_autostart_apps_summary">Otwierane po kolei kilka sekund po każdym wybudzeniu ze snu; potem na wierzch wraca launcher albo aplikacja sprzed snu. „Uruchamiaj przy starcie systemu” uruchamia swoje aplikacje tylko po ponownym uruchomieniu urządzenia.</string>
@@ -595,4 +594,7 @@
     <string name="widget_overlap_off">Widżety pozostają w swoich komórkach</string>
     <string name="widget_overlap_off_title">Wyłączyć nakładanie?</string>
     <string name="widget_overlap_off_message">Widżety leżące nad innymi elementami przesuną się na najbliższe wolne miejsce o swoim rozmiarze; widżet bez miejsca zostanie usunięty.</string>
+    <string name="autostart_apps_summary_fyt">Aplikacje uruchamiane przez systemowy autostart mogą spowalniać uruchamianie launchera. Opcja wbudowana w launcher uruchomi je dopiero po zakończeniu jego zimnego startu. Korzystając z tej listy, pamiętaj, aby wyłączyć te aplikacje w ustawieniach FYT i wszędzie indziej, gdzie są ustawione na automatyczny start; w przeciwnym razie uruchomią się dwukrotnie.</string>
+    <string name="autostart_apps_summary_other">Aplikacje uruchamiane przez systemowy autostart mogą spowalniać uruchamianie launchera. Opcja wbudowana w launcher uruchomi je dopiero po zakończeniu jego zimnego startu. Korzystając z tej listy, pamiętaj, aby wyłączyć automatyczny start tych aplikacji wszędzie indziej, gdzie jest włączony; w przeciwnym razie uruchomią się dwukrotnie.</string>
+    <string name="autostart_apps_by_boot_completed_summary">Dotyczy „Uruchamiaj przy starcie systemu” i „Uruchamiaj po wybudzeniu”</string>
 </resources>

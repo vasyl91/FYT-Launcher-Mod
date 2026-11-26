@@ -147,7 +147,6 @@
     <string name="baseline_reset_failed">Poništavanje nije uspjelo. Pokušajte ponovno kasnije.</string>
     <string name="baseline_reset_unavailable">Nije dostupno na ovom uređaju.</string>
     <string name="autostart_apps">Pokreni pri uključivanju</string>
-    <string name="autostart_apps_summary">Aplikacije koje pokreće značajka automatskog pokretanja sustava mogu usporiti pokretanje launchera. Ugrađena opcija launchera pokreće ih tek nakon što launcher završi hladno pokretanje. Kad koristite ovaj popis, ne zaboravite onemogućiti te aplikacije u FYT postavkama; inače će se pokrenuti dvaput.</string>
     <string name="autostart_apps_by_boot_completed">Pokušaj koristiti broadcast BOOT_COMPLETED ako ga je odabrana aplikacija registrirala</string>
     <string name="wake_autostart_apps">Pokreni pri buđenju</string>
     <string name="wake_autostart_apps_summary">Otvaraju se jedna po jedna nekoliko sekundi nakon svakog buđenja iz mirovanja; zatim se naprijed vraća pokretač ili aplikacija od prije mirovanja. \"Pokreni pri uključivanju\" pokreće svoje aplikacije samo nakon ponovnog pokretanja uređaja.</string>
@@ -595,4 +594,7 @@
     <string name="widget_overlap_off">Widgeti ostaju u svojim ćelijama</string>
     <string name="widget_overlap_off_title">Isključiti preklapanje?</string>
     <string name="widget_overlap_off_message">Widgeti iznad drugih stavki premještaju se na najbliže slobodno mjesto svoje veličine; widget bez mjesta uklanja se.</string>
+    <string name="autostart_apps_summary_fyt">Aplikacije koje pokreće automatsko pokretanje sustava mogu usporiti pokretanje launchera. Ugrađena opcija launchera pokrenut će ih tek nakon što launcher završi hladni start. Kad koristite ovaj popis, ne zaboravite isključiti te aplikacije u FYT postavkama i svugdje drugdje gdje su postavljene da se pokreću automatski; inače će se pokrenuti dvaput.</string>
+    <string name="autostart_apps_summary_other">Aplikacije koje pokreće automatsko pokretanje sustava mogu usporiti pokretanje launchera. Ugrađena opcija launchera pokrenut će ih tek nakon što launcher završi hladni start. Kad koristite ovaj popis, ne zaboravite isključiti automatsko pokretanje tih aplikacija svugdje drugdje gdje je uključeno; inače će se pokrenuti dvaput.</string>
+    <string name="autostart_apps_by_boot_completed_summary">Vrijedi za „Pokreni pri uključivanju” i „Pokreni pri buđenju”</string>
 </resources>

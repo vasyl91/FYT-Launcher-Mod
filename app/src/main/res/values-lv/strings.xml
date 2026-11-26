@@ -147,7 +147,6 @@
     <string name="baseline_reset_failed">Atiestatīšana neizdevās. Mēģiniet vēlreiz vēlāk.</string>
     <string name="baseline_reset_unavailable">Šajā ierīcē nav pieejams.</string>
     <string name="autostart_apps">Palaist startēšanas laikā</string>
-    <string name="autostart_apps_summary">Lietotnes, ko palaiž sistēmas automātiskās palaišanas funkcija, var palēnināt palaidēja startēšanu. Palaidēja iebūvētā opcija tās palaiž tikai pēc tam, kad palaidējs ir pabeidzis aukstās palaišanas procesu. Izmantojot šo sarakstu, neaizmirstiet šīs lietotnes atspējot FYT iestatījumos, citādi tās tiks palaistas divreiz.</string>
     <string name="autostart_apps_by_boot_completed">Mēģināt izmantot BOOT_COMPLETED apraidi, ja atlasītā lietotne to ir reģistrējusi</string>
     <string name="wake_autostart_apps">Palaist pamostoties</string>
     <string name="wake_autostart_apps_summary">Tiek atvērtas pa vienai dažas sekundes pēc katras pamošanās no miega; pēc tam priekšplānā atgriežas palaidējs vai lietotne no pirms miega. \"Palaist startēšanas laikā\" palaiž savas lietotnes tikai pēc ierīces restartēšanas.</string>
@@ -595,4 +594,7 @@
     <string name="widget_overlap_off">Logrīki paliek savās šūnās</string>
     <string name="widget_overlap_off_title">Izslēgt pārklāšanos?</string>
     <string name="widget_overlap_off_message">Logrīki, kas atrodas virs citiem elementiem, tiek pārvietoti uz tuvāko brīvo tāda paša izmēra vietu; logrīks bez vietas tiek noņemts.</string>
+    <string name="autostart_apps_summary_fyt">Lietotnes, ko palaiž sistēmas automātiskās palaišanas funkcija, var palēnināt palaidēja startēšanu. Palaidēja iebūvētā opcija tās palaiž tikai pēc tam, kad palaidējs ir pabeidzis aukstās startēšanas procesu. Izmantojot šo sarakstu, neaizmirstiet izslēgt šīs lietotnes FYT iestatījumos un visur citur, kur tās iestatītas palaisties automātiski; citādi tās tiks palaistas divreiz.</string>
+    <string name="autostart_apps_summary_other">Lietotnes, ko palaiž sistēmas automātiskās palaišanas funkcija, var palēnināt palaidēja startēšanu. Palaidēja iebūvētā opcija tās palaiž tikai pēc tam, kad palaidējs ir pabeidzis aukstās startēšanas procesu. Izmantojot šo sarakstu, neaizmirstiet izslēgt šo lietotņu automātisko palaišanu visur citur, kur tā ieslēgta; citādi tās tiks palaistas divreiz.</string>
+    <string name="autostart_apps_by_boot_completed_summary">Attiecas uz “Palaist startējot” un “Palaist pamostoties”</string>
 </resources>

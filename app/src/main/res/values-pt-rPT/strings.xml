@@ -66,7 +66,6 @@
     <string name="baseline_reset_reapplied">Os dados recolhidos não podem ser eliminados com o Shizuku sem root no Android 13 ou anterior. O perfil predefinido foi aplicado novamente e está a ser compilado em segundo plano; os dados recolhidos permanecem.</string>
     <string name="baseline_reset_full_started">Dados recolhidos eliminados. A recompilar a partir do perfil predefinido em segundo plano.</string>
     <string name="baseline_reset_failed">Falha ao repor. Tente novamente mais tarde.</string>
-    <string name="autostart_apps_summary">Apps iniciados pelo recurso de inicialização automática do sistema podem deixar a inicialização do launcher mais lenta. A opção integrada do launcher só os inicia depois que o launcher conclui a inicialização a frio. Ao usar esta lista, lembre-se de desativar esses apps nas definições do FYT; caso contrário, eles serão iniciados duas vezes.</string>
 
     <string name="favorite_cache_summary">Alguns apps não fornecem o estado de gosto/sem gosto a apps externos. Os apps selecionados usarão o sistema de cache integrado, mas o estado de gosto/sem gosto será armazenado apenas no launcher. O widget de música não saberá se gostou ou não de um vídeo em outro lugar.</string>
     <string name="oauth_for_youtube_revanced">Ativar a autorização do Google para o YouTube ReVanced obter o estado de gosto</string>

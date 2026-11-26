@@ -147,7 +147,6 @@
     <string name="baseline_reset_failed">Reset gagal. Coba lagi nanti.</string>
     <string name="baseline_reset_unavailable">Tidak tersedia di perangkat ini.</string>
     <string name="autostart_apps">Mulai saat boot</string>
-    <string name="autostart_apps_summary">Aplikasi yang dijalankan oleh fitur mulai otomatis sistem dapat memperlambat startup peluncur. Opsi bawaan peluncur menjalankannya hanya setelah peluncur menyelesaikan cold start. Saat menggunakan daftar ini, ingat untuk menonaktifkan aplikasi tersebut di setelan FYT; jika tidak, aplikasi akan dijalankan dua kali.</string>
     <string name="autostart_apps_by_boot_completed">Coba gunakan siaran BOOT_COMPLETED jika aplikasi yang dipilih telah mendaftarkannya</string>
     <string name="wake_autostart_apps">Mulai saat bangun</string>
     <string name="wake_autostart_apps_summary">Dibuka satu per satu beberapa detik setelah setiap bangun dari tidur; lalu peluncur, atau aplikasi dari sebelum tidur, kembali ke depan. \"Mulai saat boot\" hanya memulai aplikasinya setelah perangkat dimulai ulang.</string>
@@ -595,4 +594,7 @@
     <string name="widget_overlap_off">Widget tetap di selnya sendiri</string>
     <string name="widget_overlap_off_title">Matikan penumpukan?</string>
     <string name="widget_overlap_off_message">Widget yang menimpa item lain dipindah ke tempat kosong terdekat seukuran widget; widget yang tidak muat dihapus.</string>
+    <string name="autostart_apps_summary_fyt">Aplikasi yang dijalankan oleh fitur autostart sistem dapat memperlambat startup launcher. Opsi bawaan launcher baru menjalankannya setelah launcher menyelesaikan cold start. Saat memakai daftar ini, ingatlah untuk menonaktifkan aplikasi tersebut di pengaturan FYT dan di tempat lain yang disetel untuk mulai otomatis; jika tidak, aplikasi akan dijalankan dua kali.</string>
+    <string name="autostart_apps_summary_other">Aplikasi yang dijalankan oleh fitur autostart sistem dapat memperlambat startup launcher. Opsi bawaan launcher baru menjalankannya setelah launcher menyelesaikan cold start. Saat memakai daftar ini, ingatlah untuk mematikan mulai otomatis aplikasi tersebut di tempat lain yang mengaktifkannya; jika tidak, aplikasi akan dijalankan dua kali.</string>
+    <string name="autostart_apps_by_boot_completed_summary">Berlaku untuk “Mulai saat boot” dan “Mulai saat bangun”</string>
 </resources>

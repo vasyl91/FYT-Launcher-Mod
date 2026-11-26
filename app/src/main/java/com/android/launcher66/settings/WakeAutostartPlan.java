@@ -32,6 +32,33 @@ public final class WakeAutostartPlan {
     private WakeAutostartPlan() {
     }
 
+    /** How one app of the list is started. */
+    public enum Route { TITLES_BROADCAST, JAMES_BROADCAST, BOOT_COMPLETED, LAUNCH_ACTIVITY, SKIP }
+
+    /**
+     * The way an app of the list is started at a wake, the same as at a boot (the owner, 2026-11-25, D-83): Display Media Titles
+     * and JamesDSP by their own broadcasts, which try BOOT_COMPLETED first; any other app that has a BOOT_COMPLETED receiver by
+     * that broadcast, while the switch "Try to use the BOOT_COMPLETED broadcast" is on and the launcher can send it; the
+     * rest by their launch activity. An app none of these fits is skipped.
+     *
+     * @param hasBootReceiver whether the app has a BOOT_COMPLETED receiver (false where the launcher cannot send it)
+     * @param bootSetting     the switch of the broadcast
+     * @param canSend         whether the launcher can send BOOT_COMPLETED now
+     */
+    public static Route route(boolean displayMediaTitles, boolean jamesDsp, boolean hasBootReceiver, boolean bootSetting,
+                              boolean canSend, boolean hasLaunchActivity) {
+        if (displayMediaTitles) {
+            return Route.TITLES_BROADCAST;
+        }
+        if (jamesDsp) {
+            return Route.JAMES_BROADCAST;
+        }
+        if (hasBootReceiver && bootSetting && canSend) {
+            return Route.BOOT_COMPLETED;
+        }
+        return hasLaunchActivity ? Route.LAUNCH_ACTIVITY : Route.SKIP;
+    }
+
     /** Whether a wake starts the list: not the start of the process. */
     public static boolean runs(boolean processStart) {
         return !processStart;

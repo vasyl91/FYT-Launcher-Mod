@@ -147,7 +147,6 @@
     <string name="baseline_reset_failed">Tetap semula gagal. Cuba lagi nanti.</string>
     <string name="baseline_reset_unavailable">Tidak tersedia pada peranti ini.</string>
     <string name="autostart_apps">Mula semasa but</string>
-    <string name="autostart_apps_summary">Apl yang dilancarkan oleh ciri mula automatik sistem boleh memperlahankan permulaan pelancar. Pilihan terbina dalam pelancar melancarkannya hanya selepas pelancar menyelesaikan permulaan sejuknya. Apabila menggunakan senarai ini, ingat untuk melumpuhkan apl ini dalam tetapan FYT; jika tidak, ia akan dilancarkan dua kali.</string>
     <string name="autostart_apps_by_boot_completed">Cuba gunakan siaran BOOT_COMPLETED jika apl yang dipilih telah mendaftarkannya</string>
     <string name="wake_autostart_apps">Mula semasa bangun</string>
     <string name="wake_autostart_apps_summary">Dibuka satu demi satu beberapa saat selepas setiap kali bangun daripada tidur; kemudian pelancar, atau apl dari sebelum tidur, kembali ke hadapan. \"Mula semasa but\" hanya memulakan aplnya selepas peranti dimulakan semula.</string>
@@ -595,4 +594,7 @@
     <string name="widget_overlap_off">Widget kekal dalam selnya sendiri</string>
     <string name="widget_overlap_off_title">Matikan pertindihan?</string>
     <string name="widget_overlap_off_message">Widget yang menindih item lain dialihkan ke tempat kosong terdekat sebesar widget; widget tanpa ruang akan dibuang.</string>
+    <string name="autostart_apps_summary_fyt">Aplikasi yang dilancarkan oleh ciri autostart sistem boleh melambatkan permulaan pelancar. Pilihan terbina dalam pelancar hanya akan melancarkannya selepas pelancar selesai permulaan sejuk. Apabila menggunakan senarai ini, ingat untuk melumpuhkan aplikasi ini dalam tetapan FYT dan di tempat lain yang ditetapkan untuk bermula secara automatik; jika tidak, ia akan dilancarkan dua kali.</string>
+    <string name="autostart_apps_summary_other">Aplikasi yang dilancarkan oleh ciri autostart sistem boleh melambatkan permulaan pelancar. Pilihan terbina dalam pelancar hanya akan melancarkannya selepas pelancar selesai permulaan sejuk. Apabila menggunakan senarai ini, ingat untuk mematikan permulaan automatik aplikasi ini di tempat lain yang mengaktifkannya; jika tidak, ia akan dilancarkan dua kali.</string>
+    <string name="autostart_apps_by_boot_completed_summary">Terpakai untuk “Mula semasa but” dan “Mula semasa bangun”</string>
 </resources>

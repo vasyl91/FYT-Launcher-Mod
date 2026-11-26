@@ -147,7 +147,6 @@
     <string name="baseline_reset_failed">Terugstelling het misluk. Probeer later weer.</string>
     <string name="baseline_reset_unavailable">Nie op hierdie toestel beskikbaar nie.</string>
     <string name="autostart_apps">Begin by opstart</string>
-    <string name="autostart_apps_summary">Programme wat deur die stelsel se outomatiese begin-funksie geloods word, kan die lanseerder se opstart vertraag. Die lanseerder se ingeboude opsie begin hulle eers nadat die lanseerder sy koue begin voltooi het. Onthou om hierdie programme in die FYT-instellings te deaktiveer wanneer jy hierdie lys gebruik; anders word hulle twee keer begin.</string>
     <string name="autostart_apps_by_boot_completed">Probeer om die BOOT_COMPLETED-uitsending te gebruik as die gekose program dit geregistreer het</string>
     <string name="wake_autostart_apps">Begin by ontwaking</string>
     <string name="wake_autostart_apps_summary">Een vir een oopgemaak \'n paar sekondes na elke ontwaking uit slaap; dan kom die lanseerder, of die program van voor die slaap, terug na voor. \"Begin by opstart\" begin sy programme net ná \'n herbegin van die toestel.</string>
@@ -595,4 +594,7 @@
     <string name="widget_overlap_off">Legstukke bly in hul eie selle</string>
     <string name="widget_overlap_off_title">Skakel oorvleueling af?</string>
     <string name="widget_overlap_off_message">Legstukke wat oor ander items lê, skuif na die naaste vrye plek van hul grootte; \'n legstuk sonder ruimte word verwyder.</string>
+    <string name="autostart_apps_summary_fyt">Programme wat deur die stelsel se outostart-funksie begin word, kan die lanseerder se opstart vertraag. Die lanseerder se ingeboude opsie begin hulle eers nadat die lanseerder sy koue begin voltooi het. Onthou wanneer jy hierdie lys gebruik om hierdie programme in die FYT-instellings en enige ander plek waar hulle outomaties begin, af te skakel; anders word hulle twee keer begin.</string>
+    <string name="autostart_apps_summary_other">Programme wat deur die stelsel se outostart-funksie begin word, kan die lanseerder se opstart vertraag. Die lanseerder se ingeboude opsie begin hulle eers nadat die lanseerder sy koue begin voltooi het. Onthou wanneer jy hierdie lys gebruik om outomatiese begin vir hierdie programme op enige ander plek waar dit aan is, af te skakel; anders word hulle twee keer begin.</string>
+    <string name="autostart_apps_by_boot_completed_summary">Geld vir “Begin by opstart” en “Begin by ontwaking”</string>
 </resources>

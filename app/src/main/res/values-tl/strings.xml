@@ -147,7 +147,6 @@
     <string name="baseline_reset_failed">Nabigo ang pag-reset. Subukang muli sa ibang pagkakataon.</string>
     <string name="baseline_reset_unavailable">Hindi available sa device na ito.</string>
     <string name="autostart_apps">Simulan sa boot</string>
-    <string name="autostart_apps_summary">Maaaring pabagalin ng mga app na inilulunsad ng autostart feature ng system ang pagsisimula ng launcher. Ilulunsad lang sila ng built-in na opsyon ng launcher pagkatapos nitong makumpleto ang cold start. Kapag ginagamit ang listahang ito, tandaang i-disable ang mga app na ito sa mga setting ng FYT; kung hindi, dalawang beses silang ilulunsad.</string>
     <string name="autostart_apps_by_boot_completed">Subukang gamitin ang BOOT_COMPLETED broadcast kung nairehistro ito ng napiling app</string>
     <string name="wake_autostart_apps">Simulan sa paggising</string>
     <string name="wake_autostart_apps_summary">Isa-isang binubuksan ilang segundo pagkatapos ng bawat paggising mula sa sleep; pagkatapos ay babalik sa harap ang launcher, o ang app bago ang sleep. Ang \"Simulan sa boot\" ay nagsisimula lang ng mga app nito pagkatapos i-restart ang device.</string>
@@ -595,4 +594,7 @@
     <string name="widget_overlap_off">Mananatili ang mga widget sa sarili nilang cell</string>
     <string name="widget_overlap_off_title">I-off ang pagpapatong?</string>
     <string name="widget_overlap_off_message">Ang mga widget na nakapatong sa ibang item ay ililipat sa pinakamalapit na bakanteng lugar na kasya; aalisin ang widget na walang lugar.</string>
+    <string name="autostart_apps_summary_fyt">Ang mga app na sinimulan ng autostart feature ng system ay maaaring magpabagal sa pagsisimula ng launcher. Ang built-in na opsyon ng launcher ay sisimulan lang ang mga ito pagkatapos matapos ng launcher ang cold start nito. Kapag ginagamit ang listahang ito, tandaang i-disable ang mga app na ito sa mga setting ng FYT at sa iba pang lugar na nakatakda silang magsimula nang awtomatiko; kung hindi, dalawang beses silang masisimulan.</string>
+    <string name="autostart_apps_summary_other">Ang mga app na sinimulan ng autostart feature ng system ay maaaring magpabagal sa pagsisimula ng launcher. Ang built-in na opsyon ng launcher ay sisimulan lang ang mga ito pagkatapos matapos ng launcher ang cold start nito. Kapag ginagamit ang listahang ito, tandaang i-off ang awtomatikong pagsisimula ng mga app na ito sa iba pang lugar na naka-on ito; kung hindi, dalawang beses silang masisimulan.</string>
+    <string name="autostart_apps_by_boot_completed_summary">Nalalapat sa “Simulan sa boot” at “Simulan sa paggising”</string>
 </resources>

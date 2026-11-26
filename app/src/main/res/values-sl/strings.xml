@@ -147,7 +147,6 @@
     <string name="baseline_reset_failed">Ponastavitev ni uspela. Poskusite znova pozneje.</string>
     <string name="baseline_reset_unavailable">Ni na voljo v tej napravi.</string>
     <string name="autostart_apps">Zaženi ob zagonu</string>
-    <string name="autostart_apps_summary">Aplikacije, ki jih zažene funkcija samodejnega zagona sistema, lahko upočasnijo zagon zaganjalnika. Vgrajena možnost zaganjalnika jih zažene šele, ko zaganjalnik konča hladni zagon. Ko uporabljate ta seznam, ne pozabite teh aplikacij onemogočiti v nastavitvah FYT, sicer se bodo zagnale dvakrat.</string>
     <string name="autostart_apps_by_boot_completed">Poskusi uporabiti oddajo BOOT_COMPLETED, če jo je izbrana aplikacija registrirala</string>
     <string name="wake_autostart_apps">Zaženi ob prebujanju</string>
     <string name="wake_autostart_apps_summary">Odprejo se ena za drugo nekaj sekund po vsakem prebujanju iz stanja spanja; nato se v ospredje vrne zaganjalnik ali aplikacija izpred spanja. \"Zaženi ob zagonu\" zažene svoje aplikacije samo po ponovnem zagonu naprave.</string>
@@ -595,4 +594,7 @@
     <string name="widget_overlap_off">Pripomočki ostanejo v svojih celicah</string>
     <string name="widget_overlap_off_title">Izklopim prekrivanje?</string>
     <string name="widget_overlap_off_message">Pripomočki nad drugimi elementi se premaknejo na najbližje prosto mesto svoje velikosti; pripomoček brez prostora se odstrani.</string>
+    <string name="autostart_apps_summary_fyt">Aplikacije, ki jih zažene funkcija samodejnega zagona sistema, lahko upočasnijo zagon zaganjalnika. Vgrajena možnost zaganjalnika jih zažene šele, ko zaganjalnik konča hladni zagon. Pri uporabi tega seznama ne pozabite izklopiti teh aplikacij v nastavitvah FYT in povsod drugje, kjer so nastavljene na samodejni zagon; sicer se bodo zagnale dvakrat.</string>
+    <string name="autostart_apps_summary_other">Aplikacije, ki jih zažene funkcija samodejnega zagona sistema, lahko upočasnijo zagon zaganjalnika. Vgrajena možnost zaganjalnika jih zažene šele, ko zaganjalnik konča hladni zagon. Pri uporabi tega seznama ne pozabite izklopiti samodejnega zagona teh aplikacij povsod drugje, kjer je vklopljen; sicer se bodo zagnale dvakrat.</string>
+    <string name="autostart_apps_by_boot_completed_summary">Velja za »Zaženi ob zagonu« in »Zaženi ob prebuditvi«</string>
 </resources>

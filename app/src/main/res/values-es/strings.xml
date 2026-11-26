@@ -147,7 +147,6 @@
     <string name="baseline_reset_failed">Error al restablecer. Inténtalo de nuevo más tarde.</string>
     <string name="baseline_reset_unavailable">No disponible en este dispositivo.</string>
     <string name="autostart_apps">Iniciar al arrancar</string>
-    <string name="autostart_apps_summary">Las aplicaciones que inicia la función de inicio automático del sistema pueden ralentizar el arranque del launcher. La opción integrada del launcher las inicia solo después de que este termine su arranque en frío. Si usas esta lista, recuerda desactivar estas aplicaciones en los ajustes de FYT; de lo contrario, se iniciarán dos veces.</string>
     <string name="autostart_apps_by_boot_completed">Intentar usar el broadcast BOOT_COMPLETED si la aplicación seleccionada lo tiene registrado</string>
     <string name="wake_autostart_apps">Iniciar al despertar</string>
     <string name="wake_autostart_apps_summary">Se abren una a una unos segundos después de cada despertar del reposo; luego vuelve al frente el launcher, o la aplicación de antes del reposo. \"Iniciar al arrancar\" solo inicia sus aplicaciones tras reiniciar el dispositivo.</string>
@@ -595,4 +594,7 @@
     <string name="widget_overlap_off">Los widgets se quedan en sus propias celdas</string>
     <string name="widget_overlap_off_title">¿Desactivar la superposición?</string>
     <string name="widget_overlap_off_message">Los widgets sobre otros elementos pasan al hueco libre más cercano de su tamaño; un widget sin sitio se elimina.</string>
+    <string name="autostart_apps_summary_fyt">Las aplicaciones que inicia la función de inicio automático del sistema pueden ralentizar el arranque del launcher. La opción integrada del launcher solo las inicia cuando el launcher ha terminado su arranque en frío. Al usar esta lista, recuerda desactivar estas aplicaciones en los ajustes de FYT y en cualquier otro lugar donde estén configuradas para iniciarse automáticamente; de lo contrario, se iniciarán dos veces.</string>
+    <string name="autostart_apps_summary_other">Las aplicaciones que inicia la función de inicio automático del sistema pueden ralentizar el arranque del launcher. La opción integrada del launcher solo las inicia cuando el launcher ha terminado su arranque en frío. Al usar esta lista, recuerda desactivar el inicio automático de estas aplicaciones en cualquier otro lugar donde esté activado; de lo contrario, se iniciarán dos veces.</string>
+    <string name="autostart_apps_by_boot_completed_summary">Se aplica a «Iniciar al arrancar» e «Iniciar al despertar»</string>
 </resources>

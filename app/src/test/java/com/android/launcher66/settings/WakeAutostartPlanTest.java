@@ -38,4 +38,37 @@ class WakeAutostartPlanTest {
         assertTrue(WakeAutostartPlan.FIRST_MS > 1_800, "after the late refresh of the wake");
         assertEquals(3_000, WakeAutostartPlan.GAP_MS);
     }
+
+    // ---- the way an app is started (D-83, 2026-11-25): as at a boot
+
+    private static WakeAutostartPlan.Route route(boolean titles, boolean james, boolean receiver, boolean setting,
+                                                 boolean canSend, boolean launch) {
+        return WakeAutostartPlan.route(titles, james, receiver, setting, canSend, launch);
+    }
+
+    @Test
+    void anAppWithABootReceiverIsWokenByTheBroadcastWhileTheSwitchIsOnAndItCanBeSent() {
+        assertEquals(WakeAutostartPlan.Route.BOOT_COMPLETED, route(false, false, true, true, true, true));
+        assertEquals(WakeAutostartPlan.Route.BOOT_COMPLETED, route(false, false, true, true, true, false),
+                "an app with no launch activity is woken by the broadcast all the same");
+    }
+
+    @Test
+    void withTheSwitchOffOrNoWayToSendItTheAppIsOpened() {
+        assertEquals(WakeAutostartPlan.Route.LAUNCH_ACTIVITY, route(false, false, true, false, true, true));
+        assertEquals(WakeAutostartPlan.Route.LAUNCH_ACTIVITY, route(false, false, true, true, false, true));
+        assertEquals(WakeAutostartPlan.Route.LAUNCH_ACTIVITY, route(false, false, false, true, true, true));
+    }
+
+    @Test
+    void displayMediaTitlesAndJamesDspKeepTheirOwnBroadcasts() {
+        assertEquals(WakeAutostartPlan.Route.TITLES_BROADCAST, route(true, false, true, true, true, true));
+        assertEquals(WakeAutostartPlan.Route.JAMES_BROADCAST, route(false, true, false, false, false, false));
+    }
+
+    @Test
+    void anAppThatCannotBeStartedAnyWayIsSkipped() {
+        assertEquals(WakeAutostartPlan.Route.SKIP, route(false, false, false, true, true, false));
+        assertEquals(WakeAutostartPlan.Route.SKIP, route(false, false, true, false, true, false));
+    }
 }

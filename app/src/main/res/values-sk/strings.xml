@@ -147,7 +147,6 @@
     <string name="baseline_reset_failed">Obnovenie zlyhalo. Skúste to neskôr.</string>
     <string name="baseline_reset_unavailable">Na tomto zariadení nie je k dispozícii.</string>
     <string name="autostart_apps">Spustiť pri štarte</string>
-    <string name="autostart_apps_summary">Aplikácie spúšťané funkciou automatického spúšťania systému môžu spomaliť štart launchera. Zabudovaná voľba launchera ich spúšťa až po tom, čo launcher dokončí studený štart. Pri používaní tohto zoznamu nezabudnite tieto aplikácie v nastaveniach FYT zakázať, inak sa spustia dvakrát.</string>
     <string name="autostart_apps_by_boot_completed">Skúsiť použiť broadcast BOOT_COMPLETED, ak ho vybraná aplikácia zaregistrovala</string>
     <string name="wake_autostart_apps">Spustiť pri prebudení</string>
     <string name="wake_autostart_apps_summary">Otvárajú sa jedna po druhej niekoľko sekúnd po každom prebudení z režimu spánku; potom sa dopredu vráti launcher alebo aplikácia spred spánku. \"Spustiť pri štarte\" spúšťa svoje aplikácie len po reštarte zariadenia.</string>
@@ -595,4 +594,7 @@
     <string name="widget_overlap_off">Widgety zostávajú vo svojich bunkách</string>
     <string name="widget_overlap_off_title">Vypnúť prekrývanie?</string>
     <string name="widget_overlap_off_message">Widgety ležiace nad inými položkami sa presunú na najbližšie voľné miesto svojej veľkosti; widget bez miesta sa odstráni.</string>
+    <string name="autostart_apps_summary_fyt">Aplikácie spúšťané funkciou automatického spúšťania systému môžu spomaliť štart launchera. Vstavaná možnosť launchera ich spustí až po dokončení jeho studeného štartu. Pri používaní tohto zoznamu nezabudnite tieto aplikácie vypnúť v nastaveniach FYT a všade, kde je nastavené ich automatické spustenie; inak sa spustia dvakrát.</string>
+    <string name="autostart_apps_summary_other">Aplikácie spúšťané funkciou automatického spúšťania systému môžu spomaliť štart launchera. Vstavaná možnosť launchera ich spustí až po dokončení jeho studeného štartu. Pri používaní tohto zoznamu nezabudnite vypnúť automatické spúšťanie týchto aplikácií všade, kde je zapnuté; inak sa spustia dvakrát.</string>
+    <string name="autostart_apps_by_boot_completed_summary">Platí pre „Spustiť pri štarte“ a „Spustiť pri prebudení“</string>
 </resources>

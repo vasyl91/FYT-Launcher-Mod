@@ -147,7 +147,6 @@
     <string name="baseline_reset_failed">Nulstillingen mislykkedes. Prøv igen senere.</string>
     <string name="baseline_reset_unavailable">Ikke tilgængelig på denne enhed.</string>
     <string name="autostart_apps">Start ved opstart</string>
-    <string name="autostart_apps_summary">Apps, der startes af systemets autostart-funktion, kan gøre launcherens opstart langsommere. Launcherens indbyggede indstilling starter dem først, når launcheren har gennemført sin koldstart. Når du bruger denne liste, skal du huske at deaktivere disse apps i FYT-indstillingerne, ellers startes de to gange.</string>
     <string name="autostart_apps_by_boot_completed">Prøv at bruge BOOT_COMPLETED-broadcastet, hvis den valgte app har registreret det</string>
     <string name="wake_autostart_apps">Start ved opvågning</string>
     <string name="wake_autostart_apps_summary">Åbnes én ad gangen et par sekunder efter hver opvågning fra dvale; derefter kommer launcheren, eller appen fra før dvalen, tilbage i forgrunden. \"Start ved opstart\" starter kun sine apps efter en genstart af enheden.</string>
@@ -595,4 +594,7 @@
     <string name="widget_overlap_off">Widgets bliver i deres egne felter</string>
     <string name="widget_overlap_off_title">Slå overlapning fra?</string>
     <string name="widget_overlap_off_message">Widgets, der ligger over andre elementer, flyttes til nærmeste frie plads af deres størrelse; en widget uden plads fjernes.</string>
+    <string name="autostart_apps_summary_fyt">Apps, der startes af systemets autostartfunktion, kan gøre launcherens start langsommere. Launcherens indbyggede mulighed starter dem først, når launcheren har afsluttet sin kolde start. Når du bruger denne liste, skal du huske at slå disse apps fra i FYT-indstillingerne og alle andre steder, hvor de er sat til at starte automatisk; ellers startes de to gange.</string>
+    <string name="autostart_apps_summary_other">Apps, der startes af systemets autostartfunktion, kan gøre launcherens start langsommere. Launcherens indbyggede mulighed starter dem først, når launcheren har afsluttet sin kolde start. Når du bruger denne liste, skal du huske at slå automatisk start fra for disse apps alle andre steder, hvor den er slået til; ellers startes de to gange.</string>
+    <string name="autostart_apps_by_boot_completed_summary">Gælder for “Start ved opstart” og “Start ved vækning”</string>
 </resources>

@@ -147,7 +147,6 @@
     <string name="baseline_reset_failed">重置失敗，請稍後再試。</string>
     <string name="baseline_reset_unavailable">此裝置不支援此功能。</string>
     <string name="autostart_apps">開機自動啟動</string>
-    <string name="autostart_apps_summary">透過系統自動啟動功能啟動的應用程式可能會減慢啟動器的啟動速度。啟動器內建的選項會在啟動器完成冷啟動後再啟動這些應用程式。使用此列表時，請記得在 FYT 設定中取消這些應用程式的自動啟動，否則它們將被啟動兩次。</string>
     <string name="autostart_apps_by_boot_completed">如果已註冊 BOOT_COMPLETED 廣播，則嘗試透過該廣播啟動所選應用程式</string>
     <string name="wake_autostart_apps">喚醒時啟動</string>
     <string name="wake_autostart_apps_summary">每次從休眠喚醒後幾秒逐一開啟；隨後啟動器或休眠前的應用程式回到前景。「開機自動啟動」只在裝置重新啟動後啟動其應用程式。</string>
@@ -595,4 +594,7 @@
     <string name="widget_overlap_off">小工具保持在各自的格線內</string>
     <string name="widget_overlap_off_title">關閉重疊？</string>
     <string name="widget_overlap_off_message">重疊在其他項目上的小工具會移到最近的同尺寸空位；沒有空位的小工具將被刪除。</string>
+    <string name="autostart_apps_summary_fyt">系統自動啟動功能所啟動的應用程式可能會拖慢啟動器的啟動。啟動器的內建選項只會在啟動器完成冷啟動之後才啟動它們。使用此清單時，請記得在 FYT 設定以及其他所有設定了自動啟動的地方關閉這些應用程式；否則它們會被啟動兩次。</string>
+    <string name="autostart_apps_summary_other">系統自動啟動功能所啟動的應用程式可能會拖慢啟動器的啟動。啟動器的內建選項只會在啟動器完成冷啟動之後才啟動它們。使用此清單時，請記得在其他所有開啟了自動啟動的地方關閉這些應用程式的自動啟動；否則它們會被啟動兩次。</string>
+    <string name="autostart_apps_by_boot_completed_summary">適用於「開機時啟動」和「喚醒時啟動」</string>
 </resources>

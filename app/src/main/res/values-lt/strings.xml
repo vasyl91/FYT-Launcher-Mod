@@ -147,7 +147,6 @@
     <string name="baseline_reset_failed">Atstatyti nepavyko. Bandykite dar kartą vėliau.</string>
     <string name="baseline_reset_unavailable">Šiame įrenginyje nepasiekiama.</string>
     <string name="autostart_apps">Paleisti įjungiant</string>
-    <string name="autostart_apps_summary">Programos, paleidžiamos sistemos automatinio paleidimo funkcija, gali sulėtinti paleidyklės paleidimą. Integruota paleidyklės parinktis jas paleidžia tik tada, kai paleidyklė baigia šaltąjį paleidimą. Naudodami šį sąrašą nepamirškite išjungti šių programų FYT nustatymuose, kitaip jos bus paleistos du kartus.</string>
     <string name="autostart_apps_by_boot_completed">Bandyti naudoti BOOT_COMPLETED transliaciją, jei pasirinkta programa ją užregistravo</string>
     <string name="wake_autostart_apps">Paleisti pabudus</string>
     <string name="wake_autostart_apps_summary">Atidaromos po vieną praėjus kelioms sekundėms po kiekvieno pabudimo iš miego; tada į priekį grįžta paleidimo programa arba programa, buvusi prieš miegą. \"Paleisti įjungiant\" paleidžia savo programas tik iš naujo paleidus įrenginį.</string>
@@ -595,4 +594,7 @@
     <string name="widget_overlap_off">Valdikliai lieka savo langeliuose</string>
     <string name="widget_overlap_off_title">Išjungti persidengimą?</string>
     <string name="widget_overlap_off_message">Valdikliai, esantys virš kitų elementų, perkeliami į artimiausią tokio paties dydžio laisvą vietą; valdiklis be vietos pašalinamas.</string>
+    <string name="autostart_apps_summary_fyt">Programos, paleidžiamos sistemos automatinio paleidimo funkcijos, gali sulėtinti paleidimo programos starto laiką. Integruota paleidimo programos parinktis jas paleidžia tik tada, kai paleidimo programa baigia šaltąjį startą. Naudodami šį sąrašą nepamirškite išjungti šių programų FYT nustatymuose ir visur kitur, kur jos nustatytos paleisti automatiškai; kitaip jos bus paleistos du kartus.</string>
+    <string name="autostart_apps_summary_other">Programos, paleidžiamos sistemos automatinio paleidimo funkcijos, gali sulėtinti paleidimo programos starto laiką. Integruota paleidimo programos parinktis jas paleidžia tik tada, kai paleidimo programa baigia šaltąjį startą. Naudodami šį sąrašą nepamirškite išjungti automatinio šių programų paleidimo visur kitur, kur jis įjungtas; kitaip jos bus paleistos du kartus.</string>
+    <string name="autostart_apps_by_boot_completed_summary">Taikoma „Paleisti įjungus“ ir „Paleisti pabudus“</string>
 </resources>

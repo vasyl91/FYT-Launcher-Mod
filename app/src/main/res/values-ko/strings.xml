@@ -147,7 +147,6 @@
     <string name="baseline_reset_failed">초기화에 실패했습니다. 나중에 다시 시도하세요.</string>
     <string name="baseline_reset_unavailable">이 기기에서는 사용할 수 없습니다.</string>
     <string name="autostart_apps">부팅 시 시작</string>
-    <string name="autostart_apps_summary">시스템의 자동 시작 기능으로 실행되는 앱은 런처 시작을 느리게 할 수 있습니다. 런처의 내장 옵션은 런처의 콜드 스타트가 끝난 뒤에만 앱을 실행합니다. 이 목록을 사용할 때는 FYT 설정에서 해당 앱을 비활성화하세요. 그렇지 않으면 두 번 실행됩니다.</string>
     <string name="autostart_apps_by_boot_completed">선택한 앱이 BOOT_COMPLETED 브로드캐스트를 등록한 경우 이를 사용 시도</string>
     <string name="wake_autostart_apps">깨어날 때 시작</string>
     <string name="wake_autostart_apps_summary">절전 모드에서 깨어날 때마다 몇 초 뒤 하나씩 열립니다. 그 다음 런처 또는 절전 전의 앱이 앞으로 돌아옵니다. \"부팅 시 시작\"는 기기를 다시 시작한 뒤에만 앱을 시작합니다.</string>
@@ -595,4 +594,7 @@
     <string name="widget_overlap_off">위젯은 각자의 칸 안에 있습니다</string>
     <string name="widget_overlap_off_title">겹침을 끌까요?</string>
     <string name="widget_overlap_off_message">다른 항목 위에 있는 위젯은 크기에 맞는 가장 가까운 빈 자리로 옮겨지고, 자리가 없는 위젯은 삭제됩니다.</string>
+    <string name="autostart_apps_summary_fyt">시스템의 자동 시작 기능으로 실행되는 앱은 런처의 시작을 느리게 할 수 있습니다. 런처의 내장 옵션은 런처가 콜드 스타트를 마친 뒤에야 앱을 실행합니다. 이 목록을 사용할 때는 이 앱들을 FYT 설정과 자동으로 시작하도록 설정된 다른 모든 곳에서 꺼 두세요. 그렇지 않으면 두 번 실행됩니다.</string>
+    <string name="autostart_apps_summary_other">시스템의 자동 시작 기능으로 실행되는 앱은 런처의 시작을 느리게 할 수 있습니다. 런처의 내장 옵션은 런처가 콜드 스타트를 마친 뒤에야 앱을 실행합니다. 이 목록을 사용할 때는 이 앱들의 자동 시작을 켜져 있는 다른 모든 곳에서 꺼 두세요. 그렇지 않으면 두 번 실행됩니다.</string>
+    <string name="autostart_apps_by_boot_completed_summary">“부팅 시 시작”과 “절전 해제 시 시작”에 적용됩니다</string>
 </resources>

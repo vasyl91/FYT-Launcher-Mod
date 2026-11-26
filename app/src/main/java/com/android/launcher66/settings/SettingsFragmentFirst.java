@@ -475,6 +475,10 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             baselineProfileReset.setOnPreferenceClickListener(this);
         }
         if (appListAutostart != null) {
+            // What the note says about turning the apps off elsewhere depends on the device: an FYT unit has an autostart
+            // in its own settings
+            appListAutostart.setSummary(LauncherApplication.isFytDevice() ? R.string.autostart_apps_summary_fyt
+                    : R.string.autostart_apps_summary_other);
             appListAutostart.setOnPreferenceClickListener(this);
         }
         if (wakeAutostart != null) {

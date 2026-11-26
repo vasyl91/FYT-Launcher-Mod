@@ -152,7 +152,6 @@
     <string name="baseline_reset_failed">Reset failed. Try again later.</string>
     <string name="baseline_reset_unavailable">Not available on this device.</string>
     <string name="autostart_apps">Start on boot</string>
-    <string name="autostart_apps_summary">Apps launched by the system\'s autostart feature may slow down the launcher\'s startup. The launcher\'s built-in option will launch them only after the launcher has completed its cold start. When using this list, remember to disable these apps in the FYT settings; otherwise, they will be launched twice.</string>
     <string name="autostart_apps_by_boot_completed">Try to use the BOOT_COMPLETED broadcast if the selected app has it registered</string>
     <string name="wake_autostart_apps">Start on wake</string>
     <string name="wake_autostart_apps_summary">Opened one by one a few seconds after every wake from sleep; then the launcher, or the app from before the sleep, comes back to the front. \"Start on boot\" starts its apps only after a restart of the device.</string>
@@ -607,4 +606,7 @@
     <string name="widget_overlap_off">Widgets keep to their own cells</string>
     <string name="widget_overlap_off_title">Turn off overlapping?</string>
     <string name="widget_overlap_off_message">Widgets that lie over other items move to the nearest free place of their size; a widget with no room is removed.</string>
+    <string name="autostart_apps_summary_fyt">Apps launched by the system\'s autostart feature may slow down the launcher\'s startup. The launcher\'s built-in option will launch them only after the launcher has completed its cold start. When using this list, remember to disable these apps in the FYT settings and anywhere else they are set to start automatically; otherwise, they will be launched twice.</string>
+    <string name="autostart_apps_summary_other">Apps launched by the system\'s autostart feature may slow down the launcher\'s startup. The launcher\'s built-in option will launch them only after the launcher has completed its cold start. When using this list, remember to turn off automatic start for these apps anywhere else it is enabled; otherwise, they will be launched twice.</string>
+    <string name="autostart_apps_by_boot_completed_summary">Applies to “Start on boot” and “Start on wake”</string>
 </resources>

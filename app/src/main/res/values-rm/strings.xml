@@ -147,7 +147,6 @@
     <string name="baseline_reset_failed">La reinizialisaziun n\'è betg reussida. Emprova pli tard danovamain.</string>
     <string name="baseline_reset_unavailable">Betg disponibel sin quest apparat.</string>
     <string name="autostart_apps">Partir cun l\'enviar</string>
-    <string name="autostart_apps_summary">Apps che vegnan lantschadas da la funcziun d\'autostart dal sistem pon retardar l\'enviar dal launcher. L\'opziun integrada dal launcher las lantscha mo suenter che il launcher ha terminà ses enviar a fraid. Cura che ti utiliseschas questa glista, regorda da deactivar questas apps en ils parameters da FYT; uschiglio vegnan ellas lantschadas dus giadas.</string>
     <string name="autostart_apps_by_boot_completed">Empruvar da duvrar il broadcast BOOT_COMPLETED sch\'ina app tschernida al ha registrà</string>
     <string name="wake_autostart_apps">Partir cun sveglias</string>
     <string name="wake_autostart_apps_summary">Avertas ina suenter l\'autra intgins secundas suenter mintga sveglia dal sien; lura returna il launcher u l\'applicaziun d\'avant il sien davant. \"Partir cun l\'enviar\" avra sias applicaziuns mo suenter ina reaviaziun da l\'apparat.</string>
@@ -595,4 +594,7 @@
     <string name="widget_overlap_off">Ils widgets restan en lur atgnas cellas</string>
     <string name="widget_overlap_off_title">Deactivar la surlappaziun?</string>
     <string name="widget_overlap_off_message">Ils widgets sur auters elements van sin il plaz liber il pli datiers da lur grondezza; in widget senza plaz vegn allontanà.</string>
+    <string name="autostart_apps_summary_fyt">Las applicaziuns che la funcziun d\'autostart dal sistem lantscha pon retardar l\'avertura dal launcher. L\'opziun integrada dal launcher las lantscha mo suenter che il launcher ha terminà sia partenza a fraid. Cura che ti utiliseschas questa glista, regorda da deactivar questas applicaziuns en las parameters FYT e en mintga auter lieu nua ch\'ellas èn definidas per partir automaticamain; uschiglio vegnan ellas lantschadas duas giadas.</string>
+    <string name="autostart_apps_summary_other">Las applicaziuns che la funcziun d\'autostart dal sistem lantscha pon retardar l\'avertura dal launcher. L\'opziun integrada dal launcher las lantscha mo suenter che il launcher ha terminà sia partenza a fraid. Cura che ti utiliseschas questa glista, regorda da deactivar l\'autostart da questas applicaziuns en mintga auter lieu nua ch\'el è activà; uschiglio vegnan ellas lantschadas duas giadas.</string>
+    <string name="autostart_apps_by_boot_completed_summary">Valaiv per «Lantschar a l\'enviada» e «Lantschar al dasdar»</string>
 </resources>

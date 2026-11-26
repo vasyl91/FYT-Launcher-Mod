@@ -147,7 +147,6 @@
     <string name="baseline_reset_failed">Sıfırlama başarısız oldu. Daha sonra tekrar deneyin.</string>
     <string name="baseline_reset_unavailable">Bu cihazda kullanılamıyor.</string>
     <string name="autostart_apps">Açılışta başlat</string>
-    <string name="autostart_apps_summary">Sistemin otomatik başlatma özelliğiyle başlatılan uygulamalar başlatıcının açılışını yavaşlatabilir. Başlatıcının yerleşik seçeneği bunları yalnızca başlatıcının soğuk başlangıcı tamamlandıktan sonra başlatır. Bu listeyi kullanırken bu uygulamaları FYT ayarlarında devre dışı bırakmayı unutmayın; aksi halde iki kez başlatılırlar.</string>
     <string name="autostart_apps_by_boot_completed">Seçilen uygulama kaydettiyse BOOT_COMPLETED yayınını kullanmayı dene</string>
     <string name="wake_autostart_apps">Uyanınca başlat</string>
     <string name="wake_autostart_apps_summary">Uykudan her uyanıştan birkaç saniye sonra tek tek açılır; ardından başlatıcı ya da uykudan önceki uygulama öne döner. \"Açılışta başlat\" uygulamalarını yalnızca cihaz yeniden başlatıldıktan sonra başlatır.</string>
@@ -595,4 +594,7 @@
     <string name="widget_overlap_off">Widget\'lar kendi hücrelerinde kalır</string>
     <string name="widget_overlap_off_title">Çakışma kapatılsın mı?</string>
     <string name="widget_overlap_off_message">Diğer öğelerin üzerindeki widget\'lar boyutlarına uygun en yakın boş yere taşınır; yeri olmayan widget kaldırılır.</string>
+    <string name="autostart_apps_summary_fyt">Sistemin otomatik başlatma özelliğiyle başlatılan uygulamalar başlatıcının açılışını yavaşlatabilir. Başlatıcının yerleşik seçeneği bunları yalnızca başlatıcı soğuk açılışını tamamladıktan sonra başlatır. Bu listeyi kullanırken bu uygulamaları FYT ayarlarında ve otomatik başlayacak şekilde ayarlandıkları diğer tüm yerlerde kapatmayı unutmayın; aksi halde iki kez başlatılırlar.</string>
+    <string name="autostart_apps_summary_other">Sistemin otomatik başlatma özelliğiyle başlatılan uygulamalar başlatıcının açılışını yavaşlatabilir. Başlatıcının yerleşik seçeneği bunları yalnızca başlatıcı soğuk açılışını tamamladıktan sonra başlatır. Bu listeyi kullanırken bu uygulamaların otomatik başlatmasını açık olduğu diğer tüm yerlerde kapatmayı unutmayın; aksi halde iki kez başlatılırlar.</string>
+    <string name="autostart_apps_by_boot_completed_summary">“Açılışta başlat” ve “Uyandırmada başlat” için geçerlidir</string>
 </resources>

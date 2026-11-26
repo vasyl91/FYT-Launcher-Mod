@@ -147,7 +147,6 @@
     <string name="baseline_reset_failed">Nollaus epäonnistui. Yritä myöhemmin uudelleen.</string>
     <string name="baseline_reset_unavailable">Ei saatavilla tässä laitteessa.</string>
     <string name="autostart_apps">Käynnistä käynnistyksen yhteydessä</string>
-    <string name="autostart_apps_summary">Järjestelmän automaattisella käynnistyksellä käynnistettävät sovellukset voivat hidastaa launcherin käynnistystä. Launcherin sisäänrakennettu vaihtoehto käynnistää ne vasta, kun launcherin kylmäkäynnistys on valmis. Kun käytät tätä luetteloa, muista poistaa nämä sovellukset käytöstä FYT-asetuksissa, muuten ne käynnistetään kahdesti.</string>
     <string name="autostart_apps_by_boot_completed">Yritä käyttää BOOT_COMPLETED-lähetystä, jos valittu sovellus on rekisteröinyt sen</string>
     <string name="wake_autostart_apps">Käynnistä herätessä</string>
     <string name="wake_autostart_apps_summary">Avataan yksi kerrallaan muutama sekunti jokaisen lepotilasta heräämisen jälkeen; sitten etualalle palaa käynnistin tai ennen lepotilaa ollut sovellus. \"Käynnistä käynnistyksen yhteydessä\" käynnistää sovelluksensa vain laitteen uudelleenkäynnistyksen jälkeen.</string>
@@ -595,4 +594,7 @@
     <string name="widget_overlap_off">Widgetit pysyvät omissa ruuduissaan</string>
     <string name="widget_overlap_off_title">Poistetaanko päällekkäisyys käytöstä?</string>
     <string name="widget_overlap_off_message">Muiden kohteiden päällä olevat widgetit siirtyvät lähimpään vapaaseen saman kokoiseen paikkaan; widget, jolle ei ole tilaa, poistetaan.</string>
+    <string name="autostart_apps_summary_fyt">Järjestelmän automaattikäynnistyksen käynnistämät sovellukset voivat hidastaa laukaisimen käynnistymistä. Laukaisimen sisäänrakennettu vaihtoehto käynnistää ne vasta, kun laukaisin on saanut kylmäkäynnistyksensä valmiiksi. Kun käytät tätä luetteloa, muista poistaa nämä sovellukset käytöstä FYT-asetuksissa ja kaikkialla muualla, missä ne on asetettu käynnistymään automaattisesti; muuten ne käynnistyvät kahdesti.</string>
+    <string name="autostart_apps_summary_other">Järjestelmän automaattikäynnistyksen käynnistämät sovellukset voivat hidastaa laukaisimen käynnistymistä. Laukaisimen sisäänrakennettu vaihtoehto käynnistää ne vasta, kun laukaisin on saanut kylmäkäynnistyksensä valmiiksi. Kun käytät tätä luetteloa, muista poistaa näiden sovellusten automaattinen käynnistys kaikkialla muualla, missä se on käytössä; muuten ne käynnistyvät kahdesti.</string>
+    <string name="autostart_apps_by_boot_completed_summary">Koskee valintoja ”Käynnistä käynnistyksessä” ja ”Käynnistä herätessä”</string>
 </resources>

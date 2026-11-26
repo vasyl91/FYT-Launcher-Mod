@@ -147,7 +147,6 @@
     <string name="baseline_reset_failed">A visszaállítás sikertelen. Próbálja újra később.</string>
     <string name="baseline_reset_unavailable">Ezen az eszközön nem érhető el.</string>
     <string name="autostart_apps">Indítás rendszerindításkor</string>
-    <string name="autostart_apps_summary">A rendszer automatikus indítási funkciójával indított alkalmazások lassíthatják a launcher indulását. A launcher beépített lehetősége csak azután indítja el őket, hogy a launcher befejezte a hidegindítást. A lista használatakor ne felejtse el letiltani ezeket az alkalmazásokat az FYT beállításaiban, különben kétszer indulnak el.</string>
     <string name="autostart_apps_by_boot_completed">A BOOT_COMPLETED üzenet használatának megkísérlése, ha a kiválasztott alkalmazás regisztrálta</string>
     <string name="wake_autostart_apps">Indítás ébredéskor</string>
     <string name="wake_autostart_apps_summary">Minden alvó állapotból való ébredés után néhány másodperccel egyenként nyílnak meg; utána az indító vagy az alvás előtti alkalmazás kerül vissza előtérbe. A(z) \"Indítás rendszerindításkor\" csak az eszköz újraindítása után indítja el az alkalmazásait.</string>
@@ -595,4 +594,7 @@
     <string name="widget_overlap_off">A widgetek a saját celláikban maradnak</string>
     <string name="widget_overlap_off_title">Kikapcsolja az átfedést?</string>
     <string name="widget_overlap_off_message">A más elemek fölött lévő widgetek a legközelebbi, azonos méretű szabad helyre kerülnek; a hely nélküli widget törlődik.</string>
+    <string name="autostart_apps_summary_fyt">A rendszer automatikus indítása által elindított alkalmazások lassíthatják a launcher indulását. A launcher beépített lehetősége csak azután indítja el őket, hogy a launcher befejezte a hidegindítást. A lista használatakor ne felejtse el kikapcsolni ezeket az alkalmazásokat az FYT beállításaiban és mindenhol máshol, ahol automatikus indításra vannak állítva; különben kétszer indulnak el.</string>
+    <string name="autostart_apps_summary_other">A rendszer automatikus indítása által elindított alkalmazások lassíthatják a launcher indulását. A launcher beépített lehetősége csak azután indítja el őket, hogy a launcher befejezte a hidegindítást. A lista használatakor ne felejtse el kikapcsolni ezeknek az alkalmazásoknak az automatikus indítását mindenhol máshol, ahol be van kapcsolva; különben kétszer indulnak el.</string>
+    <string name="autostart_apps_by_boot_completed_summary">A „Indítás rendszerindításkor” és az „Indítás ébredéskor” beállításra vonatkozik</string>
 </resources>

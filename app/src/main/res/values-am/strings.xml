@@ -147,7 +147,6 @@
     <string name="baseline_reset_failed">ዳግም ማስጀመር አልተሳካም። በኋላ እንደገና ይሞክሩ።</string>
     <string name="baseline_reset_unavailable">በዚህ መሣሪያ ላይ አይገኝም።</string>
     <string name="autostart_apps">በማስነሳት ጊዜ ጀምር</string>
-    <string name="autostart_apps_summary">በስርዓቱ ራስ-ሰር ጅምር ባህሪ የሚጀምሩ መተግበሪያዎች የማስጀመሪያውን ጅምር ሊያዘገዩ ይችላሉ። የማስጀመሪያው አብሮ የተሰራ አማራጭ ማስጀመሪያው የቀዝቃዛ ጅምሩን ካጠናቀቀ በኋላ ብቻ ያስጀምራቸዋል። ይህን ዝርዝር ሲጠቀሙ እነዚህን መተግበሪያዎች በFYT ቅንብሮች ውስጥ ማሰናከልዎን ያስታውሱ፤ ካልሆነ ሁለት ጊዜ ይጀምራሉ።</string>
     <string name="autostart_apps_by_boot_completed">የተመረጠው መተግበሪያ ከመዘገበ የBOOT_COMPLETED ስርጭትን ለመጠቀም ይሞክሩ</string>
     <string name="wake_autostart_apps">በመንቃት ጊዜ ጀምር</string>
     <string name="wake_autostart_apps_summary">ከእንቅልፍ በተነሳ ቁጥር ከጥቂት ሰከንዶች በኋላ አንድ በአንድ ይከፈታሉ፤ ከዚያ ላውንቸሩ ወይም ከእንቅልፍ በፊት የነበረው መተግበሪያ ወደ ፊት ይመለሳል። \"በማስነሳት ጊዜ ጀምር\" መተግበሪያዎቹን የሚጀምረው መሣሪያው እንደገና ሲጀመር ብቻ ነው።</string>
@@ -595,4 +594,7 @@
     <string name="widget_overlap_off">ምግብሮች በራሳቸው ህዋሶች ውስጥ ይቆያሉ</string>
     <string name="widget_overlap_off_title">መደራረብን ማጥፋት?</string>
     <string name="widget_overlap_off_message">በሌሎች ነገሮች ላይ የሚገኙ ምግብሮች ወደ ቅርብ ነጻ ቦታ ይሄዳሉ፤ ቦታ የሌለው ምግብ ይወገዳል።</string>
+    <string name="autostart_apps_summary_fyt">በስርዓቱ የራስ-ጀምር ባህሪ የሚጀምሩ መተግበሪያዎች የማስጀመሪያውን ጅምር ሊያዘገዩ ይችላሉ። የማስጀመሪያው አብሮ የተሰራ አማራጭ ማስጀመሪያው ቀዝቃዛ ጅምሩን ካጠናቀቀ በኋላ ብቻ ያስጀምራቸዋል። ይህን ዝርዝር ሲጠቀሙ እነዚህን መተግበሪያዎች በFYT ቅንብሮች እና በራስ-ሰር እንዲጀምሩ በተዘጋጁበት ሌላ ቦታ ሁሉ ማጥፋትዎን ያስታውሱ፤ አለበለዚያ ሁለት ጊዜ ይጀምራሉ።</string>
+    <string name="autostart_apps_summary_other">በስርዓቱ የራስ-ጀምር ባህሪ የሚጀምሩ መተግበሪያዎች የማስጀመሪያውን ጅምር ሊያዘገዩ ይችላሉ። የማስጀመሪያው አብሮ የተሰራ አማራጭ ማስጀመሪያው ቀዝቃዛ ጅምሩን ካጠናቀቀ በኋላ ብቻ ያስጀምራቸዋል። ይህን ዝርዝር ሲጠቀሙ ለእነዚህ መተግበሪያዎች ራስ-ሰር ጅምርን በበራበት ሌላ ቦታ ሁሉ ማጥፋትዎን ያስታውሱ፤ አለበለዚያ ሁለት ጊዜ ይጀምራሉ።</string>
+    <string name="autostart_apps_by_boot_completed_summary">ለ“ሲነሳ ጀምር” እና ለ“ሲነቃ ጀምር” ይሠራል</string>
 </resources>

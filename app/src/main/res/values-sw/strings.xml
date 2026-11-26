@@ -147,7 +147,6 @@
     <string name="baseline_reset_failed">Kuweka upya kumeshindwa. Jaribu tena baadaye.</string>
     <string name="baseline_reset_unavailable">Haipatikani kwenye kifaa hiki.</string>
     <string name="autostart_apps">Anza kifaa kinapowashwa</string>
-    <string name="autostart_apps_summary">Programu zinazozinduliwa na kipengele cha kuanza kiotomatiki cha mfumo zinaweza kupunguza kasi ya kuanza kwa kizinduzi. Chaguo lililojengewa ndani la kizinduzi huzizindua tu baada ya kizinduzi kukamilisha kuanza kwa baridi. Unapotumia orodha hii, kumbuka kuzima programu hizi kwenye mipangilio ya FYT; vinginevyo zitazinduliwa mara mbili.</string>
     <string name="autostart_apps_by_boot_completed">Jaribu kutumia tangazo la BOOT_COMPLETED ikiwa programu iliyochaguliwa imeisajili</string>
     <string name="wake_autostart_apps">Anza kifaa kinapoamka</string>
     <string name="wake_autostart_apps_summary">Hufunguliwa moja baada ya nyingine sekunde chache baada ya kila kuamka kutoka usingizini; kisha kizindua, au programu ya kabla ya usingizi, hurudi mbele. \"Anza kifaa kinapowashwa\" huanzisha programu zake tu baada ya kifaa kuwashwa upya.</string>
@@ -595,4 +594,7 @@
     <string name="widget_overlap_off">Wijeti hubaki katika seli zake</string>
     <string name="widget_overlap_off_title">Zima kupishana?</string>
     <string name="widget_overlap_off_message">Wijeti zilizo juu ya vipengee vingine huhamia nafasi huru iliyo karibu zaidi ya ukubwa wake; wijeti isiyo na nafasi huondolewa.</string>
+    <string name="autostart_apps_summary_fyt">Programu zinazoanzishwa na kipengele cha kuanza kiotomatiki cha mfumo zinaweza kupunguza kasi ya kuanza kwa kizinduzi. Chaguo lililojengewa ndani la kizinduzi huzianzisha tu baada ya kizinduzi kumaliza kuanza kwa baridi. Unapotumia orodha hii, kumbuka kuzima programu hizi katika mipangilio ya FYT na kila mahali pengine zilipowekwa kuanza kiotomatiki; vinginevyo zitaanzishwa mara mbili.</string>
+    <string name="autostart_apps_summary_other">Programu zinazoanzishwa na kipengele cha kuanza kiotomatiki cha mfumo zinaweza kupunguza kasi ya kuanza kwa kizinduzi. Chaguo lililojengewa ndani la kizinduzi huzianzisha tu baada ya kizinduzi kumaliza kuanza kwa baridi. Unapotumia orodha hii, kumbuka kuzima kuanza kiotomatiki kwa programu hizi kila mahali pengine ilipowashwa; vinginevyo zitaanzishwa mara mbili.</string>
+    <string name="autostart_apps_by_boot_completed_summary">Inatumika kwa “Anza wakati wa kuwasha” na “Anza wakati wa kuamka”</string>
 </resources>

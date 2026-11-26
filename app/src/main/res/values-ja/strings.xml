@@ -147,7 +147,6 @@
     <string name="baseline_reset_failed">リセットに失敗しました。後でもう一度お試しください。</string>
     <string name="baseline_reset_unavailable">この端末では利用できません。</string>
     <string name="autostart_apps">起動時に開始</string>
-    <string name="autostart_apps_summary">システムの自動起動機能で起動するアプリは、ランチャーの起動を遅くすることがあります。ランチャー内蔵のオプションは、ランチャーのコールドスタートが完了してからアプリを起動します。このリストを使う場合は、FYT設定でこれらのアプリを無効にしてください。そうしないと2回起動されます。</string>
     <string name="autostart_apps_by_boot_completed">選択したアプリがBOOT_COMPLETEDブロードキャストを登録している場合は、それを使用してみる</string>
     <string name="wake_autostart_apps">スリープ解除時に開始</string>
     <string name="wake_autostart_apps_summary">スリープから復帰するたびに数秒後に1つずつ開きます。その後、ランチャーまたはスリープ前のアプリが前面に戻ります。「起動時に開始」はデバイスの再起動後にだけアプリを開始します。</string>
@@ -595,4 +594,7 @@
     <string name="widget_overlap_off">ウィジェットはそれぞれのマスに収まります</string>
     <string name="widget_overlap_off_title">重なりをオフにしますか？</string>
     <string name="widget_overlap_off_message">他の項目に重なっているウィジェットは、同じ大きさの最も近い空き位置に移動し、場所がないウィジェットは削除されます。</string>
+    <string name="autostart_apps_summary_fyt">システムの自動起動機能で起動されるアプリは、ランチャーの起動を遅くする場合があります。ランチャー内蔵のオプションは、ランチャーのコールドスタートが完了してからアプリを起動します。このリストを使うときは、これらのアプリをFYTの設定や、自動起動に設定されているほかの場所すべてでオフにしてください。そうしないと2回起動されます。</string>
+    <string name="autostart_apps_summary_other">システムの自動起動機能で起動されるアプリは、ランチャーの起動を遅くする場合があります。ランチャー内蔵のオプションは、ランチャーのコールドスタートが完了してからアプリを起動します。このリストを使うときは、これらのアプリの自動起動を、有効になっているほかの場所すべてでオフにしてください。そうしないと2回起動されます。</string>
+    <string name="autostart_apps_by_boot_completed_summary">「起動時に開始」と「スリープ解除時に開始」に適用されます</string>
 </resources>

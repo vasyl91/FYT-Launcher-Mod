@@ -147,7 +147,6 @@
     <string name="baseline_reset_failed">Lähtestamine ebaõnnestus. Proovige hiljem uuesti.</string>
     <string name="baseline_reset_unavailable">Selles seadmes pole saadaval.</string>
     <string name="autostart_apps">Käivita käivitumisel</string>
-    <string name="autostart_apps_summary">Süsteemi automaatse käivitamise funktsiooni abil käivitatavad rakendused võivad käivitaja käivitumist aeglustada. Käivitaja sisseehitatud valik käivitab need alles pärast seda, kui käivitaja on külmkäivituse lõpetanud. Selle loendi kasutamisel ärge unustage neid rakendusi FYT seadetes keelata, muidu käivitatakse need kaks korda.</string>
     <string name="autostart_apps_by_boot_completed">Proovi kasutada BOOT_COMPLETED saadet, kui valitud rakendus on selle registreerinud</string>
     <string name="wake_autostart_apps">Käivita ärkamisel</string>
     <string name="wake_autostart_apps_summary">Avatakse ükshaaval mõni sekund pärast igat unerežiimist ärkamist; seejärel tuleb esiplaanile tagasi käivitaja või enne und avatud rakendus. \"Käivita käivitumisel\" käivitab oma rakendused ainult pärast seadme taaskäivitamist.</string>
@@ -595,4 +594,7 @@
     <string name="widget_overlap_off">Vidinad jäävad oma lahtritesse</string>
     <string name="widget_overlap_off_title">Lülitada kattumine välja?</string>
     <string name="widget_overlap_off_message">Teiste elementide peal olevad vidinad liiguvad lähimasse sama suurusega vabasse kohta; vidin, millele ruumi pole, eemaldatakse.</string>
+    <string name="autostart_apps_summary_fyt">Süsteemi automaatkäivituse funktsiooni kaudu käivitatud rakendused võivad launcheri käivitamist aeglustada. Launcheri sisseehitatud valik käivitab need alles pärast launcheri külmkäivituse lõppu. Selle loendi kasutamisel pidage meeles need rakendused FYT seadetes ja kõikjal mujal, kus need automaatselt käivituvad, välja lülitada; muidu käivituvad need kaks korda.</string>
+    <string name="autostart_apps_summary_other">Süsteemi automaatkäivituse funktsiooni kaudu käivitatud rakendused võivad launcheri käivitamist aeglustada. Launcheri sisseehitatud valik käivitab need alles pärast launcheri külmkäivituse lõppu. Selle loendi kasutamisel pidage meeles lülitada nende rakenduste automaatkäivitus välja kõikjal mujal, kus see on sisse lülitatud; muidu käivituvad need kaks korda.</string>
+    <string name="autostart_apps_by_boot_completed_summary">Kehtib valikutele „Käivita käivitumisel“ ja „Käivita ärkamisel“</string>
 </resources>

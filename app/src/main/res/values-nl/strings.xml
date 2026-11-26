@@ -147,7 +147,6 @@
     <string name="baseline_reset_failed">Resetten mislukt. Probeer het later opnieuw.</string>
     <string name="baseline_reset_unavailable">Niet beschikbaar op dit apparaat.</string>
     <string name="autostart_apps">Starten bij opstarten</string>
-    <string name="autostart_apps_summary">Apps die worden gestart door de autostartfunctie van het systeem kunnen het opstarten van de launcher vertragen. De ingebouwde optie van de launcher start ze pas nadat de launcher zijn koude start heeft voltooid. Vergeet bij gebruik van deze lijst niet deze apps uit te schakelen in de FYT-instellingen; anders worden ze twee keer gestart.</string>
     <string name="autostart_apps_by_boot_completed">Probeer de BOOT_COMPLETED-broadcast te gebruiken als de geselecteerde app die heeft geregistreerd</string>
     <string name="wake_autostart_apps">Starten bij ontwaken</string>
     <string name="wake_autostart_apps_summary">Een voor een geopend enkele seconden na elk ontwaken uit de slaapstand; daarna komt de launcher, of de app van vóór de slaapstand, weer naar voren. \"Starten bij opstarten\" start zijn apps alleen na een herstart van het apparaat.</string>
@@ -595,4 +594,7 @@
     <string name="widget_overlap_off">Widgets blijven in hun eigen cellen</string>
     <string name="widget_overlap_off_title">Overlappen uitschakelen?</string>
     <string name="widget_overlap_off_message">Widgets boven andere items verschuiven naar de dichtstbijzijnde vrije plek van hun formaat; een widget zonder plek wordt verwijderd.</string>
+    <string name="autostart_apps_summary_fyt">Apps die door de autostartfunctie van het systeem worden gestart, kunnen het opstarten van de launcher vertragen. De ingebouwde optie van de launcher start ze pas nadat de launcher zijn koude start heeft voltooid. Vergeet bij het gebruik van deze lijst niet deze apps uit te schakelen in de FYT-instellingen en overal elders waar ze automatisch worden gestart; anders worden ze twee keer gestart.</string>
+    <string name="autostart_apps_summary_other">Apps die door de autostartfunctie van het systeem worden gestart, kunnen het opstarten van de launcher vertragen. De ingebouwde optie van de launcher start ze pas nadat de launcher zijn koude start heeft voltooid. Vergeet bij het gebruik van deze lijst niet het automatisch starten van deze apps uit te schakelen overal elders waar het is ingeschakeld; anders worden ze twee keer gestart.</string>
+    <string name="autostart_apps_by_boot_completed_summary">Geldt voor “Starten bij opstarten” en “Starten bij ontwaken”</string>
 </resources>
