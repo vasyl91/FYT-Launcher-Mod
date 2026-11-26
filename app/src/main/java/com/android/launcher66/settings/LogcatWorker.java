@@ -76,7 +76,7 @@ import java.util.concurrent.atomic.AtomicLong;
  *    minute back;
  *  - the time limit counts from the start (the launcher's, for the capture at startup), and its
  *    end, like the stop button, only sets the moment the capture ends at: what logcat has not
- *    read yet up to then (the boot log takes a while) is still read and written, see beginDrain();
+ *    read yet up to then is still read and written for 10 s at most (DrainPlan), see beginDrain();
  *  - "log everything" without system privileges reads through the VD host (root or Shizuku). When
  *    that host is not there yet but on its way (HostAwait.isExpected(): Shizuku installed, which
  *    on the 7870 starts minutes after the launcher or by hand) the capture does not wait for it:
@@ -210,10 +210,12 @@ public final class LogcatWorker {
      * that moment: a line newer than it, or DRAIN_IDLE_MS without any line (it waits for new ones
      * then). Reading the boot log's buffers takes a while -- about 85 000 lines in 30 s through the
      * VD host -- and killing logcat at the stop left only the start of the boot in the file.
-     * DRAIN_MAX_MS bounds it if logcat never catches up (a clock set back while it reads).
+     * DRAIN_MAX_MS bounds it (10 s, DrainPlan): the owner wants a stop to end on time (D-84), so what logcat
+     * has not read by then, the rest of a boot's buffers included, is left, and the file says so. It used to
+     * be 120 s to read a boot log to its end.
      */
-    private static final long DRAIN_IDLE_MS = 1500L;
-    private static final long DRAIN_MAX_MS = 120_000L;
+    private static final long DRAIN_IDLE_MS = DrainPlan.IDLE_MS;
+    private static final long DRAIN_MAX_MS = DrainPlan.MAX_MS;
     private static final long DRAIN_POLL_MS = 250L;
     /**
      * A line further after the end than this is not taken as logcat having caught up: FYT may
@@ -254,6 +256,11 @@ public final class LogcatWorker {
     /** logcat was stopped by the drain (caught up, or DRAIN_MAX_MS): its end is no failure. */
     private volatile boolean drainKilled;
     private volatile boolean drainTimedOut;
+    /** The last line logcat gave while draining, to see how far behind it was when it was cut (DrainPlan). */
+    private volatile String lastDrainLine;
+    /** How long the drain lasted and how far behind logcat was, for the closing line of a cut capture. */
+    private volatile long drainCutAfterSeconds;
+    private volatile long drainBehindSeconds = -1L;
     /** In elapsedRealtime(), not the wall clock, which FYT corrects in the first minutes after boot. */
     private volatile long deadlineElapsedMs;
     private volatile Process logcatProcess;
@@ -391,6 +398,9 @@ public final class LogcatWorker {
             draining = false;
             drainKilled = false;
             drainTimedOut = false;
+            lastDrainLine = null;
+            drainBehindSeconds = -1L;
+            drainCutAfterSeconds = 0L;
             awaitingHost = false;
             upgradeRequested = false;
             pendingNotes.clear();
@@ -633,6 +643,9 @@ public final class LogcatWorker {
                     while (running && (line = reader.readLine()) != null) {
                         long now = SystemClock.elapsedRealtime();
                         lastReadElapsedMs = now;
+                        if (draining) {
+                            lastDrainLine = line;
+                        }
                         if (draining && isNewerThan(lineFormat, line, cutoffWallMs)
                                 && !isNewerThan(lineFormat, line, cutoffWallMs + DRAIN_CLOCK_JUMP_MS)) {
                             caughtUp = true;
@@ -738,8 +751,7 @@ public final class LogcatWorker {
 
             if (draining && error == null) {
                 writeLine(drainTimedOut
-                        ? "===== stopped after " + DRAIN_MAX_MS / 1000L + " s of reading past the end:"
-                                + " logcat had not caught up with it ====="
+                        ? DrainPlan.footer(drainCutAfterSeconds, drainBehindSeconds)
                         : "===== written up to the end of the capture ("
                                 + new SimpleDateFormat("HH:mm:ss.SSS", Locale.US).format(new Date(cutoffWallMs))
                                 + ") =====");
@@ -1816,9 +1828,11 @@ public final class LogcatWorker {
     /**
      * Ends the capture at this moment without losing what logcat has not read yet: lines after
      * now are left out, and logcat is stopped once it has caught up (a line after now, or
-     * DRAIN_IDLE_MS without a new line), DRAIN_MAX_MS at the most. The time limit and the stop
+     * DRAIN_IDLE_MS without a new line), DRAIN_MAX_MS (10 s) at the most. The time limit and the stop
      * button end it this way; a stop that kills the stream at once left a boot log with only the
-     * start of the boot.
+     * start of the boot. The old rule, to read a boot log to its end for up to two minutes, no longer
+     * holds: the owner wants the end on time (D-84), and a capture that is still behind after 10 s says
+     * how far behind it was (DrainPlan).
      */
     private void beginDrain(String why) {
         synchronized (lock) {
@@ -1851,22 +1865,53 @@ public final class LogcatWorker {
             if (logcatProcess == null) {
                 lastReadElapsedMs = now;
                 drainStartedElapsedMs = now;
-            } else if (now - drainStartedElapsedMs >= DRAIN_MAX_MS) {
-                drainTimedOut = true;
-                drainKilled = true;
-                killProcess();
-                // runLogging() reports the result (with the file path) from its finally block;
-                // this only fires if the worker thread is stuck somewhere.
-                mainHandler.postDelayed(() -> finishOnce(false, null), FINISH_WATCHDOG_MS);
-                return;
-            } else if (now - lastReadElapsedMs >= DRAIN_IDLE_MS) {
-                drainKilled = true;     // waiting for new lines: everything up to the end is read
-                killProcess();
+                mainHandler.postDelayed(this, DRAIN_POLL_MS);
                 return;
             }
-            mainHandler.postDelayed(this, DRAIN_POLL_MS);
+            switch (DrainPlan.next(now - drainStartedElapsedMs, now - lastReadElapsedMs)) {
+                case TIMED_OUT:
+                    cutDrain(now);
+                    // runLogging() reports the result (with the file path) from its finally block;
+                    // this only fires if the worker thread is stuck somewhere.
+                    mainHandler.postDelayed(() -> finishOnce(false, null), FINISH_WATCHDOG_MS);
+                    return;
+                case CAUGHT_UP:
+                    drainKilled = true;     // waiting for new lines: everything up to the end is read
+                    killProcess();
+                    return;
+                default:
+                    mainHandler.postDelayed(this, DRAIN_POLL_MS);
+            }
         }
     };
+
+    /**
+     * Logcat is still behind the moment of the stop after DRAIN_MAX_MS: it is killed, and a moment later it is
+     * checked that it has gone (through the host too), so that no logcat is left reading after the capture.
+     */
+    private void cutDrain(long now) {
+        long behind = -1L;
+        String last = lastDrainLine;
+        if (last != null) {
+            // The watch runs on the main thread: its own format, SimpleDateFormat is not thread-safe
+            long lineMs = lineWallMs(new SimpleDateFormat("MM-dd HH:mm:ss.SSS", Locale.US), last, cutoffWallMs);
+            behind = DrainPlan.behindSeconds(cutoffWallMs, lineMs);
+        }
+        drainCutAfterSeconds = Math.max(0L, (now - drainStartedElapsedMs) / 1000L);
+        drainBehindSeconds = behind;
+        drainTimedOut = true;
+        drainKilled = true;
+        Log.w(TAG, "LogcatWorker: stop: logcat " + (behind < 0L ? "gave no line with a time" : behind + " s behind")
+                + " after " + drainCutAfterSeconds + " s, the rest of the buffers is not read");
+        final Process p = logcatProcess;
+        killProcess();
+        mainHandler.postDelayed(() -> {
+            if (p != null && p.isAlive()) {
+                Log.w(TAG, "LogcatWorker: stop: logcat still runs after the kill, killing it again");
+                try { p.destroyForcibly(); } catch (Throwable ignored) { }
+            }
+        }, 1000L);
+    }
 
     private void finishOnce(boolean success, String message) {
         if (!finished.compareAndSet(false, true)) return;
