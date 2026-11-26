@@ -1753,6 +1753,65 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     }
 
     /**
+     * True while this activity is shown before the user's first unlock (direct boot, see DirectBootPlan): it only
+     * shows the wallpaper through its theme and waits for the unlock, and every override below that would touch
+     * the home screen, the model or the preferences stops at its first line.
+     */
+    private boolean mLockedBoot;
+    private BroadcastReceiver mLockedBootReceiver;
+
+    /**
+     * The start of an activity whose user has not unlocked the device: no storage of the app can be read, so no
+     * preferences, no database and no service. An empty window with the theme's wallpaper, and the unlock makes
+     * the activity again, once the application has completed its own start (LauncherApplication.startAfterUnlock).
+     */
+    private void onCreateLocked() {
+        mLockedBoot = true;
+        super.onCreate(null);
+        setContentView(new FrameLayout(this));
+        Log.i("Launcher", "Launcher: direct boot, waiting for the user's unlock");
+        mLockedBootReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                // Whichever of this receiver and the application's comes first completes the start; once
+                LauncherApplication.completeStartAfterUnlock(Launcher.this);
+                unregisterLockedBootReceiver();
+                if (DirectBootPlan.recreateActivityOnUnlock(DirectBootPlan.Start.WALLPAPER_ONLY)) {
+                    recreate();
+                }
+            }
+        };
+        IntentFilter filter = new IntentFilter(Intent.ACTION_USER_UNLOCKED);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(mLockedBootReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(mLockedBootReceiver, filter);
+        }
+        // Unlocked between the check at the start and the registration: the broadcast is not coming. Posted:
+        // an activity is not made again from inside its own onCreate.
+        if (LauncherApplication.isUserUnlocked(this)) {
+            new Handler(Looper.getMainLooper()).post(() -> {
+                BroadcastReceiver receiver = mLockedBootReceiver;
+                if (receiver != null) {
+                    receiver.onReceive(Launcher.this, new Intent(Intent.ACTION_USER_UNLOCKED));
+                }
+            });
+        }
+    }
+
+    private void unregisterLockedBootReceiver() {
+        BroadcastReceiver receiver = mLockedBootReceiver;
+        mLockedBootReceiver = null;
+        if (receiver != null) {
+            try {
+                unregisterReceiver(receiver);
+            } catch (IllegalArgumentException alreadyGone) {
+                // not registered any more
+            }
+        }
+    }
+
+    /**
      * Through the application's context: the same files, but it already knows their paths (read
      * off the main thread at the start, see LauncherApplication), while this activity's own
      * context would look each one up on disk again.
@@ -1764,6 +1823,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (!LauncherApplication.isUserUnlocked(this)) {
+            onCreateLocked();
+            return;
+        }
+        // Normally done already; after a start that began locked it is done here if no broadcast told the application
+        LauncherApplication.completeStartAfterUnlock(this);
         mUiNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
         long appCreated = LauncherApplication.takeOnCreateEnd();
         if (appCreated > 0) {
@@ -2264,6 +2329,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     @Override
     protected void onStart() {
+        if (mLockedBoot) {
+            super.onStart();
+            return;
+        }
         super.onStart();
         Log.d(TAG, "---->>> onStart");
         if (mStopRemovePipPending) {
@@ -2323,6 +2392,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     protected void onResume() {
+        if (mLockedBoot) {
+            super.onResume();
+            return;
+        }
         super.onResume();
         showCrashToastOnce();
         // The GPS of the fuel statistics, if the permission came after the service started
@@ -2947,6 +3020,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     protected void onPostResume() {
+        if (mLockedBoot) {
+            super.onPostResume();
+            return;
+        }
         super.onPostResume();
         helpers.setWidgetDropPip(false);
 
@@ -3067,6 +3144,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
+        if (mLockedBoot) {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            return;
+        }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CODE_STORAGE) {
             mPermissionFlow.onRuntimeRequestResult(permissions, grantResults);
@@ -3084,6 +3165,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override 
     protected void onPause() {
+        if (mLockedBoot) {
+            super.onPause();
+            return;
+        }
         AppListDialogFragment.dismissListDialog(getSupportFragmentManager());
         AppListStatsDialogFragment.dismissListDialog(getSupportFragmentManager());
         AppListPipDialogFragment.dismissListDialog(getSupportFragmentManager());
@@ -3151,6 +3236,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     protected void onStop() {
+        if (mLockedBoot) {
+            super.onStop();
+            return;
+        }
         super.onStop();
         Log.d(TAG, "---->>> onStop");
         if (mWorkspace != null) {
@@ -3209,6 +3298,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public void onDestroy() {
+        if (mLockedBoot) {
+            unregisterLockedBootReceiver();
+            super.onDestroy();
+            return;
+        }
         if (mPrefs != null) {
             mPrefs.unregisterOnSharedPreferenceChangeListener(mWidgetStyleListener);
         }
@@ -3822,6 +3916,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     protected void onUserLeaveHint() {
+        if (mLockedBoot) {
+            super.onUserLeaveHint();
+            return;
+        }
         super.onUserLeaveHint();
         sPausedFromUserAction = true;
     }
@@ -4054,6 +4152,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (mLockedBoot) {
+            super.onActivityResult(requestCode, resultCode, data);
+            return;
+        }
         super.onActivityResult(requestCode, resultCode, data);
         if (LauncherPermissionFlow.isPermissionFlowRequest(requestCode)) {
             // Only logged here: the next step starts from onPostResume(), once the launcher is
@@ -4265,6 +4367,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
      */
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (mLockedBoot) {
+            return super.dispatchTouchEvent(ev);
+        }
         int action = ev.getActionMasked();
         if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_UP) {
             com.syu.util.UserTouches.note();
@@ -4280,6 +4385,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
+        if (mLockedBoot) {
+            super.onWindowFocusChanged(hasFocus);
+            return;
+        }
         super.onWindowFocusChanged(hasFocus);
         // PinnedPipFocus: while the pinned PiP is shown this window has no focus, whatever the user
         // touches; PinnedPipFocus's window has it on the launcher's behalf. Not called then, and
@@ -4298,6 +4407,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (mLockedBoot) {
+            return super.onKeyDown(keyCode, event);
+        }
         int uniChar = event.getUnicodeChar();
         boolean handled = super.onKeyDown(keyCode, event);
         boolean isKeyNotWhitespace = uniChar > 0 && !Character.isWhitespace(uniChar);
@@ -4974,6 +5086,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
+        if (mLockedBoot) {
+            super.onConfigurationChanged(newConfig);
+            return;
+        }
         super.onConfigurationChanged(newConfig);
         // Declared in the manifest (uiMode): the 7870's ROM flips the night mode with the car's
         // lights, and the Activity was destroyed and rebuilt 72 ms after "Lights on" each time.
@@ -5853,6 +5969,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public void onAttachedToWindow() {
+        if (mLockedBoot) {
+            super.onAttachedToWindow();
+            return;
+        }
         super.onAttachedToWindow();
         FirstFrameAnimatorHelper.initializeDrawListener(getWindow().getDecorView());
         mAttached = true;
@@ -5861,6 +5981,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public void onDetachedFromWindow() {
+        if (mLockedBoot) {
+            super.onDetachedFromWindow();
+            return;
+        }
         super.onDetachedFromWindow();
         mVisible = false;
         mAttached = false;
@@ -6071,6 +6195,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     protected void onNewIntent(Intent intent) {
+        if (mLockedBoot) {
+            super.onNewIntent(intent);
+            return;
+        }
         long startTime = 0;
         if (DEBUG_RESUME_TIME) {
             startTime = System.currentTimeMillis();
@@ -6147,6 +6275,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public void onRestoreInstanceState(Bundle state) {
+        if (mLockedBoot) {
+            super.onRestoreInstanceState(state);
+            return;
+        }
         super.onRestoreInstanceState(state);
         Iterator<Integer> it = mSynchronouslyBoundPages.iterator();
         while (it.hasNext()) {
@@ -6157,6 +6289,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        if (mLockedBoot) {
+            super.onSaveInstanceState(outState);
+            return;
+        }
         if (mWorkspace != null && mWorkspace.getChildCount() > 0) {
             outState.putInt(RUNTIME_STATE_CURRENT_SCREEN, mWorkspace.getRestorePage());
         }
@@ -6193,6 +6329,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public void startSearch(String initialQuery, boolean selectInitialQuery, Bundle appSearchData, boolean globalSearch) {
+        if (mLockedBoot) {
+            return;
+        }
         showWorkspace(true);
         if (initialQuery == null) {
             initialQuery = getTypedText();
@@ -6248,6 +6387,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        if (mLockedBoot) {
+            return super.onPrepareOptionsMenu(menu);
+        }
         super.onPrepareOptionsMenu(menu);
         if (!mWorkspace.isInOverviewMode()) {
             mWorkspace.enterOverviewMode();
@@ -6258,6 +6400,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public boolean onSearchRequested() {
+        if (mLockedBoot) {
+            return false;
+        }
         startSearch((String) null, false, (Bundle) null, true);
         return true;
     }
@@ -6484,6 +6629,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
+        if (mLockedBoot) {
+            return super.dispatchKeyEvent(event);
+        }
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
             com.syu.util.UserTouches.note();    // a key on the launcher; see dispatchTouchEvent()
             switch (event.getKeyCode()) {
@@ -7831,6 +7979,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public void onTrimMemory(int level) {
+        if (mLockedBoot) {
+            super.onTrimMemory(level);
+            return;
+        }
         super.onTrimMemory(level);
         if (level >= 60) {
             mAppsCustomizeTabHost.onTrimMemory();
@@ -8246,6 +8398,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public boolean dispatchPopulateAccessibilityEvent(AccessibilityEvent event) {
+        if (mLockedBoot) {
+            return super.dispatchPopulateAccessibilityEvent(event);
+        }
         boolean result = super.dispatchPopulateAccessibilityEvent(event);
         List<CharSequence> text = event.getText();
         text.clear();
@@ -8338,6 +8493,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public boolean setLoadOnResume() {
+        if (mLockedBoot) {
+            return false;
+        }
         if (!mPaused) {
             return false;
         }

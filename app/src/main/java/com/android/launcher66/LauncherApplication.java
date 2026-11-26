@@ -4,9 +4,11 @@ import android.SystemProperties;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -22,6 +24,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.StrictMode;
 import android.os.SystemClock;
+import android.os.UserManager;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
@@ -116,7 +119,9 @@ public class LauncherApplication extends Application {
         // Starts reading the preference files used first: SharedPreferences loads a file on a
         // thread of its own, so it reads while the content providers start. Otherwise onCreate()
         // and the Launcher's first lines waited for the reads on the main thread (0.4 s at a boot).
-        if (!isWallpaperPickerProcess()) {
+        // Not before the first unlock (direct boot): those files are credential encrypted and cannot be read yet
+        // (DirectBootPlan); the unlocked start reads them as it always did.
+        if (!isWallpaperPickerProcess() && isUserUnlocked(base)) {
             PreferenceManager.getDefaultSharedPreferences(this);
             getSharedPreferences(Helpers.SUS_PREFS, MODE_PRIVATE);
             // Read for every widget the workspace binds (setAppWidget()).
@@ -135,6 +140,100 @@ public class LauncherApplication extends Application {
         Log.d(TAG, "onCreate()");
         // First, so that a crash anywhere below is written to Launcher66_Logs too.
         CrashLogger.install(this);
+        if (!isWallpaperPickerProcess() && DirectBootPlan.atStart(isUserUnlocked(this)) == DirectBootPlan.Start.WALLPAPER_ONLY) {
+            startLocked();
+            return;
+        }
+        runFullStart();
+    }
+
+    /** True once the user has unlocked the device (credential encrypted storage can be read); true where unknown. */
+    static boolean isUserUnlocked(Context context) {
+        try {
+            UserManager users = (UserManager) context.getSystemService(Context.USER_SERVICE);
+            return users == null || users.isUserUnlocked();
+        } catch (RuntimeException e) {
+            return true;   // cannot be asked: the start as it always was
+        }
+    }
+
+    /** The start did not begin with the full steps: the user was locked (see DirectBootPlan). Main thread. */
+    private boolean mStartedLocked;
+    /** The full steps have been run (at the start, or at the unlock). Main thread. */
+    private boolean mFullStartDone;
+
+    /**
+     * A start before the first unlock (direct boot): nothing here reads the app's credential encrypted storage and
+     * nothing is started that does, so only the statics the launcher activity's class reads when it loads are set
+     * (they need no storage), and the unlock is waited for (DirectBootPlan).
+     */
+    private void startLocked() {
+        mStartedLocked = true;
+        sApp = this;
+        // Launcher.APPWIDGET_HOST_ID is a static final read when that class loads, which is now: it must be right
+        appWidget_Host_Id = Utils.getNameToInteger("appwidget_host_id") + 1024;
+        Log.i(TAG, "LauncherApplication: locked, only the wallpaper until the user unlocks");
+        IntentFilter filter = new IntentFilter(Intent.ACTION_USER_UNLOCKED);
+        BroadcastReceiver unlocked = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                unregisterReceiver(this);
+                completeStartAfterUnlock(LauncherApplication.this);
+            }
+        };
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(unlocked, filter, Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(unlocked, filter);
+        }
+        // Unlocked between the check and the registration
+        if (isUserUnlocked(this)) {
+            new Handler(Looper.getMainLooper()).post(() -> {
+                try {
+                    unregisterReceiver(unlocked);
+                } catch (IllegalArgumentException alreadyGone) {
+                    // the broadcast came first
+                }
+                completeStartAfterUnlock(this);
+            });
+        }
+    }
+
+    /**
+     * The unlock completes a start that began locked, once, whoever reports it first (this class's receiver or the
+     * activity's): the same steps an unlocked start takes at once. Main thread.
+     */
+    static void completeStartAfterUnlock(Context context) {
+        LauncherApplication app = context.getApplicationContext() instanceof LauncherApplication
+                ? (LauncherApplication) context.getApplicationContext() : sApp;
+        if (app == null || !DirectBootPlan.completeOnUnlock(
+                app.mStartedLocked ? DirectBootPlan.Start.WALLPAPER_ONLY : DirectBootPlan.Start.FULL,
+                app.mFullStartDone)) {
+            return;
+        }
+        Log.i(TAG, "LauncherApplication: unlocked, starting");
+        // The preferences are read from here on; the unlocked start begins with this
+        app.runFullStartAfterUnlock();
+    }
+
+    private void runFullStartAfterUnlock() {
+        PreferenceManager.getDefaultSharedPreferences(this);
+        getSharedPreferences(Helpers.SUS_PREFS, MODE_PRIVATE);
+        getSharedPreferences(WidgetFit.PREFS, MODE_PRIVATE);
+        getSharedPreferences(MediaFavoriteController.PREFS_NAME, MODE_PRIVATE);
+        getSharedPreferences(com.fyt.skin.data.SkinPathDataSource.SKIN_SHARED, MODE_PRIVATE);
+        runFullStart();
+    }
+
+    /**
+     * Everything the start does with the app's storage and services: an unlocked start runs it from onCreate(), a
+     * start before the first unlock from the unlock (see DirectBootPlan). Main thread, once.
+     */
+    private void runFullStart() {
+        if (mFullStartDone) {
+            return;
+        }
+        mFullStartDone = true;
         if (!isWallpaperPickerProcess()) {
             CrashLoopGuard.onProcessStart(this);
         }
