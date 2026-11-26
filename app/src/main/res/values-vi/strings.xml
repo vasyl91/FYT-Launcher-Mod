@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">Đó không phải là khóa OpenWeather (32 chữ cái và chữ số).</string>
     <string name="theme_accent_color">Đặt màu chủ đề chung</string>
     <string name="icon_text_color">Đặt màu văn bản của biểu tượng</string>
+    <string name="swipe_up_app_drawer">Vuốt lên để mở ngăn kéo ứng dụng</string>
+    <string name="swipe_up_app_drawer_on">Vuốt lên trên màn hình chính sẽ mở ngăn kéo ứng dụng</string>
+    <string name="swipe_up_app_drawer_off">Vuốt lên không làm gì cả</string>
+    <string name="swipe_down_notifications">Vuốt xuống để xem thông báo</string>
+    <string name="swipe_down_notifications_on">Vuốt xuống trên màn hình chính sẽ mở bảng thông báo</string>
+    <string name="swipe_down_notifications_off">Vuốt xuống không làm gì cả</string>
+    <string name="swipe_down_notifications_on_fyt">Vuốt xuống trên màn hình chính sẽ mở bảng cài đặt nhanh</string>
 </resources>

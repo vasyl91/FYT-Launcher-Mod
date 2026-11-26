@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">ນີ້ບໍ່ແມ່ນຄີ OpenWeather (ຕົວອັກສອນ ແລະ ຕົວເລກ 32 ຕົວ).</string>
     <string name="theme_accent_color">ຕັ້ງສີຊຸດຮູບແບບທົ່ວໄປ</string>
     <string name="icon_text_color">ຕັ້ງສີຂໍ້ຄວາມຂອງໄອຄອນ</string>
+    <string name="swipe_up_app_drawer">ປັດຂຶ້ນເພື່ອເປີດລິ້ນຊັກແອັບ</string>
+    <string name="swipe_up_app_drawer_on">ການປັດຂຶ້ນໃນໜ້າຫຼັກຈະເປີດລິ້ນຊັກແອັບ</string>
+    <string name="swipe_up_app_drawer_off">ການປັດຂຶ້ນບໍ່ເຮັດຫຍັງ</string>
+    <string name="swipe_down_notifications">ປັດລົງເພື່ອເບິ່ງການແຈ້ງເຕືອນ</string>
+    <string name="swipe_down_notifications_on">ການປັດລົງໃນໜ້າຫຼັກຈະເປີດແຜງການແຈ້ງເຕືອນ</string>
+    <string name="swipe_down_notifications_off">ການປັດລົງບໍ່ເຮັດຫຍັງ</string>
+    <string name="swipe_down_notifications_on_fyt">ການປັດລົງໃນໜ້າຫຼັກຈະເປີດແຜງການຕັ້ງຄ່າດ່ວນ</string>
 </resources>

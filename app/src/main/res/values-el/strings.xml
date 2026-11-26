@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">Αυτό δεν είναι κλειδί OpenWeather (32 γράμματα και ψηφία).</string>
     <string name="theme_accent_color">Ορισμός καθολικού χρώματος θέματος</string>
     <string name="icon_text_color">Ορισμός χρώματος κειμένου εικονιδίων</string>
+    <string name="swipe_up_app_drawer">Σύρετε προς τα πάνω για άνοιγμα του συρταριού εφαρμογών</string>
+    <string name="swipe_up_app_drawer_on">Η ολίσθηση προς τα πάνω στην αρχική οθόνη ανοίγει το συρτάρι εφαρμογών</string>
+    <string name="swipe_up_app_drawer_off">Η ολίσθηση προς τα πάνω δεν κάνει τίποτα</string>
+    <string name="swipe_down_notifications">Σύρετε προς τα κάτω για ειδοποιήσεις</string>
+    <string name="swipe_down_notifications_on">Η ολίσθηση προς τα κάτω στην αρχική οθόνη ανοίγει τον πίνακα ειδοποιήσεων</string>
+    <string name="swipe_down_notifications_off">Η ολίσθηση προς τα κάτω δεν κάνει τίποτα</string>
+    <string name="swipe_down_notifications_on_fyt">Η ολίσθηση προς τα κάτω στην αρχική οθόνη ανοίγει τον πίνακα γρήγορων ρυθμίσεων</string>
 </resources>

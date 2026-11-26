@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">這不是 OpenWeather 金鑰（32 個字母和數字）。</string>
     <string name="theme_accent_color">設定全域主題顏色</string>
     <string name="icon_text_color">設定圖示文字顏色</string>
+    <string name="swipe_up_app_drawer">向上滑動以開啟應用程式抽屜</string>
+    <string name="swipe_up_app_drawer_on">在主畫面向上滑動會開啟應用程式抽屜</string>
+    <string name="swipe_up_app_drawer_off">向上滑動不執行任何動作</string>
+    <string name="swipe_down_notifications">向下滑動以查看通知</string>
+    <string name="swipe_down_notifications_on">在主畫面向下滑動會開啟通知面板</string>
+    <string name="swipe_down_notifications_off">向下滑動不執行任何動作</string>
+    <string name="swipe_down_notifications_on_fyt">在主畫面向下滑動會開啟快速設定面板</string>
 </resources>

@@ -316,6 +316,8 @@ public class Workspace extends SmoothPagedView
     private SharedPreferences mPrefs;
     /** The layout creator's switch for the touch code (UserLayoutFlag): a field, not a read per touch. */
     private UserLayoutFlag mUserLayout;
+    /** The swipes up and down of the home screen (HomeGestures). */
+    private HomeGestures mHomeGestures;
     public AbsoluteLayout absoluteLayout;
     private final Handler stripHandler = new Handler(Looper.getMainLooper());
     private Runnable stripAction;
@@ -544,6 +546,7 @@ public class Workspace extends SmoothPagedView
         // The settings are in the field before the first touch: a touch can come before the first page is built.
         mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         mUserLayout = new UserLayoutFlag(mPrefs);
+        mHomeGestures = new HomeGestures(this);
         final Resources res = getResources();
         mWorkspaceFadeInAdjacentScreens = res.getBoolean(R.bool.config_workspaceFadeAdjacentScreens);
         mFadeInAdjacentScreens = false;
@@ -4792,6 +4795,10 @@ public class Workspace extends SmoothPagedView
         if (TouchOwner.claimed()) {
             return false;   // the position slider of the music widget has this touch, pages and taps included
         }
+        // A clear swipe up or down, where the settings ask for one, is not the pages' (HomeGestures)
+        if (mHomeGestures != null && mHomeGestures.onIntercept(ev)) {
+            return true;
+        }
         switch (ev.getAction() & MotionEvent.ACTION_MASK) {
         case MotionEvent.ACTION_DOWN:
             mXDown = ev.getX();
@@ -4808,6 +4815,64 @@ public class Workspace extends SmoothPagedView
             }
         }
         return super.onInterceptTouchEvent(ev);
+    }
+
+    /** A touch that HomeGestures has taken is followed to its end here; the pages never see it. */
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        if (mHomeGestures != null) {
+            int action = ev.getActionMasked();
+            if (mHomeGestures.taking() || (action == MotionEvent.ACTION_MOVE && mHomeGestures.maybeTake(ev))) {
+                return mHomeGestures.onTouch(ev);
+            }
+            if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+                mHomeGestures.release();
+            }
+        }
+        return super.onTouchEvent(ev);
+    }
+
+    /** The launcher this workspace belongs to (HomeGestures). */
+    Launcher homeLauncher() {
+        return mLauncher;
+    }
+
+    /** The settings, null before the workspace is made (HomeGestures). */
+    SharedPreferences homePrefs() {
+        return mPrefs;
+    }
+
+    /**
+     * The view of the current page at a point of this view's coordinates (an icon, a folder, a widget), or null
+     * for empty space (HomeGestures).
+     */
+    View itemAt(float x, float y) {
+        if (getChildCount() == 0 || getCurrentPage() < 0 || getCurrentPage() >= getChildCount()
+                || !(getChildAt(getCurrentPage()) instanceof CellLayout)) {
+            return null;
+        }
+        CellLayout page = (CellLayout) getChildAt(getCurrentPage());
+        ShortcutAndWidgetContainer items = page.getShortcutsAndWidgets();
+        if (items == null) {
+            return null;
+        }
+        float px = x + getScrollX() - page.getLeft() - items.getLeft();
+        float py = y - page.getTop() - items.getTop();
+        for (int i = items.getChildCount() - 1; i >= 0; i--) {
+            View child = items.getChildAt(i);
+            if (child.getVisibility() == View.VISIBLE && px >= child.getLeft() && px <= child.getRight()
+                    && py >= child.getTop() && py <= child.getBottom()) {
+                return child;
+            }
+        }
+        return null;
+    }
+
+    /** Whether a view of the current page is an element of the user's layout (the date, the music, a pane...). */
+    boolean isUserElement(View view) {
+        return getCurrentPage() >= 0 && getCurrentPage() < getChildCount()
+                && getChildAt(getCurrentPage()) instanceof CellLayout
+                && ((CellLayout) getChildAt(getCurrentPage())).isUserWidget(view);
     }
 
     // Status bar swipe strip (StatusBarSwipeDetector): its touches run through this view's own

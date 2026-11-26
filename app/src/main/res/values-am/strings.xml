@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">ይህ የ OpenWeather ቁልፍ አይደለም (32 ፊደላትና አሃዞች)።</string>
     <string name="theme_accent_color">አጠቃላይ የገጽታ ቀለም አዘጋጅ</string>
     <string name="icon_text_color">የአዶ ጽሑፍ ቀለም አዘጋጅ</string>
+    <string name="swipe_up_app_drawer">የመተግበሪያ መሳቢያውን ለመክፈት ወደ ላይ ያንሸራትቱ</string>
+    <string name="swipe_up_app_drawer_on">በመነሻ ማያ ገጽ ላይ ወደ ላይ ማንሸራተት የመተግበሪያ መሳቢያውን ይከፍታል</string>
+    <string name="swipe_up_app_drawer_off">ወደ ላይ ማንሸራተት ምንም አያደርግም</string>
+    <string name="swipe_down_notifications">ለማሳወቂያዎች ወደ ታች ያንሸራትቱ</string>
+    <string name="swipe_down_notifications_on">በመነሻ ማያ ገጽ ላይ ወደ ታች ማንሸራተት የማሳወቂያ ጥላውን ይከፍታል</string>
+    <string name="swipe_down_notifications_off">ወደ ታች ማንሸራተት ምንም አያደርግም</string>
+    <string name="swipe_down_notifications_on_fyt">በመነሻ ማያ ገጽ ላይ ወደ ታች ማንሸራተት የፈጣን ቅንብሮች ፓነሉን ይከፍታል</string>
 </resources>

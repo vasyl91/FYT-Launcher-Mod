@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">To nie je kľúč OpenWeather (32 písmen a číslic).</string>
     <string name="theme_accent_color">Nastaviť globálnu farbu motívu</string>
     <string name="icon_text_color">Nastaviť farbu textu ikon</string>
+    <string name="swipe_up_app_drawer">Potiahnutím nahor otvoriť ponuku aplikácií</string>
+    <string name="swipe_up_app_drawer_on">Potiahnutie nahor na domovskej obrazovke otvorí ponuku aplikácií</string>
+    <string name="swipe_up_app_drawer_off">Potiahnutie nahor nič nerobí</string>
+    <string name="swipe_down_notifications">Potiahnutím nadol zobraziť upozornenia</string>
+    <string name="swipe_down_notifications_on">Potiahnutie nadol na domovskej obrazovke otvorí panel upozornení</string>
+    <string name="swipe_down_notifications_off">Potiahnutie nadol nič nerobí</string>
+    <string name="swipe_down_notifications_on_fyt">Potiahnutie nadol na domovskej obrazovke otvorí panel rýchlych nastavení</string>
 </resources>

@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">هذا ليس مفتاح OpenWeather (32 حرفًا ورقمًا).</string>
     <string name="theme_accent_color">تعيين لون السمة العام</string>
     <string name="icon_text_color">تعيين لون نص الأيقونات</string>
+    <string name="swipe_up_app_drawer">التمرير لأعلى لفتح درج التطبيقات</string>
+    <string name="swipe_up_app_drawer_on">يؤدي التمرير لأعلى على الشاشة الرئيسية إلى فتح درج التطبيقات</string>
+    <string name="swipe_up_app_drawer_off">التمرير لأعلى لا يفعل شيئًا</string>
+    <string name="swipe_down_notifications">التمرير لأسفل لعرض الإشعارات</string>
+    <string name="swipe_down_notifications_on">يؤدي التمرير لأسفل على الشاشة الرئيسية إلى فتح لوحة الإشعارات</string>
+    <string name="swipe_down_notifications_off">التمرير لأسفل لا يفعل شيئًا</string>
+    <string name="swipe_down_notifications_on_fyt">يؤدي التمرير لأسفل على الشاشة الرئيسية إلى فتح لوحة الإعدادات السريعة</string>
 </resources>

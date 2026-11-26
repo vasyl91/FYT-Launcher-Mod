@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">Lokho akuwona ukhiye we-OpenWeather (izinhlamvu nezinombolo ezingu-32).</string>
     <string name="theme_accent_color">Setha umbala wetimu jikelele</string>
     <string name="icon_text_color">Setha umbala wombhalo wesithonjana</string>
+    <string name="swipe_up_app_drawer">Swayipha uye phezulu ukuze uvule idrowa lezinhlelo zokusebenza</string>
+    <string name="swipe_up_app_drawer_on">Ukuswayipha uye phezulu esikrinini sasekhaya kuvula idrowa lezinhlelo zokusebenza</string>
+    <string name="swipe_up_app_drawer_off">Ukuswayipha uye phezulu akwenzi lutho</string>
+    <string name="swipe_down_notifications">Swayipha uye phansi ukuze ubone izaziso</string>
+    <string name="swipe_down_notifications_on">Ukuswayipha uye phansi esikrinini sasekhaya kuvula iphaneli yezaziso</string>
+    <string name="swipe_down_notifications_off">Ukuswayipha uye phansi akwenzi lutho</string>
+    <string name="swipe_down_notifications_on_fyt">Ukuswayipha uye phansi esikrinini sasekhaya kuvula iphaneli yezilungiselelo ezisheshayo</string>
 </resources>

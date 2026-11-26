@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">OpenWeather 키가 아닙니다(영문자와 숫자 32자).</string>
     <string name="theme_accent_color">전체 테마 색상 설정</string>
     <string name="icon_text_color">아이콘 텍스트 색상 설정</string>
+    <string name="swipe_up_app_drawer">위로 스와이프하여 앱 서랍 열기</string>
+    <string name="swipe_up_app_drawer_on">홈 화면에서 위로 스와이프하면 앱 서랍이 열립니다</string>
+    <string name="swipe_up_app_drawer_off">위로 스와이프해도 아무 일도 일어나지 않습니다</string>
+    <string name="swipe_down_notifications">아래로 스와이프하여 알림 보기</string>
+    <string name="swipe_down_notifications_on">홈 화면에서 아래로 스와이프하면 알림 패널이 열립니다</string>
+    <string name="swipe_down_notifications_off">아래로 스와이프해도 아무 일도 일어나지 않습니다</string>
+    <string name="swipe_down_notifications_on_fyt">홈 화면에서 아래로 스와이프하면 빠른 설정 패널이 열립니다</string>
 </resources>

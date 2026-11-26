@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">Huo si ufunguo wa OpenWeather (herufi na tarakimu 32).</string>
     <string name="theme_accent_color">Weka rangi ya jumla ya mandhari</string>
     <string name="icon_text_color">Weka rangi ya maandishi ya aikoni</string>
+    <string name="swipe_up_app_drawer">Telezesha juu ili kufungua droo ya programu</string>
+    <string name="swipe_up_app_drawer_on">Kutelezesha juu kwenye skrini ya kwanza kunafungua droo ya programu</string>
+    <string name="swipe_up_app_drawer_off">Kutelezesha juu hakufanyi chochote</string>
+    <string name="swipe_down_notifications">Telezesha chini kwa arifa</string>
+    <string name="swipe_down_notifications_on">Kutelezesha chini kwenye skrini ya kwanza kunafungua kidirisha cha arifa</string>
+    <string name="swipe_down_notifications_off">Kutelezesha chini hakufanyi chochote</string>
+    <string name="swipe_down_notifications_on_fyt">Kutelezesha chini kwenye skrini ya kwanza kunafungua kidirisha cha mipangilio ya haraka</string>
 </resources>

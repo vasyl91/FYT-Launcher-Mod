@@ -12,6 +12,32 @@ public class StateAccessibilityService extends AccessibilityService {
 
     private static final String TAG = "StateAccessibilityService";
 
+    /**
+     * The running service, for the launcher's own actions through it (the home screen's swipe down opens the shade,
+     * the double tap locks the screen); null while it is off. Set when it connects, cleared when it unbinds.
+     */
+    private static volatile StateAccessibilityService sInstance;
+
+    /** Whether the service is on. */
+    public static boolean isRunning() {
+        return sInstance != null;
+    }
+
+    /** Does a global action ({@code GLOBAL_ACTION_*}) through the running service; false when it is off or refuses. */
+    public static boolean performGlobalAction(int action) {
+        StateAccessibilityService service = sInstance;
+        return service != null && service.performGlobalActionNow(action);
+    }
+
+    private boolean performGlobalActionNow(int action) {
+        try {
+            return super.performGlobalAction(action);
+        } catch (RuntimeException e) {
+            Log.w(TAG, "Global action " + action + " failed", e);
+            return false;
+        }
+    }
+
     /*
      * Only TYPE_WINDOW_STATE_CHANGED is used, and since accessibility_service_config.xml asks for
      * that type alone, it is the only one delivered. It used to be typeAllMask: every click,
@@ -65,6 +91,15 @@ public class StateAccessibilityService extends AccessibilityService {
     @Override
     protected void onServiceConnected() {
         super.onServiceConnected();
+        sInstance = this;
         Log.d(TAG, "Accessibility service connected");
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        if (sInstance == this) {
+            sInstance = null;
+        }
+        return super.onUnbind(intent);
     }
 }

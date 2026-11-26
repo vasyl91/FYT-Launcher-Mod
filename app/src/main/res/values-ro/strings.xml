@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">Aceasta nu este o cheie OpenWeather (32 de litere și cifre).</string>
     <string name="theme_accent_color">Setează culoarea globală a temei</string>
     <string name="icon_text_color">Setează culoarea textului pictogramelor</string>
+    <string name="swipe_up_app_drawer">Glisați în sus pentru a deschide sertarul de aplicații</string>
+    <string name="swipe_up_app_drawer_on">Glisarea în sus pe ecranul principal deschide sertarul de aplicații</string>
+    <string name="swipe_up_app_drawer_off">Glisarea în sus nu face nimic</string>
+    <string name="swipe_down_notifications">Glisați în jos pentru notificări</string>
+    <string name="swipe_down_notifications_on">Glisarea în jos pe ecranul principal deschide panoul de notificări</string>
+    <string name="swipe_down_notifications_off">Glisarea în jos nu face nimic</string>
+    <string name="swipe_down_notifications_on_fyt">Glisarea în jos pe ecranul principal deschide panoul de setări rapide</string>
 </resources>

@@ -58,6 +58,9 @@ public final class Keys {
      * and the bars; absent = white, what the layouts give (IconTextColor). The row itself keeps nothing else.
      */
     public static final String WORKSPACE_TEXT_COLOR = "workspace_text_color";
+    /** "Swipe up to open the app drawer" and "Swipe down for notifications" on the home screen (HomeGestures), off by default. */
+    public static final String SWIPE_UP_APP_DRAWER = "swipe_up_app_drawer";
+    public static final String SWIPE_DOWN_NOTIFICATIONS = "swipe_down_notifications";
     /** Before it was split into LAUNCHER_HOME_WAKE and LAUNCHER_HOME_COLD_START; only migrated. */
     public static final String LAUNCHER_HOME = "launcher_home";
     public static final String LAUNCHER_HOME_WAKE = "launcher_home_wake";

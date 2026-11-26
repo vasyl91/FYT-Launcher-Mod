@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">Това не е ключ за OpenWeather (32 букви и цифри).</string>
     <string name="theme_accent_color">Задаване на общ цвят на темата</string>
     <string name="icon_text_color">Задаване на цвят на текста на иконите</string>
+    <string name="swipe_up_app_drawer">Плъзнете нагоре, за да отворите списъка с приложения</string>
+    <string name="swipe_up_app_drawer_on">Плъзгането нагоре на началния екран отваря списъка с приложения</string>
+    <string name="swipe_up_app_drawer_off">Плъзгането нагоре не прави нищо</string>
+    <string name="swipe_down_notifications">Плъзнете надолу за известия</string>
+    <string name="swipe_down_notifications_on">Плъзгането надолу на началния екран отваря панела за известия</string>
+    <string name="swipe_down_notifications_off">Плъзгането надолу не прави нищо</string>
+    <string name="swipe_down_notifications_on_fyt">Плъзгането надолу на началния екран отваря панела за бързи настройки</string>
 </resources>

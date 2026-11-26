@@ -7704,6 +7704,21 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         dispatchOnLauncherTransitionStep(v, 1f);
     }
 
+    /** The drawer comes up from a swipe: with a slide from the bottom (showAllApps with fromSwipe, D-91). */
+    private boolean mShowAppsFromSwipe;
+    private static final long SWIPE_OPEN_MS = 300L;
+
+    /** As {@link #showAllApps(boolean, AppsCustomizePagedView.ContentType, boolean)}, from a swipe up on the home screen. */
+    void showAllApps(boolean animated, AppsCustomizePagedView.ContentType contentType, boolean resetPageToZero,
+                     boolean fromSwipe) {
+        mShowAppsFromSwipe = fromSwipe;
+        try {
+            showAllApps(animated, contentType, resetPageToZero);
+        } finally {
+            mShowAppsFromSwipe = false;
+        }
+    }
+
     private void showAppsCustomizeHelper(boolean animated, boolean springLoaded) {
         AppsCustomizePagedView.ContentType contentType = mAppsCustomizeContent.getContentType();
         showAppsCustomizeHelper(animated, springLoaded, contentType);
@@ -7721,6 +7736,8 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         final float scale = res.getInteger(R.integer.config_appsCustomizeZoomScaleFactor);
         final View fromView = mWorkspace;
         final AppsCustomizeTabHost toView = mAppsCustomizeTabHost;
+        final boolean fromSwipe = mShowAppsFromSwipe;
+        mShowAppsFromSwipe = false;
         int startDelay = res.getInteger(R.integer.config_workspaceAppsCustomizeAnimationStagger);
         setPivotsForZoom(toView, scale);
         hideHotseat(animated);
@@ -7729,10 +7746,19 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             mAppsCustomizeTabHost.setContentTypeImmediate(contentType);
         }
         if (animated) {
-            toView.setScaleX(scale);
-            toView.setScaleY(scale);
             LauncherViewPropertyAnimator scaleAnim = new LauncherViewPropertyAnimator(toView);
-            scaleAnim.scaleX(1.0f).scaleY(1.0f).setDuration(duration).setInterpolator(new Workspace.ZoomOutInterpolator());
+            if (fromSwipe) {
+                // From the bottom of the screen, decelerating, with the fade of the same length
+                toView.setScaleX(1.0f);
+                toView.setScaleY(1.0f);
+                toView.setTranslationY(res.getDisplayMetrics().heightPixels);
+                scaleAnim.translationY(0.0f).setDuration(SWIPE_OPEN_MS).setInterpolator(new DecelerateInterpolator());
+                fadeDuration = (int) SWIPE_OPEN_MS;
+            } else {
+                toView.setScaleX(scale);
+                toView.setScaleY(scale);
+                scaleAnim.scaleX(1.0f).scaleY(1.0f).setDuration(duration).setInterpolator(new Workspace.ZoomOutInterpolator());
+            }
             toView.setVisibility(android.view.View.VISIBLE);
             toView.setAlpha(0.0f);
             ObjectAnimator alphaAnim = LauncherAnimUtils.ofFloat(toView, "alpha", 0.0f, 1.0f).setDuration(fadeDuration);
@@ -7755,7 +7781,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 @Override
                 public void onAnimationStart(Animator animation) {
                     toView.setTranslationX(0.0f);
-                    toView.setTranslationY(0.0f);
+                    if (!fromSwipe) {
+                        toView.setTranslationY(0.0f);
+                    }
                     toView.setVisibility(android.view.View.VISIBLE);
                 }
 

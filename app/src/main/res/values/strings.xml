@@ -581,4 +581,11 @@
     <string name="tag_accent" translatable="false">accent</string>
     <string name="theme_accent_color">Set global theme color</string>
     <string name="icon_text_color">Set icon text color</string>
+    <string name="swipe_up_app_drawer">Swipe up to open the app drawer</string>
+    <string name="swipe_up_app_drawer_on">Swiping up on the home screen opens the app drawer</string>
+    <string name="swipe_up_app_drawer_off">Swiping up does nothing</string>
+    <string name="swipe_down_notifications">Swipe down for notifications</string>
+    <string name="swipe_down_notifications_on">Swiping down on the home screen opens the notification shade</string>
+    <string name="swipe_down_notifications_off">Swiping down does nothing</string>
+    <string name="swipe_down_notifications_on_fyt">Swiping down on the home screen opens the quick settings panel</string>
 </resources>

@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">Энэ OpenWeather түлхүүр биш (32 үсэг, тоо).</string>
     <string name="theme_accent_color">Нийт загварын өнгийг тохируулах</string>
     <string name="icon_text_color">Дүрсний бичвэрийн өнгийг тохируулах</string>
+    <string name="swipe_up_app_drawer">Аппын шургуулгыг нээхийн тулд дээш шударна уу</string>
+    <string name="swipe_up_app_drawer_on">Үндсэн дэлгэц дээр дээш шудрахад аппын шургуулга нээгдэнэ</string>
+    <string name="swipe_up_app_drawer_off">Дээш шудрахад юу ч болохгүй</string>
+    <string name="swipe_down_notifications">Мэдэгдэл харахын тулд доош шударна уу</string>
+    <string name="swipe_down_notifications_on">Үндсэн дэлгэц дээр доош шудрахад мэдэгдлийн самбар нээгдэнэ</string>
+    <string name="swipe_down_notifications_off">Доош шудрахад юу ч болохгүй</string>
+    <string name="swipe_down_notifications_on_fyt">Үндсэн дэлгэц дээр доош шудрахад түргэн тохиргооны самбар нээгдэнэ</string>
 </resources>

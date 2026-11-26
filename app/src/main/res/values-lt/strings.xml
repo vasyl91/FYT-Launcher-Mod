@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">Tai ne OpenWeather raktas (32 raidės ir skaitmenys).</string>
     <string name="theme_accent_color">Nustatyti bendrą temos spalvą</string>
     <string name="icon_text_color">Nustatyti piktogramų teksto spalvą</string>
+    <string name="swipe_up_app_drawer">Perbraukite aukštyn, kad atidarytumėte programų stalčių</string>
+    <string name="swipe_up_app_drawer_on">Perbraukimas aukštyn pagrindiniame ekrane atidaro programų stalčių</string>
+    <string name="swipe_up_app_drawer_off">Perbraukimas aukštyn nieko nedaro</string>
+    <string name="swipe_down_notifications">Perbraukite žemyn, kad pamatytumėte pranešimus</string>
+    <string name="swipe_down_notifications_on">Perbraukimas žemyn pagrindiniame ekrane atidaro pranešimų skydelį</string>
+    <string name="swipe_down_notifications_off">Perbraukimas žemyn nieko nedaro</string>
+    <string name="swipe_down_notifications_on_fyt">Perbraukimas žemyn pagrindiniame ekrane atidaro sparčiųjų nustatymų skydelį</string>
 </resources>

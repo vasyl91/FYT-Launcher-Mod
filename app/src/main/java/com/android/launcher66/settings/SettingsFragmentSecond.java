@@ -457,6 +457,11 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         Preference widgetsTint = findPreference(Keys.WIDGETS_TINT);
         Preference accentRow = findPreference(ThemeAccent.KEY);
         Preference iconTextRow = findPreference(Keys.WORKSPACE_TEXT_COLOR);
+        // On an FYT unit the framework shows its panel of quick settings for this swipe, not the notifications
+        androidx.preference.SwitchPreferenceCompat swipeDown = findPreference(Keys.SWIPE_DOWN_NOTIFICATIONS);
+        if (swipeDown != null && LauncherApplication.isFytDevice()) {
+            swipeDown.setSummaryOn(R.string.swipe_down_notifications_on_fyt);
+        }
         Preference barTint = findPreference(Keys.BAR_TINT);
         iconTextSizeRows = new IconTextSizeRows(this, sharedPrefs, helpers);
         iconTextSizeRows.bind();

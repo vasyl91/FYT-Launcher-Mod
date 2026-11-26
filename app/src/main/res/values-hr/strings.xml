@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">To nije OpenWeather ključ (32 slova i znamenke).</string>
     <string name="theme_accent_color">Postavi globalnu boju teme</string>
     <string name="icon_text_color">Postavi boju teksta ikona</string>
+    <string name="swipe_up_app_drawer">Povucite prema gore za otvaranje ladice aplikacija</string>
+    <string name="swipe_up_app_drawer_on">Povlačenje prema gore na početnom zaslonu otvara ladicu aplikacija</string>
+    <string name="swipe_up_app_drawer_off">Povlačenje prema gore ne radi ništa</string>
+    <string name="swipe_down_notifications">Povucite prema dolje za obavijesti</string>
+    <string name="swipe_down_notifications_on">Povlačenje prema dolje na početnom zaslonu otvara ploču s obavijestima</string>
+    <string name="swipe_down_notifications_off">Povlačenje prema dolje ne radi ništa</string>
+    <string name="swipe_down_notifications_on_fyt">Povlačenje prema dolje na početnom zaslonu otvara ploču s brzim postavkama</string>
 </resources>

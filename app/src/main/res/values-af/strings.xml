@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">Dit is nie ’n OpenWeather-sleutel nie (32 letters en syfers).</string>
     <string name="theme_accent_color">Stel globale temakleur</string>
     <string name="icon_text_color">Stel ikoonteksskleur</string>
+    <string name="swipe_up_app_drawer">Swiep op om die toepassingslade oop te maak</string>
+    <string name="swipe_up_app_drawer_on">Opswiep op die tuisskerm maak die toepassingslade oop</string>
+    <string name="swipe_up_app_drawer_off">Opswiep doen niks nie</string>
+    <string name="swipe_down_notifications">Swiep af vir kennisgewings</string>
+    <string name="swipe_down_notifications_on">Afswiep op die tuisskerm maak die kennisgewingskerm oop</string>
+    <string name="swipe_down_notifications_off">Afswiep doen niks nie</string>
+    <string name="swipe_down_notifications_on_fyt">Afswiep op die tuisskerm maak die kitsinstellingspaneel oop</string>
 </resources>

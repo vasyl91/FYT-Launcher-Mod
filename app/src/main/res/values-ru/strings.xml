@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">Это не ключ OpenWeather (32 буквы и цифры).</string>
     <string name="theme_accent_color">Задать общий цвет темы</string>
     <string name="icon_text_color">Задать цвет текста значков</string>
+    <string name="swipe_up_app_drawer">Провести вверх, чтобы открыть список приложений</string>
+    <string name="swipe_up_app_drawer_on">Проведение вверх на главном экране открывает список приложений</string>
+    <string name="swipe_up_app_drawer_off">Проведение вверх ничего не делает</string>
+    <string name="swipe_down_notifications">Провести вниз для уведомлений</string>
+    <string name="swipe_down_notifications_on">Проведение вниз на главном экране открывает шторку уведомлений</string>
+    <string name="swipe_down_notifications_off">Проведение вниз ничего не делает</string>
+    <string name="swipe_down_notifications_on_fyt">Проведение вниз на главном экране открывает панель быстрых настроек</string>
 </resources>

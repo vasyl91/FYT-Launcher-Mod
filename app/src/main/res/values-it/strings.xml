@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">Non è una chiave OpenWeather (32 lettere e cifre).</string>
     <string name="theme_accent_color">Imposta il colore globale del tema</string>
     <string name="icon_text_color">Imposta il colore del testo delle icone</string>
+    <string name="swipe_up_app_drawer">Scorri verso l\'alto per aprire il drawer delle app</string>
+    <string name="swipe_up_app_drawer_on">Scorrere verso l\'alto nella schermata Home apre il drawer delle app</string>
+    <string name="swipe_up_app_drawer_off">Scorrere verso l\'alto non fa nulla</string>
+    <string name="swipe_down_notifications">Scorri verso il basso per le notifiche</string>
+    <string name="swipe_down_notifications_on">Scorrere verso il basso nella schermata Home apre il pannello delle notifiche</string>
+    <string name="swipe_down_notifications_off">Scorrere verso il basso non fa nulla</string>
+    <string name="swipe_down_notifications_on_fyt">Scorrere verso il basso nella schermata Home apre il pannello delle impostazioni rapide</string>
 </resources>

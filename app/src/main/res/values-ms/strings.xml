@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">Itu bukan kunci OpenWeather (32 huruf dan digit).</string>
     <string name="theme_accent_color">Tetapkan warna tema global</string>
     <string name="icon_text_color">Tetapkan warna teks ikon</string>
+    <string name="swipe_up_app_drawer">Leret ke atas untuk membuka laci aplikasi</string>
+    <string name="swipe_up_app_drawer_on">Meleret ke atas pada skrin utama membuka laci aplikasi</string>
+    <string name="swipe_up_app_drawer_off">Meleret ke atas tidak melakukan apa-apa</string>
+    <string name="swipe_down_notifications">Leret ke bawah untuk pemberitahuan</string>
+    <string name="swipe_down_notifications_on">Meleret ke bawah pada skrin utama membuka panel pemberitahuan</string>
+    <string name="swipe_down_notifications_off">Meleret ke bawah tidak melakukan apa-apa</string>
+    <string name="swipe_down_notifications_on_fyt">Meleret ke bawah pada skrin utama membuka panel tetapan pantas</string>
 </resources>

@@ -48,6 +48,8 @@
         android:name="android.hardware.telephony"
         android:required="false" />
 
+    <!-- "Swipe down for notifications": StatusBarManager.expandNotificationsPanel() (normal permission) -->
+    <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" />
     <uses-permission android:name="android.permission.AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.BROADCAST_CLOSE_SYSTEM_DIALOGS"
         tools:ignore="ProtectedPermissions" />

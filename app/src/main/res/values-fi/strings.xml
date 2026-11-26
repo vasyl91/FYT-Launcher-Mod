@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">Tämä ei ole OpenWeather-avain (32 kirjainta ja numeroa).</string>
     <string name="theme_accent_color">Aseta yleinen teemaväri</string>
     <string name="icon_text_color">Aseta kuvakkeiden tekstin väri</string>
+    <string name="swipe_up_app_drawer">Avaa sovellusvalikko pyyhkäisemällä ylös</string>
+    <string name="swipe_up_app_drawer_on">Ylöspäin pyyhkäisy aloitusnäytöllä avaa sovellusvalikon</string>
+    <string name="swipe_up_app_drawer_off">Ylöspäin pyyhkäisy ei tee mitään</string>
+    <string name="swipe_down_notifications">Pyyhkäise alas ilmoituksia varten</string>
+    <string name="swipe_down_notifications_on">Alaspäin pyyhkäisy aloitusnäytöllä avaa ilmoituspaneelin</string>
+    <string name="swipe_down_notifications_off">Alaspäin pyyhkäisy ei tee mitään</string>
+    <string name="swipe_down_notifications_on_fyt">Alaspäin pyyhkäisy aloitusnäytöllä avaa pika-asetuspaneelin</string>
 </resources>

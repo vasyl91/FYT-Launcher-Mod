@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">Quai n\'è betg ina clav dad OpenWeather (32 bustabs e cifras).</string>
     <string name="theme_accent_color">Definir la colur globala dal tema</string>
     <string name="icon_text_color">Definir la colur dal text da las icunas</string>
+    <string name="swipe_up_app_drawer">Scuar si per avrir la tschaina d\'apps</string>
+    <string name="swipe_up_app_drawer_on">Scuar si sin la pagina iniziala avra la tschaina d\'apps</string>
+    <string name="swipe_up_app_drawer_off">Scuar si na fa nagut</string>
+    <string name="swipe_down_notifications">Scuar engiu per las communicaziuns</string>
+    <string name="swipe_down_notifications_on">Scuar engiu sin la pagina iniziala avra il panel da communicaziuns</string>
+    <string name="swipe_down_notifications_off">Scuar engiu na fa nagut</string>
+    <string name="swipe_down_notifications_on_fyt">Scuar engiu sin la pagina iniziala avra il panel da las empostaziuns spertas</string>
 </resources>

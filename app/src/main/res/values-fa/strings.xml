@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">این کلید OpenWeather نیست (۳۲ حرف و رقم).</string>
     <string name="theme_accent_color">تنظیم رنگ کلی پوسته</string>
     <string name="icon_text_color">تنظیم رنگ متن نمادها</string>
+    <string name="swipe_up_app_drawer">کشیدن به بالا برای باز کردن کشوی برنامه‌ها</string>
+    <string name="swipe_up_app_drawer_on">کشیدن به بالا در صفحه اصلی کشوی برنامه‌ها را باز می‌کند</string>
+    <string name="swipe_up_app_drawer_off">کشیدن به بالا کاری نمی‌کند</string>
+    <string name="swipe_down_notifications">کشیدن به پایین برای اعلان‌ها</string>
+    <string name="swipe_down_notifications_on">کشیدن به پایین در صفحه اصلی پنل اعلان‌ها را باز می‌کند</string>
+    <string name="swipe_down_notifications_off">کشیدن به پایین کاری نمی‌کند</string>
+    <string name="swipe_down_notifications_on_fyt">کشیدن به پایین در صفحه اصلی پنل تنظیمات سریع را باز می‌کند</string>
 </resources>

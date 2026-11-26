@@ -60,6 +60,22 @@
         <Preference
             android:key="theme_accent_color"
             android:title="@string/theme_accent_color" />
+        <!-- The swipes of the home screen (HomeGestures). The first is on whatever is stored while the app drawer has no
+             other way to be opened (DrawerAccess; the row is then switched on and off for the user, SettingsFragmentSecond) -->
+        <com.android.launcher66.settings.CustomSwitchPreference
+            android:key="swipe_up_app_drawer"
+            android:defaultValue="false"
+            android:title="@string/swipe_up_app_drawer"
+            android:summaryOn="@string/swipe_up_app_drawer_on"
+            android:summaryOff="@string/swipe_up_app_drawer_off"
+            app:layout="@layout/nested_preference_category_switch" />
+        <com.android.launcher66.settings.CustomSwitchPreference
+            android:key="swipe_down_notifications"
+            android:defaultValue="false"
+            android:title="@string/swipe_down_notifications"
+            android:summaryOn="@string/swipe_down_notifications_on"
+            android:summaryOff="@string/swipe_down_notifications_off"
+            app:layout="@layout/nested_preference_category_switch" />
 
     </PreferenceCategory>
 

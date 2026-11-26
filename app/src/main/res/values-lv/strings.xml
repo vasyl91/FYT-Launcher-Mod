@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">Tā nav OpenWeather atslēga (32 burti un cipari).</string>
     <string name="theme_accent_color">Iestatīt globālo motīva krāsu</string>
     <string name="icon_text_color">Iestatīt ikonu teksta krāsu</string>
+    <string name="swipe_up_app_drawer">Velciet uz augšu, lai atvērtu lietotņu atvilktni</string>
+    <string name="swipe_up_app_drawer_on">Vilkšana uz augšu sākuma ekrānā atver lietotņu atvilktni</string>
+    <string name="swipe_up_app_drawer_off">Vilkšana uz augšu neko nedara</string>
+    <string name="swipe_down_notifications">Velciet uz leju, lai skatītu paziņojumus</string>
+    <string name="swipe_down_notifications_on">Vilkšana uz leju sākuma ekrānā atver paziņojumu paneli</string>
+    <string name="swipe_down_notifications_off">Vilkšana uz leju neko nedara</string>
+    <string name="swipe_down_notifications_on_fyt">Vilkšana uz leju sākuma ekrānā atver ātro iestatījumu paneli</string>
 </resources>

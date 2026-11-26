@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">Det där är ingen OpenWeather-nyckel (32 bokstäver och siffror).</string>
     <string name="theme_accent_color">Ange global temafärg</string>
     <string name="icon_text_color">Ange textfärg för ikoner</string>
+    <string name="swipe_up_app_drawer">Svep uppåt för att öppna applådan</string>
+    <string name="swipe_up_app_drawer_on">Att svepa uppåt på startskärmen öppnar applådan</string>
+    <string name="swipe_up_app_drawer_off">Att svepa uppåt gör ingenting</string>
+    <string name="swipe_down_notifications">Svep nedåt för aviseringar</string>
+    <string name="swipe_down_notifications_on">Att svepa nedåt på startskärmen öppnar aviseringspanelen</string>
+    <string name="swipe_down_notifications_off">Att svepa nedåt gör ingenting</string>
+    <string name="swipe_down_notifications_on_fyt">Att svepa nedåt på startskärmen öppnar panelen för snabbinställningar</string>
 </resources>

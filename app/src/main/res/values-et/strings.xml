@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">See ei ole OpenWeatheri võti (32 tähte ja numbrit).</string>
     <string name="theme_accent_color">Määra globaalne teema värv</string>
     <string name="icon_text_color">Määra ikoonide teksti värv</string>
+    <string name="swipe_up_app_drawer">Pühkige üles rakenduste sahtli avamiseks</string>
+    <string name="swipe_up_app_drawer_on">Avakuval üles pühkimine avab rakenduste sahtli</string>
+    <string name="swipe_up_app_drawer_off">Üles pühkimine ei tee midagi</string>
+    <string name="swipe_down_notifications">Pühkige alla teavituste jaoks</string>
+    <string name="swipe_down_notifications_on">Avakuval alla pühkimine avab teavituste paneeli</string>
+    <string name="swipe_down_notifications_off">Alla pühkimine ei tee midagi</string>
+    <string name="swipe_down_notifications_on_fyt">Avakuval alla pühkimine avab kiirseadete paneeli</string>
 </resources>

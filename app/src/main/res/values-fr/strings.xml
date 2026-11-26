@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">Ce n\'est pas une clé OpenWeather (32 lettres et chiffres).</string>
     <string name="theme_accent_color">Définir la couleur globale du thème</string>
     <string name="icon_text_color">Définir la couleur du texte des icônes</string>
+    <string name="swipe_up_app_drawer">Balayer vers le haut pour ouvrir le tiroir d\'applications</string>
+    <string name="swipe_up_app_drawer_on">Balayer vers le haut sur l\'écran d\'accueil ouvre le tiroir d\'applications</string>
+    <string name="swipe_up_app_drawer_off">Balayer vers le haut ne fait rien</string>
+    <string name="swipe_down_notifications">Balayer vers le bas pour les notifications</string>
+    <string name="swipe_down_notifications_on">Balayer vers le bas sur l\'écran d\'accueil ouvre le volet des notifications</string>
+    <string name="swipe_down_notifications_off">Balayer vers le bas ne fait rien</string>
+    <string name="swipe_down_notifications_on_fyt">Balayer vers le bas sur l\'écran d\'accueil ouvre le panneau des réglages rapides</string>
 </resources>

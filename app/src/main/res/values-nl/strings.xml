@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">Dat is geen OpenWeather-sleutel (32 letters en cijfers).</string>
     <string name="theme_accent_color">Globale themakleur instellen</string>
     <string name="icon_text_color">Tekstkleur van pictogrammen instellen</string>
+    <string name="swipe_up_app_drawer">Veeg omhoog om de app-lade te openen</string>
+    <string name="swipe_up_app_drawer_on">Omhoog vegen op het startscherm opent de app-lade</string>
+    <string name="swipe_up_app_drawer_off">Omhoog vegen doet niets</string>
+    <string name="swipe_down_notifications">Veeg omlaag voor meldingen</string>
+    <string name="swipe_down_notifications_on">Omlaag vegen op het startscherm opent het meldingenpaneel</string>
+    <string name="swipe_down_notifications_off">Omlaag vegen doet niets</string>
+    <string name="swipe_down_notifications_on_fyt">Omlaag vegen op het startscherm opent het paneel met snelle instellingen</string>
 </resources>

@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">यह OpenWeather कुंजी नहीं है (32 अक्षर और अंक)।</string>
     <string name="theme_accent_color">वैश्विक थीम रंग सेट करें</string>
     <string name="icon_text_color">आइकन टेक्स्ट का रंग सेट करें</string>
+    <string name="swipe_up_app_drawer">ऐप ड्रॉअर खोलने के लिए ऊपर स्वाइप करें</string>
+    <string name="swipe_up_app_drawer_on">होम स्क्रीन पर ऊपर स्वाइप करने से ऐप ड्रॉअर खुलता है</string>
+    <string name="swipe_up_app_drawer_off">ऊपर स्वाइप करने से कुछ नहीं होता</string>
+    <string name="swipe_down_notifications">सूचनाओं के लिए नीचे स्वाइप करें</string>
+    <string name="swipe_down_notifications_on">होम स्क्रीन पर नीचे स्वाइप करने से सूचना पैनल खुलता है</string>
+    <string name="swipe_down_notifications_off">नीचे स्वाइप करने से कुछ नहीं होता</string>
+    <string name="swipe_down_notifications_on_fyt">होम स्क्रीन पर नीचे स्वाइप करने से क्विक सेटिंग पैनल खुलता है</string>
 </resources>

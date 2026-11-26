@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">Սա OpenWeather բանալի չէ (32 տառ և թվանշան)։</string>
     <string name="theme_accent_color">Սահմանել թեմայի ընդհանուր գույնը</string>
     <string name="icon_text_color">Սահմանել պատկերակների տեքստի գույնը</string>
+    <string name="swipe_up_app_drawer">Սահեցրեք վերև՝ հավելվածների ցանկը բացելու համար</string>
+    <string name="swipe_up_app_drawer_on">Գլխավոր էկրանին վերև սահեցնելը բացում է հավելվածների ցանկը</string>
+    <string name="swipe_up_app_drawer_off">Վերև սահեցնելը ոչինչ չի անում</string>
+    <string name="swipe_down_notifications">Սահեցրեք ներքև՝ ծանուցումների համար</string>
+    <string name="swipe_down_notifications_on">Գլխավոր էկրանին ներքև սահեցնելը բացում է ծանուցումների վահանակը</string>
+    <string name="swipe_down_notifications_off">Ներքև սահեցնելը ոչինչ չի անում</string>
+    <string name="swipe_down_notifications_on_fyt">Գլխավոր էկրանին ներքև սահեցնելը բացում է արագ կարգավորումների վահանակը</string>
 </resources>

@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">Bu bir OpenWeather anahtarı değil (32 harf ve rakam).</string>
     <string name="theme_accent_color">Genel tema rengini ayarla</string>
     <string name="icon_text_color">Simge metni rengini ayarla</string>
+    <string name="swipe_up_app_drawer">Uygulama çekmecesini açmak için yukarı kaydırın</string>
+    <string name="swipe_up_app_drawer_on">Ana ekranda yukarı kaydırmak uygulama çekmecesini açar</string>
+    <string name="swipe_up_app_drawer_off">Yukarı kaydırmak hiçbir şey yapmaz</string>
+    <string name="swipe_down_notifications">Bildirimler için aşağı kaydırın</string>
+    <string name="swipe_down_notifications_on">Ana ekranda aşağı kaydırmak bildirim panelini açar</string>
+    <string name="swipe_down_notifications_off">Aşağı kaydırmak hiçbir şey yapmaz</string>
+    <string name="swipe_down_notifications_on_fyt">Ana ekranda aşağı kaydırmak hızlı ayarlar panelini açar</string>
 </resources>

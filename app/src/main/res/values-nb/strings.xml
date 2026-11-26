@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">Dette er ikke en OpenWeather-nøkkel (32 bokstaver og sifre).</string>
     <string name="theme_accent_color">Angi global temafarge</string>
     <string name="icon_text_color">Angi tekstfarge for ikoner</string>
+    <string name="swipe_up_app_drawer">Sveip opp for å åpne appskuffen</string>
+    <string name="swipe_up_app_drawer_on">Å sveipe opp på startskjermen åpner appskuffen</string>
+    <string name="swipe_up_app_drawer_off">Å sveipe opp gjør ingenting</string>
+    <string name="swipe_down_notifications">Sveip ned for varsler</string>
+    <string name="swipe_down_notifications_on">Å sveipe ned på startskjermen åpner varselpanelet</string>
+    <string name="swipe_down_notifications_off">Å sveipe ned gjør ingenting</string>
+    <string name="swipe_down_notifications_on_fyt">Å sveipe ned på startskjermen åpner hurtiginnstillingspanelet</string>
 </resources>

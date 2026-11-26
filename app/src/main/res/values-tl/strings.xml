@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">Hindi iyan OpenWeather key (32 titik at numero).</string>
     <string name="theme_accent_color">Itakda ang pandaigdigang kulay ng tema</string>
     <string name="icon_text_color">Itakda ang kulay ng text ng icon</string>
+    <string name="swipe_up_app_drawer">Mag-swipe pataas para buksan ang app drawer</string>
+    <string name="swipe_up_app_drawer_on">Ang pag-swipe pataas sa home screen ay magbubukas ng app drawer</string>
+    <string name="swipe_up_app_drawer_off">Walang ginagawa ang pag-swipe pataas</string>
+    <string name="swipe_down_notifications">Mag-swipe pababa para sa mga notification</string>
+    <string name="swipe_down_notifications_on">Ang pag-swipe pababa sa home screen ay magbubukas ng panel ng notification</string>
+    <string name="swipe_down_notifications_off">Walang ginagawa ang pag-swipe pababa</string>
+    <string name="swipe_down_notifications_on_fyt">Ang pag-swipe pababa sa home screen ay magbubukas ng panel ng mabilis na setting</string>
 </resources>

@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">Das ist kein OpenWeather-Schlüssel (32 Buchstaben und Ziffern).</string>
     <string name="theme_accent_color">Globale Designfarbe festlegen</string>
     <string name="icon_text_color">Textfarbe der Symbole festlegen</string>
+    <string name="swipe_up_app_drawer">Nach oben wischen, um die App-Übersicht zu öffnen</string>
+    <string name="swipe_up_app_drawer_on">Wischen nach oben auf dem Startbildschirm öffnet die App-Übersicht</string>
+    <string name="swipe_up_app_drawer_off">Wischen nach oben bewirkt nichts</string>
+    <string name="swipe_down_notifications">Nach unten wischen für Benachrichtigungen</string>
+    <string name="swipe_down_notifications_on">Wischen nach unten auf dem Startbildschirm öffnet die Benachrichtigungen</string>
+    <string name="swipe_down_notifications_off">Wischen nach unten bewirkt nichts</string>
+    <string name="swipe_down_notifications_on_fyt">Wischen nach unten auf dem Startbildschirm öffnet die Schnelleinstellungen</string>
 </resources>

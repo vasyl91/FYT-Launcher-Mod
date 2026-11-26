@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">ეს არ არის OpenWeather-ის გასაღები (32 ასო და ციფრი).</string>
     <string name="theme_accent_color">თემის საერთო ფერის დაყენება</string>
     <string name="icon_text_color">ხატულების ტექსტის ფერის დაყენება</string>
+    <string name="swipe_up_app_drawer">გადაუსვით ზემოთ აპლიკაციების უჯრის გასახსნელად</string>
+    <string name="swipe_up_app_drawer_on">მთავარ ეკრანზე ზემოთ გადაწევა ხსნის აპლიკაციების უჯრას</string>
+    <string name="swipe_up_app_drawer_off">ზემოთ გადაწევა არაფერს აკეთებს</string>
+    <string name="swipe_down_notifications">გადაუსვით ქვემოთ შეტყობინებებისთვის</string>
+    <string name="swipe_down_notifications_on">მთავარ ეკრანზე ქვემოთ გადაწევა ხსნის შეტყობინებების პანელს</string>
+    <string name="swipe_down_notifications_off">ქვემოთ გადაწევა არაფერს აკეთებს</string>
+    <string name="swipe_down_notifications_on_fyt">მთავარ ეკრანზე ქვემოთ გადაწევა ხსნის სწრაფი პარამეტრების პანელს</string>
 </resources>

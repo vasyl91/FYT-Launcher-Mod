@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">To nie jest klucz OpenWeather (32 litery i cyfry).</string>
     <string name="theme_accent_color">Ustaw globalny kolor motywu</string>
     <string name="icon_text_color">Ustaw kolor tekstu ikon</string>
+    <string name="swipe_up_app_drawer">Przesuń w górę, aby otworzyć szufladę aplikacji</string>
+    <string name="swipe_up_app_drawer_on">Przesunięcie w górę na ekranie głównym otwiera szufladę aplikacji</string>
+    <string name="swipe_up_app_drawer_off">Przesunięcie w górę nic nie robi</string>
+    <string name="swipe_down_notifications">Przesuń w dół, aby zobaczyć powiadomienia</string>
+    <string name="swipe_down_notifications_on">Przesunięcie w dół na ekranie głównym otwiera panel powiadomień</string>
+    <string name="swipe_down_notifications_off">Przesunięcie w dół nic nie robi</string>
+    <string name="swipe_down_notifications_on_fyt">Przesunięcie w dół na ekranie głównym otwiera panel szybkich ustawień</string>
 </resources>

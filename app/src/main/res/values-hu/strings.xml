@@ -569,4 +569,11 @@
     <string name="openweather_key_invalid">Ez nem OpenWeather-kulcs (32 betű és számjegy).</string>
     <string name="theme_accent_color">Globális témaszín beállítása</string>
     <string name="icon_text_color">Az ikonok szövegszínének beállítása</string>
+    <string name="swipe_up_app_drawer">Felfelé húzás az alkalmazásfiók megnyitásához</string>
+    <string name="swipe_up_app_drawer_on">A kezdőképernyőn felfelé húzás megnyitja az alkalmazásfiókot</string>
+    <string name="swipe_up_app_drawer_off">A felfelé húzás nem csinál semmit</string>
+    <string name="swipe_down_notifications">Lefelé húzás az értesítésekhez</string>
+    <string name="swipe_down_notifications_on">A kezdőképernyőn lefelé húzás megnyitja az értesítési panelt</string>
+    <string name="swipe_down_notifications_off">A lefelé húzás nem csinál semmit</string>
+    <string name="swipe_down_notifications_on_fyt">A kezdőképernyőn lefelé húzás megnyitja a gyorsbeállítások panelt</string>
 </resources>
