@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Dobro došli u Launcher Mod!\nIzradite vlastiti raspored u postavkama za prikaz navigacije i drugih aplikacija u prozorima na početnom zaslonu. Ako se aplikacija stalno otvara preko početnog zaslona, isključite njezin prozor u postavkama.</string>
     <string name="welcome_7870">Dobro došli u Launcher Mod!\nIzradite vlastiti raspored u postavkama. Aplikacije se mogu prikazati u prozorima na početnom zaslonu ondje gdje to uređaj podržava; ako se neka stalno otvara preko početnog zaslona, isključite njezin prozor u postavkama.</string>
     <string name="welcome_other">Dobro došli u Launcher Mod!\nIzradite vlastiti raspored u postavkama. Prikaz aplikacija u prozorima na početnom zaslonu zahtijeva root ili Shizuku; bez njih launcher radi kao obični početni zaslon.</string>
+    <string name="notification_badges">Značke obavijesti</string>
+    <string name="notification_badges_summary">Broj obavijesti na ikonama aplikacija</string>
+    <string name="badges_enabled">Uključi značke obavijesti</string>
+    <string name="badges_position">Položaj</string>
+    <string name="badges_top_left">Gornji lijevi kut</string>
+    <string name="badges_top_right">Gornji desni kut</string>
+    <string name="badges_bottom_left">Donji lijevi kut</string>
+    <string name="badges_bottom_right">Donji desni kut</string>
+    <string name="badges_size">Veličina</string>
+    <string name="badges_small">Mala</string>
+    <string name="badges_medium">Srednja</string>
+    <string name="badges_large">Velika</string>
+    <string name="badges_corner">Polumjer kutova</string>
+    <string name="badges_color">Boja značke</string>
+    <string name="badges_outline">Obrub</string>
+    <string name="badges_outline_on">Tanki obrub u boji broja</string>
+    <string name="badges_outline_off">Bez obruba</string>
 </resources>

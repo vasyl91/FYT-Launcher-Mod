@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Sveiki atvykę į „Launcher Mod“!\nSusikurkite savo išdėstymą nustatymuose, kad navigacija ir kitos programos būtų rodomos languose pagrindiniame ekrane. Jei programa nuolat atsidaro virš pagrindinio ekrano, išjunkite jos langą nustatymuose.</string>
     <string name="welcome_7870">Sveiki atvykę į „Launcher Mod“!\nSusikurkite savo išdėstymą nustatymuose. Programas galima rodyti languose pagrindiniame ekrane, kai įrenginys tai palaiko; jei kuri nors nuolat atsidaro virš pagrindinio ekrano, išjunkite jos langą nustatymuose.</string>
     <string name="welcome_other">Sveiki atvykę į „Launcher Mod“!\nSusikurkite savo išdėstymą nustatymuose. Programoms rodyti languose pagrindiniame ekrane reikia root arba Shizuku; be jų paleidimo programa veikia kaip įprastas pagrindinis ekranas.</string>
+    <string name="notification_badges">Pranešimų ženkliukai</string>
+    <string name="notification_badges_summary">Pranešimų skaičius programų piktogramose</string>
+    <string name="badges_enabled">Įjungti pranešimų ženkliukus</string>
+    <string name="badges_position">Padėtis</string>
+    <string name="badges_top_left">Viršutinis kairysis kampas</string>
+    <string name="badges_top_right">Viršutinis dešinysis kampas</string>
+    <string name="badges_bottom_left">Apatinis kairysis kampas</string>
+    <string name="badges_bottom_right">Apatinis dešinysis kampas</string>
+    <string name="badges_size">Dydis</string>
+    <string name="badges_small">Maža</string>
+    <string name="badges_medium">Vidutinė</string>
+    <string name="badges_large">Didelė</string>
+    <string name="badges_corner">Kampų spindulys</string>
+    <string name="badges_color">Ženkliuko spalva</string>
+    <string name="badges_outline">Kontūras</string>
+    <string name="badges_outline_on">Plonas kontūras skaičiaus spalva</string>
+    <string name="badges_outline_off">Be kontūro</string>
 </resources>

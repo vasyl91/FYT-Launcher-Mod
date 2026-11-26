@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Bun venit în Launcher Mod!\nCreați propria aranjare în setări pentru a afișa navigația și alte aplicații în ferestre pe ecranul principal. Dacă o aplicație continuă să se deschidă peste ecranul principal, dezactivați fereastra ei în setări.</string>
     <string name="welcome_7870">Bun venit în Launcher Mod!\nCreați propria aranjare în setări. Aplicațiile pot fi afișate în ferestre pe ecranul principal unde unitatea o permite; dacă una continuă să se deschidă peste ecranul principal, dezactivați fereastra ei în setări.</string>
     <string name="welcome_other">Bun venit în Launcher Mod!\nCreați propria aranjare în setări. Afișarea aplicațiilor în ferestre pe ecranul principal necesită root sau Shizuku; fără ele, launcherul funcționează ca un ecran principal obișnuit.</string>
+    <string name="notification_badges">Insigne de notificări</string>
+    <string name="notification_badges_summary">Numărul de notificări pe pictogramele aplicațiilor</string>
+    <string name="badges_enabled">Activați insignele de notificări</string>
+    <string name="badges_position">Poziție</string>
+    <string name="badges_top_left">Colțul din stânga sus</string>
+    <string name="badges_top_right">Colțul din dreapta sus</string>
+    <string name="badges_bottom_left">Colțul din stânga jos</string>
+    <string name="badges_bottom_right">Colțul din dreapta jos</string>
+    <string name="badges_size">Dimensiune</string>
+    <string name="badges_small">Mică</string>
+    <string name="badges_medium">Medie</string>
+    <string name="badges_large">Mare</string>
+    <string name="badges_corner">Raza colțurilor</string>
+    <string name="badges_color">Culoarea insignei</string>
+    <string name="badges_outline">Contur</string>
+    <string name="badges_outline_on">Un contur subțire în culoarea cifrei</string>
+    <string name="badges_outline_off">Fără contur</string>
 </resources>

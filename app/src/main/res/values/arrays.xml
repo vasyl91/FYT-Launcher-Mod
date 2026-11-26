@@ -73,4 +73,27 @@
         <item>lock</item>
         <item>screen_off</item>
     </string-array>
+    <!-- "Notification badges": the corner and the size (NotificationBadgesFragment, BadgeGeometry) -->
+    <string-array name="badges_position_entries">
+        <item>@string/badges_top_left</item>
+        <item>@string/badges_top_right</item>
+        <item>@string/badges_bottom_left</item>
+        <item>@string/badges_bottom_right</item>
+    </string-array>
+    <string-array name="badges_position_values" translatable="false">
+        <item>top_left</item>
+        <item>top_right</item>
+        <item>bottom_left</item>
+        <item>bottom_right</item>
+    </string-array>
+    <string-array name="badges_size_entries">
+        <item>@string/badges_small</item>
+        <item>@string/badges_medium</item>
+        <item>@string/badges_large</item>
+    </string-array>
+    <string-array name="badges_size_values" translatable="false">
+        <item>small</item>
+        <item>medium</item>
+        <item>large</item>
+    </string-array>
 </resources>

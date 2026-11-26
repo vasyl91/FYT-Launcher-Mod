@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Добро пожаловать в Launcher Mod!\nСоздайте свою раскладку в настройках, чтобы показывать навигацию и другие приложения в окнах на главном экране. Если приложение постоянно открывается поверх главного экрана, отключите его окно в настройках.</string>
     <string name="welcome_7870">Добро пожаловать в Launcher Mod!\nСоздайте свою раскладку в настройках. Приложения можно показывать в окнах на главном экране там, где это поддерживает устройство; если какое-то постоянно открывается поверх главного экрана, отключите его окно в настройках.</string>
     <string name="welcome_other">Добро пожаловать в Launcher Mod!\nСоздайте свою раскладку в настройках. Для показа приложений в окнах на главном экране нужны root или Shizuku; без них лаунчер работает как обычный главный экран.</string>
+    <string name="notification_badges">Значки уведомлений</string>
+    <string name="notification_badges_summary">Число уведомлений на значках приложений</string>
+    <string name="badges_enabled">Включить значки уведомлений</string>
+    <string name="badges_position">Положение</string>
+    <string name="badges_top_left">Левый верхний угол</string>
+    <string name="badges_top_right">Правый верхний угол</string>
+    <string name="badges_bottom_left">Левый нижний угол</string>
+    <string name="badges_bottom_right">Правый нижний угол</string>
+    <string name="badges_size">Размер</string>
+    <string name="badges_small">Маленький</string>
+    <string name="badges_medium">Средний</string>
+    <string name="badges_large">Большой</string>
+    <string name="badges_corner">Радиус углов</string>
+    <string name="badges_color">Цвет значка</string>
+    <string name="badges_outline">Контур</string>
+    <string name="badges_outline_on">Тонкий контур цвета цифры</string>
+    <string name="badges_outline_off">Без контура</string>
 </resources>

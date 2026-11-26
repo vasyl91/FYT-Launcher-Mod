@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Karibu kwenye Launcher Mod!\nUnda mpangilio wako mwenyewe katika mipangilio ili kuonyesha urambazaji na programu nyingine katika madirisha kwenye skrini ya kwanza. Programu ikiendelea kufunguka juu ya skrini ya kwanza, zima dirisha lake katika mipangilio.</string>
     <string name="welcome_7870">Karibu kwenye Launcher Mod!\nUnda mpangilio wako mwenyewe katika mipangilio. Programu zinaweza kuonyeshwa katika madirisha kwenye skrini ya kwanza pale kifaa kinapounga mkono; ikiwa moja inaendelea kufunguka juu ya skrini ya kwanza, zima dirisha lake katika mipangilio.</string>
     <string name="welcome_other">Karibu kwenye Launcher Mod!\nUnda mpangilio wako mwenyewe katika mipangilio. Kuonyesha programu katika madirisha kwenye skrini ya kwanza kunahitaji root au Shizuku; bila hivyo kizinduzi hufanya kazi kama skrini ya kwanza ya kawaida.</string>
+    <string name="notification_badges">Beji za arifa</string>
+    <string name="notification_badges_summary">Idadi ya arifa kwenye aikoni za programu</string>
+    <string name="badges_enabled">Washa beji za arifa</string>
+    <string name="badges_position">Nafasi</string>
+    <string name="badges_top_left">Kona ya juu kushoto</string>
+    <string name="badges_top_right">Kona ya juu kulia</string>
+    <string name="badges_bottom_left">Kona ya chini kushoto</string>
+    <string name="badges_bottom_right">Kona ya chini kulia</string>
+    <string name="badges_size">Ukubwa</string>
+    <string name="badges_small">Ndogo</string>
+    <string name="badges_medium">Wastani</string>
+    <string name="badges_large">Kubwa</string>
+    <string name="badges_corner">Kipenyo cha pembe</string>
+    <string name="badges_color">Rangi ya beji</string>
+    <string name="badges_outline">Muhtasari</string>
+    <string name="badges_outline_on">Muhtasari mwembamba wa rangi ya nambari</string>
+    <string name="badges_outline_off">Bila muhtasari</string>
 </resources>

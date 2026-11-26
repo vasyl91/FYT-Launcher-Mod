@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Üdvözöljük a Launcher Modban!\nHozza létre saját elrendezését a beállításokban, hogy a navigáció és más alkalmazások ablakokban jelenjenek meg a kezdőképernyőn. Ha egy alkalmazás folyton a kezdőképernyő fölött nyílik meg, kapcsolja ki az ablakát a beállításokban.</string>
     <string name="welcome_7870">Üdvözöljük a Launcher Modban!\nHozza létre saját elrendezését a beállításokban. Az alkalmazások ablakokban jeleníthetők meg a kezdőképernyőn, ahol az egység támogatja; ha valamelyik folyton a kezdőképernyő fölött nyílik meg, kapcsolja ki az ablakát a beállításokban.</string>
     <string name="welcome_other">Üdvözöljük a Launcher Modban!\nHozza létre saját elrendezését a beállításokban. Az alkalmazások ablakokban való megjelenítéséhez a kezdőképernyőn root vagy Shizuku kell; nélkülük a launcher hagyományos kezdőképernyőként működik.</string>
+    <string name="notification_badges">Értesítési jelvények</string>
+    <string name="notification_badges_summary">Az értesítések száma az alkalmazásikonokon</string>
+    <string name="badges_enabled">Értesítési jelvények engedélyezése</string>
+    <string name="badges_position">Elhelyezkedés</string>
+    <string name="badges_top_left">Bal felső sarok</string>
+    <string name="badges_top_right">Jobb felső sarok</string>
+    <string name="badges_bottom_left">Bal alsó sarok</string>
+    <string name="badges_bottom_right">Jobb alsó sarok</string>
+    <string name="badges_size">Méret</string>
+    <string name="badges_small">Kicsi</string>
+    <string name="badges_medium">Közepes</string>
+    <string name="badges_large">Nagy</string>
+    <string name="badges_corner">Sarokkerekítés</string>
+    <string name="badges_color">Jelvény színe</string>
+    <string name="badges_outline">Körvonal</string>
+    <string name="badges_outline_on">Vékony körvonal a szám színében</string>
+    <string name="badges_outline_off">Nincs körvonal</string>
 </resources>

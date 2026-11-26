@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Сардэчна запрашаем у Launcher Mod!\nСтварыце ўласны макет у наладах, каб паказваць навігацыю і іншыя праграмы ў вокнах на галоўным экране. Калі праграма працягвае адкрывацца над галоўным экранам, адключыце яе акно ў наладах.</string>
     <string name="welcome_7870">Сардэчна запрашаем у Launcher Mod!\nСтварыце ўласны макет у наладах. Праграмы можна паказваць у вокнах на галоўным экране, калі прылада гэта падтрымлівае; калі якая-небудзь працягвае адкрывацца над галоўным экранам, адключыце яе акно ў наладах.</string>
     <string name="welcome_other">Сардэчна запрашаем у Launcher Mod!\nСтварыце ўласны макет у наладах. Каб паказваць праграмы ў вокнах на галоўным экране, патрэбны root або Shizuku; без іх лаунчар працуе як звычайны галоўны экран.</string>
+    <string name="notification_badges">Значкі апавяшчэнняў</string>
+    <string name="notification_badges_summary">Колькасць апавяшчэнняў на значках праграм</string>
+    <string name="badges_enabled">Уключыць значкі апавяшчэнняў</string>
+    <string name="badges_position">Размяшчэнне</string>
+    <string name="badges_top_left">Левы верхні кут</string>
+    <string name="badges_top_right">Правы верхні кут</string>
+    <string name="badges_bottom_left">Левы ніжні кут</string>
+    <string name="badges_bottom_right">Правы ніжні кут</string>
+    <string name="badges_size">Памер</string>
+    <string name="badges_small">Малы</string>
+    <string name="badges_medium">Сярэдні</string>
+    <string name="badges_large">Вялікі</string>
+    <string name="badges_corner">Радыус кутоў</string>
+    <string name="badges_color">Колер значка</string>
+    <string name="badges_outline">Контур</string>
+    <string name="badges_outline_on">Тонкі контур колеру лічбы</string>
+    <string name="badges_outline_off">Без контуру</string>
 </resources>

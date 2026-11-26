@@ -599,4 +599,21 @@
     <string name="welcome_fyt">ยินดีต้อนรับสู่ Launcher Mod!\nสร้างเลย์เอาต์ของคุณเองในการตั้งค่าเพื่อแสดงการนำทางและแอปอื่นในหน้าต่างบนหน้าจอหลัก หากแอปใดเปิดทับหน้าจอหลักซ้ำๆ ให้ปิดหน้าต่างของแอปนั้นในการตั้งค่า</string>
     <string name="welcome_7870">ยินดีต้อนรับสู่ Launcher Mod!\nสร้างเลย์เอาต์ของคุณเองในการตั้งค่า แอปสามารถแสดงในหน้าต่างบนหน้าจอหลักได้ในที่ที่อุปกรณ์รองรับ หากแอปใดเปิดทับหน้าจอหลักซ้ำๆ ให้ปิดหน้าต่างของแอปนั้นในการตั้งค่า</string>
     <string name="welcome_other">ยินดีต้อนรับสู่ Launcher Mod!\nสร้างเลย์เอาต์ของคุณเองในการตั้งค่า การแสดงแอปในหน้าต่างบนหน้าจอหลักต้องใช้ root หรือ Shizuku หากไม่มี ตัวเปิดแอปจะทำงานเป็นหน้าจอหลักทั่วไป</string>
+    <string name="notification_badges">ป้ายการแจ้งเตือน</string>
+    <string name="notification_badges_summary">จำนวนการแจ้งเตือนบนไอคอนแอป</string>
+    <string name="badges_enabled">เปิดใช้ป้ายการแจ้งเตือน</string>
+    <string name="badges_position">ตำแหน่ง</string>
+    <string name="badges_top_left">มุมบนซ้าย</string>
+    <string name="badges_top_right">มุมบนขวา</string>
+    <string name="badges_bottom_left">มุมล่างซ้าย</string>
+    <string name="badges_bottom_right">มุมล่างขวา</string>
+    <string name="badges_size">ขนาด</string>
+    <string name="badges_small">เล็ก</string>
+    <string name="badges_medium">กลาง</string>
+    <string name="badges_large">ใหญ่</string>
+    <string name="badges_corner">รัศมีมุม</string>
+    <string name="badges_color">สีป้าย</string>
+    <string name="badges_outline">เส้นขอบ</string>
+    <string name="badges_outline_on">เส้นขอบบางสีเดียวกับตัวเลข</string>
+    <string name="badges_outline_off">ไม่มีเส้นขอบ</string>
 </resources>

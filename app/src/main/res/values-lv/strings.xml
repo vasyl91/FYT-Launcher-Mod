@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Laipni lūdzam Launcher Mod!\nIzveidojiet savu izkārtojumu iestatījumos, lai navigāciju un citas lietotnes rādītu logos sākuma ekrānā. Ja kāda lietotne pastāvīgi atveras virs sākuma ekrāna, izslēdziet tās logu iestatījumos.</string>
     <string name="welcome_7870">Laipni lūdzam Launcher Mod!\nIzveidojiet savu izkārtojumu iestatījumos. Lietotnes var rādīt logos sākuma ekrānā, ja ierīce to atbalsta; ja kāda pastāvīgi atveras virs sākuma ekrāna, izslēdziet tās logu iestatījumos.</string>
     <string name="welcome_other">Laipni lūdzam Launcher Mod!\nIzveidojiet savu izkārtojumu iestatījumos. Lai rādītu lietotnes logos sākuma ekrānā, nepieciešams root vai Shizuku; bez tiem palaidējs darbojas kā parasts sākuma ekrāns.</string>
+    <string name="notification_badges">Paziņojumu nozīmītes</string>
+    <string name="notification_badges_summary">Paziņojumu skaits uz lietotņu ikonām</string>
+    <string name="badges_enabled">Iespējot paziņojumu nozīmītes</string>
+    <string name="badges_position">Novietojums</string>
+    <string name="badges_top_left">Augšējais kreisais stūris</string>
+    <string name="badges_top_right">Augšējais labais stūris</string>
+    <string name="badges_bottom_left">Apakšējais kreisais stūris</string>
+    <string name="badges_bottom_right">Apakšējais labais stūris</string>
+    <string name="badges_size">Izmērs</string>
+    <string name="badges_small">Maza</string>
+    <string name="badges_medium">Vidēja</string>
+    <string name="badges_large">Liela</string>
+    <string name="badges_corner">Stūru rādiuss</string>
+    <string name="badges_color">Nozīmītes krāsa</string>
+    <string name="badges_outline">Kontūra</string>
+    <string name="badges_outline_on">Plāns kontūrs skaitļa krāsā</string>
+    <string name="badges_outline_off">Bez kontūra</string>
 </resources>

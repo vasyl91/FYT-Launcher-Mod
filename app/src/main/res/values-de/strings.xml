@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Willkommen bei Launcher Mod!\nErstellen Sie in den Einstellungen Ihr eigenes Layout, um Navigation und andere Apps in Fenstern auf dem Startbildschirm anzuzeigen. Wenn sich eine App immer wieder über dem Startbildschirm öffnet, schalten Sie ihr Fenster in den Einstellungen aus.</string>
     <string name="welcome_7870">Willkommen bei Launcher Mod!\nErstellen Sie in den Einstellungen Ihr eigenes Layout. Apps können in Fenstern auf dem Startbildschirm angezeigt werden, wo das Gerät das unterstützt; öffnet sich eine immer wieder über dem Startbildschirm, schalten Sie ihr Fenster in den Einstellungen aus.</string>
     <string name="welcome_other">Willkommen bei Launcher Mod!\nErstellen Sie in den Einstellungen Ihr eigenes Layout. Apps in Fenstern auf dem Startbildschirm anzuzeigen, erfordert Root oder Shizuku; ohne sie arbeitet der Launcher als normaler Startbildschirm.</string>
+    <string name="notification_badges">Benachrichtigungs-Badges</string>
+    <string name="notification_badges_summary">Die Anzahl der Benachrichtigungen auf App-Symbolen</string>
+    <string name="badges_enabled">Benachrichtigungs-Badges aktivieren</string>
+    <string name="badges_position">Position</string>
+    <string name="badges_top_left">Ecke oben links</string>
+    <string name="badges_top_right">Ecke oben rechts</string>
+    <string name="badges_bottom_left">Ecke unten links</string>
+    <string name="badges_bottom_right">Ecke unten rechts</string>
+    <string name="badges_size">Größe</string>
+    <string name="badges_small">Klein</string>
+    <string name="badges_medium">Mittel</string>
+    <string name="badges_large">Groß</string>
+    <string name="badges_corner">Eckenradius</string>
+    <string name="badges_color">Badge-Farbe</string>
+    <string name="badges_outline">Umriss</string>
+    <string name="badges_outline_on">Ein dünner Umriss in der Farbe der Zahl</string>
+    <string name="badges_outline_off">Kein Umriss</string>
 </resources>

@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Launcher Mod में आपका स्वागत है!\nहोम स्क्रीन पर विंडो में नेविगेशन और अन्य ऐप दिखाने के लिए सेटिंग्स में अपना लेआउट बनाएँ। अगर कोई ऐप बार-बार होम स्क्रीन के ऊपर खुलता है, तो सेटिंग्स में उसकी विंडो बंद करें।</string>
     <string name="welcome_7870">Launcher Mod में आपका स्वागत है!\nसेटिंग्स में अपना लेआउट बनाएँ। जहाँ यूनिट समर्थन करती है वहाँ ऐप होम स्क्रीन पर विंडो में दिखाए जा सकते हैं; अगर कोई बार-बार होम स्क्रीन के ऊपर खुलता है, तो सेटिंग्स में उसकी विंडो बंद करें।</string>
     <string name="welcome_other">Launcher Mod में आपका स्वागत है!\nसेटिंग्स में अपना लेआउट बनाएँ। होम स्क्रीन पर विंडो में ऐप दिखाने के लिए रूट या Shizuku चाहिए; इनके बिना लॉन्चर सामान्य होम स्क्रीन की तरह काम करता है।</string>
+    <string name="notification_badges">सूचना बैज</string>
+    <string name="notification_badges_summary">ऐप आइकन पर सूचनाओं की संख्या</string>
+    <string name="badges_enabled">सूचना बैज चालू करें</string>
+    <string name="badges_position">स्थिति</string>
+    <string name="badges_top_left">ऊपर बायाँ कोना</string>
+    <string name="badges_top_right">ऊपर दायाँ कोना</string>
+    <string name="badges_bottom_left">नीचे बायाँ कोना</string>
+    <string name="badges_bottom_right">नीचे दायाँ कोना</string>
+    <string name="badges_size">आकार</string>
+    <string name="badges_small">छोटा</string>
+    <string name="badges_medium">मध्यम</string>
+    <string name="badges_large">बड़ा</string>
+    <string name="badges_corner">कोने की त्रिज्या</string>
+    <string name="badges_color">बैज का रंग</string>
+    <string name="badges_outline">रूपरेखा</string>
+    <string name="badges_outline_on">संख्या के रंग की पतली रूपरेखा</string>
+    <string name="badges_outline_off">कोई रूपरेखा नहीं</string>
 </resources>

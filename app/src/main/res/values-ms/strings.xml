@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Selamat datang ke Launcher Mod!\nCipta reka letak anda sendiri dalam tetapan untuk memaparkan navigasi dan aplikasi lain dalam tetingkap pada skrin utama. Jika sesuatu aplikasi terus dibuka di atas skrin utama, matikan tetingkapnya dalam tetapan.</string>
     <string name="welcome_7870">Selamat datang ke Launcher Mod!\nCipta reka letak anda sendiri dalam tetapan. Aplikasi boleh dipaparkan dalam tetingkap pada skrin utama jika unit menyokongnya; jika ada yang terus dibuka di atas skrin utama, matikan tetingkapnya dalam tetapan.</string>
     <string name="welcome_other">Selamat datang ke Launcher Mod!\nCipta reka letak anda sendiri dalam tetapan. Memaparkan aplikasi dalam tetingkap pada skrin utama memerlukan root atau Shizuku; tanpanya pelancar berfungsi sebagai skrin utama biasa.</string>
+    <string name="notification_badges">Lencana pemberitahuan</string>
+    <string name="notification_badges_summary">Bilangan pemberitahuan pada ikon aplikasi</string>
+    <string name="badges_enabled">Dayakan lencana pemberitahuan</string>
+    <string name="badges_position">Kedudukan</string>
+    <string name="badges_top_left">Penjuru kiri atas</string>
+    <string name="badges_top_right">Penjuru kanan atas</string>
+    <string name="badges_bottom_left">Penjuru kiri bawah</string>
+    <string name="badges_bottom_right">Penjuru kanan bawah</string>
+    <string name="badges_size">Saiz</string>
+    <string name="badges_small">Kecil</string>
+    <string name="badges_medium">Sederhana</string>
+    <string name="badges_large">Besar</string>
+    <string name="badges_corner">Jejari penjuru</string>
+    <string name="badges_color">Warna lencana</string>
+    <string name="badges_outline">Garis luar</string>
+    <string name="badges_outline_on">Garis luar nipis dalam warna nombor</string>
+    <string name="badges_outline_off">Tiada garis luar</string>
 </resources>

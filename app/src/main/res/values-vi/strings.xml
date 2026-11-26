@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Chào mừng đến với Launcher Mod!\nHãy tạo bố cục riêng trong phần cài đặt để hiển thị dẫn đường và các ứng dụng khác trong cửa sổ trên màn hình chính. Nếu một ứng dụng cứ mở đè lên màn hình chính, hãy tắt cửa sổ của nó trong cài đặt.</string>
     <string name="welcome_7870">Chào mừng đến với Launcher Mod!\nHãy tạo bố cục riêng trong phần cài đặt. Ứng dụng có thể hiển thị trong cửa sổ trên màn hình chính nếu thiết bị hỗ trợ; nếu một ứng dụng cứ mở đè lên màn hình chính, hãy tắt cửa sổ của nó trong cài đặt.</string>
     <string name="welcome_other">Chào mừng đến với Launcher Mod!\nHãy tạo bố cục riêng trong phần cài đặt. Hiển thị ứng dụng trong cửa sổ trên màn hình chính cần root hoặc Shizuku; nếu không có, trình khởi chạy hoạt động như màn hình chính thông thường.</string>
+    <string name="notification_badges">Huy hiệu thông báo</string>
+    <string name="notification_badges_summary">Số thông báo trên biểu tượng ứng dụng</string>
+    <string name="badges_enabled">Bật huy hiệu thông báo</string>
+    <string name="badges_position">Vị trí</string>
+    <string name="badges_top_left">Góc trên bên trái</string>
+    <string name="badges_top_right">Góc trên bên phải</string>
+    <string name="badges_bottom_left">Góc dưới bên trái</string>
+    <string name="badges_bottom_right">Góc dưới bên phải</string>
+    <string name="badges_size">Kích thước</string>
+    <string name="badges_small">Nhỏ</string>
+    <string name="badges_medium">Vừa</string>
+    <string name="badges_large">Lớn</string>
+    <string name="badges_corner">Bán kính góc</string>
+    <string name="badges_color">Màu huy hiệu</string>
+    <string name="badges_outline">Viền</string>
+    <string name="badges_outline_on">Viền mỏng cùng màu với số</string>
+    <string name="badges_outline_off">Không có viền</string>
 </resources>

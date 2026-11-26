@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Vítejte v Launcher Mod!\nVytvořte si v nastavení vlastní rozvržení a zobrazte navigaci a další aplikace v oknech na domovské obrazovce. Pokud se některá aplikace stále otevírá přes domovskou obrazovku, vypněte její okno v nastavení.</string>
     <string name="welcome_7870">Vítejte v Launcher Mod!\nVytvořte si v nastavení vlastní rozvržení. Aplikace lze zobrazit v oknech na domovské obrazovce, kde to jednotka podporuje; pokud se některá stále otevírá přes domovskou obrazovku, vypněte její okno v nastavení.</string>
     <string name="welcome_other">Vítejte v Launcher Mod!\nVytvořte si v nastavení vlastní rozvržení. Zobrazení aplikací v oknech na domovské obrazovce vyžaduje root nebo Shizuku; bez nich launcher funguje jako běžná domovská obrazovka.</string>
+    <string name="notification_badges">Odznaky oznámení</string>
+    <string name="notification_badges_summary">Počet oznámení na ikonách aplikací</string>
+    <string name="badges_enabled">Povolit odznaky oznámení</string>
+    <string name="badges_position">Umístění</string>
+    <string name="badges_top_left">Levý horní roh</string>
+    <string name="badges_top_right">Pravý horní roh</string>
+    <string name="badges_bottom_left">Levý dolní roh</string>
+    <string name="badges_bottom_right">Pravý dolní roh</string>
+    <string name="badges_size">Velikost</string>
+    <string name="badges_small">Malá</string>
+    <string name="badges_medium">Střední</string>
+    <string name="badges_large">Velká</string>
+    <string name="badges_corner">Poloměr rohů</string>
+    <string name="badges_color">Barva odznaku</string>
+    <string name="badges_outline">Obrys</string>
+    <string name="badges_outline_on">Tenký obrys v barvě čísla</string>
+    <string name="badges_outline_off">Bez obrysu</string>
 </resources>

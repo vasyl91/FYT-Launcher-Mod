@@ -599,4 +599,21 @@
     <string name="welcome_fyt">歡迎使用 Launcher Mod！\n在設定中建立您自己的版面配置，即可在主畫面上以視窗顯示導航和其他應用程式。如果某個應用程式一直在主畫面上方開啟，請在設定中關閉它的視窗。</string>
     <string name="welcome_7870">歡迎使用 Launcher Mod！\n在設定中建立您自己的版面配置。在裝置支援的情況下，應用程式可以在主畫面上以視窗顯示；如果某個應用程式一直在主畫面上方開啟，請在設定中關閉它的視窗。</string>
     <string name="welcome_other">歡迎使用 Launcher Mod！\n在設定中建立您自己的版面配置。在主畫面上以視窗顯示應用程式需要 root 或 Shizuku；沒有它們時，啟動器作為一般主畫面運作。</string>
+    <string name="notification_badges">通知徽章</string>
+    <string name="notification_badges_summary">應用程式圖示上的通知數量</string>
+    <string name="badges_enabled">啟用通知徽章</string>
+    <string name="badges_position">位置</string>
+    <string name="badges_top_left">左上角</string>
+    <string name="badges_top_right">右上角</string>
+    <string name="badges_bottom_left">左下角</string>
+    <string name="badges_bottom_right">右下角</string>
+    <string name="badges_size">大小</string>
+    <string name="badges_small">小</string>
+    <string name="badges_medium">中</string>
+    <string name="badges_large">大</string>
+    <string name="badges_corner">圓角半徑</string>
+    <string name="badges_color">徽章顏色</string>
+    <string name="badges_outline">外框</string>
+    <string name="badges_outline_on">與數字同色的細外框</string>
+    <string name="badges_outline_off">無外框</string>
 </resources>

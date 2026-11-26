@@ -599,4 +599,21 @@
     <string name="welcome_fyt">კეთილი იყოს თქვენი მობრძანება Launcher Mod-ში!\nშექმენით საკუთარი განლაგება პარამეტრებში, რომ ნავიგაცია და სხვა აპები მთავარ ეკრანზე ფანჯრებში გამოჩნდეს. თუ აპი განუწყვეტლივ იხსნება მთავარი ეკრანის ზემოდან, გამორთეთ მისი ფანჯარა პარამეტრებში.</string>
     <string name="welcome_7870">კეთილი იყოს თქვენი მობრძანება Launcher Mod-ში!\nშექმენით საკუთარი განლაგება პარამეტრებში. აპები შეიძლება მთავარ ეკრანზე ფანჯრებში გამოჩნდეს, სადაც მოწყობილობა მხარს უჭერს; თუ რომელიმე განუწყვეტლივ იხსნება მთავარი ეკრანის ზემოდან, გამორთეთ მისი ფანჯარა პარამეტრებში.</string>
     <string name="welcome_other">კეთილი იყოს თქვენი მობრძანება Launcher Mod-ში!\nშექმენით საკუთარი განლაგება პარამეტრებში. აპების მთავარ ეკრანზე ფანჯრებში გამოსაჩენად საჭიროა root ან Shizuku; მათ გარეშე ლანჩერი ჩვეულებრივი მთავარი ეკრანივით მუშაობს.</string>
+    <string name="notification_badges">შეტყობინების ბეჯები</string>
+    <string name="notification_badges_summary">შეტყობინებათა რაოდენობა აპების ხატულებზე</string>
+    <string name="badges_enabled">შეტყობინების ბეჯების ჩართვა</string>
+    <string name="badges_position">პოზიცია</string>
+    <string name="badges_top_left">ზედა მარცხენა კუთხე</string>
+    <string name="badges_top_right">ზედა მარჯვენა კუთხე</string>
+    <string name="badges_bottom_left">ქვედა მარცხენა კუთხე</string>
+    <string name="badges_bottom_right">ქვედა მარჯვენა კუთხე</string>
+    <string name="badges_size">ზომა</string>
+    <string name="badges_small">პატარა</string>
+    <string name="badges_medium">საშუალო</string>
+    <string name="badges_large">დიდი</string>
+    <string name="badges_corner">კუთხის რადიუსი</string>
+    <string name="badges_color">ბეჯის ფერი</string>
+    <string name="badges_outline">კონტური</string>
+    <string name="badges_outline_on">თხელი კონტური ციფრის ფერში</string>
+    <string name="badges_outline_off">კონტურის გარეშე</string>
 </resources>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The screen "Notification badges" (NotificationBadgesFragment). These are the launcher's own settings: they are not in
+     CreatorKeys and work with the stock layout too. With "Enable notification badges" off every row below it is dimmed and
+     does not respond, but is shown. -->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent" >
+
+    <PreferenceCategory
+        app:key="notification_badges_category"
+        app:title="@string/notification_badges">
+
+        <com.android.launcher66.settings.CustomSwitchPreference
+            android:key="badges_enabled"
+            android:defaultValue="true"
+            android:title="@string/badges_enabled"
+            app:layout="@layout/nested_preference_category_switch" />
+        <Preference
+            android:layout="@layout/preference_separator_within"
+            android:selectable="false" />
+        <com.android.launcher66.settings.BadgePreviewPreference
+            android:key="badges_preview" />
+        <Preference
+            android:layout="@layout/preference_separator_within"
+            android:selectable="false" />
+        <!-- A tap steps through the corners; the summary is the one chosen -->
+        <com.android.launcher66.settings.CustomNestedThreePreference
+            android:key="badges_position"
+            android:defaultValue="top_right"
+            android:title="@string/badges_position"
+            android:entries="@array/badges_position_entries"
+            android:entryValues="@array/badges_position_values"
+            app:layout="@layout/nested_preference_category_no_switch" />
+        <com.android.launcher66.settings.CustomNestedThreePreference
+            android:key="badges_size"
+            android:defaultValue="medium"
+            android:title="@string/badges_size"
+            android:entries="@array/badges_size_entries"
+            android:entryValues="@array/badges_size_values"
+            app:layout="@layout/nested_preference_category_no_switch" />
+        <Preference
+            android:key="badges_corner_title"
+            android:title="@string/badges_corner"
+            android:selectable="false" />
+        <com.android.launcher66.settings.BadgeCornerSeekBarPreference
+            android:key="badges_corner" />
+        <!-- Opens the colour picker (text mode, with "Default": the accent); stored under badges_color -->
+        <Preference
+            android:key="badges_color"
+            android:title="@string/badges_color" />
+        <com.android.launcher66.settings.CustomSwitchPreference
+            android:key="badges_outline"
+            android:defaultValue="false"
+            android:title="@string/badges_outline"
+            android:summaryOn="@string/badges_outline_on"
+            android:summaryOff="@string/badges_outline_off"
+            app:layout="@layout/nested_preference_category_switch" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

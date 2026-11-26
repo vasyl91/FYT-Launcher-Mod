@@ -599,4 +599,21 @@
     <string name="welcome_fyt">¡Te damos la bienvenida a Launcher Mod!\nCrea tu propia disposición en los ajustes para mostrar la navegación y otras aplicaciones en ventanas en la pantalla de inicio. Si una aplicación sigue abriéndose sobre la pantalla de inicio, desactiva su ventana en los ajustes.</string>
     <string name="welcome_7870">¡Te damos la bienvenida a Launcher Mod!\nCrea tu propia disposición en los ajustes. Las aplicaciones pueden mostrarse en ventanas en la pantalla de inicio donde la unidad lo admita; si una sigue abriéndose sobre la pantalla de inicio, desactiva su ventana en los ajustes.</string>
     <string name="welcome_other">¡Te damos la bienvenida a Launcher Mod!\nCrea tu propia disposición en los ajustes. Mostrar aplicaciones en ventanas en la pantalla de inicio requiere root o Shizuku; sin ellos, el launcher funciona como una pantalla de inicio normal.</string>
+    <string name="notification_badges">Insignias de notificaciones</string>
+    <string name="notification_badges_summary">El número de notificaciones en los iconos de las aplicaciones</string>
+    <string name="badges_enabled">Activar insignias de notificaciones</string>
+    <string name="badges_position">Posición</string>
+    <string name="badges_top_left">Esquina superior izquierda</string>
+    <string name="badges_top_right">Esquina superior derecha</string>
+    <string name="badges_bottom_left">Esquina inferior izquierda</string>
+    <string name="badges_bottom_right">Esquina inferior derecha</string>
+    <string name="badges_size">Tamaño</string>
+    <string name="badges_small">Pequeño</string>
+    <string name="badges_medium">Mediano</string>
+    <string name="badges_large">Grande</string>
+    <string name="badges_corner">Radio de las esquinas</string>
+    <string name="badges_color">Color de la insignia</string>
+    <string name="badges_outline">Contorno</string>
+    <string name="badges_outline_on">Un contorno fino del color del número</string>
+    <string name="badges_outline_off">Sin contorno</string>
 </resources>

@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Maligayang pagdating sa Launcher Mod!\nGumawa ng sarili mong layout sa mga setting para ipakita ang nabigasyon at iba pang app sa mga window sa home screen. Kung patuloy na bumubukas ang isang app sa ibabaw ng home screen, i-off ang window nito sa mga setting.</string>
     <string name="welcome_7870">Maligayang pagdating sa Launcher Mod!\nGumawa ng sarili mong layout sa mga setting. Maaaring ipakita ang mga app sa mga window sa home screen kung saan sinusuportahan ng unit; kung patuloy na bumubukas ang isa sa ibabaw ng home screen, i-off ang window nito sa mga setting.</string>
     <string name="welcome_other">Maligayang pagdating sa Launcher Mod!\nGumawa ng sarili mong layout sa mga setting. Kailangan ng root o Shizuku para ipakita ang mga app sa mga window sa home screen; kung wala ang mga ito, gumagana ang launcher bilang karaniwang home screen.</string>
+    <string name="notification_badges">Mga badge ng notification</string>
+    <string name="notification_badges_summary">Ang bilang ng mga notification sa mga icon ng app</string>
+    <string name="badges_enabled">I-enable ang mga badge ng notification</string>
+    <string name="badges_position">Posisyon</string>
+    <string name="badges_top_left">Kaliwang itaas na sulok</string>
+    <string name="badges_top_right">Kanang itaas na sulok</string>
+    <string name="badges_bottom_left">Kaliwang ibabang sulok</string>
+    <string name="badges_bottom_right">Kanang ibabang sulok</string>
+    <string name="badges_size">Laki</string>
+    <string name="badges_small">Maliit</string>
+    <string name="badges_medium">Katamtaman</string>
+    <string name="badges_large">Malaki</string>
+    <string name="badges_corner">Radius ng sulok</string>
+    <string name="badges_color">Kulay ng badge</string>
+    <string name="badges_outline">Outline</string>
+    <string name="badges_outline_on">Manipis na outline sa kulay ng numero</string>
+    <string name="badges_outline_off">Walang outline</string>
 </resources>

@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Tervetuloa Launcher Modiin!\nLuo asetuksissa oma asettelusi, jotta navigointi ja muut sovellukset näkyvät ikkunoissa aloitusnäytöllä. Jos sovellus avautuu jatkuvasti aloitusnäytön päälle, poista sen ikkuna käytöstä asetuksissa.</string>
     <string name="welcome_7870">Tervetuloa Launcher Modiin!\nLuo asetuksissa oma asettelusi. Sovelluksia voi näyttää ikkunoissa aloitusnäytöllä, jos laite tukee sitä; jos jokin avautuu jatkuvasti aloitusnäytön päälle, poista sen ikkuna käytöstä asetuksissa.</string>
     <string name="welcome_other">Tervetuloa Launcher Modiin!\nLuo asetuksissa oma asettelusi. Sovellusten näyttäminen ikkunoissa aloitusnäytöllä vaatii roottia tai Shizukua; ilman niitä laukaisin toimii tavallisena aloitusnäyttönä.</string>
+    <string name="notification_badges">Ilmoitusmerkit</string>
+    <string name="notification_badges_summary">Ilmoitusten määrä sovelluskuvakkeissa</string>
+    <string name="badges_enabled">Ota ilmoitusmerkit käyttöön</string>
+    <string name="badges_position">Sijainti</string>
+    <string name="badges_top_left">Vasen yläkulma</string>
+    <string name="badges_top_right">Oikea yläkulma</string>
+    <string name="badges_bottom_left">Vasen alakulma</string>
+    <string name="badges_bottom_right">Oikea alakulma</string>
+    <string name="badges_size">Koko</string>
+    <string name="badges_small">Pieni</string>
+    <string name="badges_medium">Keskikokoinen</string>
+    <string name="badges_large">Suuri</string>
+    <string name="badges_corner">Kulmien pyöristys</string>
+    <string name="badges_color">Merkin väri</string>
+    <string name="badges_outline">Ääriviiva</string>
+    <string name="badges_outline_on">Ohut ääriviiva numeron värissä</string>
+    <string name="badges_outline_off">Ei ääriviivaa</string>
 </resources>

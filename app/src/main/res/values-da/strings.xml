@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Velkommen til Launcher Mod!\nOpret dit eget layout i indstillingerne for at vise navigation og andre apps i vinduer på startskærmen. Hvis en app bliver ved med at åbne sig over startskærmen, skal du slå dens vindue fra i indstillingerne.</string>
     <string name="welcome_7870">Velkommen til Launcher Mod!\nOpret dit eget layout i indstillingerne. Apps kan vises i vinduer på startskærmen, hvor enheden understøtter det; hvis en bliver ved med at åbne sig over startskærmen, skal du slå dens vindue fra i indstillingerne.</string>
     <string name="welcome_other">Velkommen til Launcher Mod!\nOpret dit eget layout i indstillingerne. At vise apps i vinduer på startskærmen kræver root eller Shizuku; uden dem fungerer launcheren som en almindelig startskærm.</string>
+    <string name="notification_badges">Notifikationsbadges</string>
+    <string name="notification_badges_summary">Antallet af notifikationer på app-ikoner</string>
+    <string name="badges_enabled">Aktivér notifikationsbadges</string>
+    <string name="badges_position">Placering</string>
+    <string name="badges_top_left">Øverste venstre hjørne</string>
+    <string name="badges_top_right">Øverste højre hjørne</string>
+    <string name="badges_bottom_left">Nederste venstre hjørne</string>
+    <string name="badges_bottom_right">Nederste højre hjørne</string>
+    <string name="badges_size">Størrelse</string>
+    <string name="badges_small">Lille</string>
+    <string name="badges_medium">Mellem</string>
+    <string name="badges_large">Stor</string>
+    <string name="badges_corner">Hjørneradius</string>
+    <string name="badges_color">Badgefarve</string>
+    <string name="badges_outline">Kontur</string>
+    <string name="badges_outline_on">En tynd kontur i tallets farve</string>
+    <string name="badges_outline_off">Ingen kontur</string>
 </resources>

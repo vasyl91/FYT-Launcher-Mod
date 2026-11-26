@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Et donem la benvinguda a Launcher Mod!\nCrea la teva pròpia disposició a la configuració per mostrar la navegació i altres aplicacions en finestres a la pantalla d\'inici. Si una aplicació s\'obre contínuament sobre la pantalla d\'inici, desactiva\'n la finestra a la configuració.</string>
     <string name="welcome_7870">Et donem la benvinguda a Launcher Mod!\nCrea la teva pròpia disposició a la configuració. Les aplicacions es poden mostrar en finestres a la pantalla d\'inici on la unitat ho admeti; si una s\'obre contínuament sobre la pantalla d\'inici, desactiva\'n la finestra a la configuració.</string>
     <string name="welcome_other">Et donem la benvinguda a Launcher Mod!\nCrea la teva pròpia disposició a la configuració. Mostrar aplicacions en finestres a la pantalla d\'inici requereix root o Shizuku; sense ells, el llançador funciona com una pantalla d\'inici normal.</string>
+    <string name="notification_badges">Insígnies de notificacions</string>
+    <string name="notification_badges_summary">El nombre de notificacions a les icones d\'aplicacions</string>
+    <string name="badges_enabled">Activa les insígnies de notificacions</string>
+    <string name="badges_position">Posició</string>
+    <string name="badges_top_left">Cantonada superior esquerra</string>
+    <string name="badges_top_right">Cantonada superior dreta</string>
+    <string name="badges_bottom_left">Cantonada inferior esquerra</string>
+    <string name="badges_bottom_right">Cantonada inferior dreta</string>
+    <string name="badges_size">Mida</string>
+    <string name="badges_small">Petita</string>
+    <string name="badges_medium">Mitjana</string>
+    <string name="badges_large">Gran</string>
+    <string name="badges_corner">Radi de les cantonades</string>
+    <string name="badges_color">Color de la insígnia</string>
+    <string name="badges_outline">Contorn</string>
+    <string name="badges_outline_on">Un contorn fi del color del número</string>
+    <string name="badges_outline_off">Sense contorn</string>
 </resources>

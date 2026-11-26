@@ -332,6 +332,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         Preference deviceSettings = findPreference(Keys.DEVICE_SETTINGS);
         Preference notificationPreference = findPreference(Keys.NOTIFICATION_SETTINGS);
         Preference accessibilityPreference = findPreference(Keys.ACCESSIBILITY_SETTINGS);
+        Preference notificationBadges = findPreference(Keys.NOTIFICATION_BADGES);
         Preference wallpaperPicker = findPreference(Keys.WALLPAPER_PICKER);
         CustomNoSwitchPreference wallpaperPickerSource = findPreference(Keys.WALLPAPER_PICKER_SOURCE);
         weatherKeyRow = new WeatherKeyRow(this, sharedPrefs);
@@ -436,6 +437,9 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             accessibilityPreference.setOnPreferenceClickListener(this);
             // Not needed when the foreground app comes from the task stack (system privileges).
             accessibilityPreference.setVisible(!ForegroundAppTracker.isActive());
+        }
+        if (notificationBadges != null) {
+            notificationBadges.setOnPreferenceClickListener(this);
         }
         if (wallpaperPicker != null) {
             wallpaperPicker.setOnPreferenceClickListener(this);
@@ -792,6 +796,11 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             case Keys.CREATOR_FIRST:
                 SettingsScrollMemory.betweenScreens();
                 requireActivity().getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragmentSecond()).commit();
+                break;
+            case Keys.NOTIFICATION_BADGES:
+                SettingsScrollMemory.betweenScreens();
+                requireActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(android.R.id.content, new NotificationBadgesFragment()).commit();
                 break;
             case Keys.OAUTH_FOR_YOUTUBE_REVANCED:
                 FytRating.handlePreferenceClick(requireActivity());

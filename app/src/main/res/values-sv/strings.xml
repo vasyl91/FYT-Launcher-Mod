@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Välkommen till Launcher Mod!\nSkapa din egen layout i inställningarna för att visa navigering och andra appar i fönster på startskärmen. Om en app hela tiden öppnas över startskärmen, stäng av dess fönster i inställningarna.</string>
     <string name="welcome_7870">Välkommen till Launcher Mod!\nSkapa din egen layout i inställningarna. Appar kan visas i fönster på startskärmen där enheten stöder det; om en hela tiden öppnas över startskärmen, stäng av dess fönster i inställningarna.</string>
     <string name="welcome_other">Välkommen till Launcher Mod!\nSkapa din egen layout i inställningarna. Att visa appar i fönster på startskärmen kräver root eller Shizuku; utan dem fungerar launchern som en vanlig startskärm.</string>
+    <string name="notification_badges">Aviseringsmärken</string>
+    <string name="notification_badges_summary">Antalet aviseringar på appikoner</string>
+    <string name="badges_enabled">Aktivera aviseringsmärken</string>
+    <string name="badges_position">Placering</string>
+    <string name="badges_top_left">Övre vänstra hörnet</string>
+    <string name="badges_top_right">Övre högra hörnet</string>
+    <string name="badges_bottom_left">Nedre vänstra hörnet</string>
+    <string name="badges_bottom_right">Nedre högra hörnet</string>
+    <string name="badges_size">Storlek</string>
+    <string name="badges_small">Liten</string>
+    <string name="badges_medium">Medel</string>
+    <string name="badges_large">Stor</string>
+    <string name="badges_corner">Hörnradie</string>
+    <string name="badges_color">Märkets färg</string>
+    <string name="badges_outline">Kontur</string>
+    <string name="badges_outline_on">En tunn kontur i siffrans färg</string>
+    <string name="badges_outline_off">Ingen kontur</string>
 </resources>

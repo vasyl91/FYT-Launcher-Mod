@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Καλώς ήρθατε στο Launcher Mod!\nΔημιουργήστε τη δική σας διάταξη στις ρυθμίσεις για να εμφανίζετε πλοήγηση και άλλες εφαρμογές σε παράθυρα στην αρχική οθόνη. Αν μια εφαρμογή ανοίγει συνεχώς πάνω από την αρχική οθόνη, απενεργοποιήστε το παράθυρό της στις ρυθμίσεις.</string>
     <string name="welcome_7870">Καλώς ήρθατε στο Launcher Mod!\nΔημιουργήστε τη δική σας διάταξη στις ρυθμίσεις. Οι εφαρμογές μπορούν να εμφανίζονται σε παράθυρα στην αρχική οθόνη όπου το υποστηρίζει η μονάδα· αν κάποια ανοίγει συνεχώς πάνω από την αρχική οθόνη, απενεργοποιήστε το παράθυρό της στις ρυθμίσεις.</string>
     <string name="welcome_other">Καλώς ήρθατε στο Launcher Mod!\nΔημιουργήστε τη δική σας διάταξη στις ρυθμίσεις. Η εμφάνιση εφαρμογών σε παράθυρα στην αρχική οθόνη απαιτεί root ή Shizuku· χωρίς αυτά ο launcher λειτουργεί ως κανονική αρχική οθόνη.</string>
+    <string name="notification_badges">Σήματα ειδοποιήσεων</string>
+    <string name="notification_badges_summary">Ο αριθμός ειδοποιήσεων στα εικονίδια εφαρμογών</string>
+    <string name="badges_enabled">Ενεργοποίηση σημάτων ειδοποιήσεων</string>
+    <string name="badges_position">Θέση</string>
+    <string name="badges_top_left">Πάνω αριστερή γωνία</string>
+    <string name="badges_top_right">Πάνω δεξιά γωνία</string>
+    <string name="badges_bottom_left">Κάτω αριστερή γωνία</string>
+    <string name="badges_bottom_right">Κάτω δεξιά γωνία</string>
+    <string name="badges_size">Μέγεθος</string>
+    <string name="badges_small">Μικρό</string>
+    <string name="badges_medium">Μεσαίο</string>
+    <string name="badges_large">Μεγάλο</string>
+    <string name="badges_corner">Ακτίνα γωνιών</string>
+    <string name="badges_color">Χρώμα σήματος</string>
+    <string name="badges_outline">Περίγραμμα</string>
+    <string name="badges_outline_on">Λεπτό περίγραμμα στο χρώμα του αριθμού</string>
+    <string name="badges_outline_off">Χωρίς περίγραμμα</string>
 </resources>

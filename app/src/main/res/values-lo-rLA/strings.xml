@@ -599,4 +599,21 @@
     <string name="welcome_fyt">ຍິນດີຕ້ອນຮັບສູ່ Launcher Mod!\nສ້າງໂຄງຮ່າງຂອງທ່ານເອງໃນການຕັ້ງຄ່າ ເພື່ອສະແດງການນຳທາງ ແລະ ແອັບອື່ນໃນໜ້າຕ່າງເທິງໜ້າຈໍຫຼັກ. ຖ້າແອັບໃດເປີດທັບໜ້າຈໍຫຼັກຊ້ຳໆ ໃຫ້ປິດໜ້າຕ່າງຂອງມັນໃນການຕັ້ງຄ່າ.</string>
     <string name="welcome_7870">ຍິນດີຕ້ອນຮັບສູ່ Launcher Mod!\nສ້າງໂຄງຮ່າງຂອງທ່ານເອງໃນການຕັ້ງຄ່າ. ແອັບສາມາດສະແດງໃນໜ້າຕ່າງເທິງໜ້າຈໍຫຼັກໄດ້ບ່ອນທີ່ອຸປະກອນຮອງຮັບ; ຖ້າແອັບໃດເປີດທັບໜ້າຈໍຫຼັກຊ້ຳໆ ໃຫ້ປິດໜ້າຕ່າງຂອງມັນໃນການຕັ້ງຄ່າ.</string>
     <string name="welcome_other">ຍິນດີຕ້ອນຮັບສູ່ Launcher Mod!\nສ້າງໂຄງຮ່າງຂອງທ່ານເອງໃນການຕັ້ງຄ່າ. ການສະແດງແອັບໃນໜ້າຕ່າງເທິງໜ້າຈໍຫຼັກຕ້ອງໃຊ້ root ຫຼື Shizuku; ຖ້າບໍ່ມີ ຕົວເປີດໜ້າຈໍຈະເຮັດວຽກເປັນໜ້າຈໍຫຼັກທຳມະດາ.</string>
+    <string name="notification_badges">ປ້າຍການແຈ້ງເຕືອນ</string>
+    <string name="notification_badges_summary">ຈຳນວນການແຈ້ງເຕືອນເທິງໄອຄອນແອັບ</string>
+    <string name="badges_enabled">ເປີດໃຊ້ປ້າຍການແຈ້ງເຕືອນ</string>
+    <string name="badges_position">ຕຳແໜ່ງ</string>
+    <string name="badges_top_left">ມຸມເທິງຊ້າຍ</string>
+    <string name="badges_top_right">ມຸມເທິງຂວາ</string>
+    <string name="badges_bottom_left">ມຸມລຸ່ມຊ້າຍ</string>
+    <string name="badges_bottom_right">ມຸມລຸ່ມຂວາ</string>
+    <string name="badges_size">ຂະໜາດ</string>
+    <string name="badges_small">ນ້ອຍ</string>
+    <string name="badges_medium">ກາງ</string>
+    <string name="badges_large">ໃຫຍ່</string>
+    <string name="badges_corner">ລັດສະໝີມຸມ</string>
+    <string name="badges_color">ສີປ້າຍ</string>
+    <string name="badges_outline">ເສັ້ນຂອບ</string>
+    <string name="badges_outline_on">ເສັ້ນຂອບບາງໆສີດຽວກັບຕົວເລກ</string>
+    <string name="badges_outline_off">ບໍ່ມີເສັ້ນຂອບ</string>
 </resources>

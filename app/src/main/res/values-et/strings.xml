@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Tere tulemast Launcher Modi!\nLooge seadetes oma paigutus, et kuvada navigatsiooni ja muid rakendusi avakuval akendes. Kui mõni rakendus avaneb pidevalt avakuva kohal, lülitage selle aken seadetes välja.</string>
     <string name="welcome_7870">Tere tulemast Launcher Modi!\nLooge seadetes oma paigutus. Rakendusi saab avakuval akendes kuvada seal, kus seade seda toetab; kui mõni avaneb pidevalt avakuva kohal, lülitage selle aken seadetes välja.</string>
     <string name="welcome_other">Tere tulemast Launcher Modi!\nLooge seadetes oma paigutus. Rakenduste kuvamine avakuval akendes nõuab roodi või Shizukut; ilma nendeta töötab launcher tavalise avakuvana.</string>
+    <string name="notification_badges">Teavituse märgid</string>
+    <string name="notification_badges_summary">Teavituste arv rakenduste ikoonidel</string>
+    <string name="badges_enabled">Luba teavituse märgid</string>
+    <string name="badges_position">Asukoht</string>
+    <string name="badges_top_left">Vasak ülanurk</string>
+    <string name="badges_top_right">Parem ülanurk</string>
+    <string name="badges_bottom_left">Vasak alanurk</string>
+    <string name="badges_bottom_right">Parem alanurk</string>
+    <string name="badges_size">Suurus</string>
+    <string name="badges_small">Väike</string>
+    <string name="badges_medium">Keskmine</string>
+    <string name="badges_large">Suur</string>
+    <string name="badges_corner">Nurga raadius</string>
+    <string name="badges_color">Märgi värv</string>
+    <string name="badges_outline">Kontuur</string>
+    <string name="badges_outline_on">Õhuke kontuur numbri värvis</string>
+    <string name="badges_outline_off">Kontuuri pole</string>
 </resources>

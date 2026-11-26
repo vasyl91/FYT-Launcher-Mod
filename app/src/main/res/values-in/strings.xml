@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Selamat datang di Launcher Mod!\nBuat tata letak Anda sendiri di pengaturan untuk menampilkan navigasi dan aplikasi lain dalam jendela di layar utama. Jika suatu aplikasi terus terbuka di atas layar utama, matikan jendelanya di pengaturan.</string>
     <string name="welcome_7870">Selamat datang di Launcher Mod!\nBuat tata letak Anda sendiri di pengaturan. Aplikasi dapat ditampilkan dalam jendela di layar utama jika unit mendukungnya; jika ada yang terus terbuka di atas layar utama, matikan jendelanya di pengaturan.</string>
     <string name="welcome_other">Selamat datang di Launcher Mod!\nBuat tata letak Anda sendiri di pengaturan. Menampilkan aplikasi dalam jendela di layar utama memerlukan root atau Shizuku; tanpa keduanya launcher bekerja sebagai layar utama biasa.</string>
+    <string name="notification_badges">Lencana notifikasi</string>
+    <string name="notification_badges_summary">Jumlah notifikasi pada ikon aplikasi</string>
+    <string name="badges_enabled">Aktifkan lencana notifikasi</string>
+    <string name="badges_position">Posisi</string>
+    <string name="badges_top_left">Pojok kiri atas</string>
+    <string name="badges_top_right">Pojok kanan atas</string>
+    <string name="badges_bottom_left">Pojok kiri bawah</string>
+    <string name="badges_bottom_right">Pojok kanan bawah</string>
+    <string name="badges_size">Ukuran</string>
+    <string name="badges_small">Kecil</string>
+    <string name="badges_medium">Sedang</string>
+    <string name="badges_large">Besar</string>
+    <string name="badges_corner">Radius sudut</string>
+    <string name="badges_color">Warna lencana</string>
+    <string name="badges_outline">Garis tepi</string>
+    <string name="badges_outline_on">Garis tepi tipis dengan warna angka</string>
+    <string name="badges_outline_off">Tanpa garis tepi</string>
 </resources>

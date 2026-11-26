@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Bem-vindo ao Launcher Mod!\nCrie o seu próprio esquema nas definições para mostrar a navegação e outras aplicações em janelas no ecrã principal. Se uma aplicação continuar a abrir-se sobre o ecrã principal, desative a janela dela nas definições.</string>
     <string name="welcome_7870">Bem-vindo ao Launcher Mod!\nCrie o seu próprio esquema nas definições. As aplicações podem ser mostradas em janelas no ecrã principal onde a unidade o suporta; se uma continuar a abrir-se sobre o ecrã principal, desative a janela dela nas definições.</string>
     <string name="welcome_other">Bem-vindo ao Launcher Mod!\nCrie o seu próprio esquema nas definições. Mostrar aplicações em janelas no ecrã principal requer root ou Shizuku; sem eles, o launcher funciona como um ecrã principal normal.</string>
+    <string name="notification_badges">Emblemas de notificação</string>
+    <string name="notification_badges_summary">O número de notificações nos ícones das aplicações</string>
+    <string name="badges_enabled">Ativar emblemas de notificação</string>
+    <string name="badges_position">Posição</string>
+    <string name="badges_top_left">Canto superior esquerdo</string>
+    <string name="badges_top_right">Canto superior direito</string>
+    <string name="badges_bottom_left">Canto inferior esquerdo</string>
+    <string name="badges_bottom_right">Canto inferior direito</string>
+    <string name="badges_size">Tamanho</string>
+    <string name="badges_small">Pequeno</string>
+    <string name="badges_medium">Médio</string>
+    <string name="badges_large">Grande</string>
+    <string name="badges_corner">Raio dos cantos</string>
+    <string name="badges_color">Cor do emblema</string>
+    <string name="badges_outline">Contorno</string>
+    <string name="badges_outline_on">Um contorno fino na cor do número</string>
+    <string name="badges_outline_off">Sem contorno</string>
 </resources>

@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Launcher Mod へようこそ！\n設定で独自のレイアウトを作成すると、ナビゲーションなどのアプリをホーム画面のウィンドウに表示できます。アプリがホーム画面の上に何度も開く場合は、設定でそのウィンドウをオフにしてください。</string>
     <string name="welcome_7870">Launcher Mod へようこそ！\n設定で独自のレイアウトを作成してください。本体が対応していれば、アプリをホーム画面のウィンドウに表示できます。アプリがホーム画面の上に何度も開く場合は、設定でそのウィンドウをオフにしてください。</string>
     <string name="welcome_other">Launcher Mod へようこそ！\n設定で独自のレイアウトを作成してください。アプリをホーム画面のウィンドウに表示するには root または Shizuku が必要です。これらがない場合、ランチャーは通常のホーム画面として動作します。</string>
+    <string name="notification_badges">通知バッジ</string>
+    <string name="notification_badges_summary">アプリアイコンに通知の数を表示</string>
+    <string name="badges_enabled">通知バッジを有効にする</string>
+    <string name="badges_position">位置</string>
+    <string name="badges_top_left">左上隅</string>
+    <string name="badges_top_right">右上隅</string>
+    <string name="badges_bottom_left">左下隅</string>
+    <string name="badges_bottom_right">右下隅</string>
+    <string name="badges_size">サイズ</string>
+    <string name="badges_small">小</string>
+    <string name="badges_medium">中</string>
+    <string name="badges_large">大</string>
+    <string name="badges_corner">角の丸み</string>
+    <string name="badges_color">バッジの色</string>
+    <string name="badges_outline">アウトライン</string>
+    <string name="badges_outline_on">数字と同じ色の細い輪郭</string>
+    <string name="badges_outline_off">輪郭なし</string>
 </resources>

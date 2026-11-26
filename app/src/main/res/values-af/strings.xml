@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Welkom by Launcher Mod!\nSkep jou eie uitleg in die instellings om navigasie en ander programme in vensters op die tuisskerm te wys. As \'n program steeds oor die tuisskerm oopmaak, skakel sy venster in die instellings af.</string>
     <string name="welcome_7870">Welkom by Launcher Mod!\nSkep jou eie uitleg in die instellings. Programme kan in vensters op die tuisskerm gewys word waar die eenheid dit ondersteun; as een steeds oor die tuisskerm oopmaak, skakel sy venster in die instellings af.</string>
     <string name="welcome_other">Welkom by Launcher Mod!\nSkep jou eie uitleg in die instellings. Om programme in vensters op die tuisskerm te wys, het jy root of Shizuku nodig; sonder hulle werk die lanseerder as \'n gewone tuisskerm.</string>
+    <string name="notification_badges">Kennisgewingkentekens</string>
+    <string name="notification_badges_summary">Die getal kennisgewings op programikone</string>
+    <string name="badges_enabled">Aktiveer kennisgewingkentekens</string>
+    <string name="badges_position">Posisie</string>
+    <string name="badges_top_left">Linkerbovehoek</string>
+    <string name="badges_top_right">Regterbovehoek</string>
+    <string name="badges_bottom_left">Linkeronderhoek</string>
+    <string name="badges_bottom_right">Regteronderhoek</string>
+    <string name="badges_size">Grootte</string>
+    <string name="badges_small">Klein</string>
+    <string name="badges_medium">Medium</string>
+    <string name="badges_large">Groot</string>
+    <string name="badges_corner">Hoekradius</string>
+    <string name="badges_color">Kentekenkleur</string>
+    <string name="badges_outline">Buitelyn</string>
+    <string name="badges_outline_on">\'n Dun buitelyn in die kleur van die getal</string>
+    <string name="badges_outline_off">Geen buitelyn</string>
 </resources>

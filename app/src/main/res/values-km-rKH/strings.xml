@@ -599,4 +599,21 @@
     <string name="welcome_fyt">សូមស្វាគមន៍មកកាន់ Launcher Mod!\nបង្កើតប្លង់ផ្ទាល់ខ្លួនរបស់អ្នកក្នុងការកំណត់ ដើម្បីបង្ហាញការរុករក និងកម្មវិធីផ្សេងទៀតក្នុងបង្អួចនៅលើអេក្រង់ដើម។ ប្រសិនបើកម្មវិធីណាមួយបន្តបើកនៅលើអេក្រង់ដើម សូមបិទបង្អួចរបស់វាក្នុងការកំណត់។</string>
     <string name="welcome_7870">សូមស្វាគមន៍មកកាន់ Launcher Mod!\nបង្កើតប្លង់ផ្ទាល់ខ្លួនរបស់អ្នកក្នុងការកំណត់។ កម្មវិធីអាចត្រូវបានបង្ហាញក្នុងបង្អួចនៅលើអេក្រង់ដើមកន្លែងដែលឧបករណ៍គាំទ្រ។ ប្រសិនបើកម្មវិធីណាមួយបន្តបើកនៅលើអេក្រង់ដើម សូមបិទបង្អួចរបស់វាក្នុងការកំណត់។</string>
     <string name="welcome_other">សូមស្វាគមន៍មកកាន់ Launcher Mod!\nបង្កើតប្លង់ផ្ទាល់ខ្លួនរបស់អ្នកក្នុងការកំណត់។ ការបង្ហាញកម្មវិធីក្នុងបង្អួចនៅលើអេក្រង់ដើមត្រូវការ root ឬ Shizuku បើគ្មានវាទេ កម្មវិធីចាប់ផ្តើមដំណើរការជាអេក្រង់ដើមធម្មតា។</string>
+    <string name="notification_badges">ស្លាកជូនដំណឹង</string>
+    <string name="notification_badges_summary">ចំនួនការជូនដំណឹងលើរូបតំណាងកម្មវិធី</string>
+    <string name="badges_enabled">បើកស្លាកជូនដំណឹង</string>
+    <string name="badges_position">ទីតាំង</string>
+    <string name="badges_top_left">ជ្រុងខាងលើឆ្វេង</string>
+    <string name="badges_top_right">ជ្រុងខាងលើស្តាំ</string>
+    <string name="badges_bottom_left">ជ្រុងខាងក្រោមឆ្វេង</string>
+    <string name="badges_bottom_right">ជ្រុងខាងក្រោមស្តាំ</string>
+    <string name="badges_size">ទំហំ</string>
+    <string name="badges_small">តូច</string>
+    <string name="badges_medium">មធ្យម</string>
+    <string name="badges_large">ធំ</string>
+    <string name="badges_corner">កាំជ្រុង</string>
+    <string name="badges_color">ពណ៌ស្លាក</string>
+    <string name="badges_outline">គ្រោង</string>
+    <string name="badges_outline_on">គ្រោងស្តើងដែលមានពណ៌ដូចលេខ</string>
+    <string name="badges_outline_off">គ្មានគ្រោង</string>
 </resources>

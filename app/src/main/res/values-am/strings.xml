@@ -599,4 +599,21 @@
     <string name="welcome_fyt">እንኳን ወደ Launcher Mod በደህና መጡ!\nአሰሳን እና ሌሎች መተግበሪያዎችን በመነሻ ማያ ገጹ መስኮቶች ውስጥ ለማሳየት በቅንብሮች ውስጥ የራስዎን አቀማመጥ ይፍጠሩ። አንድ መተግበሪያ በመነሻ ማያ ገጹ ላይ ደጋግሞ ከተከፈተ መስኮቱን በቅንብሮች ውስጥ ያጥፉ።</string>
     <string name="welcome_7870">እንኳን ወደ Launcher Mod በደህና መጡ!\nበቅንብሮች ውስጥ የራስዎን አቀማመጥ ይፍጠሩ። መሣሪያው በሚደግፍበት ቦታ መተግበሪያዎች በመነሻ ማያ ገጹ መስኮቶች ውስጥ ሊታዩ ይችላሉ፤ አንዱ በመነሻ ማያ ገጹ ላይ ደጋግሞ ከተከፈተ መስኮቱን በቅንብሮች ውስጥ ያጥፉ።</string>
     <string name="welcome_other">እንኳን ወደ Launcher Mod በደህና መጡ!\nበቅንብሮች ውስጥ የራስዎን አቀማመጥ ይፍጠሩ። መተግበሪያዎችን በመነሻ ማያ ገጹ መስኮቶች ውስጥ ለማሳየት root ወይም Shizuku ያስፈልጋል፤ ያለእነሱ አስጀማሪው እንደ መደበኛ መነሻ ማያ ገጽ ይሠራል።</string>
+    <string name="notification_badges">የማሳወቂያ ባጆች</string>
+    <string name="notification_badges_summary">በመተግበሪያ አዶዎች ላይ የማሳወቂያዎች ብዛት</string>
+    <string name="badges_enabled">የማሳወቂያ ባጆችን አንቃ</string>
+    <string name="badges_position">ቦታ</string>
+    <string name="badges_top_left">የላይ ግራ ማዕዘን</string>
+    <string name="badges_top_right">የላይ ቀኝ ማዕዘን</string>
+    <string name="badges_bottom_left">የታች ግራ ማዕዘን</string>
+    <string name="badges_bottom_right">የታች ቀኝ ማዕዘን</string>
+    <string name="badges_size">መጠን</string>
+    <string name="badges_small">ትንሽ</string>
+    <string name="badges_medium">መካከለኛ</string>
+    <string name="badges_large">ትልቅ</string>
+    <string name="badges_corner">የማዕዘን ራዲየስ</string>
+    <string name="badges_color">የባጅ ቀለም</string>
+    <string name="badges_outline">ቅርጽ መስመር</string>
+    <string name="badges_outline_on">በቁጥሩ ቀለም ቀጭን ቅርጽ መስመር</string>
+    <string name="badges_outline_off">ቅርጽ መስመር የለም</string>
 </resources>

@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Добродошли у Launcher Mod!\nНаправите сопствени распоред у подешавањима да бисте приказивали навигацију и друге апликације у прозорима на почетном екрану. Ако се нека апликација стално отвара преко почетног екрана, искључите њен прозор у подешавањима.</string>
     <string name="welcome_7870">Добродошли у Launcher Mod!\nНаправите сопствени распоред у подешавањима. Апликације се могу приказати у прозорима на почетном екрану тамо где уређај то подржава; ако се нека стално отвара преко почетног екрана, искључите њен прозор у подешавањима.</string>
     <string name="welcome_other">Добродошли у Launcher Mod!\nНаправите сопствени распоред у подешавањима. Приказ апликација у прозорима на почетном екрану захтева root или Shizuku; без њих покретач ради као обичан почетни екран.</string>
+    <string name="notification_badges">Значке обавештења</string>
+    <string name="notification_badges_summary">Број обавештења на иконама апликација</string>
+    <string name="badges_enabled">Омогући значке обавештења</string>
+    <string name="badges_position">Положај</string>
+    <string name="badges_top_left">Горњи леви угао</string>
+    <string name="badges_top_right">Горњи десни угао</string>
+    <string name="badges_bottom_left">Доњи леви угао</string>
+    <string name="badges_bottom_right">Доњи десни угао</string>
+    <string name="badges_size">Величина</string>
+    <string name="badges_small">Мала</string>
+    <string name="badges_medium">Средња</string>
+    <string name="badges_large">Велика</string>
+    <string name="badges_corner">Полупречник углова</string>
+    <string name="badges_color">Боја значке</string>
+    <string name="badges_outline">Контура</string>
+    <string name="badges_outline_on">Танка контура у боји броја</string>
+    <string name="badges_outline_off">Без контуре</string>
 </resources>

@@ -599,4 +599,21 @@
     <string name="welcome_fyt">欢迎使用 Launcher Mod！\n在设置中创建您自己的布局，即可在主屏幕上以窗口显示导航和其他应用。如果某个应用总是在主屏幕上方打开，请在设置中关闭它的窗口。</string>
     <string name="welcome_7870">欢迎使用 Launcher Mod！\n在设置中创建您自己的布局。在设备支持的情况下，应用可以在主屏幕上以窗口显示；如果某个应用总是在主屏幕上方打开，请在设置中关闭它的窗口。</string>
     <string name="welcome_other">欢迎使用 Launcher Mod！\n在设置中创建您自己的布局。在主屏幕上以窗口显示应用需要 root 或 Shizuku；没有它们时，启动器作为普通主屏幕工作。</string>
+    <string name="notification_badges">通知角标</string>
+    <string name="notification_badges_summary">应用图标上的通知数量</string>
+    <string name="badges_enabled">启用通知角标</string>
+    <string name="badges_position">位置</string>
+    <string name="badges_top_left">左上角</string>
+    <string name="badges_top_right">右上角</string>
+    <string name="badges_bottom_left">左下角</string>
+    <string name="badges_bottom_right">右下角</string>
+    <string name="badges_size">大小</string>
+    <string name="badges_small">小</string>
+    <string name="badges_medium">中</string>
+    <string name="badges_large">大</string>
+    <string name="badges_corner">圆角半径</string>
+    <string name="badges_color">角标颜色</string>
+    <string name="badges_outline">轮廓</string>
+    <string name="badges_outline_on">与数字同色的细轮廓</string>
+    <string name="badges_outline_off">无轮廓</string>
 </resources>

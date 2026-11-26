@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Welkom bij Launcher Mod!\nMaak in de instellingen uw eigen indeling om navigatie en andere apps in vensters op het startscherm te tonen. Blijft een app zich over het startscherm openen, zet dan het venster ervan uit in de instellingen.</string>
     <string name="welcome_7870">Welkom bij Launcher Mod!\nMaak in de instellingen uw eigen indeling. Apps kunnen in vensters op het startscherm worden getoond waar het toestel dat ondersteunt; blijft er een zich over het startscherm openen, zet dan het venster ervan uit in de instellingen.</string>
     <string name="welcome_other">Welkom bij Launcher Mod!\nMaak in de instellingen uw eigen indeling. Apps in vensters op het startscherm tonen vereist root of Shizuku; zonder die werkt de launcher als een gewoon startscherm.</string>
+    <string name="notification_badges">Meldingsbadges</string>
+    <string name="notification_badges_summary">Het aantal meldingen op app-pictogrammen</string>
+    <string name="badges_enabled">Meldingsbadges inschakelen</string>
+    <string name="badges_position">Positie</string>
+    <string name="badges_top_left">Linkerbovenhoek</string>
+    <string name="badges_top_right">Rechterbovenhoek</string>
+    <string name="badges_bottom_left">Linkeronderhoek</string>
+    <string name="badges_bottom_right">Rechteronderhoek</string>
+    <string name="badges_size">Grootte</string>
+    <string name="badges_small">Klein</string>
+    <string name="badges_medium">Gemiddeld</string>
+    <string name="badges_large">Groot</string>
+    <string name="badges_corner">Hoekstraal</string>
+    <string name="badges_color">Badgekleur</string>
+    <string name="badges_outline">Omtrek</string>
+    <string name="badges_outline_on">Een dunne omtrek in de kleur van het getal</string>
+    <string name="badges_outline_off">Geen omtrek</string>
 </resources>

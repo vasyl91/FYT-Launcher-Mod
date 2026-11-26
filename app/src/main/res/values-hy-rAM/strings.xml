@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Բարի գալուստ Launcher Mod։\nՍտեղծեք ձեր սեփական դասավորությունը կարգավորումներում՝ նավիգացիան և այլ հավելվածներ գլխավոր էկրանին պատուհաններով ցուցադրելու համար։ Եթե հավելվածը շարունակ բացվում է գլխավոր էկրանի վրա, անջատեք դրա պատուհանը կարգավորումներում։</string>
     <string name="welcome_7870">Բարի գալուստ Launcher Mod։\nՍտեղծեք ձեր սեփական դասավորությունը կարգավորումներում։ Հավելվածները կարող են ցուցադրվել գլխավոր էկրանի պատուհաններում, որտեղ սարքն աջակցում է դրան. եթե որևէ մեկը շարունակ բացվում է գլխավոր էկրանի վրա, անջատեք դրա պատուհանը կարգավորումներում։</string>
     <string name="welcome_other">Բարի գալուստ Launcher Mod։\nՍտեղծեք ձեր սեփական դասավորությունը կարգավորումներում։ Հավելվածները գլխավոր էկրանին պատուհաններում ցուցադրելու համար պետք է root կամ Shizuku. առանց դրանց լաունչերն աշխատում է որպես սովորական գլխավոր էկրան։</string>
+    <string name="notification_badges">Ծանուցումների նշաններ</string>
+    <string name="notification_badges_summary">Ծանուցումների քանակը հավելվածների պատկերակների վրա</string>
+    <string name="badges_enabled">Միացնել ծանուցումների նշանները</string>
+    <string name="badges_position">Դիրք</string>
+    <string name="badges_top_left">Վերին ձախ անկյուն</string>
+    <string name="badges_top_right">Վերին աջ անկյուն</string>
+    <string name="badges_bottom_left">Ստորին ձախ անկյուն</string>
+    <string name="badges_bottom_right">Ստորին աջ անկյուն</string>
+    <string name="badges_size">Չափ</string>
+    <string name="badges_small">Փոքր</string>
+    <string name="badges_medium">Միջին</string>
+    <string name="badges_large">Մեծ</string>
+    <string name="badges_corner">Անկյունների շառավիղ</string>
+    <string name="badges_color">Նշանի գույն</string>
+    <string name="badges_outline">Եզրագիծ</string>
+    <string name="badges_outline_on">Բարակ եզրագիծ թվի գույնով</string>
+    <string name="badges_outline_off">Առանց եզրագծի</string>
 </resources>

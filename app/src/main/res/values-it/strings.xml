@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Benvenuto in Launcher Mod!\nCrea il tuo layout nelle impostazioni per mostrare navigazione e altre app in finestre sulla schermata Home. Se un\'app continua ad aprirsi sopra la schermata Home, disattiva la sua finestra nelle impostazioni.</string>
     <string name="welcome_7870">Benvenuto in Launcher Mod!\nCrea il tuo layout nelle impostazioni. Le app possono essere mostrate in finestre sulla schermata Home dove l\'unità lo supporta; se una continua ad aprirsi sopra la schermata Home, disattiva la sua finestra nelle impostazioni.</string>
     <string name="welcome_other">Benvenuto in Launcher Mod!\nCrea il tuo layout nelle impostazioni. Mostrare le app in finestre sulla schermata Home richiede root o Shizuku; senza, il launcher funziona come una normale schermata Home.</string>
+    <string name="notification_badges">Badge delle notifiche</string>
+    <string name="notification_badges_summary">Il numero di notifiche sulle icone delle app</string>
+    <string name="badges_enabled">Attiva i badge delle notifiche</string>
+    <string name="badges_position">Posizione</string>
+    <string name="badges_top_left">Angolo in alto a sinistra</string>
+    <string name="badges_top_right">Angolo in alto a destra</string>
+    <string name="badges_bottom_left">Angolo in basso a sinistra</string>
+    <string name="badges_bottom_right">Angolo in basso a destra</string>
+    <string name="badges_size">Dimensione</string>
+    <string name="badges_small">Piccola</string>
+    <string name="badges_medium">Media</string>
+    <string name="badges_large">Grande</string>
+    <string name="badges_corner">Raggio degli angoli</string>
+    <string name="badges_color">Colore del badge</string>
+    <string name="badges_outline">Contorno</string>
+    <string name="badges_outline_on">Un contorno sottile del colore del numero</string>
+    <string name="badges_outline_off">Nessun contorno</string>
 </resources>

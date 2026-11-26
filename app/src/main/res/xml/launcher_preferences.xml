@@ -128,6 +128,11 @@
         <Preference
             android:key="accessibility_settings"
             android:title="@string/accessibility_str" />
+        <!-- Opens the screen of the notification badges (NotificationBadgesFragment) -->
+        <Preference
+            android:key="notification_badges"
+            android:title="@string/notification_badges"
+            android:summary="@string/notification_badges_summary" />
         <Preference
             android:key="wallpaper_picker"
             android:title="@string/wallpaper_picker" />

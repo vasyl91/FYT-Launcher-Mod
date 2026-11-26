@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Launcher Mod에 오신 것을 환영합니다!\n설정에서 나만의 레이아웃을 만들어 내비게이션과 다른 앱을 홈 화면의 창으로 표시하세요. 앱이 계속 홈 화면 위로 열리면 설정에서 해당 앱의 창을 끄세요.</string>
     <string name="welcome_7870">Launcher Mod에 오신 것을 환영합니다!\n설정에서 나만의 레이아웃을 만드세요. 기기가 지원하는 경우 앱을 홈 화면의 창으로 표시할 수 있습니다. 앱이 계속 홈 화면 위로 열리면 설정에서 해당 앱의 창을 끄세요.</string>
     <string name="welcome_other">Launcher Mod에 오신 것을 환영합니다!\n설정에서 나만의 레이아웃을 만드세요. 앱을 홈 화면의 창으로 표시하려면 루트 또는 Shizuku가 필요하며, 없으면 런처는 일반 홈 화면처럼 동작합니다.</string>
+    <string name="notification_badges">알림 배지</string>
+    <string name="notification_badges_summary">앱 아이콘에 알림 수 표시</string>
+    <string name="badges_enabled">알림 배지 사용</string>
+    <string name="badges_position">위치</string>
+    <string name="badges_top_left">왼쪽 위 모서리</string>
+    <string name="badges_top_right">오른쪽 위 모서리</string>
+    <string name="badges_bottom_left">왼쪽 아래 모서리</string>
+    <string name="badges_bottom_right">오른쪽 아래 모서리</string>
+    <string name="badges_size">크기</string>
+    <string name="badges_small">작게</string>
+    <string name="badges_medium">보통</string>
+    <string name="badges_large">크게</string>
+    <string name="badges_corner">모서리 반경</string>
+    <string name="badges_color">배지 색상</string>
+    <string name="badges_outline">윤곽선</string>
+    <string name="badges_outline_on">숫자와 같은 색의 얇은 윤곽선</string>
+    <string name="badges_outline_off">윤곽선 없음</string>
 </resources>

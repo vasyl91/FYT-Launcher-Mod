@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Velkommen til Launcher Mod!\nLag din egen layout i innstillingene for å vise navigasjon og andre apper i vinduer på startskjermen. Hvis en app stadig åpner seg over startskjermen, slår du av vinduet i innstillingene.</string>
     <string name="welcome_7870">Velkommen til Launcher Mod!\nLag din egen layout i innstillingene. Apper kan vises i vinduer på startskjermen der enheten støtter det; hvis en stadig åpner seg over startskjermen, slår du av vinduet i innstillingene.</string>
     <string name="welcome_other">Velkommen til Launcher Mod!\nLag din egen layout i innstillingene. Å vise apper i vinduer på startskjermen krever root eller Shizuku; uten dem fungerer launcheren som en vanlig startskjerm.</string>
+    <string name="notification_badges">Varselmerker</string>
+    <string name="notification_badges_summary">Antall varsler på app-ikoner</string>
+    <string name="badges_enabled">Aktiver varselmerker</string>
+    <string name="badges_position">Plassering</string>
+    <string name="badges_top_left">Øvre venstre hjørne</string>
+    <string name="badges_top_right">Øvre høyre hjørne</string>
+    <string name="badges_bottom_left">Nedre venstre hjørne</string>
+    <string name="badges_bottom_right">Nedre høyre hjørne</string>
+    <string name="badges_size">Størrelse</string>
+    <string name="badges_small">Liten</string>
+    <string name="badges_medium">Middels</string>
+    <string name="badges_large">Stor</string>
+    <string name="badges_corner">Hjørneradius</string>
+    <string name="badges_color">Merkefarge</string>
+    <string name="badges_outline">Omriss</string>
+    <string name="badges_outline_on">En tynn omriss i tallets farge</string>
+    <string name="badges_outline_off">Ingen omriss</string>
 </resources>

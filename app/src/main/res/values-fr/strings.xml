@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Bienvenue dans Launcher Mod !\nCréez votre propre disposition dans les réglages pour afficher la navigation et d\'autres applications dans des fenêtres sur l\'écran d\'accueil. Si une application s\'ouvre sans cesse par-dessus l\'écran d\'accueil, désactivez sa fenêtre dans les réglages.</string>
     <string name="welcome_7870">Bienvenue dans Launcher Mod !\nCréez votre propre disposition dans les réglages. Les applications peuvent s\'afficher dans des fenêtres sur l\'écran d\'accueil lorsque l\'appareil le permet ; si l\'une s\'ouvre sans cesse par-dessus l\'écran d\'accueil, désactivez sa fenêtre dans les réglages.</string>
     <string name="welcome_other">Bienvenue dans Launcher Mod !\nCréez votre propre disposition dans les réglages. Afficher des applications dans des fenêtres sur l\'écran d\'accueil nécessite le root ou Shizuku ; sans eux, le lanceur fonctionne comme un écran d\'accueil ordinaire.</string>
+    <string name="notification_badges">Pastilles de notification</string>
+    <string name="notification_badges_summary">Le nombre de notifications sur les icônes des applications</string>
+    <string name="badges_enabled">Activer les pastilles de notification</string>
+    <string name="badges_position">Position</string>
+    <string name="badges_top_left">Coin supérieur gauche</string>
+    <string name="badges_top_right">Coin supérieur droit</string>
+    <string name="badges_bottom_left">Coin inférieur gauche</string>
+    <string name="badges_bottom_right">Coin inférieur droit</string>
+    <string name="badges_size">Taille</string>
+    <string name="badges_small">Petite</string>
+    <string name="badges_medium">Moyenne</string>
+    <string name="badges_large">Grande</string>
+    <string name="badges_corner">Rayon des coins</string>
+    <string name="badges_color">Couleur de la pastille</string>
+    <string name="badges_outline">Contour</string>
+    <string name="badges_outline_on">Un fin contour de la couleur du nombre</string>
+    <string name="badges_outline_off">Pas de contour</string>
 </resources>

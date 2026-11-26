@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Launcher Mod-д тавтай морил!\nТохиргоонд өөрийн схемийг үүсгэж, навигаци болон бусад аппыг нүүр дэлгэц дээрх цонхонд харуул. Хэрэв апп нүүр дэлгэцийн дээр байнга нээгдээд байвал тохиргоонд түүний цонхыг унтраа.</string>
     <string name="welcome_7870">Launcher Mod-д тавтай морил!\nТохиргоонд өөрийн схемийг үүсгэ. Төхөөрөмж дэмждэг газарт аппуудыг нүүр дэлгэц дээрх цонхонд харуулж болно; хэрэв аль нэг нь нүүр дэлгэцийн дээр байнга нээгдээд байвал тохиргоонд түүний цонхыг унтраа.</string>
     <string name="welcome_other">Launcher Mod-д тавтай морил!\nТохиргоонд өөрийн схемийг үүсгэ. Аппуудыг нүүр дэлгэц дээрх цонхонд харуулахад root эсвэл Shizuku шаардлагатай; тэдгээргүйгээр лаунчер энгийн нүүр дэлгэц шиг ажиллана.</string>
+    <string name="notification_badges">Мэдэгдлийн тэмдэг</string>
+    <string name="notification_badges_summary">Аппын дүрс дээрх мэдэгдлийн тоо</string>
+    <string name="badges_enabled">Мэдэгдлийн тэмдгийг идэвхжүүлэх</string>
+    <string name="badges_position">Байршил</string>
+    <string name="badges_top_left">Зүүн дээд булан</string>
+    <string name="badges_top_right">Баруун дээд булан</string>
+    <string name="badges_bottom_left">Зүүн доод булан</string>
+    <string name="badges_bottom_right">Баруун доод булан</string>
+    <string name="badges_size">Хэмжээ</string>
+    <string name="badges_small">Жижиг</string>
+    <string name="badges_medium">Дунд</string>
+    <string name="badges_large">Том</string>
+    <string name="badges_corner">Булангийн радиус</string>
+    <string name="badges_color">Тэмдгийн өнгө</string>
+    <string name="badges_outline">Ирмэг</string>
+    <string name="badges_outline_on">Тооны өнгөтэй нимгэн ирмэг</string>
+    <string name="badges_outline_off">Ирмэггүй</string>
 </resources>

@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Launcher Mod\'a hoş geldiniz!\nAna ekranda gezinti ve diğer uygulamaları pencerelerde göstermek için ayarlarda kendi düzeninizi oluşturun. Bir uygulama ana ekranın üzerinde sürekli açılıyorsa ayarlardan penceresini kapatın.</string>
     <string name="welcome_7870">Launcher Mod\'a hoş geldiniz!\nAyarlarda kendi düzeninizi oluşturun. Cihaz destekliyorsa uygulamalar ana ekranda pencerelerde gösterilebilir; biri ana ekranın üzerinde sürekli açılıyorsa ayarlardan penceresini kapatın.</string>
     <string name="welcome_other">Launcher Mod\'a hoş geldiniz!\nAyarlarda kendi düzeninizi oluşturun. Uygulamaları ana ekranda pencerelerde göstermek için root veya Shizuku gerekir; bunlar olmadan başlatıcı normal bir ana ekran gibi çalışır.</string>
+    <string name="notification_badges">Bildirim rozetleri</string>
+    <string name="notification_badges_summary">Uygulama simgelerinde bildirim sayısı</string>
+    <string name="badges_enabled">Bildirim rozetlerini etkinleştir</string>
+    <string name="badges_position">Konum</string>
+    <string name="badges_top_left">Sol üst köşe</string>
+    <string name="badges_top_right">Sağ üst köşe</string>
+    <string name="badges_bottom_left">Sol alt köşe</string>
+    <string name="badges_bottom_right">Sağ alt köşe</string>
+    <string name="badges_size">Boyut</string>
+    <string name="badges_small">Küçük</string>
+    <string name="badges_medium">Orta</string>
+    <string name="badges_large">Büyük</string>
+    <string name="badges_corner">Köşe yarıçapı</string>
+    <string name="badges_color">Rozet rengi</string>
+    <string name="badges_outline">Kenar çizgisi</string>
+    <string name="badges_outline_on">Rakamın renginde ince bir kenar çizgisi</string>
+    <string name="badges_outline_off">Kenar çizgisi yok</string>
 </resources>

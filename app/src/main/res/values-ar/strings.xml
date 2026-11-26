@@ -599,4 +599,21 @@
     <string name="welcome_fyt">مرحبًا بك في Launcher Mod!\nأنشئ تخطيطك الخاص في الإعدادات لعرض الملاحة وتطبيقات أخرى في نوافذ على الشاشة الرئيسية. إذا استمر تطبيق في الفتح فوق الشاشة الرئيسية، فأوقف نافذته في الإعدادات.</string>
     <string name="welcome_7870">مرحبًا بك في Launcher Mod!\nأنشئ تخطيطك الخاص في الإعدادات. يمكن عرض التطبيقات في نوافذ على الشاشة الرئيسية حيث تدعم الوحدة ذلك؛ وإذا استمر أحدها في الفتح فوق الشاشة الرئيسية، فأوقف نافذته في الإعدادات.</string>
     <string name="welcome_other">مرحبًا بك في Launcher Mod!\nأنشئ تخطيطك الخاص في الإعدادات. يتطلب عرض التطبيقات في نوافذ على الشاشة الرئيسية صلاحية root أو Shizuku؛ وبدونهما يعمل المشغّل كشاشة رئيسية عادية.</string>
+    <string name="notification_badges">شارات الإشعارات</string>
+    <string name="notification_badges_summary">عدد الإشعارات على أيقونات التطبيقات</string>
+    <string name="badges_enabled">تفعيل شارات الإشعارات</string>
+    <string name="badges_position">الموضع</string>
+    <string name="badges_top_left">الزاوية العلوية اليسرى</string>
+    <string name="badges_top_right">الزاوية العلوية اليمنى</string>
+    <string name="badges_bottom_left">الزاوية السفلية اليسرى</string>
+    <string name="badges_bottom_right">الزاوية السفلية اليمنى</string>
+    <string name="badges_size">الحجم</string>
+    <string name="badges_small">صغير</string>
+    <string name="badges_medium">متوسط</string>
+    <string name="badges_large">كبير</string>
+    <string name="badges_corner">نصف قطر الزاوية</string>
+    <string name="badges_color">لون الشارة</string>
+    <string name="badges_outline">حد خارجي</string>
+    <string name="badges_outline_on">حد خارجي رفيع بلون الرقم</string>
+    <string name="badges_outline_off">بدون حد خارجي</string>
 </resources>

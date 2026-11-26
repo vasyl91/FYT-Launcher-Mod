@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Siyakwamukela ku-Launcher Mod!\nDala isakhiwo sakho kumasethingi ukuze ubonise ukuzulazula nezinye izinhlelo zokusebenza emafasiteleni esikrini sasekhaya. Uma uhlelo lokusebenza luqhubeka luvuleka phezu kwesikrini sasekhaya, cisha ifasitela lalo kumasethingi.</string>
     <string name="welcome_7870">Siyakwamukela ku-Launcher Mod!\nDala isakhiwo sakho kumasethingi. Izinhlelo zokusebenza zingabonisa emafasiteleni esikrini sasekhaya lapho iyunithi isekela khona; uma olunye luqhubeka luvuleka phezu kwesikrini sasekhaya, cisha ifasitela lalo kumasethingi.</string>
     <string name="welcome_other">Siyakwamukela ku-Launcher Mod!\nDala isakhiwo sakho kumasethingi. Ukubonisa izinhlelo zokusebenza emafasiteleni esikrini sasekhaya kudinga i-root noma i-Shizuku; ngaphandle kwazo umqalisi usebenza njengesikrini sasekhaya esijwayelekile.</string>
+    <string name="notification_badges">Amabheji wezaziso</string>
+    <string name="notification_badges_summary">Inani lezaziso kuzithonjana zohlelo lokusebenza</string>
+    <string name="badges_enabled">Nika amandla amabheji ezaziso</string>
+    <string name="badges_position">Indawo</string>
+    <string name="badges_top_left">Ikhona ephezulu kwesokunxele</string>
+    <string name="badges_top_right">Ikhona ephezulu kwesokudla</string>
+    <string name="badges_bottom_left">Ikhona engezansi kwesokunxele</string>
+    <string name="badges_bottom_right">Ikhona engezansi kwesokudla</string>
+    <string name="badges_size">Usayizi</string>
+    <string name="badges_small">Esincane</string>
+    <string name="badges_medium">Maphakathi</string>
+    <string name="badges_large">Esikhulu</string>
+    <string name="badges_corner">Irediyasi yekhona</string>
+    <string name="badges_color">Umbala webheji</string>
+    <string name="badges_outline">Umbhalo wangaphandle</string>
+    <string name="badges_outline_on">Umumo omncane ngombala wenombolo</string>
+    <string name="badges_outline_off">Akukho umumo</string>
 </resources>

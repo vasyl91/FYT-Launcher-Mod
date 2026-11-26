@@ -611,4 +611,21 @@
     <string name="welcome_fyt">Welcome to Launcher Mod!\nCreate your own layout in the settings to show navigation and other apps in windows on the home screen. If an app keeps opening over the home screen, turn off its window in the settings.</string>
     <string name="welcome_7870">Welcome to Launcher Mod!\nCreate your own layout in the settings. Apps can be shown in windows on the home screen where the unit supports it; if one keeps opening over the home screen, turn off its window in the settings.</string>
     <string name="welcome_other">Welcome to Launcher Mod!\nCreate your own layout in the settings. Showing apps in windows on the home screen needs root or Shizuku; without them the launcher works as a regular home screen.</string>
+    <string name="notification_badges">Notification badges</string>
+    <string name="notification_badges_summary">The number of notifications on app icons</string>
+    <string name="badges_enabled">Enable notification badges</string>
+    <string name="badges_position">Position</string>
+    <string name="badges_top_left">Top left corner</string>
+    <string name="badges_top_right">Top right corner</string>
+    <string name="badges_bottom_left">Bottom left corner</string>
+    <string name="badges_bottom_right">Bottom right corner</string>
+    <string name="badges_size">Size</string>
+    <string name="badges_small">Small</string>
+    <string name="badges_medium">Medium</string>
+    <string name="badges_large">Large</string>
+    <string name="badges_corner">Corner radius</string>
+    <string name="badges_color">Badge color</string>
+    <string name="badges_outline">Outline</string>
+    <string name="badges_outline_on">A thin outline in the color of the number</string>
+    <string name="badges_outline_off">No outline</string>
 </resources>

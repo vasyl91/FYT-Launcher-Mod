@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Witaj w Launcher Mod!\nUtwórz własny układ w ustawieniach, aby pokazywać nawigację i inne aplikacje w oknach na ekranie głównym. Jeśli aplikacja ciągle otwiera się nad ekranem głównym, wyłącz jej okno w ustawieniach.</string>
     <string name="welcome_7870">Witaj w Launcher Mod!\nUtwórz własny układ w ustawieniach. Aplikacje można pokazywać w oknach na ekranie głównym tam, gdzie urządzenie to obsługuje; jeśli któraś ciągle otwiera się nad ekranem głównym, wyłącz jej okno w ustawieniach.</string>
     <string name="welcome_other">Witaj w Launcher Mod!\nUtwórz własny układ w ustawieniach. Pokazywanie aplikacji w oknach na ekranie głównym wymaga roota lub Shizuku; bez nich launcher działa jak zwykły ekran główny.</string>
+    <string name="notification_badges">Plakietki powiadomień</string>
+    <string name="notification_badges_summary">Liczba powiadomień na ikonach aplikacji</string>
+    <string name="badges_enabled">Włącz plakietki powiadomień</string>
+    <string name="badges_position">Położenie</string>
+    <string name="badges_top_left">Lewy górny róg</string>
+    <string name="badges_top_right">Prawy górny róg</string>
+    <string name="badges_bottom_left">Lewy dolny róg</string>
+    <string name="badges_bottom_right">Prawy dolny róg</string>
+    <string name="badges_size">Rozmiar</string>
+    <string name="badges_small">Mała</string>
+    <string name="badges_medium">Średnia</string>
+    <string name="badges_large">Duża</string>
+    <string name="badges_corner">Promień narożników</string>
+    <string name="badges_color">Kolor plakietki</string>
+    <string name="badges_outline">Obrys</string>
+    <string name="badges_outline_on">Cienki obrys w kolorze liczby</string>
+    <string name="badges_outline_off">Bez obrysu</string>
 </resources>

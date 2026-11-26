@@ -599,4 +599,21 @@
     <string name="welcome_fyt">Bainvegni en Launcher Mod!\nCreescha en las parameters tia agen layout per mussar la navigaziun ed autras applicaziuns en fanestras sin la surfatscha da partenza. Sch\'ina applicaziun s\'avra adina danovamain sur la surfatscha da partenza, deactivescha sia fanestra en las parameters.</string>
     <string name="welcome_7870">Bainvegni en Launcher Mod!\nCreescha en las parameters tia agen layout. Las applicaziuns pon vegnir mussadas en fanestras sin la surfatscha da partenza nua che l\'apparat lur dat sustegn; sch\'ina s\'avra adina danovamain sur la surfatscha da partenza, deactivescha sia fanestra en las parameters.</string>
     <string name="welcome_other">Bainvegni en Launcher Mod!\nCreescha en las parameters tia agen layout. Per mussar applicaziuns en fanestras sin la surfatscha da partenza dovri root u Shizuku; senza quels funcziuna il launcher sco ina surfatscha da partenza usitada.</string>
+    <string name="notification_badges">Badges da notificaziuns</string>
+    <string name="notification_badges_summary">Il dumber da las notificaziuns sin ils simbols dad applicaziuns</string>
+    <string name="badges_enabled">Activar las badges da notificaziuns</string>
+    <string name="badges_position">Posiziun</string>
+    <string name="badges_top_left">Chantun sura a sanestra</string>
+    <string name="badges_top_right">Chantun sura a dretga</string>
+    <string name="badges_bottom_left">Chantun sut a sanestra</string>
+    <string name="badges_bottom_right">Chantun sut a dretga</string>
+    <string name="badges_size">Grondezza</string>
+    <string name="badges_small">Pitschna</string>
+    <string name="badges_medium">Mesauna</string>
+    <string name="badges_large">Gronda</string>
+    <string name="badges_corner">Radius dals chantuns</string>
+    <string name="badges_color">Colur da badge</string>
+    <string name="badges_outline">Contura</string>
+    <string name="badges_outline_on">Ina contura fina da la colur dal dumber</string>
+    <string name="badges_outline_off">Nagina contura</string>
 </resources>

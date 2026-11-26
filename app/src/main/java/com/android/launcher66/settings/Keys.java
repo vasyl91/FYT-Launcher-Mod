@@ -73,7 +73,12 @@ public final class Keys {
      * "Notification badges" (BadgeModel, BadgeStyle): the settings of the number of notifications on an icon. They are
      * the launcher's own, not the creator's (CreatorKeys has none of them): they work with the stock layout too.
      */
+    /** The row of "Launcher settings" that opens the screen of the badges (NotificationBadgesFragment). */
+    public static final String NOTIFICATION_BADGES = "notification_badges";
     public static final String BADGES_ENABLED = "badges_enabled";
+    /** The rows of the badge screen that have no value of their own. */
+    public static final String BADGES_PREVIEW = "badges_preview";
+    public static final String BADGES_CORNER_TITLE = "badges_corner_title";
     public static final String BADGES_POSITION = "badges_position";
     public static final String BADGES_SIZE = "badges_size";
     public static final String BADGES_CORNER = "badges_corner";

@@ -599,4 +599,21 @@
     <string name="welcome_fyt">به Launcher Mod خوش آمدید!\nدر تنظیمات چیدمان خودتان را بسازید تا مسیریابی و برنامه‌های دیگر در پنجره‌هایی روی صفحهٔ اصلی نمایش داده شوند. اگر برنامه‌ای مدام روی صفحهٔ اصلی باز می‌شود، پنجرهٔ آن را در تنظیمات خاموش کنید.</string>
     <string name="welcome_7870">به Launcher Mod خوش آمدید!\nدر تنظیمات چیدمان خودتان را بسازید. برنامه‌ها را می‌توان در جاهایی که دستگاه پشتیبانی می‌کند در پنجره‌هایی روی صفحهٔ اصلی نشان داد؛ اگر یکی مدام روی صفحهٔ اصلی باز می‌شود، پنجرهٔ آن را در تنظیمات خاموش کنید.</string>
     <string name="welcome_other">به Launcher Mod خوش آمدید!\nدر تنظیمات چیدمان خودتان را بسازید. نمایش برنامه‌ها در پنجره‌ها روی صفحهٔ اصلی به روت یا Shizuku نیاز دارد؛ بدون آن‌ها لانچر مانند یک صفحهٔ اصلی معمولی کار می‌کند.</string>
+    <string name="notification_badges">نشان‌های اعلان</string>
+    <string name="notification_badges_summary">تعداد اعلان‌ها روی نمادهای برنامه</string>
+    <string name="badges_enabled">فعال‌سازی نشان‌های اعلان</string>
+    <string name="badges_position">موقعیت</string>
+    <string name="badges_top_left">گوشهٔ بالا چپ</string>
+    <string name="badges_top_right">گوشهٔ بالا راست</string>
+    <string name="badges_bottom_left">گوشهٔ پایین چپ</string>
+    <string name="badges_bottom_right">گوشهٔ پایین راست</string>
+    <string name="badges_size">اندازه</string>
+    <string name="badges_small">کوچک</string>
+    <string name="badges_medium">متوسط</string>
+    <string name="badges_large">بزرگ</string>
+    <string name="badges_corner">شعاع گوشه</string>
+    <string name="badges_color">رنگ نشان</string>
+    <string name="badges_outline">دورخط</string>
+    <string name="badges_outline_on">دورخط نازک به رنگ عدد</string>
+    <string name="badges_outline_off">بدون دورخط</string>
 </resources>

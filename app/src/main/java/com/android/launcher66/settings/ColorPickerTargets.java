@@ -34,6 +34,8 @@ final class ColorPickerTargets {
     static final String TAG_ICON_TEXT = "IconTextPicker";
     /** "Set global theme color": the accent of the settings (ThemeAccent). */
     static final String TAG_ACCENT = "AccentPicker";
+    /** "Badge color": the notification badges (BadgeStyle). */
+    static final String TAG_BADGE = "BadgePicker";
     /** A background's own colour, from the background selector. */
     static final String TAG_BACKGROUND = "BackgroundColorPicker";
 
@@ -91,6 +93,10 @@ final class ColorPickerTargets {
         ColorPicker iconText = find(fragments, TAG_ICON_TEXT);
         if (iconText != null && iconText.storeKey() != null) {
             bindTint(iconText, prefs, iconText.storeKey());
+        }
+        ColorPicker badge = find(fragments, TAG_BADGE);
+        if (badge != null) {
+            bindTint(badge, prefs, Keys.BADGES_COLOR);
         }
         ColorPicker accent = find(fragments, TAG_ACCENT);
         if (accent != null) {
