@@ -85,13 +85,16 @@ public class AppsVerticalViewTest {
 
     @Test
     public void theScrollerPutsTheListAtTheFirstAppOfALetter() {
-        AppsVerticalView view = view(3, 6);
+        // 18 apps in three columns are six rows and three of them are in view, so the list has room to scroll. (With six
+        // rows in view the whole list fits and a list that fits does not move: the scroll would end where it began.)
+        AppsVerticalView view = view(3, 3);
         view.scrollToLetter("M");
         view.measure(View.MeasureSpec.makeMeasureSpec(800, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(1400, View.MeasureSpec.EXACTLY));
         view.layout(0, 0, 800, 1400);
-        // the list starts at the row of "Maps", the first of the M, which in three columns begins at the 9th app
-        assertTrue("the row of the first M is at the top", view.firstVisible() <= 11 && view.firstVisible() > 11 - 3);
+        // the list starts at the row of "Maps", the first of the M (the 12th app), which in three columns begins at the 10th
+        int first = view.firstVisible();
+        assertTrue("the row of the first M is at the top, but the first in view is " + first, first <= 11 && first > 11 - 3);
     }
 
     @Test
