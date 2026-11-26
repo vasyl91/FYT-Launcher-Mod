@@ -660,3 +660,135 @@ the colour of the part not played yet; "Start on wake" under "Start on boot" as 
 the widgets tab, so KI-46 is closed [V]; the owner confirmed the panes, the order of the bar's elements and the dark
 dialogs. Round 27 on a device: no result yet. com.syu.music (7862) cannot be moved to a position from another app,
 checked in its decompiled code (`archive/decompiled/com.syu.music.zip`, KI-50).
+
+## Round 28 (2026-11-26): crashes, one accent colour, the home screen's gestures, the app drawer, the badges
+
+The brief `prompts/active/sonnet-prompt-2026-11-25-round-28.md` [H]: the owner's 25 points, the logs and 20 crash logs of
+2026-11-25; 36 commits in groups A to J (A fixes, B the music slider, C accent, switches and
+"Stock layout", D the home screen, E the bars, F the app drawer, G the widget list, H the badges, I the autostart and the
+welcome texts, J the documents). Built in a cloud session without an Android SDK, so the only build check was CI: each
+code commit was pushed on its own and the next one waited for its green run (39 code commits, runs 582 to 620). The
+documents (J1, J2, this section) are `Docs:` commits that start no run.
+
+| Commit | CI run | Subject |
+|---|---|---|
+| `0dc2cb603` | 582 green | Crashes: the package receiver no longer builds the launcher's state |
+| `e87d98fb4` | 583 green | Crashes: the workspace has its settings before the first touch |
+| `fb9ef31c5` | 584 green | Build: the settings' preferences keep their constructors in release |
+| `779cf9bd0` | 585 green | Bars: the persistent vertical bar is placed only at rest and put back if moved |
+| `1b1d589df` | 586 green | Stats: the in-app window never over the launcher's own screens |
+| `9d23674f0` | 587 green | Logcat: a stop ends the capture within seconds |
+| `baa2432fc` | 588 green | Start: before the first unlock the launcher shows the wallpaper |
+| `0b2416ae4` | 589 green | Widgets: the launcher's four own app widgets removed |
+| `6d7e353ec` | 590 green | Music widget: the slider in the bar's colour, centred on its line |
+| `e7a02c8b4` | 591 RED | Music widget: the slider owns its touches, in a larger touch area |
+| `95e9fcf2f` | 592 green | Music widget: the pager test makes its pager without a launcher state |
+| `e2efbd02d` | 593 green | Theme: one accent colour, chosen in "Set global theme color" |
+| `6abbcbbb3` | 594 green | Settings: every switch in the accent colour |
+| `097151264` | 595 green | Layout: "Stock layout" applies none of the creator's settings |
+| `e7d07089e` | 596 green | Home: an icon text colour of its own |
+| `0f52026dd` | 597 RED | Home: swipe up opens the app drawer, swipe down the notifications |
+| `dc38693cd` | 598 green | Home: the accessibility service's helper no longer clashes with the framework's method |
+| `c23e3e01e` | 599 green | Home: a double tap does nothing, locks or turns the screen off |
+| `6ac46639f` | 600 green | Folders: a background of their own |
+| `fd4f5ff08` | 601 green (second attempt) | Folders: the home screen's grid inside, if chosen |
+| `7eb117b58` | 602 green | Widgets: free placement and size on the home screen |
+| `0bcd94429` | 603 green | Widgets: may overlap other items |
+| `cd17c8117` | 604 green | Autostart: BOOT_COMPLETED for "Start on wake" too, the note per device |
+| `3863fff6f` | 605 green | Strings: "Launcher Mod" and a shorter welcome per device |
+| `fef9ab744` | 606 green | Badges: notification counts on the icons |
+| `1e9f52db4` | 607 green | Settings: "Notification badges" |
+| `25d41eb6e` | 608 green | Settings: an "App drawer" section under "Bars" |
+| `a962bc905` | 609 RED | App drawer: vertical scrolling with a letter bubble |
+| `f26a907f1` | 610 RED | App drawer: the letter scroller test has room to scroll |
+| `8ee0e2d41` | 611 green | App drawer: the letter scroller test fills its rows exactly |
+| `f77fb7688` | 612 green | App drawer: a search bar |
+| `ef821153d` | 613 green | Settings: the drawer tabs' model and the lists of apps |
+| `4559d1959` | 614 green | Settings: the tab creator |
+| `acad3b91c` | 615 green | App drawer: tabs |
+| `e8b91b683` | 616 green | Bars: "Display vertical bar" |
+| `b7f33bebf` | 617 green | Strings: the descriptions of the home screen switches as the owner worded them |
+| `3425f8bb4` | 618 green | Bars: the rule for sharing the room of the widget bar, as a tested model |
+| `1e767f5fc` | 619 green | Widgets: the grouping of the widget list, as a tested model |
+| `0751ebbb6` | 620 green | App drawer: the strip of tabs goes with the apps |
+
+The 39 code commits are not a one-to-one match with the brief's 36: the parts that were not built are missing, and the
+fixes and corrections of the deviations were added. Not in the table: the `Docs:` commits (README, the project library,
+this report), which start no run.
+
+**What was built [V: code and tests; none of it tried on a device]:**
+- **A1 to A8, the crashes and the start:** the package receiver builds no launcher state; the workspace has its settings
+  before the first touch; the settings' preferences keep their constructors in a release build (R8, KI-53); the
+  persistent vertical bar is placed only at rest and put back if moved; the in-app statistics window never opens over the
+  launcher's own screens; a logcat stop ends within seconds (D-84); before the first unlock the launcher shows the
+  wallpaper; the launcher's four own app widgets are gone.
+- **B1, B2, the music slider:** in the bar's colour and centred on its line; it owns its touches, in a larger touch area.
+- **C1 to C3:** one accent colour for the settings, chosen in "Set global theme color" (D-86); every switch in it;
+  "Stock layout" applies none of the creator's settings (D-85).
+- **D1 to D7, the home screen:** an icon text colour of its own; swipe up opens the app drawer and swipe down the
+  notifications; a double tap that does nothing, locks or turns the screen off (D-91); a background of their own for
+  folders, and the home screen's grid inside them if chosen; widgets with a free place and size, and overlapping other
+  items with a question first (D-92).
+- **I1, I2:** BOOT_COMPLETED also starts the "Start on wake" list, with a note per device; the texts say "Launcher Mod"
+  and the welcome is shorter per device.
+- **H1, H2, the badges:** notification counts on the icons (`BadgeModel`, `BadgeViews`, `BadgeDrawable`) and the screen
+  "Notification badges" (D-90).
+- **F1 to F6, the app drawer (D-88):** an "App drawer" section under "Bars"; vertical scrolling with the letters of
+  `LetterIndex` and a bubble (`AppsVerticalView`, `LetterScroller`); a search bar; the model of the tabs (`DrawerTabs`,
+  `DrawerTabsStore`, pure, tested) and the lists of apps (`DrawerAppList`, `DrawerAppsFragment`); the tab creator
+  (`DrawerTabsFragment`, `DrawerTabDialogs`); the tabs themselves (`DrawerTabStrip`, `DrawerTabGeometry`, the swipe
+  `AppsVerticalView.TabSwipe`) and their place, top or bottom, which is a creator key.
+- **E1, the vertical half:** the switch "Display vertical bar" (`display_vertical_bar`).
+- **The models only (KI-52):** `BarShares` (D-87) and `WidgetGroups` (D-89) are pure and tested, and nothing calls them.
+
+**CI that went red, and why:**
+- **591** (B2): the test of the music pager needed a launcher state that a test does not have; `95e9fcf2f` (592) makes its
+  pager without one.
+- **597** (D2): a compile error. The static helper `StateAccessibilityService.performGlobalAction(int)` clashed with the
+  framework's instance method of the same signature. It was renamed `perform(int)` (`dc38693cd`, 598); the queue of the
+  later commits was rebuilt on top of it, with no `--amend` and no force-push, and the call that D3 adds was written
+  with the new name.
+- **601** (D5): the first attempt failed in the unit tests because Maven Central answered HTTP 429, not because of the
+  code. The failed job was run again and passed; no commit.
+- **609, 610** (F2): the test `theScrollerPutsTheListAtTheFirstAppOfALetter`. In 609 all six rows of the list were in view,
+  so the list could not scroll. In 610 the rows were 466 px in 1400 px, 1398 px in all, and the layout closed the 2 px gap
+  by scrolling back, so the first app in view was one of the row before. **The cause of 610 was worked out from the RecyclerView
+  code and the sizes, not seen:** the Gradle log of CI prints the line of a failed assertion and not its message, and the
+  test report is out of reach of a session. The test now has rows of 700 px (`8ee0e2d41`, 611, green) and one assertion for
+  each way it can fail. The code of the drawer did not change.
+
+**Deviations from the brief:**
+- Strings: the new ones are in the 51 full language files, not in all 59. The 8 regional files (`en-rGB`, `en-rIN`,
+  `es-rUS`, `et-rEE`, `fr-rCA`, `ms-rMY`, `pt-rPT`, `zh-rHK`) are short overrides of their language and take the new
+  texts from it, as in round 27. The commit messages of C1 and D1 wrongly say "all 59 files".
+- A corrective commit for the strings (`b7f33bebf`): eight English texts (`folder_follow_grid_*`, `widget_freeform_*`,
+  `widget_overlap_*`, `widget_overlap_off_title` and `_message`) were set to the brief's wording, in all languages.
+- B2: no `TouchDelegate`; the larger touch area stays inside the slider's own view.
+- D3: no Robolectric test of the workspace's double tap.
+- D4: the string names are `folders_background_*`.
+- D6: a widget placed new has no "start frame".
+- H1: the views tell the model that a count changed through a registry (`BadgeViews`), not through
+  `Launcher.onBadgesChanged`; the test of `BadgeDrawable` does not compare pixels.
+- F1: a test of the order of the preferences in the XML of the screens instead of the Robolectric `PreferenceScreensTest`.
+- F2: no `DrawerDragSource` class; the drag to the home screen is the pager's, passed on through `AppsVerticalView.Host`.
+- F4, F5: one `DrawerAppsFragment` serves both lists of apps (L1, L2); the string `drawer_tabs_category` was not created
+  (the existing `drawer_tabs` is the row); the "repeat" rule is stored inside the string of the model, not under a key of
+  its own; the dialogs do not use `SettingsDialogMemory`, so a phone's turn closes them. In the F4 commit nothing opened
+  the lists of apps yet; F5's dialogs do.
+- F6: with fewer tabs than the visible count they share the bar's width; the speed of a swipe is the greater of the
+  tracker's and the swipe's average.
+- E: only the vertical half of E1 was built. **E1 horizontal, E2, E3 and G1 were not built** (KI-52); `BarShares` and
+  `WidgetGroups` are their models. The reason: the bar's place is decided at about a dozen places of `Workspace`,
+  `Helpers` and `Launcher`, and the widget list is the way widgets reach the home screen; neither can be tried without
+  a device, and a regression there would be on the 7862's home screen.
+- The extra commits of this round: the fixes `95e9fcf2f`, `dc38693cd`, `f26a907f1` (it did not fix the test),
+  `8ee0e2d41`, and `0751ebbb6` (the strip of tabs goes with the apps: `setContentType` now calls `syncTabs()`).
+- **Flaws in commit messages that stay** (no `--amend`): C1 and D1 say "all 59 files"; the message of D5 has a stray
+  "Co-Authored-By below."; F3 has a garbled sentence about the strip; B2 has "also at rest-less pages"; C1 states that
+  there is no action bar and that was not checked; F5 has a wrong sentence about the colour of the "+" tile.
+
+**What a device has to show [KI-51]:** none of the 39 commits was tried on a device. The unit tests do not tell whether a
+finger's swipe is taken by the right view. The list is in KI-51; the points that need a finger: the swipes and the double
+tap on the 7862 (the quick settings panel, "Turn off screen" and the same double tap bringing the screen back), the tab
+swipe and the strip's place in the drawer, free and overlapping widgets, the slider of `com.syu.music` (no knob), and the
+settings of a release build (A3, KI-53).
