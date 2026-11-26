@@ -568,4 +568,5 @@
     <string name="openweather_key_summary">Leeg: die ingeboude sleutel word gebruik. Met jou eie gratis sleutel van openweathermap.org hang die weer nie van die gedeelde een af nie.</string>
     <string name="openweather_key_invalid">Dit is nie ’n OpenWeather-sleutel nie (32 letters en syfers).</string>
     <string name="theme_accent_color">Stel globale temakleur</string>
+    <string name="icon_text_color">Stel ikoonteksskleur</string>
 </resources>

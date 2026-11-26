@@ -568,4 +568,5 @@
     <string name="openweather_key_summary">เว้นว่าง: ใช้คีย์ที่มีมาในตัว หากใช้คีย์ฟรีของคุณเองจาก openweathermap.org สภาพอากาศจะไม่ขึ้นกับคีย์ที่ใช้ร่วมกัน</string>
     <string name="openweather_key_invalid">นี่ไม่ใช่คีย์ OpenWeather (ตัวอักษรและตัวเลข 32 ตัว)</string>
     <string name="theme_accent_color">ตั้งค่าสีธีมส่วนกลาง</string>
+    <string name="icon_text_color">ตั้งค่าสีข้อความของไอคอน</string>
 </resources>

@@ -568,4 +568,5 @@
     <string name="openweather_key_summary">Пуста: выкарыстоўваецца ўбудаваны ключ. З уласным бясплатным ключом з openweathermap.org надвор’е не залежыць ад агульнага.</string>
     <string name="openweather_key_invalid">Гэта не ключ OpenWeather (32 літары і лічбы).</string>
     <string name="theme_accent_color">Задаць агульны колер тэмы</string>
+    <string name="icon_text_color">Задаць колер тэксту значкоў</string>
 </resources>

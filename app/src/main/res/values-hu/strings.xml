@@ -568,4 +568,5 @@
     <string name="openweather_key_summary">Üres: a beépített kulcs használatos. Saját ingyenes kulccsal az openweathermap.org oldalról az időjárás nem függ a közös kulcstól.</string>
     <string name="openweather_key_invalid">Ez nem OpenWeather-kulcs (32 betű és számjegy).</string>
     <string name="theme_accent_color">Globális témaszín beállítása</string>
+    <string name="icon_text_color">Az ikonok szövegszínének beállítása</string>
 </resources>

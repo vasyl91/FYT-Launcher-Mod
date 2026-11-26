@@ -568,4 +568,5 @@
     <string name="openweather_key_summary">ცარიელი: გამოიყენება ჩაშენებული გასაღები. openweathermap.org-ის საკუთარი უფასო გასაღებით ამინდი საერთო გასაღებზე არ არის დამოკიდებული.</string>
     <string name="openweather_key_invalid">ეს არ არის OpenWeather-ის გასაღები (32 ასო და ციფრი).</string>
     <string name="theme_accent_color">თემის საერთო ფერის დაყენება</string>
+    <string name="icon_text_color">ხატულების ტექსტის ფერის დაყენება</string>
 </resources>

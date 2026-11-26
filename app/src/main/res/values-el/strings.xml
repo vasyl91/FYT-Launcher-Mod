@@ -568,4 +568,5 @@
     <string name="openweather_key_summary">Κενό: χρησιμοποιείται το ενσωματωμένο κλειδί. Με δικό σας δωρεάν κλειδί από το openweathermap.org ο καιρός δεν εξαρτάται από το κοινόχρηστο.</string>
     <string name="openweather_key_invalid">Αυτό δεν είναι κλειδί OpenWeather (32 γράμματα και ψηφία).</string>
     <string name="theme_accent_color">Ορισμός καθολικού χρώματος θέματος</string>
+    <string name="icon_text_color">Ορισμός χρώματος κειμένου εικονιδίων</string>
 </resources>

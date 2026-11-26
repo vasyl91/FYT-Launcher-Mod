@@ -654,6 +654,11 @@ public class FolderIcon extends LinearLayout implements FolderListener {
         va.start();
     }
 
+    /** The colour of the name under the folder's icon ("Set icon text color"). */
+    void setNameColor(int color) {
+        mFolderName.setTextColor(color);
+    }
+
     public void setTextVisible(boolean visible) {
         if (visible) {
             mFolderName.setVisibility(VISIBLE);

@@ -4746,6 +4746,27 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         }
     }
 
+    /**
+     * The names under the icons of this page, those of the folders' icons too, in the colour of "Set icon text color"
+     * (IconTextColor): what a change of the setting does at once, as the icons are made only when the page is bound.
+     */
+    void applyIconTextColor(int color, int[] count) {
+        ShortcutAndWidgetContainer container = getShortcutsAndWidgets();
+        if (container == null) {
+            return;
+        }
+        for (int i = 0; i < container.getChildCount(); i++) {
+            View child = container.getChildAt(i);
+            if (child instanceof BubbleTextView) {
+                ((BubbleTextView) child).setTextColor(color);
+                count[0]++;
+            } else if (child instanceof FolderIcon) {
+                ((FolderIcon) child).setNameColor(color);
+                count[0]++;
+            }
+        }
+    }
+
     public int[] getUserWidgetPosition(View userWidget) {
         return mUserWidgetPositions.get(userWidget);
     }

@@ -568,4 +568,5 @@
     <string name="openweather_key_summary">Tom: den innebygde nøkkelen brukes. Med din egen gratis nøkkel fra openweathermap.org er været ikke avhengig av den delte.</string>
     <string name="openweather_key_invalid">Dette er ikke en OpenWeather-nøkkel (32 bokstaver og sifre).</string>
     <string name="theme_accent_color">Angi global temafarge</string>
+    <string name="icon_text_color">Angi tekstfarge for ikoner</string>
 </resources>

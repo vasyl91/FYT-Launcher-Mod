@@ -568,4 +568,5 @@
     <string name="openweather_key_summary">Prázdné: použije se vestavěný klíč. S vlastním bezplatným klíčem z openweathermap.org počasí nezávisí na sdíleném.</string>
     <string name="openweather_key_invalid">To není klíč OpenWeather (32 písmen a číslic).</string>
     <string name="theme_accent_color">Nastavit globální barvu motivu</string>
+    <string name="icon_text_color">Nastavit barvu textu ikon</string>
 </resources>

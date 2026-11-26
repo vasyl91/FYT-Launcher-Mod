@@ -568,4 +568,5 @@
     <string name="openweather_key_summary">Tühi: kasutatakse sisseehitatud võtit. Oma tasuta võtmega saidilt openweathermap.org ei sõltu ilm jagatud võtmest.</string>
     <string name="openweather_key_invalid">See ei ole OpenWeatheri võti (32 tähte ja numbrit).</string>
     <string name="theme_accent_color">Määra globaalne teema värv</string>
+    <string name="icon_text_color">Määra ikoonide teksti värv</string>
 </resources>

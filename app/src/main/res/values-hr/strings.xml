@@ -568,4 +568,5 @@
     <string name="openweather_key_summary">Prazno: koristi se ugrađeni ključ. S vlastitim besplatnim ključem s openweathermap.org vrijeme ne ovisi o dijeljenom.</string>
     <string name="openweather_key_invalid">To nije OpenWeather ključ (32 slova i znamenke).</string>
     <string name="theme_accent_color">Postavi globalnu boju teme</string>
+    <string name="icon_text_color">Postavi boju teksta ikona</string>
 </resources>

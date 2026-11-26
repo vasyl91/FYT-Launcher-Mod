@@ -53,6 +53,11 @@ public final class Keys {
     public static final String OPENWEATHER_API_KEY = "openweather_api_key";
     public static final String ALL_APPS_TEXT_SIZE = "all_apps_textSize"; 
     public static final String WORKSPACE_TEXT_SIZE = "workspace_textSize";
+    /**
+     * "Set icon text color": the colour (an opaque int) of the names under the icons of the home screen, the folders
+     * and the bars; absent = white, what the layouts give (IconTextColor). The row itself keeps nothing else.
+     */
+    public static final String WORKSPACE_TEXT_COLOR = "workspace_text_color";
     /** Before it was split into LAUNCHER_HOME_WAKE and LAUNCHER_HOME_COLD_START; only migrated. */
     public static final String LAUNCHER_HOME = "launcher_home";
     public static final String LAUNCHER_HOME_WAKE = "launcher_home_wake";

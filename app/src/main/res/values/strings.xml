@@ -580,4 +580,5 @@
     <!-- The tag of a view that AccentPainter colours with the accent whatever its colour is now -->
     <string name="tag_accent" translatable="false">accent</string>
     <string name="theme_accent_color">Set global theme color</string>
+    <string name="icon_text_color">Set icon text color</string>
 </resources>

@@ -30,6 +30,8 @@ final class ColorPickerTargets {
     static final String TAG_STATS = "ColorPicker";
     /** "Widget text and button color" / "Horizontal bar text and button color". */
     static final String TAG_TINT = "TintPicker";
+    /** "Set icon text color": the names under the icons (IconTextColor). */
+    static final String TAG_ICON_TEXT = "IconTextPicker";
     /** "Set global theme color": the accent of the settings (ThemeAccent). */
     static final String TAG_ACCENT = "AccentPicker";
     /** A background's own colour, from the background selector. */
@@ -85,6 +87,10 @@ final class ColorPickerTargets {
         ColorPicker tint = find(fragments, TAG_TINT);
         if (tint != null && tint.storeKey() != null) {
             bindTint(tint, prefs, tint.storeKey());
+        }
+        ColorPicker iconText = find(fragments, TAG_ICON_TEXT);
+        if (iconText != null && iconText.storeKey() != null) {
+            bindTint(iconText, prefs, iconText.storeKey());
         }
         ColorPicker accent = find(fragments, TAG_ACCENT);
         if (accent != null) {

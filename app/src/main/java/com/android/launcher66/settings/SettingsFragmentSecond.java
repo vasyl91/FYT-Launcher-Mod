@@ -456,6 +456,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         Preference barBackground = findPreference(Keys.BAR_BACKGROUND);
         Preference widgetsTint = findPreference(Keys.WIDGETS_TINT);
         Preference accentRow = findPreference(ThemeAccent.KEY);
+        Preference iconTextRow = findPreference(Keys.WORKSPACE_TEXT_COLOR);
         Preference barTint = findPreference(Keys.BAR_TINT);
         iconTextSizeRows = new IconTextSizeRows(this, sharedPrefs, helpers);
         iconTextSizeRows.bind();
@@ -647,6 +648,12 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (accentRow != null) {
             accentRow.setOnPreferenceClickListener(preference -> {
                 showAccentPicker();
+                return true;
+            });
+        }
+        if (iconTextRow != null) {
+            iconTextRow.setOnPreferenceClickListener(preference -> {
+                showIconTextPicker();
                 return true;
             });
         }
@@ -1200,6 +1207,20 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         picker.enableAutoClose();
         ColorPickerTargets.bindAccent(picker, sharedPrefs);
         picker.show(getParentFragmentManager(), ColorPickerTargets.TAG_ACCENT);
+    }
+
+    /**
+     * "Set icon text color": the colour picker in its text mode, as for the tints ("Select" stores the opaque colour,
+     * "Default" forgets it and the names are white again). The home screen follows at once (WidgetStyler.isLookSetting).
+     */
+    private void showIconTextPicker() {
+        int current = sharedPrefs.contains(Keys.WORKSPACE_TEXT_COLOR)
+                ? sharedPrefs.getInt(Keys.WORKSPACE_TEXT_COLOR, Color.WHITE) : Color.WHITE;
+        ColorPicker picker = ColorPicker.newTextInstance(current, true);
+        tintPicker = new WeakReference<>(picker);
+        picker.enableAutoClose();
+        ColorPickerTargets.bindTint(picker, sharedPrefs, Keys.WORKSPACE_TEXT_COLOR);
+        picker.show(getParentFragmentManager(), ColorPickerTargets.TAG_ICON_TEXT);
     }
 
     /** The settings follow every change of the accent, or of the stock layout that turns it off. */

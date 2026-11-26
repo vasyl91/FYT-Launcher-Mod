@@ -568,4 +568,5 @@
     <string name="openweather_key_summary">ባዶ፦ አብሮ የተሰራው ቁልፍ ጥቅም ላይ ይውላል። ከ openweathermap.org በነጻ ባገኙት የራስዎ ቁልፍ የአየር ሁኔታው በተጋራው ቁልፍ ላይ አይመረኮዝም።</string>
     <string name="openweather_key_invalid">ይህ የ OpenWeather ቁልፍ አይደለም (32 ፊደላትና አሃዞች)።</string>
     <string name="theme_accent_color">አጠቃላይ የገጽታ ቀለም አዘጋጅ</string>
+    <string name="icon_text_color">የአዶ ጽሑፍ ቀለም አዘጋጅ</string>
 </resources>

@@ -568,4 +568,5 @@
     <string name="openweather_key_summary">Akunalutho: kusetshenziswa ukhiye owakhelwe ngaphakathi. Ngokhiye wakho wamahhala ovela ku-openweathermap.org, isimo sezulu asincikile kulowo owabiwayo.</string>
     <string name="openweather_key_invalid">Lokho akuwona ukhiye we-OpenWeather (izinhlamvu nezinombolo ezingu-32).</string>
     <string name="theme_accent_color">Setha umbala wetimu jikelele</string>
+    <string name="icon_text_color">Setha umbala wombhalo wesithonjana</string>
 </resources>

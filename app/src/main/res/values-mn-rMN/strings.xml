@@ -568,4 +568,5 @@
     <string name="openweather_key_summary">Хоосон: суулгасан түлхүүрийг ашиглана. openweathermap.org-оос авсан өөрийн үнэгүй түлхүүртэй бол цаг агаар нийтийн түлхүүрээс хамаарахгүй.</string>
     <string name="openweather_key_invalid">Энэ OpenWeather түлхүүр биш (32 үсэг, тоо).</string>
     <string name="theme_accent_color">Нийт загварын өнгийг тохируулах</string>
+    <string name="icon_text_color">Дүрсний бичвэрийн өнгийг тохируулах</string>
 </resources>

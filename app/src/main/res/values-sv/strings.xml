@@ -568,4 +568,5 @@
     <string name="openweather_key_summary">Tomt: den inbyggda nyckeln används. Med din egen gratisnyckel från openweathermap.org är vädret inte beroende av den delade.</string>
     <string name="openweather_key_invalid">Det där är ingen OpenWeather-nyckel (32 bokstäver och siffror).</string>
     <string name="theme_accent_color">Ange global temafärg</string>
+    <string name="icon_text_color">Ange textfärg för ikoner</string>
 </resources>

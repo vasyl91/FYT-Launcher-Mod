@@ -568,4 +568,5 @@
     <string name="openweather_key_summary">خالی: از کلید داخلی استفاده می‌شود. با کلید رایگان خودتان از openweathermap.org، آب‌وهوا به کلید مشترک وابسته نیست.</string>
     <string name="openweather_key_invalid">این کلید OpenWeather نیست (۳۲ حرف و رقم).</string>
     <string name="theme_accent_color">تنظیم رنگ کلی پوسته</string>
+    <string name="icon_text_color">تنظیم رنگ متن نمادها</string>
 </resources>

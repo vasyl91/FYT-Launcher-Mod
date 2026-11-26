@@ -568,4 +568,5 @@
     <string name="openweather_key_summary">Vide : la clé intégrée est utilisée. Avec votre propre clé gratuite d\'openweathermap.org, la météo ne dépend pas de la clé partagée.</string>
     <string name="openweather_key_invalid">Ce n\'est pas une clé OpenWeather (32 lettres et chiffres).</string>
     <string name="theme_accent_color">Définir la couleur globale du thème</string>
+    <string name="icon_text_color">Définir la couleur du texte des icônes</string>
 </resources>

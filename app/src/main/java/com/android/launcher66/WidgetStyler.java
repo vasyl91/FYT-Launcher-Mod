@@ -36,7 +36,7 @@ public final class WidgetStyler {
                 || Keys.BAR_CUSTOM_BACKGROUND_COLOR.equals(key)
                 || Keys.VERTICAL_BAR_SELECTED_BACKGROUND.equals(key)
                 || Keys.VERTICAL_BAR_CUSTOM_BACKGROUND_COLOR.equals(key)
-                || Keys.USER_LAYOUT.equals(key);
+                || Keys.WORKSPACE_TEXT_COLOR.equals(key) || Keys.USER_LAYOUT.equals(key);
     }
 
     /** "Widget text and button color": the chosen colour, or ViewTint.NONE while none was chosen. */
@@ -86,6 +86,8 @@ public final class WidgetStyler {
                 View page = workspace.getChildAt(i);
                 if (page instanceof CellLayout) {
                     ((CellLayout) page).applyWidgetStyle(style, count);
+                    ((CellLayout) page).applyIconTextColor(
+                            IconTextColor.workspace(launcher.mPrefs, launcher), count);
                 }
             }
             workspace.applyBarStyle(style, count);

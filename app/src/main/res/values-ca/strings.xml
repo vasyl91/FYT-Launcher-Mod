@@ -568,4 +568,5 @@
     <string name="openweather_key_summary">Buit: s\'utilitza la clau integrada. Amb una clau gratuïta pròpia d\'openweathermap.org el temps no depèn de la compartida.</string>
     <string name="openweather_key_invalid">Això no és una clau d\'OpenWeather (32 lletres i xifres).</string>
     <string name="theme_accent_color">Defineix el color global del tema</string>
+    <string name="icon_text_color">Defineix el color del text de les icones</string>
 </resources>
