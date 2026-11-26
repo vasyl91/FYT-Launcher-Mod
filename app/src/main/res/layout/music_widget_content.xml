@@ -52,7 +52,7 @@
 
     <!-- The 7870: the track's position as a slider in place of the bar above (PositionSlider); its knob and
          its size come from MusicWidgetSizer -->
-    <SeekBar
+    <com.android.launcher66.PositionSeekBar
         android:id="@+id/music_position"
         android:tag="@string/skin_ruleless"
         android:layout_width="match_parent"

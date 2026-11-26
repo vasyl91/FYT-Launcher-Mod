@@ -1476,6 +1476,14 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
             return false;
         }
 
+        // A touch that begins on the music widget's position slider is the slider's, also while the pages still settle
+        // from a swipe (the case below that takes a first touch of a settling pager for the pager's own)
+        if (TouchOwner.claimed()
+                || ((ev.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN
+                        && TouchOwner.wants(ev.getRawX(), ev.getRawY()))) {
+            return false;
+        }
+
         /*
          * This method JUST determines whether we want to intercept the motion.
          * If we return true, onTouchEvent will be called and we do the actual
@@ -1596,6 +1604,7 @@ public abstract class PagedView extends ViewGroup implements ViewGroup.OnHierarc
      * user moves their touch point too far.
      */
     protected void determineScrollingStart(MotionEvent ev, float touchSlopScale) {
+        if (TouchOwner.claimed()) return;   // the position slider has this touch
         final int pointerIndex = ev.findPointerIndex(mActivePointerId);
         if (pointerIndex == -1) return;
 

@@ -4789,6 +4789,9 @@ public class Workspace extends SmoothPagedView
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
+        if (TouchOwner.claimed()) {
+            return false;   // the position slider of the music widget has this touch, pages and taps included
+        }
         switch (ev.getAction() & MotionEvent.ACTION_MASK) {
         case MotionEvent.ACTION_DOWN:
             mXDown = ev.getX();
@@ -5002,6 +5005,7 @@ public class Workspace extends SmoothPagedView
     @Override
     protected void determineScrollingStart(MotionEvent ev) {
         if (!isFinishedSwitchingState()) return;
+        if (TouchOwner.claimed()) return;   // the position slider of the music widget has this touch
 
         float deltaX = ev.getX() - mXDown;
         float absDeltaX = Math.abs(deltaX);
