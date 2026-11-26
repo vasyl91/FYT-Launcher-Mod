@@ -87,10 +87,6 @@
     <string name="car_guide">ຄູ່ມື</string>
     <string name="select_default_app">ເລືອກແອັບທີ່ຕ້ອງການເປີດຕາມຄ່າເລີ່ມຕົ້ນ</string>
 
-    <string name="dt_time_widget">ວິດເຈັດເວລາ</string>
-    <string name="dt_radio_widget">ວິດເຈັດວິທະຍຸ</string>
-    <string name="dt_music_widget">ວິດເຈັດເພງ</string>
-    <string name="dt_navi_widget">ວິດເຈັດນຳທາງ</string>
     <string name="group_wallpapers">ພາບພື້ນຫຼັງ</string>
 
     <string name="car_realnavi">ການນຳທາງສົດ</string>

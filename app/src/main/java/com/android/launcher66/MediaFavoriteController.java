@@ -32,8 +32,6 @@ import com.android.launcher66.settings.SpotifyRating;
 import com.android.launcher66.settings.SyuMusicLibrary;
 import com.fyt.car.MusicService;
 import com.fyt.car.StockSources;
-import com.syu.widget.DateMusicProvider;
-import com.syu.widget.Widget;
 
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
@@ -725,7 +723,7 @@ public final class MediaFavoriteController {
 
         Context appContext = context.getApplicationContext();
         // SpotifyRating already posts this to the main thread.
-        SpotifyRating.setOnUpdated(() -> Widget.widgetUpdate(appContext, DateMusicProvider.class));
+        SpotifyRating.setOnUpdated(() -> refreshWidget(appContext));
     }
 
     private static MediaController getTargetController(Context context, String preferredPackage) {
@@ -2019,8 +2017,7 @@ public final class MediaFavoriteController {
 
         // The lookup runs on a background thread; the widget has to be told
         // once the answer lands, or the new state waits for the next tick.
-        YouTubeRevancedLikeState.setOnUpdated(() -> new Handler(Looper.getMainLooper())
-                .post(() -> Widget.widgetUpdate(appContext, DateMusicProvider.class)));
+        YouTubeRevancedLikeState.setOnUpdated(() -> refreshWidget(appContext));
 
         YouTubeRevancedLikeState.setKidsChecker(
                 videoId -> FytRating.isMadeForKids(appContext, videoId));
@@ -2200,10 +2197,20 @@ public final class MediaFavoriteController {
         return mPrefs.getBoolean(key, false);
     }
 
+    /**
+     * The launcher's own music widget takes the new state of the favorite button (the app widgets that used to
+     * show it too are gone). Any thread: the button is bound on the main thread.
+     */
     public static void refreshWidget(Context context) {
-        if (context != null) {
-            Widget.widgetUpdate(context.getApplicationContext(), DateMusicProvider.class);
+        final Launcher launcher = Launcher.mLauncher;
+        if (context == null || launcher == null || launcher.mMusicWidget == null) {
+            return;
         }
+        new Handler(Looper.getMainLooper()).post(() -> {
+            if (launcher.mMusicWidget != null) {
+                launcher.mMusicWidget.updateFavoriteButtonState();
+            }
+        });
     }
 
     /**

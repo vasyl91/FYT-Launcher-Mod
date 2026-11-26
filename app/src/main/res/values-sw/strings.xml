@@ -87,10 +87,6 @@
     <string name="car_guide">Mwongozo</string>
     <string name="select_default_app">Chagua programu itakayofunguliwa kwa chaguomsingi</string>
 
-    <string name="dt_time_widget">Wijeti ya saa</string>
-    <string name="dt_radio_widget">Wijeti ya redio</string>
-    <string name="dt_music_widget">Wijeti ya muziki</string>
-    <string name="dt_navi_widget">Wijeti ya urambazaji</string>
     <string name="group_wallpapers">Mandhari</string>
 
     <string name="car_realnavi">Urambazaji wa moja kwa moja</string>

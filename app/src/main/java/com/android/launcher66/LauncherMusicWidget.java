@@ -41,8 +41,6 @@ import com.syu.util.Id3Info;
 import com.syu.util.Lrc;
 import com.syu.util.Utils;
 import com.syu.util.WindowUtil;
-import com.syu.widget.DateMusicProvider;
-import com.syu.widget.DateRadioProvider;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.Arrays;
@@ -504,7 +502,6 @@ final class LauncherMusicWidget {
                 idleSecond = MusicWidgetText.secondLine(false, normalizeMediaText(artist), false);
             }
             setTrack(idleTitle, idleSecond);
-            mLauncher.requestWidgetUpdate(DateMusicProvider.class, DateRadioProvider.class);
         }
     };
 
@@ -515,7 +512,6 @@ final class LauncherMusicWidget {
                 @Override
                 public void run() {
                     setPlayPauseIcon();
-                    mLauncher.requestWidgetUpdate(DateMusicProvider.class, DateRadioProvider.class);
                 }
             }, 300);
         } else {
@@ -1723,7 +1719,6 @@ final class LauncherMusicWidget {
                 MediaTransportController.ACTION_PREVIOUS,
                 getTransportTargetPackage()
         );
-        mLauncher.requestWidgetUpdate(DateMusicProvider.class, DateRadioProvider.class);
     }
 
     public void onPlayPauseButtonClicked(boolean barView) {
@@ -1815,7 +1810,6 @@ final class LauncherMusicWidget {
                 MediaTransportController.ACTION_NEXT,
                 getTransportTargetPackage()
         );
-        mLauncher.requestWidgetUpdate(DateMusicProvider.class, DateRadioProvider.class);
     }
 
     void setBarButtonsTint(Button button) {

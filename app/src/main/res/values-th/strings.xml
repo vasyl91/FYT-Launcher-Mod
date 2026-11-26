@@ -87,10 +87,6 @@
     <string name="car_guide">คู่มือ</string>
     <string name="select_default_app">เลือกแอปที่จะเปิดโดยค่าเริ่มต้น</string>
 
-    <string name="dt_time_widget">วิดเจ็ตเวลา</string>
-    <string name="dt_radio_widget">วิดเจ็ตวิทยุ</string>
-    <string name="dt_music_widget">วิดเจ็ตเพลง</string>
-    <string name="dt_navi_widget">วิดเจ็ตนำทาง</string>
     <string name="group_wallpapers">วอลเปเปอร์</string>
 
     <string name="car_realnavi">การนำทางสด</string>

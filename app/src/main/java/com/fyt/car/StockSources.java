@@ -19,9 +19,6 @@ import com.android.launcher66.NotificationListener;
 import com.fyt.car.StockKindArbiter.Kind;
 import com.syu.car.CarStates;
 import com.syu.remote.RemoteTools;
-import com.syu.widget.DateMusicProvider;
-import com.syu.widget.DateRadioProvider;
-import com.syu.widget.Widget;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -348,8 +345,6 @@ public final class StockSources {
         }
         if (sApp != null) {
             MediaFavoriteController.onStockFavoriteChanged(sApp);
-            Widget.widgetUpdate(sApp, DateMusicProvider.class);
-            Widget.widgetUpdate(sApp, DateRadioProvider.class);
         }
     }
 

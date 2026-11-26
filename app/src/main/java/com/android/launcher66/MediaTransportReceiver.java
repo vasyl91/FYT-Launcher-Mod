@@ -3,16 +3,9 @@ package com.android.launcher66;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
-import android.os.Looper;
 
-import com.syu.widget.DateMusicProvider;
-import com.syu.widget.DateRadioProvider;
-import com.syu.widget.Widget;
 
 public class MediaTransportReceiver extends BroadcastReceiver {
-    private static final long WIDGET_REFRESH_DELAY_MS = 800L;
-
     @Override
     public void onReceive(Context context, Intent intent) {
         if (context == null || intent == null) {
@@ -23,17 +16,6 @@ public class MediaTransportReceiver extends BroadcastReceiver {
         // The player the launcher's widget shows: the stock one too, not a paused app's session
         Launcher launcher = Launcher.mLauncher;
         String target = launcher != null ? launcher.mMusicWidget.getTransportTargetPackage() : null;
-        if (MediaTransportController.handleAction(appContext, intent.getAction(), target)) {
-            refreshMusicWidgets(appContext);
-        }
-    }
-
-    private void refreshMusicWidgets(Context context) {
-        Widget.widgetUpdate(context, DateMusicProvider.class);
-        Widget.widgetUpdate(context, DateRadioProvider.class);
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            Widget.widgetUpdate(context, DateMusicProvider.class);
-            Widget.widgetUpdate(context, DateRadioProvider.class);
-        }, WIDGET_REFRESH_DELAY_MS);
+        MediaTransportController.handleAction(appContext, intent.getAction(), target);
     }
 }

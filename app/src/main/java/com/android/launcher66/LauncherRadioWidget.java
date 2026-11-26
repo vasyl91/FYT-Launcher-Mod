@@ -7,7 +7,6 @@ import android.widget.TextView;
 import com.fyt.widget.RadioRuler;
 import com.syu.car.CarStates;
 import com.syu.remote.Callback;
-import com.syu.widget.DateRadioProvider;
 import java.math.BigDecimal;
 import share.Config;
 import share.ResValue;
@@ -123,7 +122,6 @@ final class LauncherRadioWidget {
                     }
                 }
             }
-            mLauncher.requestWidgetUpdate(DateRadioProvider.class);
         }
     };
 

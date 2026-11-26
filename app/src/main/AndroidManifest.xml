@@ -386,77 +386,12 @@
         </receiver>
 
         <receiver
-            android:exported="true"
-            android:icon="@drawable/fyt_ic_date"
-            android:label="@string/dt_music_widget"
-            android:name="com.syu.widget.DateMusicProvider"
-            android:theme="@style/Theme.MaterialComponents.DayNight.Bridge">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/fyt_dt_provider" />
-        </receiver>
-
-        <receiver
-            android:exported="true"
-            android:icon="@drawable/fyt_ic_date"
-            android:label="@string/dt_time_widget"
-            android:name="com.syu.widget.DateTimeProvider"
-            android:theme="@style/Theme.MaterialComponents.DayNight.Bridge">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/fyt_dt_provider1" />
-        </receiver>
-
-        <receiver
-            android:exported="true"
-            android:icon="@drawable/fyt_ic_date"
-            android:label="@string/dt_radio_widget"
-            android:name="com.syu.widget.DateRadioProvider"
-            android:theme="@style/Theme.MaterialComponents.DayNight.Bridge">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/fyt_dt_provider1" />
-        </receiver>
-
-        <receiver
-            android:exported="true"
-            android:icon="@drawable/fyt_ic_date"
-            android:label="@string/dt_navi_widget"
-            android:name="com.syu.widget.DateNaviProvider"
-            android:theme="@style/Theme.MaterialComponents.DayNight.Bridge">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/fyt_dt_provider2" />
-        </receiver>
-
-        <receiver
             android:name="com.android.launcher66.ChangedAuxReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.syu.launcherdisplayico" />
             </intent-filter>
         </receiver>
-
-        <service
-            android:name="com.syu.widget.RestartService"
-            android:exported="true"
-            android:permission="com.android.launcher66.permission.WRITE_SETTINGS">
-            <intent-filter>
-                <action android:name="com.syu.widget.RestartService" />
-            </intent-filter>
-        </service>
 
         <provider
             android:authorities="com.android.launcher66.settings"

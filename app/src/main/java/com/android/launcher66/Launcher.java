@@ -168,12 +168,7 @@ import com.syu.util.WindowUtil;
 import com.syu.utils.W3Utils;
 import com.syu.weather.WeatherDescription;
 import com.syu.weather.WeatherManager;
-import com.syu.widget.DateMusicProvider;
-import com.syu.widget.DateNaviProvider;
-import com.syu.widget.DateRadioProvider;
-import com.syu.widget.DateTimeProvider;
 import com.syu.widget.TimeUpdateReceiver;
-import com.syu.widget.Widget;
 
 import org.litepal.LitePal;
 
@@ -277,7 +272,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private static final String RUNTIME_STATE_PENDING_ADD_WIDGET_ID = "launcher.add_widget_id";
     static final int SCREEN_COUNT = 5;
     public static final String SHOW_WEIGHT_WATCHER = "debug.show_mem";
-    private static final long WIDGET_UPDATE_THROTTLE_MS = 350L;
     private static final long SERVICE_RUNNING_CACHE_MS = 15000L;
     private static final long FAST_HOME_RESUME_DEFER_MS = 450L;
     private static final long FAST_HOME_PIP_DEFER_MS = 1000L;
@@ -528,8 +522,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     private volatile WindowHost mWindowHost;
     boolean onBackPip = false;
     boolean onWorkspacePip = false;
-    private boolean mWidgetUpdatePending = false;
-    private long mLastWidgetUpdateMs = 0L;
     // Status bar swipe strip (StatusBarSwipeDetector): runs only while the launcher is resumed.
     // onResume() and onPause() both (re)schedule this one runnable, so the latest state wins.
     private static final long SWIPE_DETECTOR_SYNC_DELAY_MS = 500L;
@@ -1038,7 +1030,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     if (Launcher.this.mTvSpeed != null) {
                         Launcher.this.mTvSpeed.setText(String.valueOf(LauncherApplication.sApp.getResources().getString(R.string.car_speed)) + Launcher.this.carSpeed);
                     }
-                    requestWidgetUpdate(DateNaviProvider.class);
                     return;
                 }
                 return;
@@ -1096,48 +1087,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         }
     };
     private int[] images = {ResValue.getInstance().num00, ResValue.getInstance().num01, ResValue.getInstance().num02, ResValue.getInstance().num03, ResValue.getInstance().num04, ResValue.getInstance().num05, ResValue.getInstance().num06, ResValue.getInstance().num07, ResValue.getInstance().num08, ResValue.getInstance().num09};
-
-
-    void requestWidgetUpdate(Class<?>... providers) {
-        if (providers != null && providers.length > 0) {
-            for (Class<?> provider : providers) {
-                Widget.widgetUpdate(LauncherApplication.sApp, provider);
-            }
-            return;
-        }
-
-        long now = SystemClock.uptimeMillis();
-        long elapsed = now - mLastWidgetUpdateMs;
-        if (!mWidgetUpdatePending && elapsed >= WIDGET_UPDATE_THROTTLE_MS) {
-            mLastWidgetUpdateMs = now;
-            Widget.update(LauncherApplication.sApp);
-            return;
-        }
-
-        if (mWidgetUpdatePending) {
-            return;
-        }
-
-        mWidgetUpdatePending = true;
-        long delay = Math.max(0L, WIDGET_UPDATE_THROTTLE_MS - elapsed);
-        mHandler.postDelayed(() -> {
-            mWidgetUpdatePending = false;
-            mLastWidgetUpdateMs = SystemClock.uptimeMillis();
-            Widget.update(LauncherApplication.sApp);
-        }, delay);
-    }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     private IUiRefresher refreshVideo = new IUiRefresher() { 
@@ -1276,7 +1225,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                     }
                 }
             }
-            requestWidgetUpdate(DateRadioProvider.class);
         }
     };
 
@@ -1933,7 +1881,6 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
         // there): none of these receivers is needed to show the home screen.
         runAfterFirstFrame(this::initRegisterReceiver);
         
-        requestWidgetUpdate();
         markStartup("widgetUpdate");
 		
         onBackPressedX();
@@ -9372,8 +9319,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        Widget.widgetUpdate(LauncherApplication.sApp, DateTimeProvider.class);
-        Widget.widgetUpdate(LauncherApplication.sApp, DateMusicProvider.class);
+        // Nothing to do: the launcher's own app widgets (date, music, radio, navi) are gone (round 28)
     }
 
     /**

@@ -87,10 +87,6 @@
     <string name="car_guide">Guide</string>
     <string name="select_default_app">Välj appen som ska öppnas som standard</string>
 
-    <string name="dt_time_widget">Tidswidget</string>
-    <string name="dt_radio_widget">Radiowidget</string>
-    <string name="dt_music_widget">Musikwidget</string>
-    <string name="dt_navi_widget">Navigeringswidget</string>
     <string name="group_wallpapers">Bakgrunder</string>
 
     <string name="car_realnavi">Live-navigering</string>

@@ -10,8 +10,6 @@ import android.os.Bundle;
 import com.fyt.car.LauncherNotify;
 import com.fyt.car.MapConfig;
 import com.syu.car.CarStates;
-import com.syu.widget.DateNaviProvider;
-import com.syu.widget.Widget;
 
 public class MyAutoMapReceiver extends BroadcastReceiver {
     public static int mCurDis_All;
@@ -70,10 +68,6 @@ public class MyAutoMapReceiver extends BroadcastReceiver {
                     if (!LauncherApplication.sApp.getResources().getBoolean(R.bool.apps_widget_design)) {
                         LauncherNotify.NOTIFIER_NAVISTATE.set(new int[]{mCurDis_Remain, mCurState}, null, null, new String[]{mCurRoadName}, null, "unknown");
                     }
-                }
-                if (LauncherApplication.sApp.getResources().getBoolean(R.bool.apps_widget_design) && !LauncherApplication.sApp.getResources().getBoolean(R.bool.apps_widget_amauto)) {
-                    Widget.widgetUpdate(LauncherApplication.sApp, DateNaviProvider.class);
-                    return;
                 }
                 return;
             }

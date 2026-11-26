@@ -87,10 +87,6 @@
     <string name="car_guide">Przewodnik</string>
     <string name="select_default_app">Wybierz aplikację, która ma być domyślnie otwierana</string>
 
-    <string name="dt_time_widget">Widżet czasu</string>
-    <string name="dt_radio_widget">Widżet radia</string>
-    <string name="dt_music_widget">Widżet muzyki</string>
-    <string name="dt_navi_widget">Widżet nawigacji</string>
     <string name="group_wallpapers">Tapety</string>
 
     <string name="car_realnavi">Nawigacja na żywo</string>

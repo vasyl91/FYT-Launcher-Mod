@@ -87,10 +87,6 @@
     <string name="car_guide">Vodič</string>
     <string name="select_default_app">Odaberite aplikaciju koja će se zadano otvarati</string>
 
-    <string name="dt_time_widget">Widget vremena</string>
-    <string name="dt_radio_widget">Widget radija</string>
-    <string name="dt_music_widget">Widget glazbe</string>
-    <string name="dt_navi_widget">Widget navigacije</string>
     <string name="group_wallpapers">Pozadine</string>
 
     <string name="car_realnavi">Navigacija uživo</string>

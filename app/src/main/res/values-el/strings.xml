@@ -87,10 +87,6 @@
     <string name="car_guide">Οδηγός</string>
     <string name="select_default_app">Επιλέξτε την εφαρμογή που θα ανοίγει από προεπιλογή</string>
 
-    <string name="dt_time_widget">Γραφικό στοιχείο ώρας</string>
-    <string name="dt_radio_widget">Γραφικό στοιχείο ραδιοφώνου</string>
-    <string name="dt_music_widget">Γραφικό στοιχείο μουσικής</string>
-    <string name="dt_navi_widget">Γραφικό στοιχείο πλοήγησης</string>
     <string name="group_wallpapers">Ταπετσαρίες</string>
 
     <string name="car_realnavi">Ζωντανή πλοήγηση</string>

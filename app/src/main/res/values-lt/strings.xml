@@ -87,10 +87,6 @@
     <string name="car_guide">Vadovas</string>
     <string name="select_default_app">Pasirinkite programą, kuri bus atidaroma pagal numatytuosius nustatymus</string>
 
-    <string name="dt_time_widget">Laiko valdiklis</string>
-    <string name="dt_radio_widget">Radijo valdiklis</string>
-    <string name="dt_music_widget">Muzikos valdiklis</string>
-    <string name="dt_navi_widget">Navigacijos valdiklis</string>
     <string name="group_wallpapers">Ekrano fonai</string>
 
     <string name="car_realnavi">Navigacija realiuoju laiku</string>

@@ -87,10 +87,6 @@
     <string name="car_guide">가이드</string>
     <string name="select_default_app">기본으로 열 앱을 선택하세요</string>
 
-    <string name="dt_time_widget">시간 위젯</string>
-    <string name="dt_radio_widget">라디오 위젯</string>
-    <string name="dt_music_widget">음악 위젯</string>
-    <string name="dt_navi_widget">내비 위젯</string>
     <string name="group_wallpapers">배경화면</string>
 
     <string name="car_realnavi">실시간 내비게이션</string>

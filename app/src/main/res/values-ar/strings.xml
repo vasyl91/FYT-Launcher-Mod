@@ -87,10 +87,6 @@
     <string name="car_guide">الدليل</string>
     <string name="select_default_app">اختر التطبيق الذي سيُفتح افتراضيًا</string>
 
-    <string name="dt_time_widget">عنصر واجهة الوقت</string>
-    <string name="dt_radio_widget">عنصر واجهة الراديو</string>
-    <string name="dt_music_widget">عنصر واجهة الموسيقى</string>
-    <string name="dt_navi_widget">عنصر واجهة الملاحة</string>
     <string name="group_wallpapers">الخلفيات</string>
 
     <string name="car_realnavi">الملاحة المباشرة</string>

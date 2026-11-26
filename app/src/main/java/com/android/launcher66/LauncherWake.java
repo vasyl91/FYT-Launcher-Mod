@@ -7,7 +7,6 @@ import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.WakeDetection;
 import com.syu.util.WindowHost;
 import com.syu.util.WindowUtil;
-import com.syu.widget.Widget;
 
 /**
  * What the launcher itself does after the device wakes: the widget bar refresh WakeDetection

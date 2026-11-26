@@ -87,10 +87,6 @@
     <string name="car_guide">Руководство</string>
     <string name="select_default_app">Выберите приложение, которое будет открываться по умолчанию</string>
 
-    <string name="dt_time_widget">Виджет времени</string>
-    <string name="dt_radio_widget">Виджет радио</string>
-    <string name="dt_music_widget">Виджет музыки</string>
-    <string name="dt_navi_widget">Виджет навигатора</string>
     <string name="group_wallpapers">Обои</string>
 
     <string name="car_realnavi">Навигация в реальном времени</string>

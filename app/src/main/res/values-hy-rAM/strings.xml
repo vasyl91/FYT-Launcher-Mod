@@ -87,10 +87,6 @@
     <string name="car_guide">Ուղեցույց</string>
     <string name="select_default_app">Ընտրեք հավելվածը, որը կբացվի լռելյայն</string>
 
-    <string name="dt_time_widget">Ժամի վիջեթ</string>
-    <string name="dt_radio_widget">Ռադիոյի վիջեթ</string>
-    <string name="dt_music_widget">Երաժշտության վիջեթ</string>
-    <string name="dt_navi_widget">Նավիգացիայի վիջեթ</string>
     <string name="group_wallpapers">Պաստառներ</string>
 
     <string name="car_realnavi">Ուղիղ նավիգացիա</string>

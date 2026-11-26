@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.syu.widget.DateMusicProvider;
-import com.syu.widget.Widget;
 
 public class MediaFavoriteReceiver extends BroadcastReceiver {
     public static final String EXTRA_PREFERRED_PACKAGE =
@@ -24,9 +22,10 @@ public class MediaFavoriteReceiver extends BroadcastReceiver {
     static boolean handleFavoriteAction(Context context, String preferredPackage) {
         Context appContext = context.getApplicationContext();
         boolean sent = MediaFavoriteController.favoriteCurrent(appContext, preferredPackage);
-        Widget.widgetUpdate(appContext, DateMusicProvider.class);
+        // The launcher's own music widget shows the new state (refreshWidget), now and once the player has settled
+        MediaFavoriteController.refreshWidget(appContext);
         new Handler(Looper.getMainLooper()).postDelayed(
-                () -> Widget.widgetUpdate(appContext, DateMusicProvider.class),
+                () -> MediaFavoriteController.refreshWidget(appContext),
                 FAVORITE_WIDGET_REFRESH_DELAY_MS
         );
         return sent;

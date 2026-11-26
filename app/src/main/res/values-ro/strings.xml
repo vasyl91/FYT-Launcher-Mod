@@ -87,10 +87,6 @@
     <string name="car_guide">Ghid</string>
     <string name="select_default_app">Selectați aplicația care se va deschide implicit</string>
 
-    <string name="dt_time_widget">Widget oră</string>
-    <string name="dt_radio_widget">Widget radio</string>
-    <string name="dt_music_widget">Widget muzică</string>
-    <string name="dt_navi_widget">Widget navigare</string>
     <string name="group_wallpapers">Imagini de fundal</string>
 
     <string name="car_realnavi">Navigare în timp real</string>

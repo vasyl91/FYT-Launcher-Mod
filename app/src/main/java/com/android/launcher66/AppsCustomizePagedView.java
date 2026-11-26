@@ -252,7 +252,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     private boolean mInBulkBind;
     private boolean mNeedToUpdatePageCountsAndInvalidateData;
    
-    private static String[] containsWidgets = {"com.syu.widget.DateTimeProvider", "com.syu.music.MAppWidget"};
+    private static String[] containsWidgets = {"com.syu.music.MAppWidget"};
     private Helpers helpers = new Helpers();
 
     public AppsCustomizePagedView(Context context, AttributeSet attrs) {

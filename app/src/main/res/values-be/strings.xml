@@ -87,10 +87,6 @@
     <string name="car_guide">Даведнік</string>
     <string name="select_default_app">Выберыце праграму, якая будзе адкрывацца па змаўчанні</string>
 
-    <string name="dt_time_widget">Віджэт часу</string>
-    <string name="dt_radio_widget">Віджэт радыё</string>
-    <string name="dt_music_widget">Віджэт музыкі</string>
-    <string name="dt_navi_widget">Віджэт навігацыі</string>
     <string name="group_wallpapers">Шпалеры</string>
 
     <string name="car_realnavi">Навігацыя ў рэальным часе</string>

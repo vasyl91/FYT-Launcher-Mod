@@ -87,10 +87,6 @@
     <string name="car_guide">Průvodce</string>
     <string name="select_default_app">Vyberte aplikaci, která se má ve výchozím nastavení otevírat</string>
 
-    <string name="dt_time_widget">Widget času</string>
-    <string name="dt_radio_widget">Widget rádia</string>
-    <string name="dt_music_widget">Widget hudby</string>
-    <string name="dt_navi_widget">Widget navigace</string>
     <string name="group_wallpapers">Tapety</string>
 
     <string name="car_realnavi">Živá navigace</string>

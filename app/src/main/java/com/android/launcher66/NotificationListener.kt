@@ -42,9 +42,6 @@ import com.fyt.car.StockTitles
 import com.fyt.car.StockTrack
 import com.syu.car.CarStates
 import com.syu.remote.RemoteTools
-import com.syu.widget.DateMusicProvider
-import com.syu.widget.DateRadioProvider
-import com.syu.widget.Widget
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
@@ -1814,8 +1811,6 @@ class NotificationListener : NotificationListenerService() {
             position,
             albumCover
         )
-        Widget.widgetUpdate(this, DateMusicProvider::class.java)
-        Widget.widgetUpdate(this, DateRadioProvider::class.java)
     }
 
     private var appIconPackage: String? = null

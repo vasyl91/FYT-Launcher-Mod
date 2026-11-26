@@ -41,10 +41,6 @@
     <dimen name="workspace_paddingRight">0.0px</dimen>
     <dimen name="workspace_paddingBottom">0.0px</dimen>
     <dimen name="pageindicator_mariginBottom">-80.0px</dimen>
-    <dimen name="DTminHeight">160.0px</dimen>
-    <dimen name="DTminWidth">430.0px</dimen>
-    <dimen name="DT1minHeight">150.0px</dimen>
-    <dimen name="DT1minWidth">442.0px</dimen>
     <dimen name="dt_time_padding">3.0px</dimen>
     <dimen name="DTbtnHeight">70.0px</dimen>
     <dimen name="analogCenterX">0.0px</dimen>

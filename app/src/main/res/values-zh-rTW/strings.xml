@@ -87,10 +87,6 @@
     <string name="car_guide">指南</string>
     <string name="select_default_app">選擇需要預設開啟的應用程式</string>
 
-    <string name="dt_time_widget">時間日期</string>
-    <string name="dt_radio_widget">收音</string>
-    <string name="dt_music_widget">音樂</string>
-    <string name="dt_navi_widget">導航</string>
     <string name="group_wallpapers">桌布</string>
 
     <string name="car_realnavi">即時導航</string>

@@ -85,8 +85,7 @@ android {
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro",
-                "proguard-widgets.pro"
+                "proguard-rules.pro"
             )
             buildConfigField("boolean", "IS_DEBUG_FEATURES_ENABLED", "false")
         }

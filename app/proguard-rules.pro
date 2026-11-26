@@ -21,7 +21,6 @@
 #-renamesourcefileattribute SourceFile
 
 # Keep all widget-related classes
--keep class * extends android.appwidget.AppWidgetProvider { *; }
 -keep class * extends android.widget.RemoteViewsService { *; }
 -keep class * extends android.widget.RemoteViews { *; }
 

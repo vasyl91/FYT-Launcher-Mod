@@ -14,7 +14,6 @@ import android.view.KeyEvent;
 
 import com.fyt.car.MusicService;
 import com.fyt.car.StockSources;
-import com.syu.widget.WidgetProvider;
 
 import java.util.List;
 
@@ -26,6 +25,8 @@ public final class MediaTransportController {
 
     private static final String TAG = "MediaTransport";
     static final String STOCK_MUSIC_PACKAGE = "com.syu.music";
+    /** The action FYT's stock apps are started with when their launch intent is not found. */
+    private static final String APP_WIDGET_START = "syu.widget.start";
     private static final String STOCK_MUSIC_ACTIVITY = "com.syu.music.MAct";
     /** The radio app of a 7862, the target of the widget's buttons while the radio is shown. */
     private static final String STOCK_RADIO_PACKAGE = "com.syu.radio";
@@ -431,7 +432,7 @@ public final class MediaTransportController {
     private static Intent getStockMusicIntent(Context context) {
         Intent intent = context.getPackageManager().getLaunchIntentForPackage(STOCK_MUSIC_PACKAGE);
         if (intent == null) {
-            intent = new Intent(WidgetProvider.APP_WIDGET_START);
+            intent = new Intent(APP_WIDGET_START);
             intent.setComponent(new ComponentName(STOCK_MUSIC_PACKAGE, STOCK_MUSIC_ACTIVITY));
         }
         return intent;

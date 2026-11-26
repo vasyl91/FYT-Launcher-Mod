@@ -87,10 +87,6 @@
     <string name="car_guide">Ръководство</string>
     <string name="select_default_app">Изберете приложението, което да се отваря по подразбиране</string>
 
-    <string name="dt_time_widget">Приспособление за час</string>
-    <string name="dt_radio_widget">Приспособление за радио</string>
-    <string name="dt_music_widget">Приспособление за музика</string>
-    <string name="dt_navi_widget">Приспособление за навигация</string>
     <string name="group_wallpapers">Тапети</string>
 
     <string name="car_realnavi">Навигация на живо</string>

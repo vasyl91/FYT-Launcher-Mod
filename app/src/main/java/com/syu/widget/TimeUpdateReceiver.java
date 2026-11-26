@@ -1,7 +1,6 @@
 package com.syu.widget;
 
 import android.annotation.SuppressLint;
-import android.appwidget.AppWidgetManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -20,12 +19,9 @@ import com.fyt.widget.WeekDayTwo;
 import com.fyt.widget.Year;
 import com.syu.log.LogPreview;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class TimeUpdateReceiver extends BroadcastReceiver {
     public static final String SHOW_TIME = "com.syu.show_time";
-    static List<Widget> mWidgets = new ArrayList<>();
     private static TimeUpdateReceiver timeUpdate;
 
     @Override
@@ -34,10 +30,6 @@ public class TimeUpdateReceiver extends BroadcastReceiver {
         new Thread(() -> {
             if (Launcher.mLauncher != null) {
                 Launcher.mLauncher.runOnUiThread(() -> {
-                    List<Widget> mList = new ArrayList<>(TimeUpdateReceiver.mWidgets);
-                    for (Widget widget : mList) {
-                        widget.update();
-                    }
                     if (Clock.getClock() != null) {
                         Clock.getClock().setTime();
                     }
@@ -70,24 +62,12 @@ public class TimeUpdateReceiver extends BroadcastReceiver {
         }).start();
     }
 
-    public static void addWidget(Widget widget) {
-        if (!mWidgets.contains(widget)) {
-            mWidgets.add(widget);
-        }
-    }
-
-    public static void removeWidget(Widget widget) {
-        mWidgets.remove(widget);
-    }
-
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     public static void register(Context context) {
         synchronized (TimeUpdateReceiver.class) {
             if (timeUpdate == null) {
                 timeUpdate = new TimeUpdateReceiver();
             }
-            AppWidgetManager manager = AppWidgetManager.getInstance(context);
-            Widget.check(context, manager);
             IntentFilter filter = new IntentFilter("android.intent.action.TIME_TICK");
             filter.addAction("android.intent.action.DATE_CHANGED");
             filter.addAction("android.intent.action.TIME_SET");

@@ -87,10 +87,6 @@
     <string name="car_guide">មគ្គុទ្ទេសក៍</string>
     <string name="select_default_app">ជ្រើសរើសកម្មវិធីដែលត្រូវបើកតាមលំនាំដើម</string>
 
-    <string name="dt_time_widget">ធាតុក្រាហ្វិកម៉ោង</string>
-    <string name="dt_radio_widget">ធាតុក្រាហ្វិកវិទ្យុ</string>
-    <string name="dt_music_widget">ធាតុក្រាហ្វិកតន្ត្រី</string>
-    <string name="dt_navi_widget">ធាតុក្រាហ្វិកណាវី</string>
     <string name="group_wallpapers">ផ្ទាំងរូបភាព</string>
 
     <string name="car_realnavi">ការរុករកផ្ទាល់</string>

@@ -91,10 +91,6 @@
     <string name="skin_ruleless" translatable="false">Lionel</string>
     <string name="select_default_app">Select the application that needs to be opened by default</string>
     
-    <string name="dt_time_widget">Time Widget</string>
-    <string name="dt_radio_widget">Radio Widget</string>
-    <string name="dt_music_widget">Music Widget</string>
-    <string name="dt_navi_widget">Navi Widget</string>
     <string name="group_wallpapers">Wallpapers</string>
     
     <string name="car_realnavi">Live navigation</string>

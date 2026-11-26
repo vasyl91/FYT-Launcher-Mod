@@ -87,10 +87,6 @@
     <string name="car_guide">Gabay</string>
     <string name="select_default_app">Piliin ang app na bubuksan bilang default</string>
 
-    <string name="dt_time_widget">Widget ng oras</string>
-    <string name="dt_radio_widget">Widget ng radyo</string>
-    <string name="dt_music_widget">Widget ng musika</string>
-    <string name="dt_navi_widget">Widget ng nabigasyon</string>
     <string name="group_wallpapers">Mga wallpaper</string>
 
     <string name="car_realnavi">Live na nabigasyon</string>

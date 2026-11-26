@@ -87,10 +87,6 @@
     <string name="car_guide">Útmutató</string>
     <string name="select_default_app">Válassza ki az alapértelmezetten megnyitandó alkalmazást</string>
 
-    <string name="dt_time_widget">Idő widget</string>
-    <string name="dt_radio_widget">Rádió widget</string>
-    <string name="dt_music_widget">Zene widget</string>
-    <string name="dt_navi_widget">Navigáció widget</string>
     <string name="group_wallpapers">Háttérképek</string>
 
     <string name="car_realnavi">Élő navigáció</string>

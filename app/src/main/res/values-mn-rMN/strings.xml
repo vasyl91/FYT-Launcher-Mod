@@ -87,10 +87,6 @@
     <string name="car_guide">Гарын авлага</string>
     <string name="select_default_app">Анхдагчаар нээгдэх аппыг сонгоно уу</string>
 
-    <string name="dt_time_widget">Цагийн виджет</string>
-    <string name="dt_radio_widget">Радио виджет</string>
-    <string name="dt_music_widget">Хөгжмийн виджет</string>
-    <string name="dt_navi_widget">Навигацын виджет</string>
     <string name="group_wallpapers">Ханын зураг</string>
 
     <string name="car_realnavi">Бодит цагийн навигаци</string>

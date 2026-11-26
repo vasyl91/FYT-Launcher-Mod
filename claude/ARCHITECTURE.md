@@ -51,8 +51,7 @@ briefs and chat reports cite files inside it under their older paths.
   - Only the manifest differs between them; the code is the same.
   - The flavor is read at runtime only in `VersionChecker`, `CrashLogger` and the Shizuku download button [H].
 - **Build types:**
-  - `release`: R8 minify and shrink, `proguard-rules.pro` + `proguard-widgets.pro`,
-    `IS_DEBUG_FEATURES_ENABLED=false`.
+  - `release`: R8 minify and shrink, `proguard-rules.pro`, `IS_DEBUG_FEATURES_ENABLED=false`.
   - `debug`: LeakCanary, coverage, no Baseline Profile.
   - The Baseline Profile plugin adds `nonMinifiedRelease` and `benchmarkRelease`; its other variants are
     disabled.
@@ -353,7 +352,9 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
     launcher holds no Google credentials; `S/FytRatingBridgeStarter` starts it). `S/RatingReplyRule`
     handles a bridge that answers without a rating: its reason is logged and its wake activity is started
     once (`KNOWN_ISSUES.md` KI-32).
-- **App widgets:** `com/syu/widget/*Provider` (date, music, navigation, radio, time).
+- **App widgets:** none of the launcher's own since round 28 (the four `com/syu/widget/Date*Provider` were removed);
+  `com/syu/widget/` keeps `TimeUpdateReceiver` (it refreshes the clock and date views of the home screen) and
+  `util/TimeUtil`. Widgets of other apps are hosted as always (`LauncherAppWidgetHost`).
 
 ## 9. CAN bus and fuel statistics
 

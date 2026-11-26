@@ -371,9 +371,6 @@ public class ResValue {
     public int map_bg1 = getResId("map_bg1", R.drawable.class);
     public int im_am = getResId("am", R.drawable.class);
     public int im_pm = getResId("pm", R.drawable.class);
-    public int fyt_xml_dtmusicwidget = getResId("fyt_xml_dt_music_widget", R.layout.class);
-    public int fyt_xml_dtwidget = getResId("fyt_xml_dt_time_widget", R.layout.class);
-    public int fyt_xml_dtwidget1 = getResId("fyt_xml_dt_time_widget1", R.layout.class);
     public int widget_music_score = getResId("widget_music_score", R.id.class);
     public int widget_btav_score = getResId("widget_btav_score", R.id.class);
     public int music_score_0 = getResId("music_score_0", R.drawable.class);
