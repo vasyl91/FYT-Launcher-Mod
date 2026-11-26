@@ -381,6 +381,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         if ((int) grid.allAppsNumCols != mCellCountX || (int) grid.allAppsNumRows != mCellCountY) {
             onDataReady(getMeasuredWidth(), getMeasuredHeight());
         }
+        syncVertical();
     }
 
     protected void onDataReady(int width, int height) {
@@ -534,6 +535,80 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
             updatePageCounts();
             invalidateOnDataChange();
             mNeedToUpdatePageCountsAndInvalidateData = false;
+        }
+        syncVertical();
+    }
+
+    // ---- the drawer scrolling vertically (F2: AppsVerticalView), the default; the pager is the horizontal one
+
+    private AppsVerticalView mVertical;
+
+    private AppsVerticalView vertical() {
+        if (mVertical == null) {
+            AppsCustomizeTabHost host = getTabHost();
+            View found = host == null ? null : host.findViewById(R.id.apps_vertical);
+            if (found instanceof AppsVerticalView) {
+                mVertical = (AppsVerticalView) found;
+                mVertical.setHost(new AppsVerticalView.Host() {
+                    @Override
+                    public void onIconClick(View icon) {
+                        AppsCustomizePagedView.this.onClick(icon);
+                    }
+
+                    @Override
+                    public boolean onIconLongClick(View icon) {
+                        return AppsCustomizePagedView.this.onLongClick(icon);
+                    }
+
+                    @Override
+                    public void onIconTouch(View icon, android.view.MotionEvent event) {
+                        AppsCustomizePagedView.this.onTouch(icon, event);
+                    }
+
+                    @Override
+                    public PagedViewIcon.PressedCallback pressedCallback() {
+                        return AppsCustomizePagedView.this;
+                    }
+                });
+            }
+        }
+        return mVertical;
+    }
+
+    /** Whether the apps are shown in the vertical list: "App drawer: Scrolling direction" is vertical (the default). */
+    private boolean verticalWanted() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        return mContentType == ContentType.Applications && !DISABLE_ALL_APPS
+                && !"horizontal".equals(CreatorPrefs.of(prefs).getString(Keys.ALL_APPS_SCROLL, "vertical"));
+    }
+
+    /**
+     * The vertical list or the pager shows the apps, by the setting; the list gets the pager's own sorted apps and the grid of
+     * "Rows" and "Columns". Without the list (a layout that has none) the pager stays.
+     */
+    private void syncVertical() {
+        AppsVerticalView list = vertical();
+        if (list == null) {
+            return;
+        }
+        if (verticalWanted()) {
+            LauncherAppState app = LauncherAppState.getInstanceNoCreate();
+            if (app != null && app.getDynamicGrid() != null) {
+                DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
+                list.setGrid((int) grid.allAppsNumCols, (int) grid.allAppsNumRows);
+            }
+            list.setContentPadding(mPageLayoutPaddingLeft, mPageLayoutPaddingTop, mPageLayoutPaddingRight,
+                    mPageLayoutPaddingBottom);
+            list.setApps(mApps);
+            list.setVisibility(View.VISIBLE);
+            if (getVisibility() != View.INVISIBLE) {
+                setVisibility(View.INVISIBLE);
+            }
+        } else {
+            list.setVisibility(View.GONE);
+            if (getVisibility() != View.VISIBLE) {
+                setVisibility(View.VISIBLE);
+            }
         }
     }
 
@@ -1119,6 +1194,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         }
         mContentType = type;
         invalidatePageData(page, true);
+        syncVertical();
     }
 
     public ContentType getContentType() {
@@ -1759,6 +1835,9 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     public void reset() {
         // If we have reset, then we should not continue to restore the previous state
         mSaveInstanceStateItemIndex = -1;
+        if (mVertical != null) {
+            mVertical.scrollToTop();
+        }
 
         AppsCustomizeTabHost tabHost = getTabHost();
         String tag = tabHost.getCurrentTabTag();

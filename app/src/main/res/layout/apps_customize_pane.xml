@@ -51,6 +51,13 @@
                 launcher:widgetCountX="@integer/apps_customize_widget_cell_count_x"
                 launcher:widgetCountY="@integer/apps_customize_widget_cell_count_y" />
 
+            <!-- The apps scrolling vertically (F2): shown instead of the pager by AppsCustomizePagedView.syncVertical() -->
+            <com.android.launcher66.AppsVerticalView
+                android:id="@+id/apps_vertical"
+                android:visibility="gone"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" />
+
             <FrameLayout
                 android:id="@+id/animation_buffer"
                 android:background="#00000000"
