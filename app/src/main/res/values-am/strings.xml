@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">በመነሻ ማያ ገጽ ላይ ወደ ታች ማንሸራተት የማሳወቂያ ጥላውን ይከፍታል</string>
     <string name="swipe_down_notifications_off">ወደ ታች ማንሸራተት ምንም አያደርግም</string>
     <string name="swipe_down_notifications_on_fyt">በመነሻ ማያ ገጽ ላይ ወደ ታች ማንሸራተት የፈጣን ቅንብሮች ፓነሉን ይከፍታል</string>
+    <string name="double_tap_action">የሁለቴ መታ እርምጃ</string>
+    <string name="double_tap_none">ምንም</string>
+    <string name="double_tap_lock">ማያ ገጽን ቆልፍ</string>
+    <string name="double_tap_screen_off">ማያ ገጽን አጥፋ</string>
+    <string name="double_tap_screen_off_hint">መልሶ ለማብራት ማያ ገጹን እንደገና ሁለቴ መታ ያድርጉ</string>
+    <string name="double_tap_needs_accessibility">ማያ ገጹን በሁለቴ መታ ለመቆለፍ የማስጀመሪያውን የተደራሽነት አገልግሎት ያብሩ።</string>
 </resources>

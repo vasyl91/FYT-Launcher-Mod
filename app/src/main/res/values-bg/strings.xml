@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Плъзгането надолу на началния екран отваря панела за известия</string>
     <string name="swipe_down_notifications_off">Плъзгането надолу не прави нищо</string>
     <string name="swipe_down_notifications_on_fyt">Плъзгането надолу на началния екран отваря панела за бързи настройки</string>
+    <string name="double_tap_action">Действие при двукратно докосване</string>
+    <string name="double_tap_none">Няма</string>
+    <string name="double_tap_lock">Заключване на екрана</string>
+    <string name="double_tap_screen_off">Изключване на екрана</string>
+    <string name="double_tap_screen_off_hint">Докоснете екрана два пъти отново, за да го включите</string>
+    <string name="double_tap_needs_accessibility">За да заключвате екрана с двукратно докосване, включете услугата за достъпност на лаунчъра.</string>
 </resources>

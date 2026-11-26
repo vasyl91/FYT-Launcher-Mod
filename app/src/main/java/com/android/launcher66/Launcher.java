@@ -506,6 +506,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
     static final int REQUEST_CODE_NOTIFICATION_ACCESS = 1007;
     static final int REQUEST_CODE_INSTALL_PACKAGES = 1008;
     static final int REQUEST_CODE_ALL_FILES = 1009;
+    static final int REQUEST_CODE_ACCESSIBILITY = 1010;
     Helpers helpers = new Helpers();
     LinearLayout bottomButtons;
     LinearLayout bottomButtonsWidgets;

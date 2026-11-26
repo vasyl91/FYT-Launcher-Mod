@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Правядзенне ўніз на галоўным экране адкрывае шторку апавяшчэнняў</string>
     <string name="swipe_down_notifications_off">Правядзенне ўніз нічога не робіць</string>
     <string name="swipe_down_notifications_on_fyt">Правядзенне ўніз на галоўным экране адкрывае панэль хуткіх налад</string>
+    <string name="double_tap_action">Дзеянне падвойнага націску</string>
+    <string name="double_tap_none">Няма</string>
+    <string name="double_tap_lock">Заблакіраваць экран</string>
+    <string name="double_tap_screen_off">Выключыць экран</string>
+    <string name="double_tap_screen_off_hint">Двойчы націсніце на экран яшчэ раз, каб уключыць яго</string>
+    <string name="double_tap_needs_accessibility">Каб блакіраваць экран падвойным націскам, уключыце службу спецыяльных магчымасцей лаўнчара.</string>
 </resources>

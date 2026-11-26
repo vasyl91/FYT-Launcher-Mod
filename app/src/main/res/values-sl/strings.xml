@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Vlečenje navzdol na začetnem zaslonu odpre ploščo z obvestili</string>
     <string name="swipe_down_notifications_off">Vlečenje navzdol ne naredi ničesar</string>
     <string name="swipe_down_notifications_on_fyt">Vlečenje navzdol na začetnem zaslonu odpre ploščo s hitrimi nastavitvami</string>
+    <string name="double_tap_action">Dejanje dvojnega dotika</string>
+    <string name="double_tap_none">Brez</string>
+    <string name="double_tap_lock">Zakleni zaslon</string>
+    <string name="double_tap_screen_off">Izklopi zaslon</string>
+    <string name="double_tap_screen_off_hint">Znova se dvakrat dotaknite zaslona, da ga spet vklopite</string>
+    <string name="double_tap_needs_accessibility">Če želite zaslon zakleniti z dvojnim dotikom, vklopite storitev za dostopnost zaganjalnika.</string>
 </resources>

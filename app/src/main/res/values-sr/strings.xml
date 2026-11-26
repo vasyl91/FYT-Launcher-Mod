@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Prevlačenje nadole na početnom ekranu otvara tablu sa obaveštenjima</string>
     <string name="swipe_down_notifications_off">Prevlačenje nadole ne radi ništa</string>
     <string name="swipe_down_notifications_on_fyt">Prevlačenje nadole na početnom ekranu otvara tablu sa brzim podešavanjima</string>
+    <string name="double_tap_action">Radnja dvostrukog dodira</string>
+    <string name="double_tap_none">Nijedna</string>
+    <string name="double_tap_lock">Zaključaj ekran</string>
+    <string name="double_tap_screen_off">Isključi ekran</string>
+    <string name="double_tap_screen_off_hint">Ponovo dvaput dodirnite ekran da biste ga ponovo uključili</string>
+    <string name="double_tap_needs_accessibility">Da biste zaključavali ekran dvostrukim dodirom, uključite uslugu pristupačnosti pokretača.</string>
 </resources>

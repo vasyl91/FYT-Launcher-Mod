@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Үндсэн дэлгэц дээр доош шудрахад мэдэгдлийн самбар нээгдэнэ</string>
     <string name="swipe_down_notifications_off">Доош шудрахад юу ч болохгүй</string>
     <string name="swipe_down_notifications_on_fyt">Үндсэн дэлгэц дээр доош шудрахад түргэн тохиргооны самбар нээгдэнэ</string>
+    <string name="double_tap_action">Хоёр товших үйлдэл</string>
+    <string name="double_tap_none">Байхгүй</string>
+    <string name="double_tap_lock">Дэлгэцийг түгжих</string>
+    <string name="double_tap_screen_off">Дэлгэцийг унтраах</string>
+    <string name="double_tap_screen_off_hint">Дахин асаахын тулд дэлгэцийг дахин хоёр товшино уу</string>
+    <string name="double_tap_needs_accessibility">Дэлгэцийг хоёр товшиж түгжихийн тулд лаунчерын хандалтын үйлчилгээг асаана уу.</string>
 </resources>

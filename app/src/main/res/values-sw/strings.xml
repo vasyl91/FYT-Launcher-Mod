@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Kutelezesha chini kwenye skrini ya kwanza kunafungua kidirisha cha arifa</string>
     <string name="swipe_down_notifications_off">Kutelezesha chini hakufanyi chochote</string>
     <string name="swipe_down_notifications_on_fyt">Kutelezesha chini kwenye skrini ya kwanza kunafungua kidirisha cha mipangilio ya haraka</string>
+    <string name="double_tap_action">Kitendo cha kugusa mara mbili</string>
+    <string name="double_tap_none">Hakuna</string>
+    <string name="double_tap_lock">Funga skrini</string>
+    <string name="double_tap_screen_off">Zima skrini</string>
+    <string name="double_tap_screen_off_hint">Gusa skrini mara mbili tena ili kuiwasha upya</string>
+    <string name="double_tap_needs_accessibility">Ili kufunga skrini kwa kugusa mara mbili, washa huduma ya ufikivu ya kizindua.</string>
 </resources>

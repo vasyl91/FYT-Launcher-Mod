@@ -4811,6 +4811,9 @@ public class Workspace extends SmoothPagedView
                 final CellLayout currentPage = (CellLayout) getChildAt(mCurrentPage);
                 if (!currentPage.lastDownOnOccupiedCell()) {
                     onWallpaperTap(ev);
+                    if (mHomeGestures != null && ev.getActionMasked() == MotionEvent.ACTION_UP) {
+                        mHomeGestures.onEmptyTap(ev);
+                    }
                 }
             }
         }
@@ -4830,6 +4833,15 @@ public class Workspace extends SmoothPagedView
             }
         }
         return super.onTouchEvent(ev);
+    }
+
+    /** A tap on empty space that no page took (PagedView): a candidate for the double tap (HomeGestures). */
+    @Override
+    protected void onUnhandledTap(MotionEvent ev) {
+        super.onUnhandledTap(ev);
+        if (mHomeGestures != null && ev.getActionMasked() == MotionEvent.ACTION_UP) {
+            mHomeGestures.onEmptyTap(ev);
+        }
     }
 
     /** The launcher this workspace belongs to (HomeGestures). */

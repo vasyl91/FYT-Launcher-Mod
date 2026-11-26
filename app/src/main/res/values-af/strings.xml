@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Afswiep op die tuisskerm maak die kennisgewingskerm oop</string>
     <string name="swipe_down_notifications_off">Afswiep doen niks nie</string>
     <string name="swipe_down_notifications_on_fyt">Afswiep op die tuisskerm maak die kitsinstellingspaneel oop</string>
+    <string name="double_tap_action">Dubbeltik-aksie</string>
+    <string name="double_tap_none">Geen</string>
+    <string name="double_tap_lock">Sluit skerm</string>
+    <string name="double_tap_screen_off">Skakel skerm af</string>
+    <string name="double_tap_screen_off_hint">Dubbeltik weer op die skerm om dit weer aan te skakel</string>
+    <string name="double_tap_needs_accessibility">Skakel die lanseerder se toeganklikheidsdiens aan om die skerm met \'n dubbeltik te sluit.</string>
 </resources>

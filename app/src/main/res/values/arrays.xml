@@ -62,4 +62,15 @@
         <item>black</item>
         <item>transparent</item>
     </string-array>
+    <!-- "Double-tap action" (DoubleTapActions) -->
+    <string-array name="double_tap_entries">
+        <item>@string/double_tap_none</item>
+        <item>@string/double_tap_lock</item>
+        <item>@string/double_tap_screen_off</item>
+    </string-array>
+    <string-array name="double_tap_values" translatable="false">
+        <item>none</item>
+        <item>lock</item>
+        <item>screen_off</item>
+    </string-array>
 </resources>

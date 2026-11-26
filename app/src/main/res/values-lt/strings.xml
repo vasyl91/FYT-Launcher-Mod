@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Perbraukimas žemyn pagrindiniame ekrane atidaro pranešimų skydelį</string>
     <string name="swipe_down_notifications_off">Perbraukimas žemyn nieko nedaro</string>
     <string name="swipe_down_notifications_on_fyt">Perbraukimas žemyn pagrindiniame ekrane atidaro sparčiųjų nustatymų skydelį</string>
+    <string name="double_tap_action">Dvigubo palietimo veiksmas</string>
+    <string name="double_tap_none">Joks</string>
+    <string name="double_tap_lock">Užrakinti ekraną</string>
+    <string name="double_tap_screen_off">Išjungti ekraną</string>
+    <string name="double_tap_screen_off_hint">Dar kartą du kartus palieskite ekraną, kad jį vėl įjungtumėte</string>
+    <string name="double_tap_needs_accessibility">Kad užrakintumėte ekraną dvigubu palietimu, įjunkite paleidimo priemonės pritaikymo neįgaliesiems paslaugą.</string>
 </resources>

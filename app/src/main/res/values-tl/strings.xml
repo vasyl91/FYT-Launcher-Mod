@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Ang pag-swipe pababa sa home screen ay magbubukas ng panel ng notification</string>
     <string name="swipe_down_notifications_off">Walang ginagawa ang pag-swipe pababa</string>
     <string name="swipe_down_notifications_on_fyt">Ang pag-swipe pababa sa home screen ay magbubukas ng panel ng mabilis na setting</string>
+    <string name="double_tap_action">Aksyon ng double-tap</string>
+    <string name="double_tap_none">Wala</string>
+    <string name="double_tap_lock">I-lock ang screen</string>
+    <string name="double_tap_screen_off">I-off ang screen</string>
+    <string name="double_tap_screen_off_hint">I-double-tap muli ang screen para i-on ito ulit</string>
+    <string name="double_tap_needs_accessibility">Para i-lock ang screen gamit ang double tap, i-on ang accessibility service ng launcher.</string>
 </resources>

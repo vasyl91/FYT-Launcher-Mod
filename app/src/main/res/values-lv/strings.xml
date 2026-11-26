@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Vilkšana uz leju sākuma ekrānā atver paziņojumu paneli</string>
     <string name="swipe_down_notifications_off">Vilkšana uz leju neko nedara</string>
     <string name="swipe_down_notifications_on_fyt">Vilkšana uz leju sākuma ekrānā atver ātro iestatījumu paneli</string>
+    <string name="double_tap_action">Dubultā pieskāriena darbība</string>
+    <string name="double_tap_none">Nekas</string>
+    <string name="double_tap_lock">Bloķēt ekrānu</string>
+    <string name="double_tap_screen_off">Izslēgt ekrānu</string>
+    <string name="double_tap_screen_off_hint">Vēlreiz divreiz pieskarieties ekrānam, lai to atkal ieslēgtu</string>
+    <string name="double_tap_needs_accessibility">Lai bloķētu ekrānu ar dubulto pieskārienu, ieslēdziet palaidēja pieejamības pakalpojumu.</string>
 </resources>

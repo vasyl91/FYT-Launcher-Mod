@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Vuốt xuống trên màn hình chính sẽ mở bảng thông báo</string>
     <string name="swipe_down_notifications_off">Vuốt xuống không làm gì cả</string>
     <string name="swipe_down_notifications_on_fyt">Vuốt xuống trên màn hình chính sẽ mở bảng cài đặt nhanh</string>
+    <string name="double_tap_action">Thao tác chạm đúp</string>
+    <string name="double_tap_none">Không</string>
+    <string name="double_tap_lock">Khóa màn hình</string>
+    <string name="double_tap_screen_off">Tắt màn hình</string>
+    <string name="double_tap_screen_off_hint">Chạm đúp vào màn hình lần nữa để bật lại</string>
+    <string name="double_tap_needs_accessibility">Để khóa màn hình bằng cách chạm đúp, hãy bật dịch vụ hỗ trợ tiếp cận của trình khởi chạy.</string>
 </resources>

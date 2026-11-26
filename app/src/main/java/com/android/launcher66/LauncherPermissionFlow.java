@@ -48,7 +48,9 @@ final class LauncherPermissionFlow {
     private enum PermissionStep {
         RUNTIME, OVERLAY, NOTIFICATION_ACCESS, WRITE_SETTINGS, INSTALL_PACKAGES,
         /** Access to all files: from Android 13 the system gives the wallpaper's picture only with it (WallpaperAccess). */
-        ALL_FILES
+        ALL_FILES,
+        /** The launcher's accessibility service, for "Double-tap action: Lock screen" (DoubleTapActions). */
+        ACCESSIBILITY
     }
 
     /**
@@ -136,6 +138,9 @@ final class LauncherPermissionFlow {
                 // The picture of the wallpaper for the selectors and the night mode
                 return WallpaperAccess.allFilesStepNeeded(Build.VERSION.SDK_INT,
                         LauncherApplication.hasSystemPrivileges(), hasAllFilesAccess());
+            case ACCESSIBILITY:
+                return DoubleTapActions.needsAccessibility(
+                        androidx.preference.PreferenceManager.getDefaultSharedPreferences(mLauncher));
             default:
                 return false;
         }
@@ -315,6 +320,10 @@ final class LauncherPermissionFlow {
                                 Launcher.REQUEST_CODE_ALL_FILES);
                     }
                     return true;
+                case ACCESSIBILITY:
+                    mLauncher.startActivityForResult(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS),
+                            Launcher.REQUEST_CODE_ACCESSIBILITY);
+                    return true;
                 default:
                     return false;
             }
@@ -358,7 +367,8 @@ final class LauncherPermissionFlow {
                 || requestCode == Launcher.REQUEST_CODE_NOTIFICATION_ACCESS
                 || requestCode == Launcher.REQUEST_CODE_WRITE_SETTINGS
                 || requestCode == Launcher.REQUEST_CODE_INSTALL_PACKAGES
-                || requestCode == Launcher.REQUEST_CODE_ALL_FILES;
+                || requestCode == Launcher.REQUEST_CODE_ALL_FILES
+                || requestCode == Launcher.REQUEST_CODE_ACCESSIBILITY;
     }
 
     /** Back from a Settings screen of the permission flow; see onActivityResult(). */
@@ -382,6 +392,9 @@ final class LauncherPermissionFlow {
         } else if (requestCode == Launcher.REQUEST_CODE_ALL_FILES) {
             Log.i(Launcher.TAG, "Permission flow: access to all files "
                     + (hasAllFilesAccess() ? "granted" : "not granted"));
+        } else if (requestCode == Launcher.REQUEST_CODE_ACCESSIBILITY) {
+            Log.i(Launcher.TAG, "Permission flow: accessibility service "
+                    + (com.android.launcher66.settings.StateAccessibilityService.isRunning() ? "on" : "off"));
         }
     }
 
@@ -415,6 +428,11 @@ final class LauncherPermissionFlow {
      */
     static void armOverlayStep() {
         sPermissionStepsHandled.remove(PermissionStep.OVERLAY);
+    }
+
+    /** "Lock screen" was chosen (or found without the service): the accessibility step is asked on the next resume. */
+    static void armAccessibilityStep() {
+        sPermissionStepsHandled.remove(PermissionStep.ACCESSIBILITY);
     }
 
 }

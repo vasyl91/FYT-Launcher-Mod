@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Menggeser ke bawah di layar utama membuka panel notifikasi</string>
     <string name="swipe_down_notifications_off">Menggeser ke bawah tidak melakukan apa pun</string>
     <string name="swipe_down_notifications_on_fyt">Menggeser ke bawah di layar utama membuka panel pengaturan cepat</string>
+    <string name="double_tap_action">Tindakan ketuk dua kali</string>
+    <string name="double_tap_none">Tidak ada</string>
+    <string name="double_tap_lock">Kunci layar</string>
+    <string name="double_tap_screen_off">Matikan layar</string>
+    <string name="double_tap_screen_off_hint">Ketuk dua kali layar lagi untuk menyalakannya kembali</string>
+    <string name="double_tap_needs_accessibility">Untuk mengunci layar dengan ketuk dua kali, aktifkan layanan aksesibilitas launcher.</string>
 </resources>

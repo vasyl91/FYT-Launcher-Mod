@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">ការអូសចុះក្រោមនៅអេក្រង់ដើមបើកបន្ទះការជូនដំណឹង</string>
     <string name="swipe_down_notifications_off">ការអូសចុះក្រោមមិនធ្វើអ្វីទេ</string>
     <string name="swipe_down_notifications_on_fyt">ការអូសចុះក្រោមនៅអេក្រង់ដើមបើកបន្ទះការកំណត់រហ័ស</string>
+    <string name="double_tap_action">សកម្មភាពប៉ះពីរដង</string>
+    <string name="double_tap_none">គ្មាន</string>
+    <string name="double_tap_lock">ចាក់សោអេក្រង់</string>
+    <string name="double_tap_screen_off">បិទអេក្រង់</string>
+    <string name="double_tap_screen_off_hint">ប៉ះអេក្រង់ពីរដងម្ដងទៀតដើម្បីបើកវាឡើងវិញ</string>
+    <string name="double_tap_needs_accessibility">ដើម្បីចាក់សោអេក្រង់ដោយប៉ះពីរដង សូមបើកសេវាកម្មភាពងាយស្រួលរបស់ឡុនឆឺ។</string>
 </resources>

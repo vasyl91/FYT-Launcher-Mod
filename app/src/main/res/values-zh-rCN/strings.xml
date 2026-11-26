@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">在主屏幕上下滑可打开通知栏</string>
     <string name="swipe_down_notifications_off">下滑不执行任何操作</string>
     <string name="swipe_down_notifications_on_fyt">在主屏幕上下滑可打开快捷设置面板</string>
+    <string name="double_tap_action">双击操作</string>
+    <string name="double_tap_none">无</string>
+    <string name="double_tap_lock">锁定屏幕</string>
+    <string name="double_tap_screen_off">关闭屏幕</string>
+    <string name="double_tap_screen_off_hint">再次双击屏幕即可重新开启</string>
+    <string name="double_tap_needs_accessibility">要通过双击锁定屏幕，请开启启动器的无障碍服务。</string>
 </resources>

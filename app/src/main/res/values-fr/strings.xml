@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Balayer vers le bas sur l\'écran d\'accueil ouvre le volet des notifications</string>
     <string name="swipe_down_notifications_off">Balayer vers le bas ne fait rien</string>
     <string name="swipe_down_notifications_on_fyt">Balayer vers le bas sur l\'écran d\'accueil ouvre le panneau des réglages rapides</string>
+    <string name="double_tap_action">Action du double appui</string>
+    <string name="double_tap_none">Aucune</string>
+    <string name="double_tap_lock">Verrouiller l\'écran</string>
+    <string name="double_tap_screen_off">Éteindre l\'écran</string>
+    <string name="double_tap_screen_off_hint">Appuyez de nouveau deux fois sur l\'écran pour le rallumer</string>
+    <string name="double_tap_needs_accessibility">Pour verrouiller l\'écran par un double appui, activez le service d\'accessibilité du lanceur.</string>
 </resources>

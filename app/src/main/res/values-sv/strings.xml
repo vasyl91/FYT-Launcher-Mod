@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Att svepa nedåt på startskärmen öppnar aviseringspanelen</string>
     <string name="swipe_down_notifications_off">Att svepa nedåt gör ingenting</string>
     <string name="swipe_down_notifications_on_fyt">Att svepa nedåt på startskärmen öppnar panelen för snabbinställningar</string>
+    <string name="double_tap_action">Åtgärd vid dubbeltryck</string>
+    <string name="double_tap_none">Ingen</string>
+    <string name="double_tap_lock">Lås skärmen</string>
+    <string name="double_tap_screen_off">Stäng av skärmen</string>
+    <string name="double_tap_screen_off_hint">Tryck två gånger på skärmen igen för att slå på den igen</string>
+    <string name="double_tap_needs_accessibility">Aktivera startskärmens tillgänglighetstjänst för att låsa skärmen med dubbeltryck.</string>
 </resources>

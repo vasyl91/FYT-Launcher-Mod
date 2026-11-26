@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Deslizar hacia abajo en la pantalla de inicio abre el panel de notificaciones</string>
     <string name="swipe_down_notifications_off">Deslizar hacia abajo no hace nada</string>
     <string name="swipe_down_notifications_on_fyt">Deslizar hacia abajo en la pantalla de inicio abre el panel de ajustes rápidos</string>
+    <string name="double_tap_action">Acción del doble toque</string>
+    <string name="double_tap_none">Ninguna</string>
+    <string name="double_tap_lock">Bloquear pantalla</string>
+    <string name="double_tap_screen_off">Apagar pantalla</string>
+    <string name="double_tap_screen_off_hint">Toca dos veces la pantalla de nuevo para volver a encenderla</string>
+    <string name="double_tap_needs_accessibility">Para bloquear la pantalla con un doble toque, activa el servicio de accesibilidad del launcher.</string>
 </resources>

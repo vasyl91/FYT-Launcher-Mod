@@ -76,6 +76,15 @@
             android:summaryOn="@string/swipe_down_notifications_on"
             android:summaryOff="@string/swipe_down_notifications_off"
             app:layout="@layout/nested_preference_category_switch" />
+        <!-- A tap steps through the choices, the summary shows the one chosen (as the widget bar's lines);
+             "Lock screen" is left out below Android 9 (SettingsFragmentSecond) -->
+        <com.android.launcher66.settings.CustomNestedThreePreference
+            android:key="double_tap_action"
+            android:defaultValue="none"
+            android:title="@string/double_tap_action"
+            android:entries="@array/double_tap_entries"
+            android:entryValues="@array/double_tap_values"
+            app:layout="@layout/nested_preference_category_no_switch" />
 
     </PreferenceCategory>
 

@@ -36,6 +36,9 @@ final class HomeGestures {
     private final int mSlop;
     private final float mDensity;
 
+    private final DoubleTap mDoubleTap = new DoubleTap();
+    private long mLastTapEvent = -1L;
+
     private boolean mArmed;
     private boolean mTaking;
     private float mDownX;
@@ -192,6 +195,35 @@ final class HomeGestures {
             Log.i(TAG, "Home swipe down: the notification shade (dy " + Math.round(dy) + " px, "
                     + Math.round(speed) + " dp/s)");
             StatusBarPanel.expand(launcher);
+        }
+    }
+
+    /**
+     * A tap on empty space of the home screen (the up of a touch that began on no icon and no widget): the second of two
+     * close in time and place ({@link DoubleTap}, with the system's timeout and slop) does what "Double-tap action" says.
+     * Both ways a tap reaches the workspace may report the same up: the same event counts once.
+     */
+    void onEmptyTap(MotionEvent up) {
+        SharedPreferences prefs = prefs();
+        Launcher launcher = mWorkspace.homeLauncher();
+        if (prefs == null || launcher == null || launcher.mState != Launcher.State.WORKSPACE
+                || mWorkspace.isInOverviewMode() || mWorkspace.isSmall()) {
+            return;
+        }
+        String action = DoubleTapActions.chosen(prefs);
+        if (DoubleTapActions.NONE.equals(action)) {
+            mDoubleTap.reset();
+            return;
+        }
+        if (up.getEventTime() == mLastTapEvent) {
+            return;
+        }
+        mLastTapEvent = up.getEventTime();
+        ViewConfiguration configuration = ViewConfiguration.get(mWorkspace.getContext());
+        if (mDoubleTap.onTap(up.getEventTime(), up.getX(), up.getY(), ViewConfiguration.getDoubleTapTimeout(),
+                configuration.getScaledDoubleTapSlop())) {
+            Log.i(TAG, "Home double tap: " + action);
+            DoubleTapActions.perform(launcher, action);
         }
     }
 

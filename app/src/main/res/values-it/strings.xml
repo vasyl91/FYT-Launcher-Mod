@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Scorrere verso il basso nella schermata Home apre il pannello delle notifiche</string>
     <string name="swipe_down_notifications_off">Scorrere verso il basso non fa nulla</string>
     <string name="swipe_down_notifications_on_fyt">Scorrere verso il basso nella schermata Home apre il pannello delle impostazioni rapide</string>
+    <string name="double_tap_action">Azione del doppio tocco</string>
+    <string name="double_tap_none">Nessuna</string>
+    <string name="double_tap_lock">Blocca schermo</string>
+    <string name="double_tap_screen_off">Spegni schermo</string>
+    <string name="double_tap_screen_off_hint">Tocca di nuovo due volte lo schermo per riaccenderlo</string>
+    <string name="double_tap_needs_accessibility">Per bloccare lo schermo con un doppio tocco, attiva il servizio di accessibilità del launcher.</string>
 </resources>

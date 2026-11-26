@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Meleret ke bawah pada skrin utama membuka panel pemberitahuan</string>
     <string name="swipe_down_notifications_off">Meleret ke bawah tidak melakukan apa-apa</string>
     <string name="swipe_down_notifications_on_fyt">Meleret ke bawah pada skrin utama membuka panel tetapan pantas</string>
+    <string name="double_tap_action">Tindakan ketik dua kali</string>
+    <string name="double_tap_none">Tiada</string>
+    <string name="double_tap_lock">Kunci skrin</string>
+    <string name="double_tap_screen_off">Matikan skrin</string>
+    <string name="double_tap_screen_off_hint">Ketik dua kali skrin sekali lagi untuk menghidupkannya semula</string>
+    <string name="double_tap_needs_accessibility">Untuk mengunci skrin dengan ketik dua kali, hidupkan perkhidmatan kebolehcapaian pelancar.</string>
 </resources>

@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">يؤدي التمرير لأسفل على الشاشة الرئيسية إلى فتح لوحة الإشعارات</string>
     <string name="swipe_down_notifications_off">التمرير لأسفل لا يفعل شيئًا</string>
     <string name="swipe_down_notifications_on_fyt">يؤدي التمرير لأسفل على الشاشة الرئيسية إلى فتح لوحة الإعدادات السريعة</string>
+    <string name="double_tap_action">إجراء النقر المزدوج</string>
+    <string name="double_tap_none">بدون</string>
+    <string name="double_tap_lock">قفل الشاشة</string>
+    <string name="double_tap_screen_off">إيقاف تشغيل الشاشة</string>
+    <string name="double_tap_screen_off_hint">انقر على الشاشة نقرًا مزدوجًا مرة أخرى لتشغيلها</string>
+    <string name="double_tap_needs_accessibility">لقفل الشاشة بالنقر المزدوج، فعّل خدمة إمكانية الوصول الخاصة بالمشغّل.</string>
 </resources>

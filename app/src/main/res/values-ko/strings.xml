@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">홈 화면에서 아래로 스와이프하면 알림 패널이 열립니다</string>
     <string name="swipe_down_notifications_off">아래로 스와이프해도 아무 일도 일어나지 않습니다</string>
     <string name="swipe_down_notifications_on_fyt">홈 화면에서 아래로 스와이프하면 빠른 설정 패널이 열립니다</string>
+    <string name="double_tap_action">두 번 탭 동작</string>
+    <string name="double_tap_none">없음</string>
+    <string name="double_tap_lock">화면 잠금</string>
+    <string name="double_tap_screen_off">화면 끄기</string>
+    <string name="double_tap_screen_off_hint">화면을 다시 두 번 탭하면 켜집니다</string>
+    <string name="double_tap_needs_accessibility">두 번 탭하여 화면을 잠그려면 런처의 접근성 서비스를 켜세요.</string>
 </resources>

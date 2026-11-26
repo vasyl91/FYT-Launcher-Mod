@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">ホーム画面で下にスワイプすると通知パネルが開きます</string>
     <string name="swipe_down_notifications_off">下にスワイプしても何も起こりません</string>
     <string name="swipe_down_notifications_on_fyt">ホーム画面で下にスワイプするとクイック設定パネルが開きます</string>
+    <string name="double_tap_action">ダブルタップの動作</string>
+    <string name="double_tap_none">なし</string>
+    <string name="double_tap_lock">画面をロック</string>
+    <string name="double_tap_screen_off">画面をオフにする</string>
+    <string name="double_tap_screen_off_hint">もう一度画面をダブルタップすると、画面がオンに戻ります</string>
+    <string name="double_tap_needs_accessibility">ダブルタップで画面をロックするには、ランチャーのユーザー補助サービスをオンにしてください。</string>
 </resources>

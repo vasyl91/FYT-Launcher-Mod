@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Ukuswayipha uye phansi esikrinini sasekhaya kuvula iphaneli yezaziso</string>
     <string name="swipe_down_notifications_off">Ukuswayipha uye phansi akwenzi lutho</string>
     <string name="swipe_down_notifications_on_fyt">Ukuswayipha uye phansi esikrinini sasekhaya kuvula iphaneli yezilungiselelo ezisheshayo</string>
+    <string name="double_tap_action">Isenzo sokuthinta kabili</string>
+    <string name="double_tap_none">Lutho</string>
+    <string name="double_tap_lock">Khiya isikrini</string>
+    <string name="double_tap_screen_off">Vala isikrini</string>
+    <string name="double_tap_screen_off_hint">Thinta isikrini kabili futhi ukuze usivule kabusha</string>
+    <string name="double_tap_needs_accessibility">Ukuze ukhiye isikrini ngokuthinta kabili, vula isevisi yokufinyeleleka ye-launcher.</string>
 </resources>

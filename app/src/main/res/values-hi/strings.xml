@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">होम स्क्रीन पर नीचे स्वाइप करने से सूचना पैनल खुलता है</string>
     <string name="swipe_down_notifications_off">नीचे स्वाइप करने से कुछ नहीं होता</string>
     <string name="swipe_down_notifications_on_fyt">होम स्क्रीन पर नीचे स्वाइप करने से क्विक सेटिंग पैनल खुलता है</string>
+    <string name="double_tap_action">डबल-टैप कार्रवाई</string>
+    <string name="double_tap_none">कोई नहीं</string>
+    <string name="double_tap_lock">स्क्रीन लॉक करें</string>
+    <string name="double_tap_screen_off">स्क्रीन बंद करें</string>
+    <string name="double_tap_screen_off_hint">स्क्रीन को फिर से चालू करने के लिए उस पर दोबारा डबल-टैप करें</string>
+    <string name="double_tap_needs_accessibility">डबल टैप से स्क्रीन लॉक करने के लिए, लॉन्चर की सुलभता सेवा चालू करें।</string>
 </resources>

@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Přejetí dolů na domovské obrazovce otevře panel oznámení</string>
     <string name="swipe_down_notifications_off">Přejetí dolů nic nedělá</string>
     <string name="swipe_down_notifications_on_fyt">Přejetí dolů na domovské obrazovce otevře panel rychlého nastavení</string>
+    <string name="double_tap_action">Akce dvojitého klepnutí</string>
+    <string name="double_tap_none">Žádná</string>
+    <string name="double_tap_lock">Zamknout obrazovku</string>
+    <string name="double_tap_screen_off">Vypnout obrazovku</string>
+    <string name="double_tap_screen_off_hint">Dalším dvojitým klepnutím na obrazovku ji znovu zapnete</string>
+    <string name="double_tap_needs_accessibility">Chcete-li zamykat obrazovku dvojitým klepnutím, zapněte službu usnadnění přístupu launcheru.</string>
 </resources>

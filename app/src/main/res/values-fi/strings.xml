@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Alaspäin pyyhkäisy aloitusnäytöllä avaa ilmoituspaneelin</string>
     <string name="swipe_down_notifications_off">Alaspäin pyyhkäisy ei tee mitään</string>
     <string name="swipe_down_notifications_on_fyt">Alaspäin pyyhkäisy aloitusnäytöllä avaa pika-asetuspaneelin</string>
+    <string name="double_tap_action">Kaksoisnapautuksen toiminto</string>
+    <string name="double_tap_none">Ei mitään</string>
+    <string name="double_tap_lock">Lukitse näyttö</string>
+    <string name="double_tap_screen_off">Sammuta näyttö</string>
+    <string name="double_tap_screen_off_hint">Napauta näyttöä kahdesti uudelleen kytkeäksesi sen takaisin päälle</string>
+    <string name="double_tap_needs_accessibility">Jos haluat lukita näytön kaksoisnapautuksella, ota käyttöön käynnistysnäkymän esteettömyyspalvelu.</string>
 </resources>

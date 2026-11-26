@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Գլխավոր էկրանին ներքև սահեցնելը բացում է ծանուցումների վահանակը</string>
     <string name="swipe_down_notifications_off">Ներքև սահեցնելը ոչինչ չի անում</string>
     <string name="swipe_down_notifications_on_fyt">Գլխավոր էկրանին ներքև սահեցնելը բացում է արագ կարգավորումների վահանակը</string>
+    <string name="double_tap_action">Կրկնակի հպման գործողություն</string>
+    <string name="double_tap_none">Ոչինչ</string>
+    <string name="double_tap_lock">Արգելափակել էկրանը</string>
+    <string name="double_tap_screen_off">Անջատել էկրանը</string>
+    <string name="double_tap_screen_off_hint">Նորից երկու անգամ հպեք էկրանին՝ այն կրկին միացնելու համար</string>
+    <string name="double_tap_needs_accessibility">Էկրանը կրկնակի հպումով արգելափակելու համար միացրեք լաունչերի հասանելիության ծառայությունը։</string>
 </resources>

@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">کشیدن به پایین در صفحه اصلی پنل اعلان‌ها را باز می‌کند</string>
     <string name="swipe_down_notifications_off">کشیدن به پایین کاری نمی‌کند</string>
     <string name="swipe_down_notifications_on_fyt">کشیدن به پایین در صفحه اصلی پنل تنظیمات سریع را باز می‌کند</string>
+    <string name="double_tap_action">اقدام ضربه دوبل</string>
+    <string name="double_tap_none">هیچ</string>
+    <string name="double_tap_lock">قفل کردن صفحه</string>
+    <string name="double_tap_screen_off">خاموش کردن صفحه</string>
+    <string name="double_tap_screen_off_hint">برای روشن کردن دوباره صفحه، دوباره دو بار روی آن ضربه بزنید</string>
+    <string name="double_tap_needs_accessibility">برای قفل کردن صفحه با ضربه دوبل، سرویس دسترسی‌پذیری لانچر را روشن کنید.</string>
 </resources>

@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Scuar engiu sin la pagina iniziala avra il panel da communicaziuns</string>
     <string name="swipe_down_notifications_off">Scuar engiu na fa nagut</string>
     <string name="swipe_down_notifications_on_fyt">Scuar engiu sin la pagina iniziala avra il panel da las empostaziuns spertas</string>
+    <string name="double_tap_action">Acziun dal dubel clic</string>
+    <string name="double_tap_none">Nagina</string>
+    <string name="double_tap_lock">Bloccar la visur</string>
+    <string name="double_tap_screen_off">Stizzar la visur</string>
+    <string name="double_tap_screen_off_hint">Tutga puspè duas giadas la visur per l\'envidar danovamain</string>
+    <string name="double_tap_needs_accessibility">Per bloccar la visur cun in dubel clic, activescha il servetsch d\'accessibilitad dal launcher.</string>
 </resources>

@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">การปัดลงบนหน้าจอหลักจะเปิดแผงการแจ้งเตือน</string>
     <string name="swipe_down_notifications_off">การปัดลงไม่ทำอะไร</string>
     <string name="swipe_down_notifications_on_fyt">การปัดลงบนหน้าจอหลักจะเปิดแผงการตั้งค่าด่วน</string>
+    <string name="double_tap_action">การทำงานเมื่อแตะสองครั้ง</string>
+    <string name="double_tap_none">ไม่มี</string>
+    <string name="double_tap_lock">ล็อกหน้าจอ</string>
+    <string name="double_tap_screen_off">ปิดหน้าจอ</string>
+    <string name="double_tap_screen_off_hint">แตะหน้าจอสองครั้งอีกครั้งเพื่อเปิดหน้าจออีกครั้ง</string>
+    <string name="double_tap_needs_accessibility">หากต้องการล็อกหน้าจอด้วยการแตะสองครั้ง ให้เปิดบริการการเข้าถึงของแลนเชอร์</string>
 </resources>

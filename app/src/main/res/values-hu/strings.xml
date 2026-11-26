@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">A kezdőképernyőn lefelé húzás megnyitja az értesítési panelt</string>
     <string name="swipe_down_notifications_off">A lefelé húzás nem csinál semmit</string>
     <string name="swipe_down_notifications_on_fyt">A kezdőképernyőn lefelé húzás megnyitja a gyorsbeállítások panelt</string>
+    <string name="double_tap_action">Dupla koppintás művelete</string>
+    <string name="double_tap_none">Nincs</string>
+    <string name="double_tap_lock">Képernyő zárolása</string>
+    <string name="double_tap_screen_off">Képernyő kikapcsolása</string>
+    <string name="double_tap_screen_off_hint">Koppintson duplán újra a képernyőre a visszakapcsoláshoz</string>
+    <string name="double_tap_needs_accessibility">A képernyő dupla koppintással történő zárolásához kapcsolja be a kezdőképernyő-kezelő kisegítő szolgáltatását.</string>
 </resources>

@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Η ολίσθηση προς τα κάτω στην αρχική οθόνη ανοίγει τον πίνακα ειδοποιήσεων</string>
     <string name="swipe_down_notifications_off">Η ολίσθηση προς τα κάτω δεν κάνει τίποτα</string>
     <string name="swipe_down_notifications_on_fyt">Η ολίσθηση προς τα κάτω στην αρχική οθόνη ανοίγει τον πίνακα γρήγορων ρυθμίσεων</string>
+    <string name="double_tap_action">Ενέργεια διπλού πατήματος</string>
+    <string name="double_tap_none">Καμία</string>
+    <string name="double_tap_lock">Κλείδωμα οθόνης</string>
+    <string name="double_tap_screen_off">Απενεργοποίηση οθόνης</string>
+    <string name="double_tap_screen_off_hint">Πατήστε ξανά δύο φορές την οθόνη για να την ενεργοποιήσετε</string>
+    <string name="double_tap_needs_accessibility">Για να κλειδώνετε την οθόνη με διπλό πάτημα, ενεργοποιήστε την υπηρεσία προσβασιμότητας του launcher.</string>
 </resources>

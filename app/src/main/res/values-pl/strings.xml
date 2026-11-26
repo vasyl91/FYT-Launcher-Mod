@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Przesunięcie w dół na ekranie głównym otwiera panel powiadomień</string>
     <string name="swipe_down_notifications_off">Przesunięcie w dół nic nie robi</string>
     <string name="swipe_down_notifications_on_fyt">Przesunięcie w dół na ekranie głównym otwiera panel szybkich ustawień</string>
+    <string name="double_tap_action">Działanie dwukrotnego dotknięcia</string>
+    <string name="double_tap_none">Brak</string>
+    <string name="double_tap_lock">Zablokuj ekran</string>
+    <string name="double_tap_screen_off">Wyłącz ekran</string>
+    <string name="double_tap_screen_off_hint">Dotknij ekranu dwukrotnie jeszcze raz, aby go ponownie włączyć</string>
+    <string name="double_tap_needs_accessibility">Aby blokować ekran dwukrotnym dotknięciem, włącz usługę dostępności launchera.</string>
 </resources>

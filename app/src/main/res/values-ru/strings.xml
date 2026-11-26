@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Проведение вниз на главном экране открывает шторку уведомлений</string>
     <string name="swipe_down_notifications_off">Проведение вниз ничего не делает</string>
     <string name="swipe_down_notifications_on_fyt">Проведение вниз на главном экране открывает панель быстрых настроек</string>
+    <string name="double_tap_action">Действие при двойном касании</string>
+    <string name="double_tap_none">Нет</string>
+    <string name="double_tap_lock">Заблокировать экран</string>
+    <string name="double_tap_screen_off">Выключить экран</string>
+    <string name="double_tap_screen_off_hint">Коснитесь экрана дважды ещё раз, чтобы включить его</string>
+    <string name="double_tap_needs_accessibility">Чтобы блокировать экран двойным касанием, включите службу специальных возможностей лаунчера.</string>
 </resources>

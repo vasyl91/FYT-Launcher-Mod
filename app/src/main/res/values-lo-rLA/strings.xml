@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">ການປັດລົງໃນໜ້າຫຼັກຈະເປີດແຜງການແຈ້ງເຕືອນ</string>
     <string name="swipe_down_notifications_off">ການປັດລົງບໍ່ເຮັດຫຍັງ</string>
     <string name="swipe_down_notifications_on_fyt">ການປັດລົງໃນໜ້າຫຼັກຈະເປີດແຜງການຕັ້ງຄ່າດ່ວນ</string>
+    <string name="double_tap_action">ການກະທຳເມື່ອແຕະສອງຄັ້ງ</string>
+    <string name="double_tap_none">ບໍ່ມີ</string>
+    <string name="double_tap_lock">ລັອກໜ້າຈໍ</string>
+    <string name="double_tap_screen_off">ປິດໜ້າຈໍ</string>
+    <string name="double_tap_screen_off_hint">ແຕະສອງຄັ້ງໃສ່ໜ້າຈໍອີກເທື່ອເພື່ອເປີດຄືນ</string>
+    <string name="double_tap_needs_accessibility">ເພື່ອລັອກໜ້າຈໍດ້ວຍການແຕະສອງຄັ້ງ, ກະລຸນາເປີດບໍລິການການຊ່ວຍເຂົ້າເຖິງຂອງ launcher.</string>
 </resources>

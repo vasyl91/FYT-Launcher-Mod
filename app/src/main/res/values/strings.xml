@@ -588,4 +588,10 @@
     <string name="swipe_down_notifications_on">Swiping down on the home screen opens the notification shade</string>
     <string name="swipe_down_notifications_off">Swiping down does nothing</string>
     <string name="swipe_down_notifications_on_fyt">Swiping down on the home screen opens the quick settings panel</string>
+    <string name="double_tap_action">Double-tap action</string>
+    <string name="double_tap_none">None</string>
+    <string name="double_tap_lock">Lock screen</string>
+    <string name="double_tap_screen_off">Turn off screen</string>
+    <string name="double_tap_screen_off_hint">Double-tap the screen again to turn it back on</string>
+    <string name="double_tap_needs_accessibility">To lock the screen with a double tap, turn on the launcher\'s accessibility service.</string>
 </resources>

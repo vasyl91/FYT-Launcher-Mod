@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Glisarea în jos pe ecranul principal deschide panoul de notificări</string>
     <string name="swipe_down_notifications_off">Glisarea în jos nu face nimic</string>
     <string name="swipe_down_notifications_on_fyt">Glisarea în jos pe ecranul principal deschide panoul de setări rapide</string>
+    <string name="double_tap_action">Acțiune la atingere dublă</string>
+    <string name="double_tap_none">Niciuna</string>
+    <string name="double_tap_lock">Blochează ecranul</string>
+    <string name="double_tap_screen_off">Oprește ecranul</string>
+    <string name="double_tap_screen_off_hint">Atingeți din nou de două ori ecranul pentru a-l porni la loc</string>
+    <string name="double_tap_needs_accessibility">Pentru a bloca ecranul cu o atingere dublă, activați serviciul de accesibilitate al launcherului.</string>
 </resources>

@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Omlaag vegen op het startscherm opent het meldingenpaneel</string>
     <string name="swipe_down_notifications_off">Omlaag vegen doet niets</string>
     <string name="swipe_down_notifications_on_fyt">Omlaag vegen op het startscherm opent het paneel met snelle instellingen</string>
+    <string name="double_tap_action">Actie bij dubbeltikken</string>
+    <string name="double_tap_none">Geen</string>
+    <string name="double_tap_lock">Scherm vergrendelen</string>
+    <string name="double_tap_screen_off">Scherm uitschakelen</string>
+    <string name="double_tap_screen_off_hint">Tik nogmaals twee keer op het scherm om het weer in te schakelen</string>
+    <string name="double_tap_needs_accessibility">Schakel de toegankelijkheidsservice van de launcher in om het scherm te vergrendelen met dubbeltikken.</string>
 </resources>

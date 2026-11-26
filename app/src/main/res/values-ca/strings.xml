@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Lliscar cap avall a la pantalla d\'inici obre el tauler de notificacions</string>
     <string name="swipe_down_notifications_off">Lliscar cap avall no fa res</string>
     <string name="swipe_down_notifications_on_fyt">Lliscar cap avall a la pantalla d\'inici obre el tauler de configuració ràpida</string>
+    <string name="double_tap_action">Acció del doble toc</string>
+    <string name="double_tap_none">Cap</string>
+    <string name="double_tap_lock">Bloqueja la pantalla</string>
+    <string name="double_tap_screen_off">Apaga la pantalla</string>
+    <string name="double_tap_screen_off_hint">Toca dues vegades la pantalla un altre cop per tornar-la a encendre</string>
+    <string name="double_tap_needs_accessibility">Per bloquejar la pantalla amb un doble toc, activa el servei d\'accessibilitat de l\'iniciador.</string>
 </resources>

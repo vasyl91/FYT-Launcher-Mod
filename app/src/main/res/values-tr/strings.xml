@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Ana ekranda aşağı kaydırmak bildirim panelini açar</string>
     <string name="swipe_down_notifications_off">Aşağı kaydırmak hiçbir şey yapmaz</string>
     <string name="swipe_down_notifications_on_fyt">Ana ekranda aşağı kaydırmak hızlı ayarlar panelini açar</string>
+    <string name="double_tap_action">Çift dokunma eylemi</string>
+    <string name="double_tap_none">Yok</string>
+    <string name="double_tap_lock">Ekranı kilitle</string>
+    <string name="double_tap_screen_off">Ekranı kapat</string>
+    <string name="double_tap_screen_off_hint">Ekranı yeniden açmak için üzerine tekrar çift dokunun</string>
+    <string name="double_tap_needs_accessibility">Ekranı çift dokunuşla kilitlemek için başlatıcının erişilebilirlik hizmetini açın.</string>
 </resources>

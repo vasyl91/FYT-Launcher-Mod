@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Wischen nach unten auf dem Startbildschirm öffnet die Benachrichtigungen</string>
     <string name="swipe_down_notifications_off">Wischen nach unten bewirkt nichts</string>
     <string name="swipe_down_notifications_on_fyt">Wischen nach unten auf dem Startbildschirm öffnet die Schnelleinstellungen</string>
+    <string name="double_tap_action">Aktion bei doppeltem Tippen</string>
+    <string name="double_tap_none">Keine</string>
+    <string name="double_tap_lock">Bildschirm sperren</string>
+    <string name="double_tap_screen_off">Bildschirm ausschalten</string>
+    <string name="double_tap_screen_off_hint">Tippen Sie erneut doppelt auf den Bildschirm, um ihn wieder einzuschalten</string>
+    <string name="double_tap_needs_accessibility">Aktivieren Sie den Bedienungshilfendienst des Launchers, um den Bildschirm mit doppeltem Tippen zu sperren.</string>
 </resources>

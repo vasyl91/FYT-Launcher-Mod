@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">在主畫面向下滑動會開啟通知面板</string>
     <string name="swipe_down_notifications_off">向下滑動不執行任何動作</string>
     <string name="swipe_down_notifications_on_fyt">在主畫面向下滑動會開啟快速設定面板</string>
+    <string name="double_tap_action">點兩下動作</string>
+    <string name="double_tap_none">無</string>
+    <string name="double_tap_lock">鎖定螢幕</string>
+    <string name="double_tap_screen_off">關閉螢幕</string>
+    <string name="double_tap_screen_off_hint">再次點兩下螢幕即可重新開啟</string>
+    <string name="double_tap_needs_accessibility">若要點兩下鎖定螢幕，請開啟啟動器的無障礙服務。</string>
 </resources>

@@ -457,6 +457,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         Preference widgetsTint = findPreference(Keys.WIDGETS_TINT);
         Preference accentRow = findPreference(ThemeAccent.KEY);
         Preference iconTextRow = findPreference(Keys.WORKSPACE_TEXT_COLOR);
+        bindDoubleTap();
         // On an FYT unit the framework shows its panel of quick settings for this swipe, not the notifications
         androidx.preference.SwitchPreferenceCompat swipeDown = findPreference(Keys.SWIPE_DOWN_NOTIFICATIONS);
         if (swipeDown != null && LauncherApplication.isFytDevice()) {
@@ -1226,6 +1227,32 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         picker.enableAutoClose();
         ColorPickerTargets.bindTint(picker, sharedPrefs, Keys.WORKSPACE_TEXT_COLOR);
         picker.show(getParentFragmentManager(), ColorPickerTargets.TAG_ICON_TEXT);
+    }
+
+    /**
+     * "Double-tap action": below Android 9 the choices are nothing and "Turn off screen" (the global action that locks
+     * is from Android 9). Choosing "Lock screen" asks for the accessibility service at the next return to the home screen
+     * (the permission flow), and "Turn off screen" says that the same double tap brings the screen back.
+     */
+    private void bindDoubleTap() {
+        androidx.preference.ListPreference row = findPreference(Keys.DOUBLE_TAP_ACTION);
+        if (row == null) {
+            return;
+        }
+        if (!com.android.launcher66.DoubleTapActions.lockAvailable()) {
+            row.setEntries(new CharSequence[] {getString(R.string.double_tap_none), getString(R.string.double_tap_screen_off)});
+            row.setEntryValues(new CharSequence[] {com.android.launcher66.DoubleTapActions.NONE,
+                    com.android.launcher66.DoubleTapActions.SCREEN_OFF});
+        }
+        row.setOnPreferenceChangeListener((preference, value) -> {
+            if (com.android.launcher66.DoubleTapActions.LOCK.equals(value)) {
+                com.android.launcher66.DoubleTapActions.lockChosen();
+            } else if (com.android.launcher66.DoubleTapActions.SCREEN_OFF.equals(value)) {
+                android.widget.Toast.makeText(requireContext(), R.string.double_tap_screen_off_hint,
+                        android.widget.Toast.LENGTH_LONG).show();
+            }
+            return true;
+        });
     }
 
     /** The settings follow every change of the accent, or of the stock layout that turns it off. */

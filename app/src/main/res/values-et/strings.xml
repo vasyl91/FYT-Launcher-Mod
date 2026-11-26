@@ -576,4 +576,10 @@
     <string name="swipe_down_notifications_on">Avakuval alla pühkimine avab teavituste paneeli</string>
     <string name="swipe_down_notifications_off">Alla pühkimine ei tee midagi</string>
     <string name="swipe_down_notifications_on_fyt">Avakuval alla pühkimine avab kiirseadete paneeli</string>
+    <string name="double_tap_action">Topeltpuutetoiming</string>
+    <string name="double_tap_none">Puudub</string>
+    <string name="double_tap_lock">Lukusta ekraan</string>
+    <string name="double_tap_screen_off">Lülita ekraan välja</string>
+    <string name="double_tap_screen_off_hint">Puudutage ekraani uuesti kaks korda, et see tagasi sisse lülitada</string>
+    <string name="double_tap_needs_accessibility">Ekraani topeltpuudutusega lukustamiseks lülitage sisse käivitaja juurdepääsetavusteenus.</string>
 </resources>
