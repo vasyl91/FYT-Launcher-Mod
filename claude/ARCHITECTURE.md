@@ -187,6 +187,47 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
 - **Navigation:** `U/FytPackage.resolveNavigationPackage()` returns the package `com.syu.ms` reports
   (`com/syu/car/CarStates.mNaviPkg`). The launcher never writes the system's navigation app (D-29).
 
+### Round 28 additions to the home screen (2026-11-26)
+
+- **Gestures:** `L/HomeGesture` (plain Java: UP, DOWN or NONE from dx, dy, time and speed) and `L/HomeGestures`
+  follow a touch for `Workspace`; UP opens the drawer (`Launcher.showAllApps(..., fromSwipe)`), DOWN asks
+  `L/StatusBarPanel` for the notification shade (the accessibility service when the system service refuses).
+  `L/DoubleTap` and `L/ScreenOffPlan` (plain Java) decide the double tap and what "Turn off screen" does on this unit;
+  the accessibility service (`S/StateAccessibilityService.sInstance`) locks the screen, and `LauncherPermissionFlow`
+  has a step `ACCESSIBILITY`.
+- **Widgets:** `L/WidgetFrame` / `L/WidgetFrames` keep a freely placed widget as fractions of the page's content area
+  (the file `widget_frames`); `CellLayout.isPixelPlaced()` and `ShortcutAndWidgetContainer` lay out by pixels the
+  elements of the user's layout and those widgets; with "Allow widgets to overlap" `CellLayout.takesCells()` is false
+  for an app widget, `PageFit.toMove(..., widgetsMayOverlap)` and `L/GridRefit` handle the rest. `Folder` has its own
+  background (`BarBackground.folders()`) and may follow the home screen's grid (`L/FolderGrid`).
+- **Badges:** `NotificationListener` tells `L/BadgeModel`, which counts on a thread of its own (`L/BadgeCounts`, plain
+  Java) and tells the views registered in `L/BadgeViews`; `L/BadgeDrawable` draws a badge in an icon's rectangle.
+- **"Stock layout"** (D-85): `L/CreatorKeys` (every key of the creator's XML, checked by a test) and `L/CreatorPrefs`
+  (the read-only wrapper through which the launcher reads them) give the defaults while the creator is off.
+- **Direct boot:** the launcher shows the wallpaper before the first unlock (`DirectBootState`); the package receiver no
+  longer builds the launcher's state.
+
+### The app drawer (round 28)
+
+- `L/AppsCustomizePagedView` still holds the apps (`mAllApps` sorted, `mApps` what shows of them) and now also the
+  widgets' pages. `applyFilter()` narrows `mAllApps` first by the tab (`DrawerTabs.appsOf`) and then by the search field
+  (`L/AppSearch`, `L/AppSearchBar`); every change of the list goes through it.
+- **Vertical by default:** `L/AppsVerticalView` (a `RecyclerView` in a `FrameLayout`, with the swipe that changes the
+  tab) and `L/LetterScroller` (the letters and the bubble, `L/LetterIndex`); the pager is the horizontal choice.
+  The grid is `L/AppsGrid` (plain Java) through `DeviceProfile.updateAllAppsGrid` and the keys `all_apps_grid_*`.
+- **Tabs:** `L/DrawerTabs` (plain Java, tested: the rules of D-88), `L/DrawerTabsStore` (one string under `drawer_tabs`,
+  read through `CreatorPrefs`), `L/DrawerTabGeometry` (plain Java: sizes and swipe decisions), `L/DrawerTabStrip` (the
+  strip, in `apps_customize_pane.xml`, moved above or below the apps by `AppsCustomizePagedView.placeStrip`).
+  `AppsCustomizePagedView.syncTabs()` reads the tabs when the drawer opens and when `Launcher`'s preference listener
+  sees a key of the tabs.
+- **Settings:** "App drawer" is a category of the creator's second screen. "Tabs" opens `S/DrawerTabsFragment` (the tab
+  creator, one `RecyclerView` with the categories "Tabs" and "Miscellaneous"; the dragging as `S/BarOrderDialog`'s);
+  `S/DrawerTabDialogs` has the add / edit / delete dialogs and is used by the drawer too; `S/DrawerAppsFragment` is the
+  list of a tab's apps or of the hidden ones (`L/DrawerAppList` is its model), opened from the dialogs, or by itself from
+  the drawer through `SettingsActivity` and the extra `DrawerAppsFragment.EXTRA_TAB`.
+- **Not built (KI-52):** the widget list (`L/WidgetGroups` is its model), `L/BarShares` (the model of the widget bar's
+  sharing of room) and the horizontal bar's switch.
+
 ## 5. Bars
 
 - **Geometry** (pure, tested): `L/BarLayout` (one page's bars: the horizontal bar at the top or bottom, the
@@ -458,6 +499,10 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   - The second screen (reachable while the user layout is on) starts with "Home screen layout": the rows
     and columns sliders (`S/GridSeekBarPreference`), the start page and the two icon text sizes
     (`S/IconTextSizeRows`).
+  - Since round 28: one accent colour for the settings (`L/ThemeAccent`, `L/AccentPainter`: every row as it is
+    attached, every switch, the dialogs; the colour is the user's only with the creator on), and the screens that are
+    not preference lists (`S/DrawerTabsFragment`, `S/DrawerAppsFragment`, `S/NotificationBadgesFragment`'s rows) use
+    `AccentPainter.attach` too; `S/SettingsSystemBars` gives a screen of that kind the room of the system bars.
   - Small pieces: `S/ButtonTextFit` (the text of the small buttons in a row), `S/CompatInfoText` (FYT-only
     lines of two info texts), `S/BackgroundSelectorDialog` with `S/ColorTileDrawable` and
     `S/SelectedFrameDrawable`, `L/FabButtons`.

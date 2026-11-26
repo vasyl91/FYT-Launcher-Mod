@@ -1,7 +1,13 @@
 # Project state
 
-**Snapshot: 2026-11-25, `testBranch` after round 27 (`7ec71e8dc` … `58b5c3365`, then the documentation commits);
-round 28 is briefed for implementation (`prompts/active/sonnet-prompt-2026-11-25-round-28.md`). On 2026-11-25 the 7862's
+**Snapshot: 2026-11-26, `testBranch` after round 28 (the brief `prompts/active/sonnet-prompt-2026-11-25-round-28.md`;
+{{COMMITS}}). Built: the crash and start fixes (A1–A8), the slider's look and touch (B1, B2), one accent colour and "Stock
+layout" turning off the whole creator (C1–C3, D-85, D-86), the home screen's colour of names, swipes, double tap, folders,
+free and overlapping widgets (D1–D7, D-91, D-92), the app drawer (vertical, letters, search, grid, tabs and their creator,
+F1–F6, D-88), the notification badges (H1, H2, D-90), BOOT_COMPLETED at a wake (I1) and the new welcome texts (I2), and
+"Display vertical bar". **Not built (KI-52):** the horizontal bar's switch, hiding the drawer button and the music widget
+with the sharing rule (only the model `BarShares`, D-87), and the widget list (only the model `WidgetGroups`, D-89). None
+of it was tried on a device (KI-51); CI is green for every code commit ({{CI}}). Before it, on 2026-11-25 the 7862's
 log of round 25 closed KI-46 (no StrictMode report, no leaked `ActivityView` surface); the owner confirmed the panes,
 the order of the bar's elements (D-77) and the dark dialogs (D-78) on the 7862, and the A55 runs the launcher as before on
 Android 17. com.syu.music cannot be moved to a position from another app (KI-50, D-81).
@@ -47,9 +53,10 @@ What the owner wants from it, as the briefs and chat reports show [H]:
 | Unreleased work | At `ee8e4f91`: 536 commits since `v1.2.1`, and `testBranch` 141 commits ahead of `main` (last merge: PR #33, 2026-11-01) [V]. Round 13 added 26 more, round 14 31 (29 of code). |
 | Next version | 1.2.2. README, the updater and `release-assets.yml` already describe `system_release_1.2.2.apk` [V]. **No release date is recorded** [U]. |
 | Development phase | Short feature and fix rounds on `testBranch`, driven by device logs (Opus brief → Sonnet commits → owner test). 33 briefs since 2026-10-27, all implemented [V]. |
-| Active brief | **Round 28** (2026-11-25): `prompts/active/sonnet-prompt-2026-11-25-round-28.md`, 34 code commits and 2 documentation commits, not started [V]. |
+| Active brief | **Round 28** (2026-11-25): `prompts/active/sonnet-prompt-2026-11-25-round-28.md`, implemented 2026-11-26 except E1 (the horizontal bar's switch), E2, E3 and G1 (KI-52); waiting for the owner's test (KI-51) [V]. |
 | Last code change | **Round 22, 2026-11-18/19:** Robolectric for tests of views (D-68); the bar's music buttons, title and artist bound while its window stays (KI-35); the bar's title and artist sized the same with "Resizable horizontal bar" off; the guides below the app bar and the settings list keeping its place (D-73); "Transparent status bar" moved (D-72); the statistics window in landscape where the creator puts it, and on the home screen under the bars and over the panes (D-69); the vertical bar's width (D-70) and the number of icons on each bar (D-71) may be set; 10 code commits `62fc51126` … `5a6272396` [V]. **The owner, 2026-11-19 on the 7862 [H]: all work**, except a jump of the second settings screen scrolled up after a return; `16f256ee8` sizes the settings rows when they are bound. **The owner confirmed that fix too (2026-11-19).** Then `660b032e6`: a widget's configuration opened by the system (KI-41), waiting for the owner's test. Report: `reports/implementation_report_2026-11-15.md`, section "Round 22". |
 | Round 27 | **2026-11-22:** after the owner's A55 test of round 26 ("everything works"). The position slider on every unit (`PositionSlider.Mode` SEEK / SHOW / GREY), a session's own app moved where its session allows it (`MediaTransportController.canSeek`, `seekToPosition`); "Start on wake" (`WakeAutostartPlan`, `ColdStart.startForWake`, the dialog's list argument); `canbus_library/README.md` on unpacking the zips for `--launcher`. 4 code commits `7ec71e8dc` … `58b5c3365` [V]. **Waiting for the owner's test (A55, 7862).** Report: `reports/implementation_report_2026-11-15.md`, section "Round 27". |
+| Round 28 | **2026-11-26:** after the owner's 25 points, logs and 20 crash logs of 2026-11-25. {{COUNT}} commits, each with a green CI: see `reports/implementation_report_2026-11-15.md`, section "Round 28", for the list, the deviations and what is not built. Decisions D-84 … D-92, D-81 and D-83 changed; KI-51 … KI-53, KI-33 accepted. **Waiting for the owner's test (A55, 7862).** |
 | Round 26 | **2026-11-21/22:** after the owner's A55 test of round 25 ("everything works but the dialogs after a turn") and the 7870 tester's report. A turn on a phone: the plain dialogs come back with their texts (`SettingsDialogMemory`, `DialogTurn`), a download, a wallpaper save and a canbus import go on with their dialogs (`HandedWork`), the colour picker stores its colour and the app lists come back (`ColorPickerTargets`), the background selector is sized from its window and draws the wallpaper center-crop (`CenterCropDrawable`); "App icons" without "Resizable" (D-71 changed); "Fit the apps to their icons" and "Hide the apps" under the widget bar (`WidgetBarPlan.shares`, D-80); the 7870's BT cover after a start or a title that comes back (`StockBtCover`), file covers read as com.syu.media reads them (`FileCover`), the cover in a pause and on a rebuilt widget (`PausedCover`), the position slider (`PositionSlider`, D-81). 12 code commits `edcee91a9` … `6c525ff3e` [V]. **Waiting for the owner's test (A55, 7862) and the tester's (7870).** Report: `reports/implementation_report_2026-11-15.md`, section "Round 26". |
 | Round 25 | **2026-11-20:** the widget previews of the page shown first read off the main thread, and a released `ActivityView` giving back its root surface (KI-46); a nested settings row keeps its space under the title, blank summaries gone, three sections with dividers in "Bars" (D-79); every settings dialog dark like the settings (`SettingsDialogs`, D-78); the order of the horizontal bar's elements, per orientation, in a dialog of "Bars" (`BarOrder`, `BarOrderDialog`, D-77); 7 code commits `6670ecf8b` … `8118d0af9` [V]. **The owner, A55 (2026-11-21) [H]: everything works as it should, except the dialogs after a turn of the screen (round 26).** The 7862's log (KI-46) is awaited. Report: `reports/implementation_report_2026-11-15.md`, section "Round 25". |
 | Round 24 | **2026-11-20:** CI only for pushes that change more than the documentation (`46b59b2a7`, the rule in `CLAUDE.md`); the screens' ids kept in memory for a launcher created again in the process (`ScreenIdsMemory`); one window thread for the status bar strip; the home check waits for the binding before it judges the bars (KI-45); 3 code commits `85f35583d` … `32adc8b50` [V]. **The owner's log of 2026-11-20 18:21 [V]: the three fixes work (KI-45 closed); the status bar swipe works [H].** Report: `reports/implementation_report_2026-11-15.md`, section "Round 24". |
@@ -146,6 +153,13 @@ JUnit 5 JVM tests: 110 files, 1011 tests, no instrumented tests. CI runs on GitH
 
 ## Active tasks
 
+**Round 28 (2026-11-26), waiting for the owner's test (KI-51):** nothing of it was tried on a device. The list is in
+KI-51; the ones to look at first on the A55: the settings of a release build (A3), the black window before the unlock
+(A7), the slider's touch, the accent colour, the gestures and the double tap, the drawer (letters, search, tabs and their
+creator), the badges. On the 7862: the double tap "Turn off screen" (the tile's command, the same double tap brings the
+screen back), the swipe down (the quick settings panel), and that nothing changed where the round was not about it.
+What was left out (E1 horizontal, E2, E3, G1) needs a device (KI-52).
+
 **Round 27 (2026-11-22), waiting for the owner's test (KI-50):** on the A55 the slider with a streaming app (a knob,
 a move goes there), with an app that cannot seek (no knob) and with a live YouTube stream (empty); "Start on wake"
 with one or two apps, a sleep and a wake (they open one by one, then the launcher or the app from before the sleep),
@@ -179,6 +193,9 @@ The hardcoded OpenWeather key is **not** an open issue: the owner decided to kee
 ## Next priorities
 
 **Confirmed by the owner or the briefs:**
+- Round 28's left-out half (KI-52): the switch "Display horizontal bar" with the launcher building no bar, hiding the
+  drawer button and the music widget, `BarShares` used by every place that counts the bar's room, and the widget list; each
+  one briefed on its own, with a device to try the bar and the drag on.
 - Release 1.2.2 at some point; before it, a fresh Baseline Profile (`ROADMAP.md` P-2, P-3).
 - Deferred ideas, each needing its own brief: day/night mode pinned to the PiP displays; FYT skins in the
   standard flavor.

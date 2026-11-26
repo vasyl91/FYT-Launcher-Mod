@@ -1,6 +1,6 @@
 # Known issues
 
-As of 2026-11-25 (`testBranch` after round 27; round 28 briefed; the 7870 tester's results are awaited, see `checks/7870.md`). KI-46 closed 2026-11-25 by the 7862's log. One list of what is open today,
+As of 2026-11-26 (`testBranch` after round 28; none of it tried on a device; the 7870 tester's results are awaited, see `checks/7870.md`). KI-46 closed 2026-11-25 by the 7862's log. One list of what is open today,
 rewritten on 2026-11-18 at the owner's request. What was fixed or closed has been taken out; it stays in git
 and in the reports (`reports/`, `chat_archive/`). Sources: the code, git, CI, the briefs, the chat reports and
 the owner's results.
@@ -40,12 +40,15 @@ file and named in the round's report.
 | KI-28 | A workspace load that bound nothing for 30 s | unverified | watching | a log of the next case |
 | KI-29 | "Changes do not work on the 7870" | unverified | open | the tester's reply |
 | KI-31 | StrictMode reports inside the framework (A55 log of 2026-11-09) | problem | partial | — |
-| KI-33 | Some settings of the home screen only with the user layout on | problem | open | the owner's choice |
+| KI-33 | Some settings of the home screen only with the user layout on | limit | accepted (D-85) | — |
 | KI-37 | A widget lay over icons after a change of the grid | unverified | watching | a log with `Item out of place` |
 | KI-44 | The GPS of the fuel statistics only while something needs it | unverified | partial | a unit whose code check waits for a drive |
 | KI-48 | The 7870's covers and the position slider | unverified | watching | the tester's result and log (round 26) |
 | KI-49 | The canbus script's `--launcher .` needs the decompiled folders, now zips | limit | accepted (the owner, 2026-11-22) | — |
 | KI-50 | The position slider for every player, and "Start on wake" | unverified | watching | the owner's test on the A55 and the 7862's log (round 27) |
+| KI-51 | Round 28 on a device: crashes, the black window before the unlock, the settings' look, the gestures, the drawer, the badges | unverified | watching | the owner's test on the A55 and the 7862 (the lists in the round's report) |
+| KI-52 | Round 28's brief only partly built: E1 horizontal, E2, E3, G1 | problem | open | a round with a device to try the bar and the drag on |
+| KI-53 | The release build of the settings' preferences (A3) cannot be tried in a session | unverified | watching | a release build by the owner |
 
 ## Problems
 
@@ -94,8 +97,35 @@ the reads under `LauncherAppWidgetHostView.onLayout` and in a toast, both inside
 ### KI-33 Some settings of the home screen only with the user layout on
 The second settings screen opens only with "User layout" on [V]. Its "Home screen layout" holds the grid, the
 icon text sizes (D-56) and, since 2026-11-18, "Transparent status bar" (D-72): with the built-in layout they
-cannot be changed, though their stored values still apply. A fix, if wanted: show that category on the first
-screen while the user layout is off.
+cannot be changed. **Accepted 2026-11-25 (D-85):** that is the rule now; "Stock layout" turns off everything of the
+creator, and since round 28 their stored values no longer apply to it either (`CreatorPrefs`).
+
+### KI-51 Round 28 on a device
+Round 28 is built and its tests are green, but none of it was tried on a device [V: every commit says so]. What to look
+at, by the owner's points: the crashes (A1 to A3, the settings of a release build included), the vertical bar at a
+swipe (A4), the statistics window after a restart (A5), the logcat stop after a restart (A6), the black window before
+and after the unlock, with a PIN and without (A7); the slider's colour, centre, touch and area (B1, B2); the accent and the
+switches (C1, C2), "Stock layout" (C3); the colour of the icons' names, the two swipes, the double tap: lock, turn off, turn
+on (D1 to D3); folders (D4, D5); free widgets and overlap with its question (D6, D7); "Start on wake" with BOOT_COMPLETED
+(I1), the welcome texts (I2); the badges (H1, H2); the drawer: vertical, the letters, the search bar, the grid, the
+tabs and their creator, the lists of apps (F1 to F6). On the 7862: the double tap "Turn off screen" is the tile's
+command and the same double tap brings the screen back; the swipe down is the quick settings panel; the slider
+of com.syu.music has no knob. The unit tests do not tell whether a swipe of a finger is taken by the right view.
+
+### KI-52 Round 28's brief only partly built
+Built: A1 to A8, B1, B2, C1 to C3, D1 to D7, F1 to F6, H1, H2, I1, I2, and "Display vertical bar" (the vertical half of
+E1). **Not built:** the horizontal half of E1 (the switch "Display horizontal bar" with the launcher not building the
+bar and giving its room to the grid, and `DrawerAccess` in the settings), E2 (hide the app drawer button), E3 (hide the
+music widget, and `BarShares` used by the page's layout, the window's, the apps list's room, the tiles and the music
+widget's size) and G1 (the widget list). What exists of them is the tested models `BarShares` and `WidgetGroups` (D-87,
+D-89), which nothing calls yet. Reason: the bar's placement is decided at about a dozen places in `Workspace`, `Helpers`
+and `Launcher`, and the widget picker is the way widgets get onto the home screen; neither can be tried without a
+device, and a regression there would be in the 7862's home screen. A round with a device should take them one by one.
+
+### KI-53 The release build of the settings' preferences (A3)
+The second settings screen crashed in the A55's release build (standard release 1.2.1, Android 17, the owner's crash log of 2026-11-25): R8 removed the `(Context, AttributeSet)` constructor of a preference, which the inflater calls by reflection.
+A3 keeps them (`proguard-rules.pro`), but a release cannot be built in a session, so the fix is [V] only by reading the
+rules. The owner opens the settings of a release build to see.
 
 ## Limits
 

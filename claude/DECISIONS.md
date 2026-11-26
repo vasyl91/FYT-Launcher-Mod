@@ -1042,6 +1042,13 @@ The round had no brief; its result is in `reports/implementation_report_2026-11-
 - **Where:** `PositionSlider` (`Mode` SEEK / SHOW / GREY), `SyuMediaClient.seekTo`,
   `MediaTransportController.canSeek` / `seekToPosition`, `MusicWidgetPlan.HOME_*_SLIDER`, `6c525ff3e`,
   `7ec71e8dc`, `8f2259db1`.
+- **Changed in round 28 (2026-11-25, the owner's points 1 and 2; the mechanism by the assistant):** the slider is in
+  the bar's text and button colour and lies on the line of the widget's other texts; a finger on it moves the knob and
+  never turns the page, and it answers in an area larger than the line (the track along the whole width and the
+  knob's circle grown by 30 % of its diameter; `PositionSeekBar`, `SliderHitArea`, `TouchOwner`). A touch outside
+  that area, and any touch on a slider that only shows, is not taken. No `TouchDelegate`: the row is larger than the
+  area, so the area stays inside the view. com.syu.music: no way to scroll it, and the README says so (the owner:
+  "FYT's app offers no such possibility").
 
 ### D-82 An open dialog and work in progress come back after a turn of the screen
 - **Status:** ACTIVE. **By:** owner, 2026-11-21 (the colour picker as the example: "the other dialogs disappear after
@@ -1065,3 +1072,111 @@ The round had no brief; its result is in `reports/implementation_report_2026-11-
 - **Where:** `WakeAutostartPlan`, `ColdStart.startForWake`, `WakeDetection.onWake`,
   `AppListAutostartDialogFragment` (`KEY_WAKE_AUTOSTART_APPS`, `newInstance(listKey)`), key `wake_autostart_apps`,
   `65a43ebc4`, `58b5c3365`.
+- **Changed in round 28 (the owner, 2026-11-25):** "Start on wake" uses the same ways as a boot: an app with a
+  BOOT_COMPLETED receiver is woken by that broadcast while the switch "Try to use the BOOT_COMPLETED broadcast" is on
+  and the launcher can send it (`WakeAutostartPlan.route`, tested); Display Media Titles and JamesDSP by their own
+  broadcasts; the rest by their launch activity. The switch's note says it applies to both lists, and the note of the
+  list is by the device (an FYT unit has an autostart of its own to turn off, others are told to turn it off
+  wherever it is enabled). The broadcast is not sent at a wake for the apps' sake only: an app that gets no
+  BOOT_COMPLETED is opened.
+
+### D-84 A stop of the logcat ends within seconds
+- **Status:** ACTIVE. **By:** the owner, 2026-11-25 (after a restart "Saving the log..." lasted long and the file was
+  large).
+- **Decision:** the capture reads logcat past the stop for 10 s at most, or until it has caught up or had no line for
+  1.5 s; a line newer than the stop is never written. After the 10 s the process is killed, checked a second later
+  and killed again if it still runs, and the file says how far behind logcat was. The earlier rule (up to 120 s) was
+  what made the stop slow after a cold start, whose capture reads whole buffers through the host.
+- **Where:** `DrainPlan` (tested), `LogcatWorker`, `9d23674f`.
+
+### D-85 "Stock layout" turns off everything of the layout creator
+- **Status:** ACTIVE. **By:** the owner, 2026-11-25 (an answer to the plan's question: also the new options of the
+  round; the rows of those functions are greyed out).
+- **Decision:** with the creator off ("Stock layout") the launcher reads the default of every setting of the creator's
+  screen; what the user set is kept and comes back with the creator. The launcher's own settings (the notification
+  badges, the accent colour's default) are not the creator's and work with both. A new row of the creator's screen
+  must be in `CreatorKeys`; `CreatorKeysTest` parses the XML and fails when it is not, so that no setting slips past.
+- **Where:** `CreatorKeys`, `CreatorPrefs` (every read of a creator setting goes through it), `CreatorKeysTest`,
+  `StockLayoutReadSitesTest`, `09715126`. The drawer's tabs, the hidden apps and the placement of the strip are
+  creator keys too, so with the stock layout the drawer has no tabs and hides nothing.
+
+### D-86 One accent colour for the settings, chosen in "Set global theme color"
+- **Status:** ACTIVE. **By:** the owner, 2026-11-25.
+- **Decision:** what the layouts and themes colour with the default accent (`R.color.colorAccent`) is coloured with
+  the chosen colour: texts, backgrounds and drawables of that colour, progress and thumbs, the checkboxes and radio
+  buttons when checked, every switch (thumb in the accent when on, a lighter tone of it half transparent for the
+  track; off, a light grey thumb on a grey track), also in the dialogs. `AccentPainter` does it on every row as it is
+  attached, `ThemeAccent` keeps the colour (the user's only with the creator on). The colour a view was painted with is
+  kept in it, so that the next change finds what the last one painted.
+- **Where:** `ThemeAccent`, `AccentPainter` (`attach`, `paint`, `watch`, `paintSwitch`), `AccentPainterTest`,
+  `AccentSettingsViewTest`, `e2efbd02`, `6abbcbbb`.
+
+### D-87 The room of the widget bar goes to the other elements by one rule (a model; not wired yet)
+- **Status:** UNDER_REVIEW: only the model is built. **By:** the owner, 2026-11-25 (the table), the model by the
+  assistant.
+- **Decision:** when an element of the widget bar is hidden, or the apps list is fitted, its room goes by this table: the
+  date and the weather to the music widget; the apps list 10 % each to the date and the weather and the rest to the
+  music widget; the drawer's button 10 %, 10 %, 40 % (apps), 40 % (music); the music widget 10 %, 10 % and 80 % to the
+  apps; a part meant for an element that is not there goes to the "rest" of its rule, or equally to those that are; one
+  element left gets the whole bar, centred.
+- **Where:** `BarShares` (pure, `BarSharesTest`, `BarSharesUsualTest`). **Not built** (no device to try it on): the
+  switches "Display horizontal bar", "Hide the app drawer button", "Hide the music widget", and the use of the rule by
+  `WidgetBarLayout`, `Workspace.forceOriginalSizes*`, `BarCapacity`, `AppListAdapter` and `MusicWidgetSizer`. The
+  vertical switch is "Display vertical bar" (the key `left_bar` is unchanged).
+
+### D-88 The app drawer: vertical by default, a search bar, a grid of its own, tabs
+- **Status:** ACTIVE (not tried on a device). **By:** the owner, 2026-11-25 (points 6 to 8); the mechanisms by the assistant.
+- **Decision:** the drawer scrolls vertically by default, with a bar of letters at the right edge and a bubble with
+  the letter under the finger; the horizontal pages stay as a choice. "Rows" and "Columns" are its own (3 to 12 and 2 to 8
+  cells along the long and the short edge). A search bar above the apps is optional; it searches the tab you are in,
+  ignores capitals and accents, and is emptied when the drawer closes. The tabs: the main tab is always first, cannot be
+  deleted, may be renamed; the others have an order, a name (blank: "Tab" and its place; at most 50 characters), a set
+  of apps and the flag "keep apps in the main tab". A hidden app is in no tab. The main tab shows the apps that are not
+  hidden and in no other tab; with the rule "allow in all tabs" the apps of tabs that keep them are in the main tab as
+  well, with the other two rules the flag does nothing (its checkbox is dimmed). "Apps in several tabs": all tabs, all
+  but the main tab, or one tab at most (then the list an app is picked from leaves out the other tabs' apps). With one
+  tab the drawer has no strip. The strip is above or below the apps, 14 % of the shorter side high; two tabs show side by
+  side in portrait and four in landscape; a swipe longer than 25 % of the width, or a fling, changes the tab. The model is
+  one string under `drawer_tabs`, with the rule inside it (not a key of its own).
+- **Where:** `DrawerTabs` (pure, tested), `DrawerTabsStore`, `DrawerAppList`, `DrawerTabGeometry`, `DrawerTabStrip`,
+  `AppsVerticalView`, `LetterScroller`, `LetterIndex`, `AppSearch`, `AppSearchBar`, `AppsGrid`, `DrawerTabsFragment`,
+  `DrawerTabDialogs`, `DrawerAppsFragment`, `AppsCustomizePagedView`.
+
+### D-89 The widget list: a model; the list is not built
+- **Status:** UNDER_REVIEW: only the model is built. **By:** the owner, 2026-11-25 (point 9); the model by the assistant.
+- **Decision:** the widget picker is to be a list of apps, each with its widgets and shortcuts and a search field; one group
+  per app in the alphabetical order of its name (the collator of the language), the counts for "1 widget, 3 shortcuts",
+  the search keeping the groups whose app or entries match; at most one row unfolded; the entries are dragged as today.
+- **Where:** `WidgetGroups` (pure, `WidgetGroupsTest`). **Not built:** `WidgetsListView`, the unfolded rows, the previews
+  off the main thread, the drag from them.
+
+### D-90 Notification badges
+- **Status:** ACTIVE (not tried on a device). **By:** the owner, 2026-11-25 (point 15).
+- **Decision:** an app's number is the sum of its notifications' numbers (one for a notification with none), without the
+  summary of a group, ongoing and foreground-service notifications and those of a channel that shows no badge; it reads
+  "99+" above 99. It is drawn in a corner of the icon on the home screen, in folders (the sum of the folder's apps), on
+  the bars' icons and in the drawer. The badges are the launcher's own settings, not the creator's, so they work with "Stock
+  layout" (position, size, corner radius, colour (the accent by default) and outline; a preview).
+- **Where:** `BadgeCounts`, `BadgeModel`, `BadgeViews`, `BadgeDrawable`, `NotificationListener`,
+  `NotificationBadgesFragment`, `fef9ab74`, `1e9f52db`.
+
+### D-91 Gestures on the home screen, and the double tap
+- **Status:** ACTIVE (not tried on a device). **By:** the owner, 2026-11-25 (points 4 and 3 of the answers).
+- **Decision:** "Swipe up to open the app drawer" and "Swipe down for notifications" (the quick settings panel on an FYT unit),
+  both off by default; a swipe is vertical when it is steeper than 60 degrees and at least 12 % of the shorter side, or at
+  least 1000 dp/s. A touch that begins on a widget, an element of the user's layout, the music slider, in the overview, the
+  drawer, an open folder or during a drag does not start one. "Double-tap action": none (the default), lock the screen
+  (the accessibility service, and a step of the permission flow) or turn off the screen: on an FYT unit with the stock
+  service the tile's own command `C_BLACKSCREEN`, which the system undoes with its own double tap; elsewhere a black window of
+  the launcher, undone by a double tap on it.
+- **Where:** `HomeGesture`, `HomeGestures`, `StatusBarPanel`, `DoubleTap`, `ScreenOffPlan`, `0f52026d`, `c23e3e01`.
+
+### D-92 Free widgets and overlap
+- **Status:** ACTIVE (not tried on a device). **By:** the owner, 2026-11-25 (point 4).
+- **Decision:** "Free widget placement": an app widget keeps the pixels and the size the user gives it (kept as fractions of
+  the page's content area, by appwidget id, in the file `widget_frames`), the cells nearest to it are what the database
+  holds. "Allow widgets to overlap": a widget takes no cell, icons and folders may lie under it, a drop pushes nothing
+  aside; the widgets are drawn over the icons and take the touch first. Turning overlap off asks first, and puts the widgets
+  that overlap on the grid again (icons and folders stay; a widget with no room is removed).
+- **Where:** `WidgetFrame`, `WidgetFrames`, `FreeformWidgets`, `GridRefit`, `PageFit.toMove(..., widgetsMayOverlap)`,
+  `CellLayout`, `ShortcutAndWidgetContainer`, `7eb117b5`, `0bcd9442`.
