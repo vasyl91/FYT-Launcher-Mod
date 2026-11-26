@@ -3,6 +3,9 @@ package com.android.launcher66;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.VelocityTracker;
+import android.view.ViewConfiguration;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -87,6 +90,160 @@ public final class AppsVerticalView extends FrameLayout {
 
     void setHost(Host host) {
         mHost = host;
+    }
+
+    /**
+     * What the drawer's tabs ask of a sideways swipe on the list (F6): the list follows the finger, the strip's underline
+     * with it; a swipe that is long enough, or a fling, changes the tab and the new tab's list comes in from the other side.
+     */
+    interface TabSwipe {
+        /** Whether swipes change the tab now (there is a strip of two tabs or more). */
+        boolean canSwipe();
+
+        /** Whether there is a tab that way: +1 the next one, -1 the previous one. */
+        boolean hasTab(int direction);
+
+        /** The list is dragged: {@code fraction} of its width, positive to the right. */
+        void onSwipeProgress(float fraction);
+
+        /** The swipe ended on another tab; the drawer shows it, and the list comes in. */
+        void onSwipeCommit(int direction);
+
+        /** The swipe ended on the same tab. */
+        void onSwipeCancel();
+    }
+
+    private TabSwipe mTabSwipe;
+    private float mDownX;
+    private float mDownY;
+    private long mDownTime;
+    private boolean mSwiping;
+    private boolean mSwipeBlocked;
+    private VelocityTracker mVelocity;
+    private int mSlop = -1;
+
+    void setTabSwipe(TabSwipe swipe) {
+        mTabSwipe = swipe;
+    }
+
+    private void track(MotionEvent ev) {
+        if (mVelocity == null) {
+            mVelocity = VelocityTracker.obtain();
+        }
+        mVelocity.addMovement(ev);
+    }
+
+    private void endTracking() {
+        if (mVelocity != null) {
+            mVelocity.recycle();
+            mVelocity = null;
+        }
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        if (mTabSwipe == null) {
+            return false;
+        }
+        if (mSlop < 0) {
+            mSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
+        }
+        switch (ev.getActionMasked()) {
+            case MotionEvent.ACTION_DOWN:
+                mDownX = ev.getX();
+                mDownY = ev.getY();
+                mDownTime = ev.getEventTime();
+                mSwiping = false;
+                // a touch that starts on the letters is theirs: they forbid the interception on their own touch down
+                mSwipeBlocked = !mTabSwipe.canSwipe();
+                endTracking();
+                track(ev);
+                break;
+            case MotionEvent.ACTION_MOVE:
+                if (!mSwipeBlocked && !mSwiping) {
+                    track(ev);
+                    if (DrawerTabGeometry.sideways(ev.getX() - mDownX, ev.getY() - mDownY, mSlop)) {
+                        mSwiping = true;
+                        if (getParent() != null) {
+                            getParent().requestDisallowInterceptTouchEvent(true);
+                        }
+                        return true;
+                    }
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
+                if (!mSwiping) {
+                    endTracking();
+                }
+                break;
+            default:
+                break;
+        }
+        return mSwiping;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        if (!mSwiping) {
+            return super.onTouchEvent(ev);
+        }
+        track(ev);
+        float dx = ev.getX() - mDownX;
+        switch (ev.getActionMasked()) {
+            case MotionEvent.ACTION_MOVE:
+                mList.setTranslationX(dx);
+                mTabSwipe.onSwipeProgress(getWidth() == 0 ? 0f : dx / getWidth());
+                break;
+            case MotionEvent.ACTION_UP:
+                mVelocity.computeCurrentVelocity(1000);
+                // the speed at the lift, or the average one of the whole swipe when that is the greater
+                float atLift = mVelocity.getXVelocity();
+                float average = dx / Math.max(1L, ev.getEventTime() - mDownTime) * 1000f;
+                finishSwipe(dx, Math.abs(atLift) >= Math.abs(average) ? atLift : average);
+                break;
+            case MotionEvent.ACTION_CANCEL:
+                finishSwipe(0f, 0f);
+                break;
+            default:
+                break;
+        }
+        return true;
+    }
+
+    /** The finger is up: the list goes out and the next tab comes in, or the list goes back. */
+    void finishSwipe(float dx, float vx) {
+        mSwiping = false;
+        endTracking();
+        final int width = Math.max(1, getWidth());
+        float flingMin = 600f * getResources().getDisplayMetrics().density;
+        final int direction = DrawerTabGeometry.swipeDirection(dx, vx, width, flingMin);
+        // a view that is not on a window cannot animate: it changes the tab at once, so that the swipe is not left half done
+        boolean animate = isAttachedToWindow();
+        if (direction != 0 && mTabSwipe.hasTab(direction)) {
+            // +1: the next tab, the finger went left, the list leaves to the left and the new one comes from the right
+            Runnable commit = () -> {
+                mTabSwipe.onSwipeCommit(direction);
+                if (animate) {
+                    mList.setTranslationX(direction * width);
+                    mList.animate().translationX(0f).setDuration(160).start();
+                } else {
+                    mList.setTranslationX(0f);
+                }
+            };
+            if (animate) {
+                mList.animate().translationX(-direction * width).setDuration(120).withEndAction(commit).start();
+            } else {
+                commit.run();
+            }
+        } else {
+            if (animate) {
+                mList.animate().translationX(0f).setDuration(140).start();
+            } else {
+                mList.setTranslationX(0f);
+            }
+            mTabSwipe.onSwipeCancel();
+        }
     }
 
     void setBinder(IconBinder binder) {

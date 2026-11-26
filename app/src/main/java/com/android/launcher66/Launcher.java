@@ -1383,6 +1383,11 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         || Keys.ALL_APPS_GRID_SHORT.equals(key) || Keys.USER_LAYOUT.equals(key))) {
                     mAppsCustomizeContent.refreshGrid();
                 }
+                // the tabs, the hidden apps, "Tab bar placement" (F4, F5, F6): the strip and the apps are made again
+                if (mAppsCustomizeContent != null && (Keys.DRAWER_TABS.equals(key)
+                        || Keys.DRAWER_TAB_BAR_POSITION.equals(key) || Keys.USER_LAYOUT.equals(key))) {
+                    mAppsCustomizeContent.syncTabs();
+                }
                 // "Allow widgets to overlap" and "Free widget placement": the cells taken are counted anew; with the first
                 // turned off the widgets that overlap are put on the grid again
                 if (mWorkspace != null && (Keys.WIDGET_OVERLAP.equals(key) || Keys.WIDGET_FREEFORM.equals(key)

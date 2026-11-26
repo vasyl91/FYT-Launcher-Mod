@@ -42,6 +42,8 @@ import androidx.preference.PreferenceManager;
 
 import com.android.async.AsyncTask;
 import com.android.launcher66.DropTarget.DragObject;
+import com.android.launcher66.settings.DrawerAppsFragment;
+import com.android.launcher66.settings.DrawerTabDialogs;
 import com.android.launcher66.settings.Helpers;
 import com.android.launcher66.settings.Keys;
 import com.android.launcher66.settings.SettingsActivity;
@@ -553,6 +555,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
             View found = host == null ? null : host.findViewById(R.id.apps_vertical);
             if (found instanceof AppsVerticalView) {
                 mVertical = (AppsVerticalView) found;
+                mVertical.setTabSwipe(mTabSwipe);
                 mVertical.setHost(new AppsVerticalView.Host() {
                     @Override
                     public void onIconClick(View icon) {
@@ -610,6 +613,247 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
             mSearch.clear();
         }
         setQuery("");
+    }
+
+    // ---- the drawer's tabs (F6: DrawerTabs, DrawerTabStrip)
+
+    private DrawerTabs mTabs = new DrawerTabs();
+    /** The tab the drawer shows; the main tab again when the one chosen is gone (deleted in the settings). */
+    private int mTabId = DrawerTabs.MAIN;
+    private DrawerTabStrip mStrip;
+    /** What the drawer shows of the tabs when it was last made: the model and the tab, to tell a change. */
+    private String mTabsKey = "";
+
+    private List<String> installedPackages() {
+        List<String> packages = new ArrayList<>();
+        for (AppInfo info : mAllApps) {
+            String pkg = info.getPackageName();
+            if (pkg != null && !pkg.isEmpty()) {
+                packages.add(pkg);
+            }
+        }
+        return packages;
+    }
+
+    /** Reads the tabs and the hidden apps; with "Stock layout" the model is the one with only the main tab. */
+    private void loadTabs() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        mTabs = DrawerTabsStore.load(prefs, installedPackages());
+        if (!mTabs.ids().contains(mTabId)) {
+            mTabId = DrawerTabs.MAIN;
+        }
+    }
+
+    /** The apps of the tab that is shown now: the hidden ones never, and in another tab only the tab's own. */
+    private List<AppInfo> inCurrentTab(List<AppInfo> all) {
+        if (mTabs.hidden().isEmpty() && !mTabs.hasStrip()) {
+            return all;
+        }
+        List<String> packages = new ArrayList<>(all.size());
+        for (AppInfo info : all) {
+            packages.add(info.getPackageName());
+        }
+        Set<String> allowed = new HashSet<>(mTabs.appsOf(mTabId, packages));
+        List<AppInfo> shown = new ArrayList<>(all.size());
+        for (AppInfo info : all) {
+            if (allowed.contains(info.getPackageName())) {
+                shown.add(info);
+            }
+        }
+        return shown;
+    }
+
+    private DrawerTabStrip strip() {
+        if (mStrip == null) {
+            AppsCustomizeTabHost host = getTabHost();
+            View found = host == null ? null : host.findViewById(R.id.apps_tab_strip);
+            if (found instanceof DrawerTabStrip) {
+                mStrip = (DrawerTabStrip) found;
+                mStrip.setListener(new DrawerTabStrip.Listener() {
+                    @Override
+                    public void onTabSelected(int id) {
+                        showTab(id, false);
+                    }
+
+                    @Override
+                    public void onSelectedTabTapped(int id) {
+                        editTab(id);
+                    }
+                });
+            }
+        }
+        return mStrip;
+    }
+
+    /**
+     * The tabs as the settings have them now: the strip is shown with two tabs or more, above or below the apps; the
+     * apps are those of the tab. Nothing is made again when nothing of the tabs changed since the last time.
+     */
+    void syncTabs() {
+        loadTabs();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        boolean top = !"bottom".equals(CreatorPrefs.of(prefs).getString(Keys.DRAWER_TAB_BAR_POSITION, "top"));
+        DrawerTabStrip strip = strip();
+        boolean wanted = strip != null && mContentType == ContentType.Applications && !DISABLE_ALL_APPS && mTabs.hasStrip();
+        if (strip != null) {
+            if (wanted) {
+                placeStrip(strip, top);
+                List<Integer> ids = mTabs.ids();
+                List<String> names = new ArrayList<>(ids.size());
+                for (int id : ids) {
+                    names.add(tabName(id));
+                }
+                strip.setAccent(ThemeAccent.color(getContext()));
+                strip.setTabs(ids, names, Math.max(0, ids.indexOf(mTabId)));
+            }
+            strip.setVisibility(wanted ? View.VISIBLE : View.GONE);
+        }
+        mStripOnTop = top;
+        mStripShown = wanted;
+        String key = tabsKey();
+        if (!key.equals(mTabsKey)) {
+            mTabsKey = key;
+            applyFilter();
+            updatePageCountsAndInvalidateData();
+        }
+    }
+
+    private boolean mStripOnTop = true;
+    private boolean mStripShown;
+
+    private String tabsKey() {
+        return mTabs.serialize() + "|" + mTabId + "|" + mStripOnTop + "|" + mStripShown;
+    }
+
+    private String tabName(int id) {
+        return mTabs.nameOf(id, getContext().getString(R.string.drawer_tab_main),
+                getContext().getString(R.string.drawer_tab_default));
+    }
+
+    /** The strip above the apps or below them: its place among the pane's children. */
+    private static void placeStrip(DrawerTabStrip strip, boolean top) {
+        strip.setBarOnTop(top);
+        if (!(strip.getParent() instanceof ViewGroup)) {
+            return;
+        }
+        ViewGroup parent = (ViewGroup) strip.getParent();
+        View content = parent.findViewById(android.R.id.tabcontent);
+        if (content == null) {
+            return;
+        }
+        boolean above = parent.indexOfChild(strip) < parent.indexOfChild(content);
+        if (top && !above) {
+            parent.removeView(strip);
+            parent.addView(strip, parent.indexOfChild(content));
+        } else if (!top && above) {
+            parent.removeView(strip);
+            parent.addView(strip);
+        }
+    }
+
+    /** Shows a tab: its apps, from the first page (or the last one, when a drag past the first page came here). */
+    private void showTab(int id, boolean lastPage) {
+        if (id == mTabId || !mTabs.ids().contains(id)) {
+            return;
+        }
+        mTabId = id;
+        mTabsKey = tabsKey();
+        applyFilter();
+        updatePageCountsAndInvalidateData();
+        if (mVertical != null) {
+            mVertical.scrollToTop();
+        }
+        DrawerTabStrip strip = strip();
+        if (strip != null) {
+            strip.select(Math.max(0, mTabs.ids().indexOf(mTabId)), true);
+        }
+        final boolean last = lastPage;
+        post(() -> setCurrentPage(last ? Math.max(0, getPageCount() - 1) : 0));
+    }
+
+    /** A tap on the tab that is selected: its dialog, as in the tab creator (the owner, 2026-11-25). */
+    private void editTab(int id) {
+        final Context context = getContext();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        DrawerTabDialogs.showEdit(context, mTabs, prefs, id, new DrawerTabDialogs.Host() {
+            @Override
+            public void changed() {
+                syncTabs();
+            }
+
+            @Override
+            public void openApps(int tab) {
+                context.startActivity(DrawerAppsFragment.intent(context, tab));
+            }
+        });
+    }
+
+    private final AppsVerticalView.TabSwipe mTabSwipe = new AppsVerticalView.TabSwipe() {
+        @Override
+        public boolean canSwipe() {
+            return mStrip != null && mStrip.getVisibility() == View.VISIBLE && mStrip.count() >= 2;
+        }
+
+        @Override
+        public boolean hasTab(int direction) {
+            int at = mTabs.ids().indexOf(mTabId);
+            return DrawerTabGeometry.target(at, direction, mTabs.count()) != at;
+        }
+
+        @Override
+        public void onSwipeProgress(float fraction) {
+            if (mStrip != null) {
+                mStrip.followPosition(mTabs.ids().indexOf(mTabId) - fraction);
+            }
+        }
+
+        @Override
+        public void onSwipeCommit(int direction) {
+            int to = DrawerTabGeometry.target(mTabs.ids().indexOf(mTabId), direction, mTabs.count());
+            showTab(mTabs.ids().get(to), false);
+        }
+
+        @Override
+        public void onSwipeCancel() {
+            if (mStrip != null) {
+                mStrip.select(Math.max(0, mTabs.ids().indexOf(mTabId)), true);
+            }
+        }
+    };
+
+    private float mDownX;
+    private long mDownTime;
+    private int mDownPage;
+
+    /**
+     * With the pager (the horizontal drawer) the next tab comes after the last page and the previous one before the first:
+     * a drag past the end of the pages, a quarter of the width or a fling, changes the tab (the owner, 2026-11-25).
+     */
+    @Override
+    public boolean dispatchTouchEvent(android.view.MotionEvent ev) {
+        int action = ev.getActionMasked();
+        if (action == android.view.MotionEvent.ACTION_DOWN) {
+            mDownX = ev.getX();
+            mDownTime = ev.getEventTime();
+            mDownPage = getCurrentPage();
+        }
+        boolean handled = super.dispatchTouchEvent(ev);
+        if (action == android.view.MotionEvent.ACTION_UP && getVisibility() == View.VISIBLE
+                && mStrip != null && mStrip.getVisibility() == View.VISIBLE && mStrip.count() >= 2) {
+            float dx = ev.getX() - mDownX;
+            long dt = Math.max(1L, ev.getEventTime() - mDownTime);
+            float vx = dx / dt * 1000f;
+            int direction = DrawerTabGeometry.swipeDirection(dx, vx, Math.max(1, getWidth()),
+                    600f * getResources().getDisplayMetrics().density);
+            int last = Math.max(0, getPageCount() - 1);
+            boolean pastTheEnd = (direction > 0 && mDownPage == last && getCurrentPage() == last)
+                    || (direction < 0 && mDownPage == 0 && getCurrentPage() == 0);
+            if (pastTheEnd && mTabSwipe.hasTab(direction)) {
+                int to = DrawerTabGeometry.target(mTabs.ids().indexOf(mTabId), direction, mTabs.count());
+                showTab(mTabs.ids().get(to), direction < 0);
+            }
+        }
+        return handled;
     }
 
     /** Whether the apps are shown in the vertical list: "App drawer: Scrolling direction" is vertical (the default). */
@@ -1110,7 +1354,8 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
             // closing the drawer empties the search field
             clearSearch();
         } else {
-            // opening it: the settings of the list and of the search field as they are now
+            // opening it: the settings of the list, of the search field and of the tabs as they are now
+            syncTabs();
             syncVertical();
         }
     }
@@ -1816,6 +2061,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         if (!DISABLE_ALL_APPS) {
             mAllApps = list;
             Collections.sort(mAllApps, LauncherModel.getAppNameComparator());
+            loadTabs();
             applyFilter();
             updatePageCountsAndInvalidateData();
         }
@@ -1823,7 +2069,8 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
 
     /** What shows of the apps: all of them, or those whose name matches the search field ({@link AppSearch}). */
     private void applyFilter() {
-        List<AppInfo> shown = AppSearch.filter(mAllApps, info -> info.title == null ? "" : info.title.toString(), mQuery);
+        List<AppInfo> inTab = inCurrentTab(mAllApps);
+        List<AppInfo> shown = AppSearch.filter(inTab, info -> info.title == null ? "" : info.title.toString(), mQuery);
         mApps = shown == mAllApps ? mAllApps : new ArrayList<AppInfo>(shown);
     }
 
