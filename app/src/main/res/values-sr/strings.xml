@@ -624,4 +624,5 @@
     <string name="drawer_tabs">Картице</string>
     <string name="drawer_tabs_summary">Додајте, преименујте и сложите картице фиоке апликација</string>
     <string name="icon_text_size">Подеси величину текста икона</string>
+    <string name="search_apps_hint">Претражи апликације</string>
 </resources>

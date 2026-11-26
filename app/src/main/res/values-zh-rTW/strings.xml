@@ -624,4 +624,5 @@
     <string name="drawer_tabs">分頁</string>
     <string name="drawer_tabs_summary">新增、重新命名及排列應用程式抽屜的分頁</string>
     <string name="icon_text_size">設定圖示文字大小</string>
+    <string name="search_apps_hint">搜尋應用程式</string>
 </resources>

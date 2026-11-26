@@ -624,4 +624,5 @@
     <string name="drawer_tabs">タブ</string>
     <string name="drawer_tabs_summary">アプリドロワーのタブを追加・名前変更・並べ替えします</string>
     <string name="icon_text_size">アイコンの文字サイズを設定</string>
+    <string name="search_apps_hint">アプリを検索</string>
 </resources>

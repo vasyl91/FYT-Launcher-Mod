@@ -624,4 +624,5 @@
     <string name="drawer_tabs">Vahekaardid</string>
     <string name="drawer_tabs_summary">Lisa, nimeta ümber ja järjesta rakenduste sahtli vahekaarte</string>
     <string name="icon_text_size">Määra ikoonide teksti suurus</string>
+    <string name="search_apps_hint">Otsi rakendusi</string>
 </resources>

@@ -624,4 +624,5 @@
     <string name="drawer_tabs">Kartice</string>
     <string name="drawer_tabs_summary">Dodajte, preimenujte i složite kartice ladice aplikacija</string>
     <string name="icon_text_size">Postavi veličinu teksta ikona</string>
+    <string name="search_apps_hint">Pretraži aplikacije</string>
 </resources>

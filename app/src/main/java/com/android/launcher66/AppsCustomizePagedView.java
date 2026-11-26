@@ -182,6 +182,10 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
 
     // Content
     private ArrayList<AppInfo> mApps;
+    /** Every app of the drawer, sorted; {@link #mApps} is what shows of them (the search field of F3 narrows it). */
+    private ArrayList<AppInfo> mAllApps = new ArrayList<AppInfo>();
+    /** What was typed in the search field; empty shows every app. */
+    private String mQuery = "";
     private ArrayList<Object> mWidgets;
     /** The pages were built from a list of widgets once: only then can a same list be skipped, see onPackagesUpdated(). */
     private boolean mWidgetsListed;
@@ -575,6 +579,39 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         return mVertical;
     }
 
+    private AppSearchBar mSearch;
+
+    /** The search field at the top of the drawer (F3): shown with "App drawer: Search bar" on, for the apps. */
+    private void syncSearch() {
+        if (mSearch == null) {
+            AppsCustomizeTabHost host = getTabHost();
+            View found = host == null ? null : host.findViewById(R.id.apps_search);
+            if (found instanceof AppSearchBar) {
+                mSearch = (AppSearchBar) found;
+                mSearch.setListener(query -> setQuery(query));
+            }
+        }
+        if (mSearch == null) {
+            return;
+        }
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        boolean wanted = mContentType == ContentType.Applications && !DISABLE_ALL_APPS
+                && CreatorPrefs.of(prefs).getBoolean(Keys.ALL_APPS_SEARCH, false);
+        mSearch.setVisibility(wanted ? View.VISIBLE : View.GONE);
+        if (!wanted && !mQuery.isEmpty()) {
+            mSearch.clear();
+            setQuery("");
+        }
+    }
+
+    /** Closing the drawer empties the search field. */
+    private void clearSearch() {
+        if (mSearch != null) {
+            mSearch.clear();
+        }
+        setQuery("");
+    }
+
     /** Whether the apps are shown in the vertical list: "App drawer: Scrolling direction" is vertical (the default). */
     private boolean verticalWanted() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -587,6 +624,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
      * "Rows" and "Columns". Without the list (a layout that has none) the pager stays.
      */
     private void syncVertical() {
+        syncSearch();
         AppsVerticalView list = vertical();
         if (list == null) {
             return;
@@ -1069,6 +1107,11 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         mInTransition = true;
         if (toWorkspace) {
             cancelAllTasks();
+            // closing the drawer empties the search field
+            clearSearch();
+        } else {
+            // opening it: the settings of the list and of the search field as they are now
+            syncVertical();
         }
     }
 
@@ -1771,9 +1814,30 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
 
     public void setApps(ArrayList<AppInfo> list) {
         if (!DISABLE_ALL_APPS) {
-            mApps = list;
-            Collections.sort(mApps, LauncherModel.getAppNameComparator());
+            mAllApps = list;
+            Collections.sort(mAllApps, LauncherModel.getAppNameComparator());
+            applyFilter();
             updatePageCountsAndInvalidateData();
+        }
+    }
+
+    /** What shows of the apps: all of them, or those whose name matches the search field ({@link AppSearch}). */
+    private void applyFilter() {
+        List<AppInfo> shown = AppSearch.filter(mAllApps, info -> info.title == null ? "" : info.title.toString(), mQuery);
+        mApps = shown == mAllApps ? mAllApps : new ArrayList<AppInfo>(shown);
+    }
+
+    /** The search field changed: the list and the pages narrow to the apps that match (the pages start again). */
+    void setQuery(String query) {
+        String q = query == null ? "" : query;
+        if (q.equals(mQuery)) {
+            return;
+        }
+        mQuery = q;
+        applyFilter();
+        updatePageCountsAndInvalidateData();
+        if (mVertical != null) {
+            mVertical.scrollToTop();
         }
     }
     private void addAppsWithoutInvalidate(ArrayList<AppInfo> list) {
@@ -1781,15 +1845,16 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         int count = list.size();
         for (int i = 0; i < count; ++i) {
             AppInfo info = list.get(i);
-            int index = Collections.binarySearch(mApps, info, LauncherModel.getAppNameComparator());
+            int index = Collections.binarySearch(mAllApps, info, LauncherModel.getAppNameComparator());
             if (index < 0) {
-                mApps.add(-(index + 1), info);
+                mAllApps.add(-(index + 1), info);
             }
         }
     }
     public void addApps(ArrayList<AppInfo> list) {
         if (!DISABLE_ALL_APPS) {
             addAppsWithoutInvalidate(list);
+            applyFilter();
             updatePageCountsAndInvalidateData();
         }
     }
@@ -1809,15 +1874,16 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         int length = list.size();
         for (int i = 0; i < length; ++i) {
             AppInfo info = list.get(i);
-            int removeIndex = findAppByComponent(mApps, info);
+            int removeIndex = findAppByComponent(mAllApps, info);
             if (removeIndex > -1) {
-                mApps.remove(removeIndex);
+                mAllApps.remove(removeIndex);
             }
         }
     }
     public void removeApps(ArrayList<AppInfo> appInfos) {
         if (!DISABLE_ALL_APPS) {
             removeAppsWithoutInvalidate(appInfos);
+            applyFilter();
             updatePageCountsAndInvalidateData();
         }
     }
@@ -1828,6 +1894,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         if (!DISABLE_ALL_APPS) {
             removeAppsWithoutInvalidate(list);
             addAppsWithoutInvalidate(list);
+            applyFilter();
             updatePageCountsAndInvalidateData();
         }
     }
@@ -1838,6 +1905,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         if (mVertical != null) {
             mVertical.scrollToTop();
         }
+        clearSearch();
 
         AppsCustomizeTabHost tabHost = getTabHost();
         String tag = tabHost.getCurrentTabTag();

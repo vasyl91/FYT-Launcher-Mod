@@ -624,4 +624,5 @@
     <string name="drawer_tabs">Табууд</string>
     <string name="drawer_tabs_summary">Аппын шургуулгын табуудыг нэмэх, нэрийг өөрчлөх, эрэмбэлэх</string>
     <string name="icon_text_size">Дүрсний текстийн хэмжээг тохируулах</string>
+    <string name="search_apps_hint">Апп хайх</string>
 </resources>

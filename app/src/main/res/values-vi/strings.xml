@@ -624,4 +624,5 @@
     <string name="drawer_tabs">Thẻ</string>
     <string name="drawer_tabs_summary">Thêm, đổi tên và sắp xếp các thẻ của ngăn kéo ứng dụng</string>
     <string name="icon_text_size">Đặt cỡ chữ của biểu tượng</string>
+    <string name="search_apps_hint">Tìm ứng dụng</string>
 </resources>

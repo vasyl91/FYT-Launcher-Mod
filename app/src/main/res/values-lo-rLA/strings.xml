@@ -624,4 +624,5 @@
     <string name="drawer_tabs">ແຖບ</string>
     <string name="drawer_tabs_summary">ເພີ່ມ, ປ່ຽນຊື່ ແລະ ຈັດລຽງແຖບຂອງລິ້ນຊັກແອັບ</string>
     <string name="icon_text_size">ຕັ້ງຂະໜາດຕົວອັກສອນໄອຄອນ</string>
+    <string name="search_apps_hint">ຄົ້ນຫາແອັບ</string>
 </resources>

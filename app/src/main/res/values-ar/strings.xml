@@ -624,4 +624,5 @@
     <string name="drawer_tabs">علامات التبويب</string>
     <string name="drawer_tabs_summary">أضف علامات تبويب قائمة التطبيقات وأعد تسميتها ورتّبها</string>
     <string name="icon_text_size">تعيين حجم نص الأيقونات</string>
+    <string name="search_apps_hint">البحث في التطبيقات</string>
 </resources>

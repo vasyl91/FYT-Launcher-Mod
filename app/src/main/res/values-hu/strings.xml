@@ -624,4 +624,5 @@
     <string name="drawer_tabs">Lapok</string>
     <string name="drawer_tabs_summary">Az alkalmazásfiók lapjainak hozzáadása, átnevezése és rendezése</string>
     <string name="icon_text_size">Ikonszöveg méretének beállítása</string>
+    <string name="search_apps_hint">Alkalmazások keresése</string>
 </resources>

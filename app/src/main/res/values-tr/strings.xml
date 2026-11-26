@@ -624,4 +624,5 @@
     <string name="drawer_tabs">Sekmeler</string>
     <string name="drawer_tabs_summary">Uygulama çekmecesinin sekmelerini ekleyin, yeniden adlandırın ve düzenleyin</string>
     <string name="icon_text_size">Simge metni boyutunu ayarla</string>
+    <string name="search_apps_hint">Uygulama ara</string>
 </resources>

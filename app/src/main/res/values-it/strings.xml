@@ -624,4 +624,5 @@
     <string name="drawer_tabs">Schede</string>
     <string name="drawer_tabs_summary">Aggiungi, rinomina e riordina le schede del cassetto delle app</string>
     <string name="icon_text_size">Imposta la dimensione del testo delle icone</string>
+    <string name="search_apps_hint">Cerca applicazioni</string>
 </resources>

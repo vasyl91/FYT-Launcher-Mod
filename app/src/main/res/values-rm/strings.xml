@@ -624,4 +624,5 @@
     <string name="drawer_tabs">Tabs</string>
     <string name="drawer_tabs_summary">Agiuntar, rebattegiar ed urdinar las file dal chaschun d\'applicaziuns</string>
     <string name="icon_text_size">Fixar la grondezza dal text dals simbols</string>
+    <string name="search_apps_hint">Tschertgar applicaziuns</string>
 </resources>

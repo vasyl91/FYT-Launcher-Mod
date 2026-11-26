@@ -624,4 +624,5 @@
     <string name="drawer_tabs">ჩანართები</string>
     <string name="drawer_tabs_summary">დაამატეთ, გადაარქვით სახელი და დაალაგეთ აპების უჯრის ჩანართები</string>
     <string name="icon_text_size">ხატულების ტექსტის ზომის დაყენება</string>
+    <string name="search_apps_hint">აპების ძიება</string>
 </resources>

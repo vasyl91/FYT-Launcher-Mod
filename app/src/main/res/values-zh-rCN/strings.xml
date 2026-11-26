@@ -624,4 +624,5 @@
     <string name="drawer_tabs">标签页</string>
     <string name="drawer_tabs_summary">添加、重命名和排列应用抽屉的标签页</string>
     <string name="icon_text_size">设置图标文字大小</string>
+    <string name="search_apps_hint">搜索应用</string>
 </resources>

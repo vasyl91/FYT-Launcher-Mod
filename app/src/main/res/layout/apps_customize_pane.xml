@@ -37,6 +37,13 @@
                 layout="@layout/market_button" />
         </FrameLayout>
 
+        <!-- The search field of the app drawer (F3), shown by AppsCustomizePagedView.syncSearch() -->
+        <com.android.launcher66.AppSearchBar
+            android:id="@+id/apps_search"
+            android:visibility="gone"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+
         <FrameLayout
             android:id="@android:id/tabcontent"
             android:layout_width="fill_parent"

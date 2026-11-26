@@ -624,4 +624,5 @@
     <string name="drawer_tabs">Amathebhu</string>
     <string name="drawer_tabs_summary">Engeza, qamba kabusha futhi uhlele amathebhu efolda yezinhlelo zokusebenza</string>
     <string name="icon_text_size">Setha usayizi wombhalo wesithonjana</string>
+    <string name="search_apps_hint">Sesha izinhlelo zokusebenza</string>
 </resources>

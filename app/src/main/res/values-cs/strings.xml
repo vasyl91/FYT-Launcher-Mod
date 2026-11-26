@@ -624,4 +624,5 @@
     <string name="drawer_tabs">Karty</string>
     <string name="drawer_tabs_summary">Přidávejte, přejmenovávejte a řaďte karty nabídky aplikací</string>
     <string name="icon_text_size">Nastavit velikost textu ikon</string>
+    <string name="search_apps_hint">Hledat aplikace</string>
 </resources>

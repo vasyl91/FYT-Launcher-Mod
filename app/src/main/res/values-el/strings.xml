@@ -624,4 +624,5 @@
     <string name="drawer_tabs">Καρτέλες</string>
     <string name="drawer_tabs_summary">Προσθέστε, μετονομάστε και τακτοποιήστε τις καρτέλες του συρταριού εφαρμογών</string>
     <string name="icon_text_size">Ορισμός μεγέθους κειμένου εικονιδίων</string>
+    <string name="search_apps_hint">Αναζήτηση εφαρμογών</string>
 </resources>

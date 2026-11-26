@@ -624,4 +624,5 @@
     <string name="drawer_tabs">Faner</string>
     <string name="drawer_tabs_summary">Tilføj, omdøb og arranger app-skuffens faner</string>
     <string name="icon_text_size">Indstil ikontekstens størrelse</string>
+    <string name="search_apps_hint">Søg i apps</string>
 </resources>

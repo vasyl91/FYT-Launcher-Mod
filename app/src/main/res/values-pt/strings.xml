@@ -624,4 +624,5 @@
     <string name="drawer_tabs">Separadores</string>
     <string name="drawer_tabs_summary">Adicione, mude o nome e organize os separadores da gaveta de aplicações</string>
     <string name="icon_text_size">Definir o tamanho do texto dos ícones</string>
+    <string name="search_apps_hint">Pesquisar aplicações</string>
 </resources>

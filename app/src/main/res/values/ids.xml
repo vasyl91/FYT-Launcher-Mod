@@ -124,6 +124,8 @@
     <item type="id" name="badge_host" />
     <!-- The vertical list of the app drawer (AppsVerticalView), in apps_customize_pane.xml -->
     <item type="id" name="apps_vertical" />
+    <!-- The search field of the app drawer (AppSearchBar), in apps_customize_pane.xml -->
+    <item type="id" name="apps_search" />
     <item type="id" name="marquee_restart_listener" />
     <item type="id" name="creator_bar" />
     <item type="id" name="rectangle_name" />

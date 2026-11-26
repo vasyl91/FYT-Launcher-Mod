@@ -624,4 +624,5 @@
     <string name="drawer_tabs">File</string>
     <string name="drawer_tabs_summary">Adăugați, redenumiți și aranjați filele sertarului de aplicații</string>
     <string name="icon_text_size">Setați dimensiunea textului pictogramelor</string>
+    <string name="search_apps_hint">Căutați aplicații</string>
 </resources>

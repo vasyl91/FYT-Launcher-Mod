@@ -624,4 +624,5 @@
     <string name="drawer_tabs">Mga tab</string>
     <string name="drawer_tabs_summary">Magdagdag, palitan ang pangalan at ayusin ang mga tab ng app drawer</string>
     <string name="icon_text_size">Itakda ang laki ng text ng icon</string>
+    <string name="search_apps_hint">Maghanap ng app</string>
 </resources>

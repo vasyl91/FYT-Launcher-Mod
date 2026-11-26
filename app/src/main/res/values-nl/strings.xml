@@ -624,4 +624,5 @@
     <string name="drawer_tabs">Tabbladen</string>
     <string name="drawer_tabs_summary">Voeg tabbladen van de app-lade toe, hernoem ze en rangschik ze</string>
     <string name="icon_text_size">Tekstgrootte van pictogrammen instellen</string>
+    <string name="search_apps_hint">Apps zoeken</string>
 </resources>

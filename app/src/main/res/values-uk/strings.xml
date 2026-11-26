@@ -624,4 +624,5 @@
     <string name="drawer_tabs">Вкладки</string>
     <string name="drawer_tabs_summary">Додавайте, перейменовуйте й впорядковуйте вкладки меню програм</string>
     <string name="icon_text_size">Задати розмір тексту значків</string>
+    <string name="search_apps_hint">Пошук програм</string>
 </resources>
