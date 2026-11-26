@@ -577,6 +577,74 @@ public class FolderIcon extends LinearLayout implements FolderListener {
         canvas.restore();
     }
 
+    // ---- the notification badge (H1): the sum of the numbers of the apps in the folder
+
+    private BadgeDrawable mBadge;
+    private final BadgeViews.Host mBadgeHost = new BadgeViews.Host() {
+        @Override
+        public boolean showsPackage(java.util.Set<String> packages) {
+            if (mInfo != null) {
+                for (ShortcutInfo item : mInfo.contents) {
+                    String pkg = BadgeViews.packageOf(item.getIntent());
+                    if (pkg != null && packages.contains(pkg)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public void refreshBadge() {
+            invalidate();
+        }
+    };
+
+    /** The numbers of the apps in the folder, each app counted once. */
+    private int badgeCount(BadgeModel model) {
+        if (mInfo == null) {
+            return 0;
+        }
+        java.util.Set<String> seen = new java.util.HashSet<>();
+        int sum = 0;
+        for (ShortcutInfo item : mInfo.contents) {
+            String pkg = BadgeViews.packageOf(item.getIntent());
+            if (pkg != null && seen.add(pkg)) {
+                sum += model.count(pkg);
+            }
+        }
+        return sum;
+    }
+
+    @Override
+    public void draw(Canvas canvas) {
+        super.draw(canvas);
+        BadgeModel model = BadgeModel.get();
+        int count = badgeCount(model);
+        if (count <= 0 || mPreviewBackground == null) {
+            return;
+        }
+        if (mBadge == null) {
+            mBadge = new BadgeDrawable(getContext());
+        }
+        mBadge.setBounds(mPreviewBackground.getLeft(), mPreviewBackground.getTop(), mPreviewBackground.getRight(),
+                mPreviewBackground.getBottom());
+        mBadge.set(count, model.style(getContext()), BadgeModel.iconTextColor(getContext()));
+        mBadge.draw(canvas);
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        BadgeViews.register(mBadgeHost);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        BadgeViews.unregister(mBadgeHost);
+        super.onDetachedFromWindow();
+    }
+
     @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);

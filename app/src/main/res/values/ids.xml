@@ -120,6 +120,8 @@
     <item type="id" name="position_slider_tint" />
     <!-- What AccentPainter painted of a view (a bit set), so that a later change of the accent finds it -->
     <item type="id" name="accent_painted" />
+    <!-- The badge of an icon in a bar's list (BadgeViews) -->
+    <item type="id" name="badge_host" />
     <item type="id" name="marquee_restart_listener" />
     <item type="id" name="creator_bar" />
     <item type="id" name="rectangle_name" />

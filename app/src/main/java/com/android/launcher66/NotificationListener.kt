@@ -27,6 +27,7 @@ import android.os.Looper
 import android.os.Process
 import android.os.SystemClock
 import android.service.notification.NotificationListenerService
+import android.service.notification.StatusBarNotification
 import android.util.Log
 import androidx.annotation.CallSuper
 import androidx.core.content.edit
@@ -352,6 +353,8 @@ class NotificationListener : NotificationListenerService() {
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onListenerConnected() {    
         super.onListenerConnected() 
+        // The numbers on the icons: all the notifications there are now (BadgeModel reads them on a thread of its own)
+        BadgeModel.get().refresh(this)
         // Connected again without onListenerDisconnected() in between: start from a clean state,
         // otherwise the runTask / time loops of the first connection keep running next to the new
         // ones (each posts itself again), and the session poll runs twice as often.
@@ -434,6 +437,15 @@ class NotificationListener : NotificationListenerService() {
     override fun onListenerDisconnected() {
         super.onListenerDisconnected()
         cleanupResources()
+    }
+
+    // The numbers on the icons (BadgeModel): any change of the notifications reads them again, off the main thread
+    override fun onNotificationPosted(sbn: StatusBarNotification?) {
+        BadgeModel.get().refresh(this)
+    }
+
+    override fun onNotificationRemoved(sbn: StatusBarNotification?) {
+        BadgeModel.get().refresh(this)
     }
 
     @CallSuper

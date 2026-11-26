@@ -100,6 +100,8 @@ public class VerticalAppListAdapter extends RecyclerView.Adapter<LeftAppListHold
     public void onBindViewHolder(final LeftAppListHolder appListHolder, int position) {
         final AppListBean appListBean = this.mData.get(position);
         BarIconImage.show(appListHolder.mAppIcon, appListBean.icon);
+        // The number of notifications of the app, over its icon (H1)
+        com.android.launcher66.BadgeViews.bindBarIcon(appListHolder.mAppIcon, appListBean.packageName);
 
         appListHolder.itemView.setOnClickListener(view -> {
             final String packageName = appListBean.packageName;

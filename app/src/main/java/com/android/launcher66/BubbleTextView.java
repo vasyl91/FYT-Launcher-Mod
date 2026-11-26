@@ -347,6 +347,54 @@ public class BubbleTextView extends androidx.appcompat.widget.AppCompatTextView 
 
     @Override
     public void draw(Canvas canvas) {
+        drawContent(canvas);
+        drawBadge(canvas);
+    }
+
+    // ---- the notification badge (H1: BadgeModel, BadgeViews)
+
+    private BadgeDrawable mBadge;
+    private final BadgeViews.Host mBadgeHost = new BadgeViews.Host() {
+        @Override
+        public boolean showsPackage(java.util.Set<String> packages) {
+            String pkg = badgePackage();
+            return pkg != null && packages.contains(pkg);
+        }
+
+        @Override
+        public void refreshBadge() {
+            invalidate();
+        }
+    };
+
+    private String badgePackage() {
+        Object tag = getTag();
+        return tag instanceof ShortcutInfo ? BadgeViews.packageOf(((ShortcutInfo) tag).getIntent()) : null;
+    }
+
+    /** The number of notifications of the app, in a corner of the icon (not of the name below it). */
+    private void drawBadge(Canvas canvas) {
+        BadgeModel model = BadgeModel.get();
+        int count = model.count(badgePackage());
+        Drawable icon = getCompoundDrawables()[1];
+        if (count <= 0 || icon == null) {
+            return;
+        }
+        if (mBadge == null) {
+            mBadge = new BadgeDrawable(getContext());
+        }
+        // a top drawable is drawn centred in the width between the paddings, at the top padding
+        int w = icon.getBounds().width();
+        int h = icon.getBounds().height();
+        int x = getScrollX() + getCompoundPaddingLeft()
+                + (getWidth() - getCompoundPaddingLeft() - getCompoundPaddingRight() - w) / 2;
+        int y = getScrollY() + getPaddingTop();
+        mBadge.setBounds(x, y, x + w, y + h);
+        mBadge.set(count, model.style(getContext()), BadgeModel.iconTextColor(getContext()));
+        mBadge.draw(canvas);
+    }
+
+    private void drawContent(Canvas canvas) {
         if (!mShadowsEnabled) {
             super.draw(canvas);
             return;
@@ -393,12 +441,14 @@ public class BubbleTextView extends androidx.appcompat.widget.AppCompatTextView 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        BadgeViews.register(mBadgeHost);
         if (mBackground != null) mBackground.setCallback(this);
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        BadgeViews.unregister(mBadgeHost);
         if (mBackground != null) mBackground.setCallback(null);
     }
 

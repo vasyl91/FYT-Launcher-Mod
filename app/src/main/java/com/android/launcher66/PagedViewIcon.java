@@ -89,6 +89,65 @@ public class PagedViewIcon extends androidx.appcompat.widget.AppCompatTextView {
 
     @Override
     public void draw(Canvas canvas) {
+        drawContent(canvas);
+        drawBadge(canvas);
+    }
+
+    // ---- the notification badge of the app drawer's icons (H1: BadgeModel, BadgeViews)
+
+    private BadgeDrawable mBadge;
+    private final BadgeViews.Host mBadgeHost = new BadgeViews.Host() {
+        @Override
+        public boolean showsPackage(java.util.Set<String> packages) {
+            String pkg = badgePackage();
+            return pkg != null && packages.contains(pkg);
+        }
+
+        @Override
+        public void refreshBadge() {
+            invalidate();
+        }
+    };
+
+    private String badgePackage() {
+        Object tag = getTag();
+        return tag instanceof AppInfo ? BadgeViews.packageOf(((AppInfo) tag).intent) : null;
+    }
+
+    private void drawBadge(Canvas canvas) {
+        BadgeModel model = BadgeModel.get();
+        int count = model.count(badgePackage());
+        android.graphics.drawable.Drawable icon = getCompoundDrawables()[1];
+        if (count <= 0 || icon == null) {
+            return;
+        }
+        if (mBadge == null) {
+            mBadge = new BadgeDrawable(getContext());
+        }
+        int w = icon.getBounds().width();
+        int h = icon.getBounds().height();
+        int x = getScrollX() + getCompoundPaddingLeft()
+                + (getWidth() - getCompoundPaddingLeft() - getCompoundPaddingRight() - w) / 2;
+        int y = getScrollY() + getPaddingTop();
+        mBadge.setBounds(x, y, x + w, y + h);
+        // the colour of the number is the drawer's own text colour
+        mBadge.set(count, model.style(getContext()), getCurrentTextColor());
+        mBadge.draw(canvas);
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        BadgeViews.register(mBadgeHost);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        BadgeViews.unregister(mBadgeHost);
+        super.onDetachedFromWindow();
+    }
+
+    private void drawContent(Canvas canvas) {
         // If text is transparent, don't draw any shadow
         if (getCurrentTextColor() == ContextCompat.getColor(getContext(), android.R.color.transparent)) {
             getPaint().clearShadowLayer();

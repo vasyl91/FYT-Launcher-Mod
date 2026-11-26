@@ -69,6 +69,17 @@ public final class Keys {
     public static final String WIDGET_FREEFORM = "widget_freeform";
     /** "Allow widgets to overlap": widgets take no cells and lie over other items (FreeformWidgets.overlapOn), off by default. */
     public static final String WIDGET_OVERLAP = "widget_overlap";
+    /**
+     * "Notification badges" (BadgeModel, BadgeStyle): the settings of the number of notifications on an icon. They are
+     * the launcher's own, not the creator's (CreatorKeys has none of them): they work with the stock layout too.
+     */
+    public static final String BADGES_ENABLED = "badges_enabled";
+    public static final String BADGES_POSITION = "badges_position";
+    public static final String BADGES_SIZE = "badges_size";
+    public static final String BADGES_CORNER = "badges_corner";
+    /** The badge's colour (an opaque int); none means the settings' accent (ThemeAccent). */
+    public static final String BADGES_COLOR = "badges_color";
+    public static final String BADGES_OUTLINE = "badges_outline";
     /** Before it was split into LAUNCHER_HOME_WAKE and LAUNCHER_HOME_COLD_START; only migrated. */
     public static final String LAUNCHER_HOME = "launcher_home";
     public static final String LAUNCHER_HOME_WAKE = "launcher_home_wake";

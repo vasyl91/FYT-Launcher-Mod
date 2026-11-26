@@ -288,6 +288,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListHolder>
         } else {
             BarIconImage.show(appListHolder.mAppIcon, appListBean.icon);
         }
+        // The number of notifications of the app, over its icon (H1)
+        com.android.launcher66.BadgeViews.bindBarIcon(appListHolder.mAppIcon, appListBean.packageName);
 
         appListHolder.itemView.setOnClickListener(view -> {
             if (!isComponentAvailable(appListBean.packageName, appListBean.className)) {
