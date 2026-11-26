@@ -44,18 +44,52 @@ public class Helpers {
     // These prefs remain. The name is a constant: LauncherApplication reads it before this
     // class may be initialised (sApp is set only in its onCreate()).
     public static final String SUS_PREFS = "HelpersPrefsSus";
-    private static final SharedPreferences sharedPrefsSus = LauncherApplication.sApp.getSharedPreferences(SUS_PREFS, Context.MODE_PRIVATE);
-    private static final SharedPreferences.Editor editorSus = sharedPrefsSus.edit();
+    /*
+     * Opened at the first use, never when this class loads. Before the user's first unlock (direct boot) the file is
+     * credential encrypted and Android refuses it with an exception; the Launcher activity makes a Helpers in a field
+     * initializer, so a read here at class load hung the A55 at boot (2026-11-26, see DirectBootPlan). One editor for
+     * the class, as before: callers put and apply on it in separate statements.
+     */
+    private static volatile SharedPreferences sSusPrefs;
+    private static volatile SharedPreferences.Editor sSusEditor;
+
+    private static SharedPreferences sus() {
+        SharedPreferences prefs = sSusPrefs;
+        if (prefs == null) {
+            synchronized (Helpers.class) {
+                prefs = sSusPrefs;
+                if (prefs == null) {
+                    prefs = LauncherApplication.sApp.getSharedPreferences(SUS_PREFS, Context.MODE_PRIVATE);
+                    sSusPrefs = prefs;
+                }
+            }
+        }
+        return prefs;
+    }
+
+    private static SharedPreferences.Editor susEditor() {
+        SharedPreferences.Editor editor = sSusEditor;
+        if (editor == null) {
+            synchronized (Helpers.class) {
+                editor = sSusEditor;
+                if (editor == null) {
+                    editor = sus().edit();
+                    sSusEditor = editor;
+                }
+            }
+        }
+        return editor;
+    }
 
     private boolean day = false;
     public boolean isDay() {
-        day = sharedPrefsSus.getBoolean("day", false);
+        day = sus().getBoolean("day", false);
         return day;
     }
     public void setDay(boolean day) {
         this.day = day;
-        editorSus.putBoolean("day", day);
-        editorSus.apply();
+        susEditor().putBoolean("day", day);
+        susEditor().apply();
     }
 
 
@@ -73,25 +107,25 @@ public class Helpers {
 
     private boolean polarDay = false;    
     public boolean isPolarDay() {
-        polarDay = sharedPrefsSus.getBoolean("polarDay", false);
+        polarDay = sus().getBoolean("polarDay", false);
         return polarDay;
     }
     public void setPolarDay(boolean polarDay) {
         this.polarDay = polarDay;
-        editorSus.putBoolean("polarDay", polarDay);
-        editorSus.apply();
+        susEditor().putBoolean("polarDay", polarDay);
+        susEditor().apply();
     }
 
 
     private boolean perpetualNight = false;
     public boolean isPerpetualNight() {
-        perpetualNight = sharedPrefsSus.getBoolean("perpetualNight", false);
+        perpetualNight = sus().getBoolean("perpetualNight", false);
         return perpetualNight;
     }
     public void setPerpetualNight(boolean perpetualNight) {
         this.perpetualNight = perpetualNight;
-        editorSus.putBoolean("perpetualNight", perpetualNight);
-        editorSus.apply();
+        susEditor().putBoolean("perpetualNight", perpetualNight);
+        susEditor().apply();
     }
 
 
@@ -361,49 +395,49 @@ public class Helpers {
 
     private boolean codeInspector = false;
     public boolean codeInspectorBoolean() {
-        codeInspector = sharedPrefsSus.getBoolean("codeInspector", false);
+        codeInspector = sus().getBoolean("codeInspector", false);
         return codeInspector;
     }
     public void setCodeInspectorBoolean(boolean codeInspector) {
         this.codeInspector = codeInspector;
-        editorSus.putBoolean("codeInspector", codeInspector);
-        editorSus.apply();
+        susEditor().putBoolean("codeInspector", codeInspector);
+        susEditor().apply();
     }
     
 
     private boolean logcatRun = false;
     public boolean logcatRunBoolean() {
-        logcatRun = sharedPrefsSus.getBoolean("logcatRun", false);
+        logcatRun = sus().getBoolean("logcatRun", false);
         return logcatRun;
     }
     public void setLogcatRunBoolean(boolean logcatRun) {
         this.logcatRun = logcatRun;
-        editorSus.putBoolean("logcatRun", logcatRun);
-        editorSus.apply();
+        susEditor().putBoolean("logcatRun", logcatRun);
+        susEditor().apply();
     }
 
 
     private boolean allAppsTextSize = false;
     public boolean allAppsTextSizeBoolean() {
-        allAppsTextSize = sharedPrefsSus.getBoolean("allAppsTextSize", false);
+        allAppsTextSize = sus().getBoolean("allAppsTextSize", false);
         return allAppsTextSize;
     }
     public void allAppsTextSizeChanged(boolean allAppsTextSize) {
         this.allAppsTextSize = allAppsTextSize;
-        editorSus.putBoolean("allAppsTextSize", allAppsTextSize);
-        editorSus.apply();
+        susEditor().putBoolean("allAppsTextSize", allAppsTextSize);
+        susEditor().apply();
     }
     
 
     private boolean workspaceTextSize = false;
     public boolean workspaceTextSizeBoolean() {
-        workspaceTextSize = sharedPrefsSus.getBoolean("workspaceTextSize", false);
+        workspaceTextSize = sus().getBoolean("workspaceTextSize", false);
         return workspaceTextSize;
     }
     public void workspaceTextSizeChanged(boolean workspaceTextSize) {
         this.workspaceTextSize = workspaceTextSize;
-        editorSus.putBoolean("workspaceTextSize", workspaceTextSize);
-        editorSus.apply();
+        susEditor().putBoolean("workspaceTextSize", workspaceTextSize);
+        susEditor().apply();
     }
 
 
@@ -446,13 +480,13 @@ public class Helpers {
 
     private int countDownInspector = 0;
     public int returnCountDownInspector() {
-        countDownInspector = sharedPrefsSus.getInt("countDownInspector", 0);
+        countDownInspector = sus().getInt("countDownInspector", 0);
         return countDownInspector;
     }
     public void setCountDownInspector(int countDownInspector) {
         this.countDownInspector = countDownInspector;
-        editorSus.putInt("countDownInspector", countDownInspector);
-        editorSus.apply();
+        susEditor().putInt("countDownInspector", countDownInspector);
+        susEditor().apply();
     }
 
 

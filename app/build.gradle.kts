@@ -88,6 +88,9 @@ android {
                 "proguard-rules.pro"
             )
             buildConfigField("boolean", "IS_DEBUG_FEATURES_ENABLED", "false")
+            // Direct boot (the Launcher activity before the first unlock, DirectBootPlan) only in debug builds until the
+            // owner confirms it on the A55: the round 28 build hung that phone at boot (2026-11-26)
+            manifestPlaceholders["launcherDirectBoot"] = "false"
         }
 
         debug {
@@ -95,6 +98,7 @@ android {
             enableUnitTestCoverage = true
             enableAndroidTestCoverage = true
             buildConfigField("boolean", "IS_DEBUG_FEATURES_ENABLED", "true")
+            manifestPlaceholders["launcherDirectBoot"] = "true"
         }
     }
 

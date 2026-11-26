@@ -204,8 +204,10 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   Java) and tells the views registered in `L/BadgeViews`; `L/BadgeDrawable` draws a badge in an icon's rectangle.
 - **"Stock layout"** (D-85): `L/CreatorKeys` (every key of the creator's XML, checked by a test) and `L/CreatorPrefs`
   (the read-only wrapper through which the launcher reads them) give the defaults while the creator is off.
-- **Direct boot:** the launcher shows the wallpaper before the first unlock (`DirectBootState`); the package receiver no
-  longer builds the launcher's state.
+- **Direct boot:** in debug builds only (`launcherDirectBoot` in `app/build.gradle.kts`, since 2026-11-26: the first
+  version hung the A55 at boot) the launcher shows the wallpaper before the first unlock (`DirectBootPlan`,
+  `DirectBootState`). Nothing may read storage when a class loads or in the Launcher's field initializers
+  (`StorageAtClassLoadTest`, `LockedStartViewTest`). The package receiver no longer builds the launcher's state.
 
 ### The app drawer (round 28)
 
