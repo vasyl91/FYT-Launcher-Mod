@@ -314,6 +314,8 @@ public class Workspace extends SmoothPagedView
     public CellLayout[] customScreen = new CellLayout[LauncherApplication.sApp.getResources().getInteger(R.integer.apps_customepage_count)];
     public static int apps_customepage_count = LauncherApplication.sApp.getResources().getInteger(R.integer.apps_customepage_count);
     private SharedPreferences mPrefs;
+    /** The layout creator's switch for the touch code (UserLayoutFlag): a field, not a read per touch. */
+    private UserLayoutFlag mUserLayout;
     public AbsoluteLayout absoluteLayout;
     private final Handler stripHandler = new Handler(Looper.getMainLooper());
     private Runnable stripAction;
@@ -539,6 +541,9 @@ public class Workspace extends SmoothPagedView
         setDataIsReady();
 
         mLauncher = (Launcher) context;
+        // The settings are in the field before the first touch: a touch can come before the first page is built.
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        mUserLayout = new UserLayoutFlag(mPrefs);
         final Resources res = getResources();
         mWorkspaceFadeInAdjacentScreens = res.getBoolean(R.bool.config_workspaceFadeAdjacentScreens);
         mFadeInAdjacentScreens = false;
@@ -882,6 +887,7 @@ public class Workspace extends SmoothPagedView
         helpers.setInWidgets(false);
         helpers.setInOverviewMode(false);
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this.getContext());
+        mUserLayout.refresh();
         boolean verticalBar = mPrefs.getBoolean(Keys.VERTICAL_BAR, false);
         mVerticalBar = verticalBar;
         BarLayout sides = BarLayouts.sides(mPrefs, verticalBar);
@@ -5009,7 +5015,7 @@ public class Workspace extends SmoothPagedView
         boolean passRightSwipesToCustomContent =
                 (mTouchDownTime - mCustomContentShowTime) > CUSTOM_CONTENT_GESTURE_DELAY;
 
-        boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);       
+        boolean userLayout = mUserLayout.get();
         boolean swipeInIgnoreDirection;
         if (userLayout) {
             swipeInIgnoreDirection = isLayoutRtl() ? deltaX < 0 : deltaX > 0;
