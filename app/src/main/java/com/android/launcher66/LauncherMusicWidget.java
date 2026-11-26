@@ -1408,7 +1408,7 @@ final class LauncherMusicWidget {
             bindPositionSlider();
             widgetTint = WidgetStyler.widgetsTint(mLauncher.mPrefs);
             ViewTint.tintProgress(musicProgress, widgetTint);
-            ViewTint.tintProgress(musicPosition, widgetTint);
+            PositionSliderLook.tint(musicPosition, widgetTint);
             ViewTint.tintText(musicWidgetView.findViewById(ResValue.getInstance().tv_musicName), widgetTint);
             ViewTint.tintText(musicWidgetView.findViewById(ResValue.getInstance().tv_artist), widgetTint);
             mLauncher.putCustomView(Config.WS_Music, musicWidgetView.findViewById(ResValue.getInstance().rl_music));
@@ -1847,6 +1847,8 @@ final class LauncherMusicWidget {
             count[0] += button != null ? 1 : 0;
         }
         ViewTint.tintProgress(musicProgress, style.tint(WidgetStyle.Role.WIDGET_PROGRESS));
+        // The slider's played part and its knob take the same colour (the knob is not a progress layer)
+        PositionSliderLook.tint(musicPosition, style.tint(WidgetStyle.Role.WIDGET_PROGRESS));
         ViewTint.tintText(tvMusicName, style.tint(WidgetStyle.Role.WIDGET_TEXT));
         ViewTint.tintText(tvAritst, style.tint(WidgetStyle.Role.WIDGET_TEXT));
         ViewTint.tintText(tvMusicNameTwo, style.tint(WidgetStyle.Role.BAR_TEXT));

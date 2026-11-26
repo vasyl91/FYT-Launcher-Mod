@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The line of the music widget's position slider: rounded, of the thickness PositionSliderLook gives it, in the colours
+     of the thin bar (music_progress) - the part not played yet, and the part played, which the widget's tint replaces.
+     It is a layer-list with the ids ProgressBar looks for, so that setProgressTintList colours the played part. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@android:id/background">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/music_track_unplayed" />
+            <corners android:radius="100dp" />
+        </shape>
+    </item>
+    <item android:id="@android:id/progress">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/music_track_played" />
+            <corners android:radius="100dp" />
+        </shape>
+    </item>
+</layer-list>

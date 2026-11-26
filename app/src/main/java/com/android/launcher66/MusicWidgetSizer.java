@@ -210,7 +210,7 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
             if (slider) {
                 setBox(position, ViewGroup.LayoutParams.MATCH_PARENT, plan.progressPx, plan.gapPx,
                         (int) (w * PROGRESS_MARGIN));
-                sizeKnob((android.widget.SeekBar) position, plan.progressPx);
+                PositionSliderLook.size((android.widget.SeekBar) position, plan.progressPx);
             }
         }
         if (buttons != null) {
@@ -394,26 +394,6 @@ final class MusicWidgetSizer implements View.OnLayoutChangeListener {
             lp.rightMargin = sideMargin;
             view.setLayoutParams(lp);
         }
-    }
-
-    /**
-     * The slider's knob: a round one of the settings' blue, a share of the row's height so that it is never cut;
-     * the side padding lets it reach both ends. Whether it shows (a slider that only shows the position has none)
-     * is LauncherMusicWidget's: the alpha is kept.
-     */
-    private static void sizeKnob(android.widget.SeekBar slider, int rowPx) {
-        int side = Math.max(2, Math.round(rowPx * 0.6f));
-        android.graphics.drawable.Drawable old = slider.getThumb();
-        if (old != null && old.getIntrinsicWidth() == side) {
-            return;
-        }
-        android.graphics.drawable.GradientDrawable knob = new android.graphics.drawable.GradientDrawable();
-        knob.setShape(android.graphics.drawable.GradientDrawable.OVAL);
-        knob.setSize(side, side);
-        knob.setColor(androidx.core.content.ContextCompat.getColor(slider.getContext(), R.color.colorAccent));
-        knob.setAlpha(old != null ? old.getAlpha() : 255);
-        slider.setThumb(knob);
-        slider.setPadding(side / 2, 0, side / 2, 0);
     }
 
     private static void setVisibility(View view, int visibility) {

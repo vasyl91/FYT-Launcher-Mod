@@ -61,7 +61,7 @@
         android:progress="0"
         android:visibility="gone"
         android:splitTrack="false"
-        android:progressDrawable="@drawable/progressbar_bg" />
+        android:progressDrawable="@drawable/music_position_track" />
 
     <LinearLayout
         android:id="@+id/music_buttons"

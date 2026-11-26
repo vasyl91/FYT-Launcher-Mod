@@ -17,6 +17,10 @@
     <color name="colorPrimaryDark">#ffe0e0e0</color>
     <color name="colorAccent">#ff4285f4</color>
     <color name="white">#FFFFFFFF</color>
+    <!-- The music widget's position slider (round 28): the line of the part not played yet and of the part played,
+         read from music_slide_bar.png and music_slide_bg.png (white at alpha 77 of 255, and opaque white) -->
+    <color name="music_track_unplayed">#4dffffff</color>
+    <color name="music_track_played">#ffffffff</color>
     <color name="black">#FF000000</color>
     <color name="logcat_stop_text">#FFF44336</color>
     <color name="dark_secondary">#0D47A1</color> 
