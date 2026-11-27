@@ -287,7 +287,9 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
     (`horizontal_bar_no_drawer`) and "Hide the music widget" (`widget_bar_no_music`): `WidgetBarLayout.applyShared`
     gives every element of the widget bar its width by `L/BarShares` (the button stays at no width, the music widget
     is gone), `WidgetBarLayout.applyPlain` gives the bar without widgets the button's room, `BarCapacity` counts the
-    wider list, and a bar with nothing left turns "Display horizontal bar" off. Without them hidden the old path
+    wider list, and a bar with nothing left turns "Display horizontal bar" off. The bar's window (every page, auto-hide)
+    sets its widths in pixels after that (`Workspace.forceOriginalSizes`): since round 30 from `L/BarWindowWidths` (plain
+    Java), the same shares, and the hidden button gets no listener there. Without them hidden the old path
     (`WidgetBarPlan.shares`) runs unchanged.
   - `L/HorizontalBarPlacement` and `L/VerticalBarPlacement` decide where each bar is drawn. A bar on every
     page is its window on every page, the first one too, moving or at rest (2026-11-16): the pages move

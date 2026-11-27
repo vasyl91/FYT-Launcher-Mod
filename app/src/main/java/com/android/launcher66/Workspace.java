@@ -2255,7 +2255,13 @@ public class Workspace extends SmoothPagedView
             setupOverlayWidgetBar();
         }
         
-        overlayAllApps.setOnClickListener(v -> {
+        if (WidgetBarLayout.drawerHidden(mPrefs)) {
+            // Hidden: no room and no tap, in the window as on the page (WidgetBarLayout.hideDrawer); first the listener,
+            // which makes a view clickable even when it is null
+            overlayAllApps.setOnClickListener(null);
+            overlayAllApps.setClickable(false);
+            overlayAllApps.setFocusable(false);
+        } else overlayAllApps.setOnClickListener(v -> {
             // All apps first: the launcher state is then no longer WORKSPACE, so the edge handle
             // does not fade in behind the sliding bar.
             if (mLauncher != null) {
@@ -2342,6 +2348,11 @@ public class Workspace extends SmoothPagedView
             showBarWidth = (int) (screenWidth * 0.06);
             showBarHeight = (int) (horizontalBarHeight * 0.67);
         }
+        // "Hide the app drawer button": no room for it, the apps get it, as on the page's bar (BarWindowWidths); the
+        // list keeps the height of its usual width, worked out above
+        int[] plain = BarWindowWidths.plain(allAppsWidth, recyclerWidth, WidgetBarLayout.drawerHidden(mPrefs));
+        allAppsWidth = plain[0];
+        recyclerWidth = plain[1];
             
         // Apply forced dimensions
         ImageView overlayAllApps = overlayHorizontalBar.findViewById(R.id.rl_allapps);
@@ -2457,6 +2468,22 @@ public class Workspace extends SmoothPagedView
             recyclerWidth = (int) (screenWidth * shares.apps);
             dateWidgetWidth = (int) (screenWidth * shares.date);
             weatherWidgetWidth = (int) (screenWidth * shares.weather);
+        }
+        // The drawer button or the music widget hidden: every width by the one rule (BarShares), as the page's bar has
+        // it (WidgetBarLayout.applyShared); the window set the usual widths again and the button came back in it
+        if (WidgetBarLayout.drawerHidden(mPrefs) || WidgetBarLayout.musicHidden(mPrefs)) {
+            int[] widths = BarWindowWidths.shared(screenWidth, WidgetBarLayout.barShares(mPrefs, portraitBar));
+            allAppsWidth = widths[0];
+            if (!noApps) {
+                recyclerWidth = widths[1];
+            }
+            musicWidgetWidth = widths[2];
+            if (widths[3] > 0) {
+                dateWidgetWidth = widths[3];
+            }
+            if (widths[4] > 0) {
+                weatherWidgetWidth = widths[4];
+            }
         }
         
         // Apply forced dimensions
