@@ -193,6 +193,8 @@
 
     <string name="device_settings">إعدادات الجهاز</string>
     <string name="layout_category">التخطيط</string>
+    <string name="settings_text_scale">حجم نص الإعدادات</string>
+    <string name="settings_text_scale_value">%1$d٪</string>
     <string name="misc_category">متنوعة</string>
     <string name="widgets_category">عناصر الواجهة</string>
     <string name="stats_category">إحصاءات الوقود</string>

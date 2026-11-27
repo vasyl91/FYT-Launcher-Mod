@@ -193,6 +193,8 @@
 
     <string name="device_settings">Ρυθμίσεις συσκευής</string>
     <string name="layout_category">Διάταξη</string>
+    <string name="settings_text_scale">Μέγεθος κειμένου ρυθμίσεων</string>
+    <string name="settings_text_scale_value">%1$d%%</string>
     <string name="misc_category">Διάφορα</string>
     <string name="widgets_category">Γραφικά στοιχεία</string>
     <string name="stats_category">Στατιστικά καυσίμου</string>

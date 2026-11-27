@@ -193,6 +193,8 @@
 
     <string name="device_settings">Seadme seaded</string>
     <string name="layout_category">Paigutus</string>
+    <string name="settings_text_scale">Seadete teksti suurus</string>
+    <string name="settings_text_scale_value">%1$d%%</string>
     <string name="misc_category">Mitmesugust</string>
     <string name="widgets_category">Vidinad</string>
     <string name="stats_category">Kütusestatistika</string>

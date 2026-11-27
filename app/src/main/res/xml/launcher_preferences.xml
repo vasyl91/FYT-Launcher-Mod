@@ -9,6 +9,13 @@
         app:key="layout_category"
         app:title="@string/layout_category">
 
+        <!-- "Settings text size" (SettingsTextScale): 70 to 150 per cent, taken when the finger is lifted -->
+        <Preference
+            android:key="settings_text_scale_title"
+            android:title="@string/settings_text_scale"
+            android:selectable="false" />
+        <com.android.launcher66.settings.SettingsTextScaleSeekBarPreference
+            android:key="settings_text_scale" />
         <com.android.launcher66.settings.CustomNoSwitchPreference
             android:key="user_layout"
             android:defaultValue="false"

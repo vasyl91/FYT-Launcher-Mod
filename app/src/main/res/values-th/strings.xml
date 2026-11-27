@@ -193,6 +193,8 @@
 
     <string name="device_settings">การตั้งค่าอุปกรณ์</string>
     <string name="layout_category">เลย์เอาต์</string>
+    <string name="settings_text_scale">ขนาดข้อความของการตั้งค่า</string>
+    <string name="settings_text_scale_value">%1$d%%</string>
     <string name="misc_category">เบ็ดเตล็ด</string>
     <string name="widgets_category">วิดเจ็ต</string>
     <string name="stats_category">สถิติเชื้อเพลิง</string>

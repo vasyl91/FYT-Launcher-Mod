@@ -527,6 +527,10 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   - Since round 29: a row that is off is drawn at 38 % (`S/SettingsRowDim`), applied on every bind by
     `S/DimmingPreferenceAdapter`, the adapter of the three preference screens (`S/CustomPreferenceColorAdapter` of
     the first screen extends it). The theme's text colours have no disabled state, so nothing else dims a row.
+  - Since round 29 "Settings text size" (`S/SettingsTextScale`, plain Java; the slider `S/SettingsTextScaleSeekBarPreference`,
+    the first row of "Layout"): `SettingsActivity.attachBaseContext` multiplies the activity's font scale by it (on FYT
+    units only the font scale is overridden), `SettingsActivity.withoutTextScale` gives the creator's screens their
+    scale back, and above 100 % `S/DimmingPreferenceAdapter` lets every title and summary wrap without a limit.
   - Small pieces: `S/ButtonTextFit` (the text of the small buttons in a row), `S/CompatInfoText` (FYT-only
     lines of two info texts), `S/BackgroundSelectorDialog` with `S/ColorTileDrawable` and
     `S/SelectedFrameDrawable`, `L/FabButtons`.

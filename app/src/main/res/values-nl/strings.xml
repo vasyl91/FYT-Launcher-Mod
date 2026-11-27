@@ -193,6 +193,8 @@
 
     <string name="device_settings">Apparaatinstellingen</string>
     <string name="layout_category">Indeling</string>
+    <string name="settings_text_scale">Tekstgrootte van de instellingen</string>
+    <string name="settings_text_scale_value">%1$d%%</string>
     <string name="misc_category">Diversen</string>
     <string name="widgets_category">Widgets</string>
     <string name="stats_category">Brandstofstatistieken</string>

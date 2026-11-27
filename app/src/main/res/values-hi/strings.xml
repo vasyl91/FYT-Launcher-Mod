@@ -193,6 +193,8 @@
 
     <string name="device_settings">डिवाइस सेटिंग</string>
     <string name="layout_category">लेआउट</string>
+    <string name="settings_text_scale">सेटिंग्स के टेक्स्ट का आकार</string>
+    <string name="settings_text_scale_value">%1$d%%</string>
     <string name="misc_category">विविध</string>
     <string name="widgets_category">विजेट</string>
     <string name="stats_category">ईंधन आँकड़े</string>

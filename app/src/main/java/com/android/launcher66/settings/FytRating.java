@@ -1104,7 +1104,7 @@ public final class FytRating {
                 openReleasesPage(activity);
             } else {
                 missingToast = Toast.makeText(
-                        activity, R.string.fyt_rating_missing, Toast.LENGTH_LONG);
+                        activity.getApplicationContext(), R.string.fyt_rating_missing, Toast.LENGTH_LONG);
                 missingToast.show();
             }
             return;
@@ -1112,11 +1112,11 @@ public final class FytRating {
 
         Intent launch = activity.getPackageManager().getLaunchIntentForPackage(BRIDGE_PACKAGE);
         if (launch == null) {
-            Toast.makeText(activity, R.string.fyt_rating_missing, Toast.LENGTH_LONG).show();
+            Toast.makeText(activity.getApplicationContext(), R.string.fyt_rating_missing, Toast.LENGTH_LONG).show();
             return;
         }
 
-        Toast.makeText(activity, R.string.fyt_rating_opening, Toast.LENGTH_SHORT).show();
+        Toast.makeText(activity.getApplicationContext(), R.string.fyt_rating_opening, Toast.LENGTH_SHORT).show();
         sOpenedFromSettings = true;
         launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         activity.startActivity(launch);

@@ -193,6 +193,8 @@
 
     <string name="device_settings">Налады прылады</string>
     <string name="layout_category">Макет</string>
+    <string name="settings_text_scale">Памер тэксту налад</string>
+    <string name="settings_text_scale_value">%1$d %%</string>
     <string name="misc_category">Рознае</string>
     <string name="widgets_category">Віджэты</string>
     <string name="stats_category">Статыстыка паліва</string>

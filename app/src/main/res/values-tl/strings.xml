@@ -193,6 +193,8 @@
 
     <string name="device_settings">Mga setting ng device</string>
     <string name="layout_category">Layout</string>
+    <string name="settings_text_scale">Laki ng teksto ng mga setting</string>
+    <string name="settings_text_scale_value">%1$d%%</string>
     <string name="misc_category">Iba-iba</string>
     <string name="widgets_category">Mga widget</string>
     <string name="stats_category">Mga istatistika ng gasolina</string>

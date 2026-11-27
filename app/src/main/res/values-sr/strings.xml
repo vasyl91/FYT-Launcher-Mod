@@ -193,6 +193,8 @@
 
     <string name="device_settings">Подешавања уређаја</string>
     <string name="layout_category">Распоред</string>
+    <string name="settings_text_scale">Величина текста подешавања</string>
+    <string name="settings_text_scale_value">%1$d%%</string>
     <string name="misc_category">Разно</string>
     <string name="widgets_category">Виџети</string>
     <string name="stats_category">Статистика горива</string>

@@ -193,6 +193,8 @@
 
     <string name="device_settings">Laitteen asetukset</string>
     <string name="layout_category">Asettelu</string>
+    <string name="settings_text_scale">Asetusten tekstin koko</string>
+    <string name="settings_text_scale_value">%1$d %%</string>
     <string name="misc_category">Sekalaista</string>
     <string name="widgets_category">Widgetit</string>
     <string name="stats_category">Polttoainetilastot</string>

@@ -193,6 +193,8 @@
 
     <string name="device_settings">Eszközbeállítások</string>
     <string name="layout_category">Elrendezés</string>
+    <string name="settings_text_scale">A beállítások szövegmérete</string>
+    <string name="settings_text_scale_value">%1$d%%</string>
     <string name="misc_category">Egyebek</string>
     <string name="widgets_category">Widgetek</string>
     <string name="stats_category">Üzemanyag-statisztika</string>

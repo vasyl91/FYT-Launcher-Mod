@@ -193,6 +193,8 @@
 
     <string name="device_settings">Սարքի կարգավորումներ</string>
     <string name="layout_category">Դասավորություն</string>
+    <string name="settings_text_scale">Կարգավորումների տեքստի չափը</string>
+    <string name="settings_text_scale_value">%1$d%%</string>
     <string name="misc_category">Տարբեր</string>
     <string name="widgets_category">Վիջեթներ</string>
     <string name="stats_category">Վառելիքի վիճակագրություն</string>

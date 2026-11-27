@@ -193,6 +193,8 @@
 
     <string name="device_settings">Ajustes del dispositivo</string>
     <string name="layout_category">Diseño</string>
+    <string name="settings_text_scale">Tamaño del texto de los ajustes</string>
+    <string name="settings_text_scale_value">%1$d %%</string>
     <string name="misc_category">Varios</string>
     <string name="widgets_category">Widgets</string>
     <string name="stats_category">Estadísticas de combustible</string>

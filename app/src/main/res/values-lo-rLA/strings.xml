@@ -193,6 +193,8 @@
 
     <string name="device_settings">ການຕັ້ງຄ່າອຸປະກອນ</string>
     <string name="layout_category">ຮູບແບບ</string>
+    <string name="settings_text_scale">ຂະໜາດຂໍ້ຄວາມຂອງການຕັ້ງຄ່າ</string>
+    <string name="settings_text_scale_value">%1$d%%</string>
     <string name="misc_category">ເບັດເຕັດ</string>
     <string name="widgets_category">ວິດເຈັດ</string>
     <string name="stats_category">ສະຖິຕິນ້ຳມັນ</string>

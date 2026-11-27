@@ -193,6 +193,8 @@
 
     <string name="device_settings">Налаштування пристрою</string>
     <string name="layout_category">Макет</string>
+    <string name="settings_text_scale">Розмір тексту налаштувань</string>
+    <string name="settings_text_scale_value">%1$d%%</string>
     <string name="misc_category">Різне</string>
     <string name="widgets_category">Віджети</string>
     <string name="stats_category">Статистика витрати пального</string>

@@ -199,6 +199,8 @@
     
     <string name="device_settings">Device settings</string> 
     <string name="layout_category">Layout</string>
+    <string name="settings_text_scale">Settings text size</string>
+    <string name="settings_text_scale_value">%1$d%%</string>
     <string name="misc_category">Miscellaneous</string>
     <string name="widgets_category">Widgets</string>
     <string name="stats_category">Fuel statistics</string>

@@ -117,7 +117,7 @@ final class WeatherKeyRow {
         } else if (WeatherKey.valid(typed)) {
             prefs.edit().putString(Keys.OPENWEATHER_API_KEY, typed).apply();
         } else {
-            Toast.makeText(fragment.requireContext(), R.string.openweather_key_invalid, Toast.LENGTH_LONG).show();
+            Toast.makeText(fragment.requireContext().getApplicationContext(), R.string.openweather_key_invalid, Toast.LENGTH_LONG).show();
             return;
         }
         showState(row);

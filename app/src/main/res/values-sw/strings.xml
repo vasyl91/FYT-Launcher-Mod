@@ -193,6 +193,8 @@
 
     <string name="device_settings">Mipangilio ya kifaa</string>
     <string name="layout_category">Mpangilio</string>
+    <string name="settings_text_scale">Ukubwa wa maandishi ya mipangilio</string>
+    <string name="settings_text_scale_value">%1$d%%</string>
     <string name="misc_category">Mbalimbali</string>
     <string name="widgets_category">Wijeti</string>
     <string name="stats_category">Takwimu za mafuta</string>

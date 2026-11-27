@@ -89,6 +89,9 @@ public class CreatorScreen extends Fragment {
         if (mContext == null) {
             return null;
         }
+        // Drawn to the launcher's scale: "Settings text size" is not for this screen (SettingsTextScale)
+        mContext = SettingsActivity.withoutTextScale(mContext);
+        inflater = inflater.cloneInContext(mContext);
 
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
         mCreatorPage = CreatorPage.of(mPage, snapshot(sharedPrefs));

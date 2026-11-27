@@ -193,6 +193,8 @@
 
     <string name="device_settings">Enhetsinställningar</string>
     <string name="layout_category">Layout</string>
+    <string name="settings_text_scale">Textstorlek i inställningarna</string>
+    <string name="settings_text_scale_value">%1$d %%</string>
     <string name="misc_category">Övrigt</string>
     <string name="widgets_category">Widgets</string>
     <string name="stats_category">Bränslestatistik</string>

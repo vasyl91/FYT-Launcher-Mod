@@ -193,6 +193,8 @@
 
     <string name="device_settings">Nastavenia zariadenia</string>
     <string name="layout_category">Rozloženie</string>
+    <string name="settings_text_scale">Veľkosť textu nastavení</string>
+    <string name="settings_text_scale_value">%1$d %%</string>
     <string name="misc_category">Rôzne</string>
     <string name="widgets_category">Widgety</string>
     <string name="stats_category">Štatistiky paliva</string>

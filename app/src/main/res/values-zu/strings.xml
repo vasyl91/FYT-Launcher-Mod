@@ -193,6 +193,8 @@
 
     <string name="device_settings">Izilungiselelo zedivayisi</string>
     <string name="layout_category">Isakhiwo</string>
+    <string name="settings_text_scale">Usayizi wombhalo wezilungiselelo</string>
+    <string name="settings_text_scale_value">%1$d%%</string>
     <string name="misc_category">Okuhlukahlukene</string>
     <string name="widgets_category">Amawijethi</string>
     <string name="stats_category">Izibalo zikaphethiloli</string>

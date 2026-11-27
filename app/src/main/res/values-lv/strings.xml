@@ -193,6 +193,8 @@
 
     <string name="device_settings">Ierīces iestatījumi</string>
     <string name="layout_category">Izkārtojums</string>
+    <string name="settings_text_scale">Iestatījumu teksta lielums</string>
+    <string name="settings_text_scale_value">%1$d%%</string>
     <string name="misc_category">Dažādi</string>
     <string name="widgets_category">Logrīki</string>
     <string name="stats_category">Degvielas statistika</string>

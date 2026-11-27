@@ -193,6 +193,8 @@
 
     <string name="device_settings">ការកំណត់ឧបករណ៍</string>
     <string name="layout_category">ប្លង់</string>
+    <string name="settings_text_scale">ទំហំអក្សរនៃការកំណត់</string>
+    <string name="settings_text_scale_value">%1$d%%</string>
     <string name="misc_category">ផ្សេងៗ</string>
     <string name="widgets_category">ធាតុក្រាហ្វិក</string>
     <string name="stats_category">ស្ថិតិឥន្ធនៈ</string>

@@ -193,6 +193,8 @@
 
     <string name="device_settings">Tetapan peranti</string>
     <string name="layout_category">Reka letak</string>
+    <string name="settings_text_scale">Saiz teks tetapan</string>
+    <string name="settings_text_scale_value">%1$d%%</string>
     <string name="misc_category">Pelbagai</string>
     <string name="widgets_category">Widget</string>
     <string name="stats_category">Statistik bahan api</string>

@@ -193,6 +193,8 @@
 
     <string name="device_settings">Toestelinstellings</string>
     <string name="layout_category">Uitleg</string>
+    <string name="settings_text_scale">Instellings se teksgrootte</string>
+    <string name="settings_text_scale_value">%1$d%%</string>
     <string name="misc_category">Diverse</string>
     <string name="widgets_category">Legstukke</string>
     <string name="stats_category">Brandstofstatistiek</string>

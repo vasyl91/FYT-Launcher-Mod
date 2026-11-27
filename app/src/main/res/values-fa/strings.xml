@@ -193,6 +193,8 @@
 
     <string name="device_settings">تنظیمات دستگاه</string>
     <string name="layout_category">چیدمان</string>
+    <string name="settings_text_scale">اندازه متن تنظیمات</string>
+    <string name="settings_text_scale_value">%1$d٪</string>
     <string name="misc_category">متفرقه</string>
     <string name="widgets_category">ویجت‌ها</string>
     <string name="stats_category">آمار سوخت</string>

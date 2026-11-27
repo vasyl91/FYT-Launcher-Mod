@@ -30,7 +30,9 @@ public class CreatorAppStats extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
-        mContext = container.getContext();
+        // Drawn to the launcher's scale: "Settings text size" is not for this screen (SettingsTextScale)
+        mContext = SettingsActivity.withoutTextScale(container.getContext());
+        inflater = inflater.cloneInContext(mContext);
         View rootView = inflater.inflate(R.layout.creator_screen, container, false);
         ConstraintLayout layout = rootView.findViewById(R.id.creator_screen);
         DrawViewAppStats canvas = new DrawViewAppStats(inflater, rootView, mContext);

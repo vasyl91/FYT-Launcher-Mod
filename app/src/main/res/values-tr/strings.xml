@@ -193,6 +193,8 @@
 
     <string name="device_settings">Cihaz ayarları</string>
     <string name="layout_category">Düzen</string>
+    <string name="settings_text_scale">Ayarların metin boyutu</string>
+    <string name="settings_text_scale_value">%%%1$d</string>
     <string name="misc_category">Çeşitli</string>
     <string name="widgets_category">Widget\'lar</string>
     <string name="stats_category">Yakıt istatistikleri</string>

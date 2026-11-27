@@ -193,6 +193,8 @@
 
     <string name="device_settings">მოწყობილობის პარამეტრები</string>
     <string name="layout_category">განლაგება</string>
+    <string name="settings_text_scale">პარამეტრების ტექსტის ზომა</string>
+    <string name="settings_text_scale_value">%1$d%%</string>
     <string name="misc_category">სხვადასხვა</string>
     <string name="widgets_category">ვიჯეტები</string>
     <string name="stats_category">საწვავის სტატისტიკა</string>

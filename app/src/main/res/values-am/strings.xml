@@ -193,6 +193,8 @@
 
     <string name="device_settings">የመሣሪያ ቅንብሮች</string>
     <string name="layout_category">አቀማመጥ</string>
+    <string name="settings_text_scale">የቅንብሮች ጽሑፍ መጠን</string>
+    <string name="settings_text_scale_value">%1$d%%</string>
     <string name="misc_category">ልዩ ልዩ</string>
     <string name="widgets_category">ምግቦች</string>
     <string name="stats_category">የነዳጅ ስታቲስቲክስ</string>

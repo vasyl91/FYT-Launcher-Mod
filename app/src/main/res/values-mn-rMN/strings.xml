@@ -193,6 +193,8 @@
 
     <string name="device_settings">Төхөөрөмжийн тохиргоо</string>
     <string name="layout_category">Зохион байгуулалт</string>
+    <string name="settings_text_scale">Тохиргооны текстийн хэмжээ</string>
+    <string name="settings_text_scale_value">%1$d%%</string>
     <string name="misc_category">Төрөл бүрийн</string>
     <string name="widgets_category">Виджетүүд</string>
     <string name="stats_category">Түлшний статистик</string>

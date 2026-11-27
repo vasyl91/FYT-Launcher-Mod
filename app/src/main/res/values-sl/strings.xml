@@ -193,6 +193,8 @@
 
     <string name="device_settings">Nastavitve naprave</string>
     <string name="layout_category">Razporeditev</string>
+    <string name="settings_text_scale">Velikost besedila nastavitev</string>
+    <string name="settings_text_scale_value">%1$d %%</string>
     <string name="misc_category">Razno</string>
     <string name="widgets_category">Gradniki</string>
     <string name="stats_category">Statistika goriva</string>

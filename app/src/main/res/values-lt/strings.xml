@@ -193,6 +193,8 @@
 
     <string name="device_settings">Įrenginio nustatymai</string>
     <string name="layout_category">Išdėstymas</string>
+    <string name="settings_text_scale">Nustatymų teksto dydis</string>
+    <string name="settings_text_scale_value">%1$d %%</string>
     <string name="misc_category">Įvairūs</string>
     <string name="widgets_category">Valdikliai</string>
     <string name="stats_category">Degalų statistika</string>

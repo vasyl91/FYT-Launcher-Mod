@@ -193,6 +193,8 @@
 
     <string name="device_settings">Setelan perangkat</string>
     <string name="layout_category">Tata letak</string>
+    <string name="settings_text_scale">Ukuran teks setelan</string>
+    <string name="settings_text_scale_value">%1$d%%</string>
     <string name="misc_category">Lain-lain</string>
     <string name="widgets_category">Widget</string>
     <string name="stats_category">Statistik bahan bakar</string>

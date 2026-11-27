@@ -1331,7 +1331,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             if (DoubleTapActions.LOCK.equals(value)) {
                 DoubleTapActions.lockChosen();
             } else if (DoubleTapActions.SCREEN_OFF.equals(value)) {
-                Toast.makeText(requireContext(), R.string.double_tap_screen_off_hint,
+                Toast.makeText(requireContext().getApplicationContext(), R.string.double_tap_screen_off_hint,
                         Toast.LENGTH_LONG).show();
             }
             return true;
@@ -2804,7 +2804,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         if (pages > 0 && !StartPageRule.accepts(typed, pages)) {
             // A page that does not exist is refused: the stored page and the summary stay as they are
             Log.i("SettingsFragmentSecond", "Start page " + typed + " refused: the home screen has " + pages + " pages");
-            Toast.makeText(requireContext(), getString(R.string.start_page_missing, typed, pages),
+            Toast.makeText(requireContext().getApplicationContext(), getString(R.string.start_page_missing, typed, pages),
                     Toast.LENGTH_LONG).show();
             return;
         }
@@ -2943,7 +2943,7 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         String cmd = cmdInt.getText().toString().trim();
         int[] ints = CanbusLibrary.parseInts(cmdArr.getText().toString());
         if (ints == null || (!cmd.isEmpty() && !cmd.matches("[0-9]{1,4}"))) {
-            Toast.makeText(this.requireContext(), R.string.stats_codes_cmd_invalid, Toast.LENGTH_LONG).show();
+            Toast.makeText(this.requireContext().getApplicationContext(), R.string.stats_codes_cmd_invalid, Toast.LENGTH_LONG).show();
             return;
         }
         StringBuilder arr = new StringBuilder();

@@ -312,6 +312,7 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
         padding = SettingsActivity.dialogPadding;
         CustomNoSwitchPreference userLayout = findPreference(Keys.USER_LAYOUT);
         settingsSecondFragment = findPreference(Keys.CREATOR_FIRST);
+        bindTextScale();
 
         Preference favoriteCache = findPreference(Keys.FAVORITE_CACHE);
         oauthForYoutubeRevanced = findPreference(Keys.OAUTH_FOR_YOUTUBE_REVANCED);
@@ -753,6 +754,34 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
             resetNightMode.setVisible(nightModeBool);
             resetNightModeCategory.setVisible(nightModeBool);
         }         
+    }
+
+    /**
+     * "Settings text size" (SettingsTextScale): the title row shows the value while the slider moves; when it is let go
+     * the settings are made again with the new size, at the place of the list they were at (the list keeps its place
+     * through recreate()).
+     */
+    private void bindTextScale() {
+        final Preference title = findPreference(SettingsTextScale.KEY + "_title");
+        SettingsTextScaleSeekBarPreference slider = findPreference(SettingsTextScale.KEY);
+        if (title == null || slider == null) {
+            return;
+        }
+        title.setSummary(getString(R.string.settings_text_scale_value, slider.getValue()));
+        slider.setListener(new SettingsTextScaleSeekBarPreference.Listener() {
+            @Override
+            public void onMoved(int percent) {
+                title.setSummary(getString(R.string.settings_text_scale_value, percent));
+            }
+
+            @Override
+            public void onChosen(int percent) {
+                Log.i(TAG, "Settings text size: " + percent + " %, the settings are made again");
+                if (getActivity() != null) {
+                    getActivity().recreate();
+                }
+            }
+        });
     }
 
     @NonNull

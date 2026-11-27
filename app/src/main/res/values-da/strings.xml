@@ -193,6 +193,8 @@
 
     <string name="device_settings">Enhedsindstillinger</string>
     <string name="layout_category">Layout</string>
+    <string name="settings_text_scale">Tekststørrelse i indstillinger</string>
+    <string name="settings_text_scale_value">%1$d %%</string>
     <string name="misc_category">Diverse</string>
     <string name="widgets_category">Widgets</string>
     <string name="stats_category">Brændstofstatistik</string>

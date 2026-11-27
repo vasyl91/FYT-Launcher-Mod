@@ -193,6 +193,8 @@
 
     <string name="device_settings">设备设置</string>
     <string name="layout_category">布局</string>
+    <string name="settings_text_scale">设置文字大小</string>
+    <string name="settings_text_scale_value">%1$d%%</string>
     <string name="misc_category">其他</string>
     <string name="widgets_category">小部件</string>
     <string name="stats_category">油耗统计</string>

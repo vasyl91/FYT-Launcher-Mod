@@ -193,6 +193,8 @@
 
     <string name="device_settings">Настройки на устройството</string>
     <string name="layout_category">Изглед</string>
+    <string name="settings_text_scale">Размер на текста на настройките</string>
+    <string name="settings_text_scale_value">%1$d%%</string>
     <string name="misc_category">Разни</string>
     <string name="widgets_category">Приспособления</string>
     <string name="stats_category">Статистика за горивото</string>

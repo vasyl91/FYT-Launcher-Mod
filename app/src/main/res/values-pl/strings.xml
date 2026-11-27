@@ -193,6 +193,8 @@
 
     <string name="device_settings">Ustawienia android</string>
     <string name="layout_category">Layout</string>
+    <string name="settings_text_scale">Rozmiar tekstu ustawień</string>
+    <string name="settings_text_scale_value">%1$d%%</string>
     <string name="misc_category">Różne</string>
     <string name="widgets_category">Widgety</string>
     <string name="stats_category">Statystyki paliwa</string>

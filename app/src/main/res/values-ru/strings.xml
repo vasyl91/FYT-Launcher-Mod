@@ -193,6 +193,8 @@
 
     <string name="device_settings">Настройки устройства</string>
     <string name="layout_category">Макет</string>
+    <string name="settings_text_scale">Размер текста настроек</string>
+    <string name="settings_text_scale_value">%1$d %%</string>
     <string name="misc_category">Прочее</string>
     <string name="widgets_category">Виджеты</string>
     <string name="stats_category">Статистика расхода топлива</string>

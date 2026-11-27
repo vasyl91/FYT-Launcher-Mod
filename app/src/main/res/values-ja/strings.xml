@@ -193,6 +193,8 @@
 
     <string name="device_settings">端末設定</string>
     <string name="layout_category">レイアウト</string>
+    <string name="settings_text_scale">設定の文字サイズ</string>
+    <string name="settings_text_scale_value">%1$d%%</string>
     <string name="misc_category">その他</string>
     <string name="widgets_category">ウィジェット</string>
     <string name="stats_category">燃料統計</string>

@@ -193,6 +193,8 @@
 
     <string name="device_settings">Configuració del dispositiu</string>
     <string name="layout_category">Disposició</string>
+    <string name="settings_text_scale">Mida del text de la configuració</string>
+    <string name="settings_text_scale_value">%1$d %%</string>
     <string name="misc_category">Diversos</string>
     <string name="widgets_category">Widgets</string>
     <string name="stats_category">Estadístiques de combustible</string>

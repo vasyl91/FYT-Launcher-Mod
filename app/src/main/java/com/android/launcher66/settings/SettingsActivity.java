@@ -99,17 +99,77 @@ public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void attachBaseContext(Context newBase) {
+        // "Settings text size" (SettingsTextScale): the font scale of the whole activity, the dialogs included
+        float text = textFactor(newBase);
         if (LauncherApplication.isFytDevice()) {
-            super.attachBaseContext(newBase);
+            super.attachBaseContext(text == 1f ? newBase : withFontScale(newBase, text));
             return;
         }
         mScaledForOrientation = newBase.getResources().getConfiguration().orientation;
-        super.attachBaseContext(withScaledDensity(newBase));
+        super.attachBaseContext(withScaledDensity(newBase, text));
     }
 
-    private static Context withScaledDensity(Context base) {
+    /** The factor of "Settings text size", read through the application (its preferences are in memory). */
+    private static float textFactor(Context base) {
+        Context app = base.getApplicationContext() != null ? base.getApplicationContext() : base;
+        return SettingsTextScale.factor(PreferenceManager.getDefaultSharedPreferences(app)
+                .getInt(SettingsTextScale.KEY, SettingsTextScale.DEFAULT));
+    }
+
+    /**
+     * The context with only its font scale changed: the rest of the configuration follows the system, a turn of the
+     * screen too (a FYT unit turns without a new activity).
+     */
+    private static Context withFontScale(Context base, float factor) {
+        Configuration override = new Configuration();
+        override.fontScale = base.getResources().getConfiguration().fontScale * factor;
+        return base.createConfigurationContext(override);
+    }
+
+    private static Context withScaledDensity(Context base, float textFactor) {
         Configuration config = ScreenScale.scaledConfiguration(base.getResources());
-        return config != null ? base.createConfigurationContext(config) : base;
+        if (config == null) {
+            return textFactor == 1f ? base : withFontScale(base, textFactor);
+        }
+        config.fontScale *= textFactor;
+        return base.createConfigurationContext(config);
+    }
+
+    /**
+     * A context for the creator's screens with their rectangles (CreatorScreen, CreatorAppStats): the settings' own,
+     * with "Settings text size" taken out of its font scale, since those screens are drawn to the launcher's scale
+     * (SettingsTextScale). The same context at 100.
+     */
+    public static Context withoutTextScale(Context context) {
+        float factor = textFactor(context);
+        if (factor == 1f || context == null) {
+            return context;
+        }
+        android.view.ContextThemeWrapper wrapper = new android.view.ContextThemeWrapper(context, themeOf(context));
+        Configuration override = new Configuration();
+        override.fontScale = context.getResources().getConfiguration().fontScale / factor;
+        wrapper.applyOverrideConfiguration(override);
+        return wrapper;
+    }
+
+    /** The theme of the activity a context belongs to, else the application's. */
+    private static int themeOf(Context context) {
+        Context c = context;
+        while (c instanceof android.content.ContextWrapper && !(c instanceof android.app.Activity)) {
+            c = ((android.content.ContextWrapper) c).getBaseContext();
+        }
+        if (c instanceof android.app.Activity) {
+            try {
+                int theme = c.getPackageManager().getActivityInfo(((android.app.Activity) c).getComponentName(), 0)
+                        .getThemeResource();
+                if (theme != 0) {
+                    return theme;
+                }
+            } catch (android.content.pm.PackageManager.NameNotFoundException ignore) {
+                // the application's theme then
+            }
+        }
+        return context.getApplicationInfo().theme;
     }
 
     @Override

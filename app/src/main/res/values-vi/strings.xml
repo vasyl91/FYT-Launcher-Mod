@@ -193,6 +193,8 @@
 
     <string name="device_settings">Cài đặt thiết bị</string>
     <string name="layout_category">Bố cục</string>
+    <string name="settings_text_scale">Cỡ chữ của cài đặt</string>
+    <string name="settings_text_scale_value">%1$d%%</string>
     <string name="misc_category">Khác</string>
     <string name="widgets_category">Widget</string>
     <string name="stats_category">Thống kê nhiên liệu</string>

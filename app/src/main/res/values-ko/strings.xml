@@ -193,6 +193,8 @@
 
     <string name="device_settings">기기 설정</string>
     <string name="layout_category">레이아웃</string>
+    <string name="settings_text_scale">설정 글자 크기</string>
+    <string name="settings_text_scale_value">%1$d%%</string>
     <string name="misc_category">기타</string>
     <string name="widgets_category">위젯</string>
     <string name="stats_category">연료 통계</string>

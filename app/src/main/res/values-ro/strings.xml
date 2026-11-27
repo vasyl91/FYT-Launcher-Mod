@@ -193,6 +193,8 @@
 
     <string name="device_settings">Setări dispozitiv</string>
     <string name="layout_category">Aspect</string>
+    <string name="settings_text_scale">Dimensiunea textului setărilor</string>
+    <string name="settings_text_scale_value">%1$d%%</string>
     <string name="misc_category">Diverse</string>
     <string name="widgets_category">Widgeturi</string>
     <string name="stats_category">Statistici de combustibil</string>
