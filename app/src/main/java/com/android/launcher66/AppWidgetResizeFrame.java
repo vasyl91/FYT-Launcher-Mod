@@ -209,24 +209,39 @@ public class AppWidgetResizeFrame extends FrameLayout {
     }
 
     /**
-     * "Free widget placement": the widget follows the frame's pixels instead of stepping from cell to cell. The frame
-     * lies round the widget by its padding and the widget's own padding (snapToWidget); this is the same, the other way.
+     * "Freeform widgets": the widget follows the frame's pixels instead of stepping from cell to cell, and the frame is put
+     * back round the rectangle the widget got (ResizeGeometry): where the page limits the size or refuses it, the frame
+     * does not run on with the finger.
      *
      * @return whether the widget is placed freely and this took care of the resize
      */
     private boolean resizeFreeform(boolean onDismiss) {
-        if (!FreeformWidgets.enabled(getContext()) || mCellLayout.freeformRect(this.mWidgetView) == null) {
+        if (!FreeformWidgets.enabled(getContext())) {
+            return false;
+        }
+        int[] before = mCellLayout.freeformRect(this.mWidgetView);
+        if (before == null) {
             return false;
         }
         DragLayer.LayoutParams frame = (DragLayer.LayoutParams) getLayoutParams();
         this.mTmpPt[0] = 0;
         this.mTmpPt[1] = 0;
         this.mDragLayer.getDescendantCoordRelativeToSelf(this.mCellLayout.getShortcutsAndWidgets(), this.mTmpPt);
-        int left = frame.x + this.mBackgroundPadding - this.mWidgetPaddingLeft - this.mTmpPt[0];
-        int top = frame.y + this.mBackgroundPadding - this.mWidgetPaddingTop - this.mTmpPt[1];
-        int width = frame.width - 2 * this.mBackgroundPadding + this.mWidgetPaddingLeft + this.mWidgetPaddingRight;
-        int height = frame.height - 2 * this.mBackgroundPadding + this.mWidgetPaddingTop + this.mWidgetPaddingBottom;
-        FreeformWidgets.resizeTo(this.mCellLayout, this.mWidgetView, left, top, width, height, onDismiss);
+        boolean scaled = LauncherAppWidgetHostView.isScaled(this.mWidgetView);
+        int[] pad = scaled ? new int[4] : new int[] {this.mWidgetPaddingLeft, this.mWidgetPaddingTop,
+                this.mWidgetPaddingRight, this.mWidgetPaddingBottom};
+        float scale = scaled ? this.mWidgetView.getScaleToFit() : 1f;
+        int[] asked = ResizeGeometry.widgetOf(new int[] {frame.x, frame.y, frame.width, frame.height},
+                this.mBackgroundPadding, pad, scale, this.mTmpPt[0], this.mTmpPt[1]);
+        int[] got = FreeformWidgets.resizeTo(this.mCellLayout, this.mWidgetView, asked[0], asked[1], asked[2],
+                asked[3], onDismiss);
+        // The frame round what the widget has: the new rectangle, or the one it kept when the resize was refused
+        int[] round = ResizeGeometry.frameOf(got != null ? got : before, this.mBackgroundPadding, pad, scale,
+                this.mTmpPt[0], this.mTmpPt[1]);
+        frame.x = round[0];
+        frame.y = round[1];
+        frame.width = round[2];
+        frame.height = round[3];
         if (onDismiss) {
             this.mCellLayout.markCellsAsOccupiedForView(this.mWidgetView);
             ItemInfo info = (ItemInfo) this.mWidgetView.getTag();

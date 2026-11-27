@@ -65,7 +65,7 @@ public final class Keys {
     public static final String DOUBLE_TAP_ACTION = "double_tap_action";
     /** "Follow home screen grid inside folders": the folder has the home screen's columns (FolderGrid), off by default. */
     public static final String FOLDER_FOLLOW_GRID = "folder_follow_grid";
-    /** "Free widget placement": widgets at the pixels the user puts them, not in cells (FreeformWidgets), off by default. */
+    /** "Freeform widgets": widgets at the pixels the user puts them, not in cells (FreeformWidgets), off by default. */
     public static final String WIDGET_FREEFORM = "widget_freeform";
     /** "Allow widgets to overlap": widgets take no cells and lie over other items (FreeformWidgets.overlapOn), off by default. */
     public static final String WIDGET_OVERLAP = "widget_overlap";

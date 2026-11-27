@@ -4841,6 +4841,40 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         return maxX < 0 ? null : new int[] {minX, minY, maxX - minX + 1, maxY - minY + 1};
     }
 
+    /**
+     * The edges of the grid's columns and rows in the container (FreePlace): {colLeft, colRight, rowTop, rowBottom}, each
+     * an array in the order of the columns or rows.
+     */
+    int[][] cellEdges() {
+        int[] colLeft = new int[mCountX];
+        int[] colRight = new int[mCountX];
+        int[] rowTop = new int[mCountY];
+        int[] rowBottom = new int[mCountY];
+        for (int x = 0; x < mCountX; x++) {
+            int[] c = mShortcutsAndWidgets.cellAreaRect(x, 0, 1, 1);
+            colLeft[x] = c[0];
+            colRight[x] = c[0] + c[2];
+        }
+        for (int y = 0; y < mCountY; y++) {
+            int[] c = mShortcutsAndWidgets.cellAreaRect(0, y, 1, 1);
+            rowTop[y] = c[1];
+            rowBottom[y] = c[1] + c[3];
+        }
+        return new int[][] {colLeft, colRight, rowTop, rowBottom};
+    }
+
+    /** The cells the other items of the page hold, counted from them, the given view left out (FreePlace). */
+    boolean[][] occupiedWithout(View view) {
+        boolean[][] held = new boolean[mCountX][mCountY];
+        for (int i = 0; i < mShortcutsAndWidgets.getChildCount(); i++) {
+            View child = mShortcutsAndWidgets.getChildAt(i);
+            if (child != view) {
+                markCellsAsOccupiedForView(child, held);
+            }
+        }
+        return held;
+    }
+
     /** Whether no item holds a cell of the area (a widget in the middle of a resize has given its own cells up). */
     boolean cellsVacant(int cellX, int cellY, int spanX, int spanY) {
         if (!PageFit.inGrid(cellX, cellY, spanX, spanY, mCountX, mCountY)) {

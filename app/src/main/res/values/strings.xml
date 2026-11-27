@@ -590,7 +590,7 @@
     <string name="folders_background_preference">Choose background for folders</string>
     <string name="folders_background_dialog_title">Select background for folders:</string>
     <string name="folder_follow_grid">Follow home screen grid inside folders</string>
-    <string name="widget_freeform">Free widget placement</string>
+    <string name="widget_freeform">Freeform widgets</string>
     <string name="widget_overlap">Allow widgets to overlap</string>
     <string name="autostart_apps_summary_fyt">Apps launched by the system\'s autostart feature may slow down the launcher\'s startup. The launcher\'s built-in option will launch them only after the launcher has completed its cold start. When using this list, remember to disable these apps in the FYT settings and anywhere else they are set to start automatically; otherwise, they will be launched twice.</string>
     <string name="autostart_apps_summary_other">Apps launched by the system\'s autostart feature may slow down the launcher\'s startup. The launcher\'s built-in option will launch them only after the launcher has completed its cold start. When using this list, remember to turn off automatic start for these apps anywhere else it is enabled; otherwise, they will be launched twice.</string>

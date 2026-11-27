@@ -3,7 +3,7 @@ package com.android.launcher66;
 import java.util.Locale;
 
 /**
- * The rectangle of a widget on a page of the home screen when "Free widget placement" is on.
+ * The rectangle of a widget on a page of the home screen when "Freeform widgets" is on.
  *
  * <p>The rules:
  * <ul>

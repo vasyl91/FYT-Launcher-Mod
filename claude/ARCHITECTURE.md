@@ -198,7 +198,9 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   the accessibility service (`S/StateAccessibilityService.sInstance`) locks the screen, and `LauncherPermissionFlow`
   has a step `ACCESSIBILITY`.
 - **Widgets:** `L/WidgetFrame` / `L/WidgetFrames` keep a freely placed widget as fractions of the page's content area
-  (the file `widget_frames`); `CellLayout.isPixelPlaced()` and `ShortcutAndWidgetContainer` lay out by pixels the
+  (the file `widget_frames`); since round 29 ("Freeform widgets") `L/FreePlace` (plain Java) puts a dropped widget
+  at the pixels it was let go, or at the nearest place over free cells, and `L/ResizeGeometry` (plain Java) keeps the
+  resize frame round the widget; `CellLayout.isPixelPlaced()` and `ShortcutAndWidgetContainer` lay out by pixels the
   elements of the user's layout and those widgets; with "Allow widgets to overlap" `CellLayout.takesCells()` is false
   for an app widget, `PageFit.toMove(..., widgetsMayOverlap)` and `L/GridRefit` handle the rest. `Folder` has its own
   background (`BarBackground.folders()`) and may follow the home screen's grid (`L/FolderGrid`), its icons then drawn as there

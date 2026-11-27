@@ -4840,7 +4840,7 @@ public class Workspace extends SmoothPagedView
     }
 
     /**
-     * "Allow widgets to overlap" or "Free widget placement" changed: the cells taken are counted anew on every page (a
+     * "Allow widgets to overlap" or "Freeform widgets" changed: the cells taken are counted anew on every page (a
      * widget takes none with the first), and the widgets are drawn over or among the icons.
      */
     void onWidgetRulesChanged() {
@@ -7366,11 +7366,18 @@ public class Workspace extends SmoothPagedView
                     cell.setId(LauncherModel.getCellLayoutChildId(container, mDragInfo.screenId,
                             mTargetCell[0], mTargetCell[1], mDragInfo.spanX, mDragInfo.spanY));
 
-                    // "Free widget placement": the widget keeps the pixels it was dropped at, inside the cells found for it
+                    // "Freeform widgets": the widget keeps the pixels it was let go at (FreePlace); the database gets the
+                    // cells it lies over
                     if (container != LauncherSettings.Favorites.CONTAINER_HOTSEAT
                             && cell instanceof LauncherAppWidgetHostView && FreeformWidgets.enabled(mLauncher)) {
-                        FreeformWidgets.placeOnDrop(dropTargetLayout, (LauncherAppWidgetHostView) cell,
+                        int[] cells = FreeformWidgets.placeOnDrop(dropTargetLayout, (LauncherAppWidgetHostView) cell,
                                 mDragViewVisualCenter, mTargetCell, item.spanX, item.spanY, !resizeOnDrop);
+                        lp.cellX = lp.tmpCellX = mTargetCell[0] = cells[0];
+                        lp.cellY = lp.tmpCellY = mTargetCell[1] = cells[1];
+                        lp.cellHSpan = item.spanX = cells[2];
+                        lp.cellVSpan = item.spanY = cells[3];
+                        // The cells taken follow the ones it lies over, not those the grid found for the drop
+                        dropTargetLayout.rebuildOccupied();
                         freeformDrop = true;
                     }
 

@@ -1388,7 +1388,7 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                         || Keys.DRAWER_TAB_BAR_POSITION.equals(key) || Keys.USER_LAYOUT.equals(key))) {
                     mAppsCustomizeContent.syncTabs();
                 }
-                // "Allow widgets to overlap" and "Free widget placement": the cells taken are counted anew; with the first
+                // "Allow widgets to overlap" and "Freeform widgets": the cells taken are counted anew; with the first
                 // turned off the widgets that overlap are put on the grid again
                 if (mWorkspace != null && (Keys.WIDGET_OVERLAP.equals(key) || Keys.WIDGET_FREEFORM.equals(key)
                         || Keys.USER_LAYOUT.equals(key))) {
@@ -5909,6 +5909,12 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
 
             mWorkspace.addInScreen(launcherInfo.hostView, container, screenId, cellXY[0], cellXY[1],
                     launcherInfo.spanX, launcherInfo.spanY, isWorkspaceLocked());
+            // "Freeform widgets": free from the start, with the frame of its cells
+            if (container == LauncherSettings.Favorites.CONTAINER_DESKTOP
+                    && launcherInfo.hostView instanceof LauncherAppWidgetHostView) {
+                FreeformWidgets.frameNew(layout, (LauncherAppWidgetHostView) launcherInfo.hostView, cellXY[0],
+                        cellXY[1], launcherInfo.spanX, launcherInfo.spanY);
+            }
 
             addWidgetToAutoAdvanceIfNeeded(launcherInfo.hostView, appWidgetInfo);
         }
