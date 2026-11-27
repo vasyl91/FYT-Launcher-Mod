@@ -196,15 +196,28 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
         return new int[] {lp.x, lp.y, lp.width, lp.height};
     }
 
-    /** A widget placed freely has the pixels of its frame, whatever its cells are (FreeformWidgets). */
-    private void applyFreeform(CellLayout parent, View child, CellLayout.LayoutParams lp) {
+    /**
+     * A widget placed freely is drawn in its frame, whatever its cells are (FreeformWidgets): laid out at the frame's size
+     * divided by its scale and scaled back (FreeformLayout), as a widget in its cells.
+     *
+     * @return the layout, or null for a view that is not placed freely
+     */
+    private FreeformLayout applyFreeform(CellLayout parent, View child, CellLayout.LayoutParams lp) {
         int[] rect = parent == null ? null : parent.freeformRect(child);
-        if (rect != null) {
-            lp.x = rect[0];
-            lp.y = rect[1];
-            lp.width = rect[2];
-            lp.height = rect[3];
+        if (rect == null) {
+            return null;
         }
+        FreeformLayout layout = FreeformLayout.of(rect[0], rect[1], rect[2], rect[3], freeformScale(child));
+        lp.x = layout.x;
+        lp.y = layout.y;
+        lp.width = layout.width;
+        lp.height = layout.height;
+        return layout;
+    }
+
+    /** The scale a freely placed widget is drawn with: a widget's, as in its cells; 1 for anything else. */
+    float freeformScale(View child) {
+        return LauncherAppWidgetHostView.isScaled(child) ? widgetScaleFactor : 1f;
     }
 
     public void setupLp(CellLayout.LayoutParams lp, View child) {
@@ -349,7 +362,13 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
                 CellLayout.LayoutParams lp = (CellLayout.LayoutParams) child.getLayoutParams();
 
                 CellLayout parent = (CellLayout) getParent();
-                applyFreeform(parent, child, lp);
+                FreeformLayout free = applyFreeform(parent, child, lp);
+                if (free != null && child instanceof LauncherAppWidgetHostView) {
+                    // Drawn in its frame: the scale and the translation of its layout, never those of its cells
+                    LauncherAppWidgetHostView widget = (LauncherAppWidgetHostView) child;
+                    widget.setScaleToFit(free.scale);
+                    widget.setTranslationForCentering(free.translationX, free.translationY);
+                }
                 if (parent != null && parent.isPixelPlaced(child)) {
                     // Use the exact stored position
                     int childLeft = lp.x;

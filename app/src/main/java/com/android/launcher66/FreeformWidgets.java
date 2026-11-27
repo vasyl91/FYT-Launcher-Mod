@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import android.util.Log;
+import android.view.View;
 
 import androidx.preference.PreferenceManager;
 
@@ -31,7 +32,9 @@ import com.android.launcher66.settings.Keys;
  *       With it, neither is limited by other items.</li>
  *   <li>While it is resized the frame stays round the widget (ResizeGeometry): a refused or limited size puts the frame
  *       back round the widget in the same move.</li>
- *   <li>The widget is told its size in pixels, not the size of its cells.</li>
+ *   <li>The frame is the rectangle the widget is seen in (FreeformLayout, round 30): the drop counts with the size the
+ *       widget is drawn at, not the size it is laid out at, and the provider is told the laid-out size. A resize is
+ *       checked against the cells other items hold, never the widget's own.</li>
  * </ul>
  * Main thread.
  */
@@ -61,6 +64,11 @@ final class FreeformWidgets {
         return CreatorPrefs.of(prefs).getBoolean(Keys.WIDGET_OVERLAP, false);
     }
 
+    /** The scale the widget is drawn with on its page (FreeformLayout): a widget's, as in its cells. */
+    static float scaleOf(View view) {
+        return LauncherAppWidgetHostView.isScaled(view) ? ScreenScale.widgetScale() : 1f;
+    }
+
     /** The least size of a widget in pixels {width, height}: what its provider asks for, never less than 48 dp. */
     static int[] minSizePx(LauncherAppWidgetHostView view) {
         float density = view.getResources().getDisplayMetrics().density;
@@ -74,12 +82,14 @@ final class FreeformWidgets {
         return new int[] {Math.max(floor, w), Math.max(floor, h)};
     }
 
-    /** Tells the widget how large it is, in pixels (its provider sees dp). */
-    static void updateSize(LauncherAppWidgetHostView view, int widthPx, int heightPx) {
-        float density = view.getResources().getDisplayMetrics().density;
-        int w = Math.round(widthPx / density);
-        int h = Math.round(heightPx / density);
-        view.updateAppWidgetSize(null, w, h, w, h);
+    /**
+     * Tells the widget how large it is: the size it is laid out at for a frame of this size (FreeformLayout), in dp, the
+     * room its content really has.
+     */
+    static void updateSize(LauncherAppWidgetHostView view, int frameWidthPx, int frameHeightPx) {
+        int[] dp = FreeformLayout.of(0, 0, frameWidthPx, frameHeightPx, scaleOf(view))
+                .sizeDp(view.getResources().getDisplayMetrics().density);
+        view.updateAppWidgetSize(null, dp[0], dp[1], dp[0], dp[1]);
     }
 
     /**
@@ -100,8 +110,12 @@ final class FreeformWidgets {
             return new int[] {cell[0], cell[1], spanX, spanY};
         }
         int[] area = container.cellAreaRect(cell[0], cell[1], spanX, spanY);
-        int w = sizeKept && view.getWidth() > 0 ? view.getWidth() : area[2];
-        int h = sizeKept && view.getHeight() > 0 ? view.getHeight() : area[3];
+        // The size it is seen at: its frame, or the cells it was drawn in. Its own width is the laid-out one, smaller or
+        // larger by the scale, and a drop counted with it put the widget off the place it was let go (the owner's log,
+        // 2026-11-27: the dragged widget 457x615, the frame kept 543x731)
+        int[] seen = sizeKept ? page.freeformRect(view) : null;
+        int w = seen != null ? seen[2] : area[2];
+        int h = seen != null ? seen[3] : area[3];
         int left = Math.round(visualCenter[0] - container.getLeft() - w / 2f);
         int top = Math.round(visualCenter[1] - container.getTop() - h / 2f);
         int[][] edges = page.cellEdges();
@@ -182,14 +196,18 @@ final class FreeformWidgets {
         if (cw <= 0 || ch <= 0) {
             return null;
         }
+        // The least size as it is seen: the provider's, drawn at the widget's scale
         int[] min = minSizePx(view);
+        float scale = scaleOf(view);
         WidgetFrame frame = WidgetFrame.ofPixels(left, top, left + width, top + height, cw, ch)
-                .fit(cw, ch, min[0], min[1]);
+                .fit(cw, ch, Math.round(min[0] * scale), Math.round(min[1] * scale));
         int[] px = frame.toPixels(cw, ch);
         int[] rect = {px[0], px[1], px[2] - px[0], px[3] - px[1]};
         int[] cells = page.cellsCovering(rect);
+        // Without overlap, the cells other items hold; the widget's own are free for it (it was refused its own place,
+        // the owner's log of 2026-11-27)
         if (cells == null || (!overlapOn(view.getContext())
-                && !page.cellsVacant(cells[0], cells[1], cells[2], cells[3]))) {
+                && !page.cellsVacantFor(view, cells[0], cells[1], cells[2], cells[3]))) {
             if (commit) {
                 Log.i(TAG, "Freeform widget " + view.getAppWidgetId() + ": resize to " + rect[0] + "," + rect[1] + " "
                         + rect[2] + "x" + rect[3] + " refused, another item holds a cell there");

@@ -4896,6 +4896,22 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         return held;
     }
 
+    /** Whether these cells are free for this view: free, or held by the view itself. */
+    boolean cellsVacantFor(View view, int cellX, int cellY, int spanX, int spanY) {
+        if (!PageFit.inGrid(cellX, cellY, spanX, spanY, mCountX, mCountY)) {
+            return false;
+        }
+        boolean[][] occupied = occupiedWithout(view);
+        for (int x = cellX; x < cellX + spanX; x++) {
+            for (int y = cellY; y < cellY + spanY; y++) {
+                if (occupied[x][y]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     /** Whether no item holds a cell of the area (a widget in the middle of a resize has given its own cells up). */
     boolean cellsVacant(int cellX, int cellY, int spanX, int spanY) {
         if (!PageFit.inGrid(cellX, cellY, spanX, spanY, mCountX, mCountY)) {

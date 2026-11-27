@@ -207,7 +207,8 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   resize frame round the widget; with "Allow widgets to overlap" a widget is placed by pixels too, nothing is pushed
   while it is dragged, and `L/PipEdge` (plain Java) moves one let go over a PiP edge to edge with it;
   `CellLayout.isPixelPlaced()` and `ShortcutAndWidgetContainer` lay out by pixels the
-  elements of the user's layout and those widgets; with "Allow widgets to overlap" `CellLayout.takesCells()` is false
+  elements of the user's layout and those widgets; since round 30 a widget's frame is the rectangle it is seen in, and
+  `L/FreeformLayout` (plain Java) lays the widget out at the frame ÷ its scale and draws it scaled back, as in cells; with "Allow widgets to overlap" `CellLayout.takesCells()` is false
   for an app widget, `PageFit.toMove(..., widgetsMayOverlap)` and `L/GridRefit` handle the rest. `Folder` has its own
   background (`BarBackground.folders()`) and may follow the home screen's grid (`L/FolderGrid`), its icons then drawn as there
   (`L/FolderItemLook`, round 29: the page's icon size, the icon text colour and shadow).
