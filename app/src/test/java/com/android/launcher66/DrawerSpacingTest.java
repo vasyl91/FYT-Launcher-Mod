@@ -27,14 +27,14 @@ class DrawerSpacingTest {
         assertEquals(GAP, spacing.appsBottom, "above the strip's line");
         assertEquals(0, spacing.stripTop);
         assertEquals(GAP, spacing.stripBottom);
-        assertEquals(0, DrawerSpacing.of(false, true, false, GAP).appsTop);
+        assertEquals(GAP, DrawerSpacing.of(false, true, false, GAP).appsTop, "from the top too");
     }
 
     @Test
-    void withoutTheStripTheAppsHaveTheGapUnderTheSearchBarOnly() {
+    void withoutTheStripTheAppsHaveTheGapUnderTheSearchBarOrFromTheTop() {
         assertEquals(GAP, DrawerSpacing.of(true, false, true, GAP).appsTop);
         DrawerSpacing none = DrawerSpacing.of(false, false, true, GAP);
-        assertEquals(0, none.appsTop);
+        assertEquals(GAP, none.appsTop, "the apps never touch the top of the screen");
         assertEquals(0, none.appsBottom);
         assertEquals(0, none.stripTop);
     }

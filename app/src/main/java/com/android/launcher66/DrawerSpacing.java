@@ -10,7 +10,9 @@ package com.android.launcher66;
  *       has none below it; what follows it (the strip or the apps) has the gap above it.</li>
  *   <li>The strip on top: the gap above it (under the search bar, or from the top), its line, the gap, the apps.</li>
  *   <li>The strip at the bottom, mirrored: the apps, the gap, its line, the strip, the gap to the bottom.</li>
- *   <li>Without the strip the apps have the gap above them only under the search bar, as before.</li>
+ *   <li>The apps always have the gap above them, also when they are the first thing from the top (no search bar, the
+ *       strip at the bottom or none): they touched the top of the screen, under the status bar (the owner on the 7862
+ *       and the A55, 2026-11-27).</li>
  * </ul>
  * Pure Java, so that it has a test.
  */
@@ -37,7 +39,8 @@ final class DrawerSpacing {
         if (strip && stripOnTop) {
             return new DrawerSpacing(0, gapPx, 0, gapPx, 0);
         }
-        int appsTop = search ? gapPx : 0;
+        // Under the search bar, or from the top of the screen
+        int appsTop = gapPx;
         if (strip) {
             return new DrawerSpacing(0, 0, gapPx, appsTop, gapPx);
         }
