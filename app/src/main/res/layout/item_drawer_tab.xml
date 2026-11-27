@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- A tab in the tab creator. From the left: the handle on a tile (the main tab has a star on it and cannot be
-     dragged), the name, a bin (the main tab keeps the room, so that the gears line up) and a gear. -->
+     dragged), the name, a bin (the main tab keeps the room, so that the gears line up) and a gear. The handle and the
+     buttons are 48 dp, their pictures 32 dp (the owner, 2026-11-27: they were too small to hit). -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
-    android:minHeight="56dp"
+    android:minHeight="64dp"
     android:orientation="horizontal"
     android:paddingStart="16dp"
     android:paddingTop="6dp"
@@ -14,14 +15,14 @@
 
     <FrameLayout
         android:id="@+id/tab_handle"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:background="@drawable/bar_order_tile">
 
         <ImageView
             android:id="@+id/tab_handle_icon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_gravity="center"
             android:importantForAccessibility="no"
             android:src="@drawable/ic_drag_handle" />
@@ -34,7 +35,7 @@
             android:includeFontPadding="false"
             android:text="*"
             android:textColor="@color/white"
-            android:textSize="24sp"
+            android:textSize="30sp"
             android:textStyle="bold"
             android:visibility="gone" />
     </FrameLayout>
@@ -49,22 +50,27 @@
         android:focusable="false"
         android:marqueeRepeatLimit="marquee_forever"
         android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceListItem"
         android:textColor="@color/white" />
 
     <ImageButton
         android:id="@+id/tab_delete"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_marginStart="8dp"
+        android:padding="8dp"
+        android:scaleType="fitCenter"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/delete_drawer_tab_button"
         android:src="@drawable/ic_delete" />
 
     <ImageButton
         android:id="@+id/tab_edit"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_marginStart="8dp"
+        android:padding="8dp"
+        android:scaleType="fitCenter"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/edit_drawer_tab"
         android:src="@drawable/ic_settings_gear" />

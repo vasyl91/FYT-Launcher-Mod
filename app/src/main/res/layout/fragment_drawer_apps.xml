@@ -29,8 +29,10 @@
 
         <ImageButton
             android:id="@+id/drawer_apps_more"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:padding="12dp"
+            android:scaleType="fitCenter"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/abc_action_menu_overflow_description"
             android:src="@drawable/ic_more_vert" />

@@ -60,6 +60,19 @@ public class DrawerTabsFragment extends Fragment implements DrawerTabDialogs.Hos
     private RowsAdapter adapter;
     private ItemTouchHelper touch;
     private AlertDialog dialog;
+    /** What the dialog open now is ({@link #TURN_ADD}, {@link #TURN_EDIT}, {@link #TURN_DELETE}) and for which tab. */
+    private String dialogKey;
+    private int dialogTab;
+
+    /**
+     * The tab creator's number in SettingsDialogMemory, beside the two settings screens (1, 2): its dialogs ("Add
+     * drawer tab", "Edit drawer tab", the bin's question) are open again after a turn of the screen, with the name typed
+     * and the flag as it was (the owner's rule of 2026-11-21, missing here in round 28).
+     */
+    static final int TURN_SCREEN = 3;
+    static final String TURN_ADD = "drawer_tab_add";
+    static final String TURN_EDIT = "drawer_tab_edit";
+    static final String TURN_DELETE = "drawer_tab_delete";
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -100,10 +113,68 @@ public class DrawerTabsFragment extends Fragment implements DrawerTabDialogs.Hos
         if (!LauncherApplication.isFytDevice()) {
             SettingsSystemBars.pad(view);
         }
+        reopenAfterTurn();
+    }
+
+    /** The screen was made again for a turn: the dialog that was open is opened as before, with its name and flag. */
+    private void reopenAfterTurn() {
+        SettingsDialogMemory.Kept kept = SettingsDialogMemory.takeFor(TURN_SCREEN);
+        if (kept == null) {
+            return;
+        }
+        int tab = DrawerTabs.MAIN;
+        boolean keep = false;
+        if (kept.arg != null) {
+            String[] parts = kept.arg.split(":");
+            try {
+                tab = Integer.parseInt(parts[0]);
+            } catch (NumberFormatException e) {
+                return;
+            }
+            keep = parts.length > 1 && Boolean.parseBoolean(parts[1]);
+        }
+        if (TURN_ADD.equals(kept.dialog)) {
+            openAdd();
+        } else if (model.ids().contains(tab) && TURN_EDIT.equals(kept.dialog)) {
+            openEdit(tab);
+        } else if (model.ids().contains(tab) && TURN_DELETE.equals(kept.dialog)) {
+            openDelete(tab);
+        } else {
+            return;
+        }
+        DialogTurn.fill(dialog, kept.fields);
+        android.widget.CheckBox check = dialog.findViewById(R.id.drawer_tab_keep_check);
+        if (check != null && check.isEnabled()) {
+            check.setChecked(keep);
+        }
+    }
+
+    private void openAdd() {
+        dialogKey = TURN_ADD;
+        dialogTab = DrawerTabs.MAIN;
+        dialog = DrawerTabDialogs.showAdd(requireContext(), model, prefs, this);
+    }
+
+    private void openEdit(int id) {
+        dialogKey = TURN_EDIT;
+        dialogTab = id;
+        dialog = DrawerTabDialogs.showEdit(requireContext(), model, prefs, id, this);
+    }
+
+    private void openDelete(int id) {
+        dialogKey = TURN_DELETE;
+        dialogTab = id;
+        dialog = DrawerTabDialogs.confirmDelete(requireContext(), model, prefs, id, this);
     }
 
     @Override
     public void onDestroyView() {
+        if (dialog != null && dialogKey != null) {
+            android.widget.CheckBox check = dialog.findViewById(R.id.drawer_tab_keep_check);
+            final String arg = dialogTab + ":" + (check != null && check.isChecked());
+            final AlertDialog open = dialog;
+            DialogTurn.keep(this, TURN_SCREEN, new String[] {dialogKey}, key -> open, key -> arg);
+        }
         if (dialog != null && dialog.isShowing()) {
             dialog.dismiss();
         }
@@ -251,8 +322,7 @@ public class DrawerTabsFragment extends Fragment implements DrawerTabDialogs.Hos
                 header.title.setText(tabsHeader ? R.string.drawer_tabs : R.string.misc_category);
                 header.add.setVisibility(tabsHeader ? View.VISIBLE : View.GONE);
                 header.add.setContentDescription(getString(R.string.add_drawer_tab));
-                header.add.setOnClickListener(v -> dialog = DrawerTabDialogs.showAdd(requireContext(), model, prefs,
-                        DrawerTabsFragment.this));
+                header.add.setOnClickListener(v -> openAdd());
             } else if (holder instanceof TabHolder) {
                 bindTab((TabHolder) holder, tabs.get(position - 1));
             } else {
@@ -287,10 +357,8 @@ public class DrawerTabsFragment extends Fragment implements DrawerTabDialogs.Hos
             // the main tab keeps the room of the bin, so that the gears are in one column
             row.delete.setVisibility(main ? View.INVISIBLE : View.VISIBLE);
             row.delete.setEnabled(!main);
-            row.delete.setOnClickListener(v -> dialog = DrawerTabDialogs.confirmDelete(requireContext(), model, prefs, id,
-                    DrawerTabsFragment.this));
-            row.edit.setOnClickListener(v -> dialog = DrawerTabDialogs.showEdit(requireContext(), model, prefs, id,
-                    DrawerTabsFragment.this));
+            row.delete.setOnClickListener(v -> openDelete(id));
+            row.edit.setOnClickListener(v -> openEdit(id));
             row.handle.setOnTouchListener((v, event) -> {
                 if (!main && event.getActionMasked() == MotionEvent.ACTION_DOWN) {
                     touch.startDrag(row);

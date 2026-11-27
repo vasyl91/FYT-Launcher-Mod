@@ -141,6 +141,30 @@ public class DrawerAppsFragmentTest {
     }
 
     @Test
+    public void theNamesHaveTheTextOfAPreferenceTitleAndTheMenuIsDark() {
+        SettingsActivity activity = open(DrawerAppList.HIDDEN, false);
+        // the text a preference's title has in the settings: the platform's list item text
+        TextView title = new TextView(activity);
+        title.setTextAppearance(resolve(activity, android.R.attr.textAppearanceListItem));
+        TextView name = row(activity, 0).findViewById(R.id.drawer_app_name);
+        assertEquals("the owner, 2026-11-27: it was the smaller text of the dialogs", title.getTextSize(),
+                name.getTextSize(), 0.01f);
+
+        activity.findViewById(R.id.drawer_apps_more).performClick();
+        shadowOf(Looper.getMainLooper()).idle();
+        android.widget.PopupWindow menu = shadowOf(org.robolectric.RuntimeEnvironment.getApplication()).getLatestPopupWindow();
+        TextView text = menu.getContentView().findViewById(R.id.drawer_menu_text);
+        assertEquals("white on the dark surface", android.graphics.Color.WHITE, text.getCurrentTextColor());
+        assertEquals(title.getTextSize(), text.getTextSize(), 0.01f);
+    }
+
+    private static int resolve(android.content.Context context, int attr) {
+        android.util.TypedValue value = new android.util.TypedValue();
+        context.getTheme().resolveAttribute(attr, value, true);
+        return value.resourceId;
+    }
+
+    @Test
     public void backClosesTheSettingsWhenTheDrawerOpenedTheList() {
         SettingsActivity activity = open(DrawerAppList.HIDDEN, true);
         activity.getOnBackPressedDispatcher().onBackPressed();

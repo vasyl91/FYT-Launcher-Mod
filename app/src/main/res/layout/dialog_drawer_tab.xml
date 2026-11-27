@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- "Add drawer tab" and "Edit drawer tab" (DrawerTabDialogs): the name, and "Keep apps in main app tab" -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -19,7 +20,9 @@
         android:maxLines="1"
         android:singleLine="true" />
 
-    <LinearLayout
+    <!-- The checkbox right after the text, 8 dp from it (the owner, 2026-11-27), and a long text wraps before it: a
+         packed chain at the start, the text's width held to the room -->
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/drawer_tab_keep_row"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,27 +30,33 @@
         android:background="?attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
-        android:gravity="center_vertical"
-        android:minHeight="48dp"
-        android:orientation="horizontal">
-
+        android:minHeight="48dp">
         <TextView
             android:id="@+id/drawer_tab_keep_text"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="@string/keep_in_main_tab"
-            android:textColor="@color/white" />
-
+            android:textAppearance="?android:attr/textAppearanceListItem"
+            android:textColor="@color/white"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/drawer_tab_keep_check"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
         <CheckBox
             android:id="@+id/drawer_tab_keep_check"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="8dp"
             android:clickable="false"
-            android:focusable="false" />
-    </LinearLayout>
-
+            android:focusable="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/drawer_tab_keep_text"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
     <TextView
         android:id="@+id/drawer_tab_keep_note"
         android:layout_width="match_parent"

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- One app of "Select apps" / "Hide apps": its name on the left, a checkbox on the right, no icon. The whole row
-     is the target of a tap and lights up for a moment when it is tapped. -->
+<!-- One app of "Select apps" / "Hide apps": its name on the left, in the text of a preference's title (the owner,
+     2026-11-27), a checkbox on the right, no icon. The whole row is the target of a tap and lights up for a moment when
+     it is tapped. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -24,8 +25,8 @@
             android:layout_weight="1"
             android:ellipsize="end"
             android:singleLine="true"
-            android:textColor="@color/white"
-            android:textSize="16sp" />
+            android:textAppearance="?android:attr/textAppearanceListItem"
+            android:textColor="@color/white" />
 
         <CheckBox
             android:id="@+id/drawer_app_check"

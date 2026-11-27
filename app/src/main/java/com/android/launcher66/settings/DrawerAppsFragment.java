@@ -3,8 +3,6 @@ package com.android.launcher66.settings;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -184,7 +182,7 @@ public class DrawerAppsFragment extends Fragment {
         return apps;
     }
 
-    /** The window under the three dots: "Show hidden apps" on a light surface, in the top right corner. */
+    /** The window under the three dots: "Show hidden apps" on the settings' dark surface, in the top right corner. */
     private void showMenu(View anchor) {
         if (menu != null && menu.isShowing()) {
             menu.dismiss();
@@ -197,11 +195,9 @@ public class DrawerAppsFragment extends Fragment {
         AccentPainter.paint(content);
         PopupWindow popup = new PopupWindow(content, ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT, true);
-        GradientDrawable surface = new GradientDrawable();
-        surface.setColor(Color.parseColor("#fff2f2f2"));
-        surface.setCornerRadius(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 6,
-                context.getResources().getDisplayMetrics()));
-        popup.setBackgroundDrawable(surface);
+        // The dark surface of the settings' dialogs, with their frame in the dividers' grey
+        popup.setBackgroundDrawable(androidx.core.content.ContextCompat.getDrawable(context,
+                R.drawable.settings_dialog_background));
         popup.setElevation(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8,
                 context.getResources().getDisplayMetrics()));
         // a tap anywhere on the row is the tap of the checkbox; the window closes and the list changes
@@ -232,10 +228,8 @@ public class DrawerAppsFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull Holder holder, int position) {
             DrawerAppList.App app = rows.get(position);
+            // The text of a preference's title (item_drawer_app), not the smaller one of the dialogs
             holder.name.setText(app.label);
-            if (SettingsActivity.dialogTextView > 0) {
-                holder.name.setTextSize(TypedValue.COMPLEX_UNIT_SP, SettingsActivity.dialogTextView);
-            }
             holder.check.setChecked(list.isChecked(app.pkg));
             holder.itemView.setOnClickListener(v -> {
                 list.toggle(app.pkg);
