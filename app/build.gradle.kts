@@ -200,8 +200,24 @@ baselineProfile {
     }
 }
 
+// The Android jar the tests of views run on, fetched by Gradle (cached with the build) instead of by Robolectric at test
+// time from Maven Central, where CI runs failed with 429s and broken downloads. Robolectric reads it offline from here.
+val robolectricRuntime: Configuration by configurations.creating {
+    isTransitive = false
+}
+val robolectricDeps = tasks.register<Copy>("robolectricDeps") {
+    from(robolectricRuntime)
+    into(layout.buildDirectory.dir("robolectric-deps"))
+}
+
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
+    dependsOn(robolectricDeps)
+    val depsDir = layout.buildDirectory.dir("robolectric-deps").get().asFile.absolutePath
+    systemProperty("robolectric.offline", "true")
+    systemProperty("robolectric.dependency.dir", depsDir)
+    // Two or more forks where the machine has the cores (a CI runner has four): the tests of views take most of the time
+    maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
 }
 
 configurations.configureEach {
@@ -277,4 +293,5 @@ dependencies {
     testImplementation(libs.robolectric)
     testImplementation(libs.junit4)
     testRuntimeOnly(libs.junit.vintage.engine)
+    robolectricRuntime(libs.robolectric.android.all)
 }

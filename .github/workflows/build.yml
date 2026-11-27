@@ -55,20 +55,21 @@ jobs:
           echo "Installing ${pkg}"
           sdkmanager "${pkg}"
 
+      # The cache is written on testBranch too (by default only the default branch writes it, so every run of
+      # testBranch started from a cold one): dependencies, the Robolectric jar and the build cache carry over.
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/testBranch' && github.ref != 'refs/heads/main' }}
 
-      - name: Unit tests
-        run: bash ./gradlew :app:testSystemDebugUnitTest --stacktrace
-
-      - name: Build (system debug)
-        run: bash ./gradlew :app:assembleSystemDebug --stacktrace
-
-      - name: Build (standard debug)
-        run: bash ./gradlew :app:assembleStandardDebug --stacktrace
-
-      - name: Build the VD host Magisk module
-        run: bash ./gradlew :vdhost-server:magiskZip --stacktrace
+      # One Gradle run for the tests, both APKs and the module: configured once, the tasks in parallel
+      - name: Unit tests, both debug builds and the VD host Magisk module
+        run: >
+          bash ./gradlew --stacktrace
+          :app:testSystemDebugUnitTest
+          :app:assembleSystemDebug
+          :app:assembleStandardDebug
+          :vdhost-server:magiskZip
 
       - name: Upload the VD host Magisk module
         uses: actions/upload-artifact@v4

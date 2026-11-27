@@ -26,6 +26,11 @@ dependencyResolutionManagement {
                 includeGroupAndSubgroups("com.google")
             }
         }
+        // Robolectric's Android jar (100 MB) where Robolectric itself left it before: a machine that already has it
+        // (a developer's, this session's) need not fetch it again; everyone else gets it from Maven Central below.
+        mavenLocal {
+            content { includeModule("org.robolectric", "android-all-instrumented") }
+        }
         mavenCentral()
         maven {
             url = uri("https://jitpack.io")

@@ -105,6 +105,9 @@ junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher
 junit-vintage-engine = { module = "org.junit.vintage:junit-vintage-engine", version.ref = "junitJupiter" }
 junit4 = { module = "junit:junit", version.ref = "junit4" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+# The Android that the tests of views run on (robolectric.properties: sdk=34), the jar Robolectric 4.18 asks for. Fetched
+# by Gradle with the rest, so that the tests run offline: Robolectric's own download at test time failed CI with 429s.
+robolectric-android-all = { module = "org.robolectric:android-all-instrumented", version = "14-robolectric-10818077-i7" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junit" }
 androidx-test-runner = { group = "androidx.test", name = "runner", version.ref = "androidxTestRunner" }
 
