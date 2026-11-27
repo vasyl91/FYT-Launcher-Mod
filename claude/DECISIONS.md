@@ -4,7 +4,7 @@ Important technical and product decisions. Last consolidated on 2026-11-12 from 
 (`prompts/archive/`), the 15 chat reports (`chat_archive/CHAT_01.MD` … `CHAT_15.MD`) and the owner's answers
 of that day. D-52 … D-57 were added on 2026-11-13 with round 13, D-58 … D-63 on 2026-11-15 with round 14,
 D-64 and D-65 on 2026-11-16 with round 15, D-66 with round 16, D-67 with round 19, D-68 … D-74 with round 22
-(2026-11-18/19), D-75 and D-76 with round 23 (2026-11-20).
+(2026-11-18/19), D-75 and D-76 with round 23 (2026-11-20), D-93 … D-100 with round 29 (2026-11-27).
 
 ## How to read this file
 
@@ -117,6 +117,23 @@ entry that replaces it.
 | D-81 | A position slider on the 7870's home music widget | ACTIVE | Owner (tester's request) / Assistant |
 | D-82 | An open dialog and work in progress come back after a turn of the screen | ACTIVE | Owner |
 | D-83 | "Start on wake", a list of its own; "Start on boot" only at a cold start | ACTIVE | Owner |
+| D-84 | A stop of the logcat ends within seconds | ACTIVE | Owner |
+| D-85 | "Stock layout" turns off everything of the layout creator | ACTIVE | Owner |
+| D-86 | One accent colour for the settings, chosen in "Set global theme color" | ACTIVE | Owner |
+| D-87 | The room of the widget bar goes to the other elements by one rule | ACTIVE (round 29) | Owner / Assistant |
+| D-88 | The app drawer: vertical by default, a search bar, a grid of its own, tabs | ACTIVE (D-94 changed the keep rule) | Owner |
+| D-89 | The widget list | ACTIVE (round 29) | Owner / Assistant |
+| D-90 | Notification badges | ACTIVE (D-95 changed the size) | Owner |
+| D-91 | Gestures on the home screen, and the double tap | ACTIVE | Owner |
+| D-92 | Free widgets and overlap | ACTIVE (D-96 changed the placement) | Owner |
+| D-93 | CI in batches | ACTIVE | Owner |
+| D-94 | "Keep apps in main app tab" only with the two stricter rules | ACTIVE | Owner |
+| D-95 | The badges' size: a slider of the visible icon | ACTIVE | Owner |
+| D-96 | Freeform and overlapping widgets land where they are let go | ACTIVE | Owner / Assistant |
+| D-97 | The fuel estimate below the car's threshold only when switched on | ACTIVE | Owner |
+| D-98 | The settings' text size, 70–150 % | ACTIVE | Owner |
+| D-99 | Direct boot in debug builds only; at the unlock the locked launcher ends | ACTIVE | Owner / Assistant |
+| D-100 | The 7862's keyboard of a PiP above the bars, by an anchor window | UNDER_REVIEW | Owner (the request) / Assistant |
 
 ---
 
@@ -580,7 +597,8 @@ entry that replaces it.
 - **Status:** ACTIVE. **By:** owner.
 - **Decision:** Opus writes briefs, Sonnet implements them, and the owner tests on devices.
   - One commit per step, with fixed English subjects.
-  - Every commit must build; CI is the gate between commits; no amend or force-push.
+  - Every commit must build; no amend or force-push. Since 2026-11-27 every commit with code passes the tests and
+    both builds locally, and CI runs once on the last commit of a batch of related commits (D-93).
   - No model names in repository content (the session's commit trailers are the exception).
   - Briefs and replies to the owner are in Polish; code, commits and these docs are in English.
   - Work happens on `testBranch` only.
@@ -1111,18 +1129,22 @@ The round had no brief; its result is in `reports/implementation_report_2026-11-
 - **Where:** `ThemeAccent`, `AccentPainter` (`attach`, `paint`, `watch`, `paintSwitch`), `AccentPainterTest`,
   `AccentSettingsViewTest`, `e2efbd02`, `6abbcbbb`.
 
-### D-87 The room of the widget bar goes to the other elements by one rule (a model; not wired yet)
-- **Status:** UNDER_REVIEW: only the model is built. **By:** the owner, 2026-11-25 (the table), the model by the
-  assistant.
+### D-87 The room of the widget bar goes to the other elements by one rule
+- **Status:** ACTIVE since round 29 (2026-11-27, `a149a178c`; not tried on a device); before it only the model was
+  built. **By:** the owner, 2026-11-25 (the table), the model and its use by the assistant.
 - **Decision:** when an element of the widget bar is hidden, or the apps list is fitted, its room goes by this table: the
   date and the weather to the music widget; the apps list 10 % each to the date and the weather and the rest to the
   music widget; the drawer's button 10 %, 10 %, 40 % (apps), 40 % (music); the music widget 10 %, 10 % and 80 % to the
   apps; a part meant for an element that is not there goes to the "rest" of its rule, or equally to those that are; one
   element left gets the whole bar, centred.
-- **Where:** `BarShares` (pure, `BarSharesTest`, `BarSharesUsualTest`). **Not built** (no device to try it on): the
-  switches "Display horizontal bar", "Hide the app drawer button", "Hide the music widget", and the use of the rule by
-  `WidgetBarLayout`, `Workspace.forceOriginalSizes*`, `BarCapacity`, `AppListAdapter` and `MusicWidgetSizer`. The
-  vertical switch is "Display vertical bar" (the key `left_bar` is unchanged).
+- **Where:** `BarShares` (pure, `BarSharesTest`, `BarSharesUsualTest`). Round 29 built the switches "Display horizontal
+  bar" (`fe456f31f`, key `display_horizontal_bar`), "Hide the app drawer button" and "Hide the music widget"
+  (`a149a178c`, keys `horizontal_bar_no_drawer`, `widget_bar_no_music`) and the use of the rule by `WidgetBarLayout`
+  (`applyShared`, `applyPlain`, for the page and the window alike) and `BarCapacity` (`appsWidthFactor`). The rule
+  applies only while the button or the music widget is hidden; otherwise the bar is as before. The hidden button keeps
+  no width and takes no tap but stays VISIBLE (the auto-hide bar and the bar's order depend on it); a bar with
+  everything hidden turns "Display horizontal bar" off. The vertical switch is "Display vertical bar" (the key
+  `left_bar` is unchanged).
 
 ### D-88 The app drawer: vertical by default, a search bar, a grid of its own, tabs
 - **Status:** ACTIVE (not tried on a device). **By:** the owner, 2026-11-25 (points 6 to 8); the mechanisms by the assistant.
@@ -1133,7 +1155,8 @@ The round had no brief; its result is in `reports/implementation_report_2026-11-
   deleted, may be renamed; the others have an order, a name (blank: "Tab" and its place; at most 50 characters), a set
   of apps and the flag "keep apps in the main tab". A hidden app is in no tab. The main tab shows the apps that are not
   hidden and in no other tab; with the rule "allow in all tabs" the apps of tabs that keep them are in the main tab as
-  well, with the other two rules the flag does nothing (its checkbox is dimmed). "Apps in several tabs": all tabs, all
+  well, with the other two rules the flag does nothing (its checkbox is dimmed). **Changed by D-94 (2026-11-27):** the
+  flag now works the other way round. "Apps in several tabs": all tabs, all
   but the main tab, or one tab at most (then the list an app is picked from leaves out the other tabs' apps). With one
   tab the drawer has no strip. The strip is above or below the apps, 14 % of the shorter side high; two tabs show side by
   side in portrait and four in landscape; a swipe longer than 25 % of the width, or a fling, changes the tab. The model is
@@ -1142,13 +1165,16 @@ The round had no brief; its result is in `reports/implementation_report_2026-11-
   `AppsVerticalView`, `LetterScroller`, `LetterIndex`, `AppSearch`, `AppSearchBar`, `AppsGrid`, `DrawerTabsFragment`,
   `DrawerTabDialogs`, `DrawerAppsFragment`, `AppsCustomizePagedView`.
 
-### D-89 The widget list: a model; the list is not built
-- **Status:** UNDER_REVIEW: only the model is built. **By:** the owner, 2026-11-25 (point 9); the model by the assistant.
+### D-89 The widget list
+- **Status:** ACTIVE since round 29 (2026-11-27, `5c3c8bc19`; not tried on a device); before it only the model was
+  built. **By:** the owner, 2026-11-25 (point 9); the model and the list by the assistant.
 - **Decision:** the widget picker is to be a list of apps, each with its widgets and shortcuts and a search field; one group
   per app in the alphabetical order of its name (the collator of the language), the counts for "1 widget, 3 shortcuts",
   the search keeping the groups whose app or entries match; at most one row unfolded; the entries are dragged as today.
-- **Where:** `WidgetGroups` (pure, `WidgetGroupsTest`). **Not built:** `WidgetsListView`, the unfolded rows, the previews
-  off the main thread, the drag from them.
+- **Where:** `WidgetGroups` (pure, `WidgetGroupsTest`), `WidgetsListView` (the search, the rows that open one at a time,
+  the letter scroller), `AppsCustomizePagedView.mWidgetsListHost` (the pager's own `PagedViewWidget` cells, previews on one
+  background thread, dragged through `beginListDrag`). The counts read "Widgets: 1, Shortcuts: 3" without plural forms
+  (a count of none left out). `DrawerContent` decides which of the pager and the two lists shows the content.
 
 ### D-90 Notification badges
 - **Status:** ACTIVE (not tried on a device). **By:** the owner, 2026-11-25 (point 15).
@@ -1156,7 +1182,8 @@ The round had no brief; its result is in `reports/implementation_report_2026-11-
   summary of a group, ongoing and foreground-service notifications and those of a channel that shows no badge; it reads
   "99+" above 99. It is drawn in a corner of the icon on the home screen, in folders (the sum of the folder's apps), on
   the bars' icons and in the drawer. The badges are the launcher's own settings, not the creator's, so they work with "Stock
-  layout" (position, size, corner radius, colour (the accent by default) and outline; a preview).
+  layout" (position, size, corner radius, colour (the accent by default) and outline; a preview). The size is D-95's
+  slider since round 29.
 - **Where:** `BadgeCounts`, `BadgeModel`, `BadgeViews`, `BadgeDrawable`, `NotificationListener`,
   `NotificationBadgesFragment`, `fef9ab74`, `1e9f52db`.
 
@@ -1179,4 +1206,90 @@ The round had no brief; its result is in `reports/implementation_report_2026-11-
   aside; the widgets are drawn over the icons and take the touch first. Turning overlap off asks first, and puts the widgets
   that overlap on the grid again (icons and folders stay; a widget with no room is removed).
 - **Where:** `WidgetFrame`, `WidgetFrames`, `FreeformWidgets`, `GridRefit`, `PageFit.toMove(..., widgetsMayOverlap)`,
-  `CellLayout`, `ShortcutAndWidgetContainer`, `7eb117b5`, `0bcd9442`.
+  `CellLayout`, `ShortcutAndWidgetContainer`, `7eb117b5`, `0bcd9442`. The drop by pixels and the frame of a resize are
+  D-96's since round 29; the setting is called "Freeform widgets" there (the key `widget_freeform` is unchanged).
+
+---
+
+## Added on 2026-11-27 (round 29: the owner's test of round 28 on the A55)
+
+### D-93 CI in batches
+- **Status:** ACTIVE. **By:** the owner, 2026-11-27 (an answer to the plan's question: "Batches + speed-up").
+- **Decision:** every commit with code passes the unit tests and both debug builds locally. Related commits are pushed
+  together and CI runs once, on the last of them (`concurrency` cancels the runs of the ones before); the next batch
+  goes only after the previous one is green. A red build is fixed with a new commit, a failure of the infrastructure is
+  run again. A push of documentation only starts no run and may go at any time. CI itself is faster: one Gradle run for
+  the tests, both builds and the Magisk module, a cache written on `testBranch`, and Robolectric's Android jar resolved
+  by Gradle and read offline.
+- **Where:** `claude/CLAUDE.md` ("Branch and commits"), `.github/workflows/build.yml`, `app/build.gradle.kts`
+  (`robolectricRuntime`), `e13ee4080`, `50c7ddc0e`.
+
+### D-94 "Keep apps in main app tab" only with the two stricter rules
+- **Status:** ACTIVE. **By:** the owner, 2026-11-27. Replaces that part of D-88.
+- **Decision:** with "Allow in all tabs" every app is also in the main tab, and the tab's "Keep apps in main app tab" is
+  not offered (dimmed). With "Allow in all tabs except the main tab" and "Do not allow" the apps of another tab leave the
+  main tab, unless that tab keeps them there. The summary of "Apps in several tabs" says it in a sentence and names those
+  tabs ("Do not allow, except for “Tab2”, “Tab5” and “Tab8”."; with the second rule a line "… still keep their apps in the
+  main tab."), the names joined by the language's own "and".
+- **Where:** `DrawerTabs` (`keepApplies`, tested), `ListText`, `DrawerTabsFragment.repeatSummary`, `3524adeb1`.
+
+### D-95 The badges' size: a slider of the visible icon
+- **Status:** ACTIVE (not tried on a device). **By:** the owner, 2026-11-27.
+- **Decision:** the badge's height is 15 to 35 % (25 % by default) of the part of the icon that can be seen (its pixels
+  with an alpha of 24 or more, measured once per picture), not of the drawable's bounds; the number is 85 % of the
+  badge's height; a wider number makes the badge grow from its corner towards the icon's middle. The choice of three
+  sizes and its key `badges_size` are gone, and a size chosen there is not taken over.
+- **Where:** `BadgeGeometry`, `VisibleBounds`, `IconBounds`, `BadgeDrawable`, `BadgeSizeSeekBarPreference`, key
+  `badges_size_percent`, `a016cc7f7`.
+
+### D-96 Freeform and overlapping widgets land where they are let go
+- **Status:** ACTIVE (not tried on a device). **By:** the owner, 2026-11-27 (the behaviour and the name "Freeform
+  widgets"); the mechanisms by the assistant.
+- **Decision:** with "Freeform widgets" or "Allow widgets to overlap" a dropped widget's top left corner is where the
+  finger let it go, kept inside the page; without overlap a place that is taken gives the nearest free one in pixels
+  (and the grid's search when there is none). The frame of a resize is worked out from the widget's rectangle and goes
+  back round it when the widget cannot grow. With overlap a drag plans no reorder, shows no pushed icons and undoes any
+  before the drop, and a widget let go over a PiP is moved edge to edge off it, the shortest way inside the page. A
+  widget added from the list still lands on cells. The decisions are logged (`FreeformWidgets`).
+- **Where:** `FreePlace`, `ResizeGeometry`, `PipEdge` (pure, tested), `FreeformWidgets.placeOnDrop`, `resizeTo`,
+  `frameNew`, `AppWidgetResizeFrame.resizeFreeform`, `Workspace.onDragOver` and `onDrop`, `658a08b68`, `fe496ccba`.
+
+### D-97 The fuel estimate below the car's threshold only when switched on
+- **Status:** ACTIVE (not tried on a device). **By:** the owner, 2026-11-27 (the switch); off by default, as the approved
+  plan said.
+- **Decision:** where the car gives no consumption at low speed, the statistics showed one learned from the car's own
+  values (marked ~). That estimate is now shown only with "Estimate below the car's threshold" on (`fuel_estimate`, a
+  setting of the creator's "Fuel statistics", so off with "Stock layout"); otherwise the car's value or nothing.
+- **Where:** `FuelModel.setEstimateOn` (tested), `CanbusService.showFuelEstimate`, `34d4be595`.
+
+### D-98 The settings' text size, 70–150 %
+- **Status:** ACTIVE (not tried on a device). **By:** the owner, 2026-11-27.
+- **Decision:** a slider at the very top of "Layout" (`settings_text_scale`, 70 to 150 %, steps of 10, 100 by default)
+  multiplies the settings' font scale when the finger is lifted, and the settings are made again at their place. It
+  reaches the rows, the dialogs, the colour picker and the lists of apps, not the creator's screens with the rectangles,
+  nor the toasts (made with the application's context). Above 100 % no title or summary is cut; the buttons of the PiP
+  and widget rows grow with their row. At 100 % nothing in the context changes.
+- **Where:** `SettingsTextScale` (pure, tested), `SettingsTextScaleSeekBarPreference`, `SettingsActivity`
+  (`attachBaseContext`, `withoutTextScale`), `DimmingPreferenceAdapter`, `76a4a7fbc`.
+
+### D-99 Direct boot in debug builds only; at the unlock the locked launcher ends
+- **Status:** ACTIVE. **By:** the owner, 2026-11-27 (direct boot stays in debug builds until the owner's OK); the end at
+  the unlock by the assistant (the approved plan).
+- **Decision:** before the user's first unlock Android starts only a home that is direct boot aware, so a debug build of
+  the launcher shows its wallpaper-only activity then. At the unlock that activity ends (`finish()`) instead of being
+  made again: the system starts the home the user chose, a fresh instance of this launcher when it is that one. A
+  relaunch with a kept window had attached the views before the workspace had its drag controller and crashed.
+- **Where:** `DirectBootPlan.finishActivityOnUnlock`, `Launcher.onCreateLocked`, `Workspace.onAttachedToWindow`,
+  `LockedStartViewTest`, the placeholder `launcherDirectBoot`, `35366adbf`. KI-54.
+
+### D-100 The 7862's keyboard of a PiP above the bars, by an anchor window
+- **Status:** UNDER_REVIEW [A]. **By:** the owner, 2026-11-27 (the request: the keyboard opened from a PiP must always be
+  above the bars); the mechanism by the assistant, from Android 10's window manager, with no log.
+- **Decision:** on Android 10 and lower the keyboard is layered just above its target, the topmost window that may take
+  it; the panes of the PiPs may, and the bars' windows lie above them. After each bar's window (and the stats window)
+  is added, the launcher adds a 1×1 window of the bars' type that cannot be touched or focused but is a target for the
+  keyboard (`NOT_FOCUSABLE | ALT_FOCUSABLE_IM`), so the keyboard goes above it and above the bars. Not on Android 11 and
+  later.
+- **Where:** `ImeAnchor` (`wanted(sdk)`, `raise`, `remove`), `BarWindows.addEveryPageBar`,
+  `CanbusService.addHomeStatsWindow`, `ImeAnchorViewTest`, `f727fc0ed`. KI-56.
+

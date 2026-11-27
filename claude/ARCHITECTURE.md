@@ -1,6 +1,7 @@
 # Architecture
 
-State of `a654c0d60` (2026-11-16, after round 16). Everything here was checked in the code [V] unless it is
+State of `a654c0d60` (2026-11-16, after round 16), with what rounds 17 to 29 added (up to `77f440135`, 2026-11-27)
+written in by each round where it changed something. Everything here was checked in the code [V] unless it is
 tagged otherwise.
 The reasons behind the design are in `DECISIONS.md`; this file says what exists and where.
 Abbreviations used in paths below:
@@ -134,7 +135,7 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   - The creator's elements take their cells (`CellLayout.handleConflictingViews` moves what lies there), except
     the statistics window's placeholder, which only says where the window lies (`CustomElement.takesCells`,
     D-65). After a load, every drag and every resize each page moves an item that does not lie wholly in its
-    grid or that shares a cell with another (`L/PageFit`, `L/CellOverlap`: icons stay, widgets move; KI-37;
+    grid or that shares a cell with another (`L/PageFit`, `L/CellOverlap`: icons stay, widgets move; KI-37, closed 2026-11-27;
     KI-39, closed 2026-11-16). The creator's elements are shown wholly in the page (`PageFit.intoBox`); the box measured last is
     kept per orientation for the time before the launcher has measured one (`S/HorizontalBarDimensions`).
     Outside a reorder an item's temporary cell is its cell (`CellLayout.LayoutParams.setCell`). A drop asks at most for the size an item has and takes no area of size 0
@@ -255,8 +256,8 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   `S/DrawerTabDialogs` has the add / edit / delete dialogs and is used by the drawer too; `S/DrawerAppsFragment` is the
   list of a tab's apps or of the hidden ones (`L/DrawerAppList` is its model), opened from the dialogs, or by itself from
   the drawer through `SettingsActivity` and the extra `DrawerAppsFragment.EXTRA_TAB`.
-- **Not built (KI-52):** the widget list (`L/WidgetGroups` is its model), `L/BarShares` (the model of the widget bar's
-  sharing of room) and the horizontal bar's switch.
+- **Built in round 29** (left out of round 28, KI-52 closed): the widget list (above), `L/BarShares` used by the widget
+  bar (section 5) and the horizontal bar's switch.
 
 ## 5. Bars
 

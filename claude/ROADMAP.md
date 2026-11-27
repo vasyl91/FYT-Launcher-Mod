@@ -1,6 +1,6 @@
 # Roadmap
 
-As of 2026-11-15.
+As of 2026-11-27 (round 29; the milestones after round 14 are summed up in one row).
 
 - **Completed milestones** are backed by git (commits, tags) and, where given, a chat report.
 - **Confirmed** items come from the owner, the briefs or the user-facing docs, with a source.
@@ -14,9 +14,9 @@ Move an item to "Completed" when it ships; do not delete it.
 The owner runs short device-driven rounds on `testBranch`: logs → Opus brief → Sonnet commits → device test.
 Each round fixes what the last test found and adds the features the owner asks for. The work since `v1.2.1`
 (536 commits at `ee8e4f91`, 26 more with round 13, 31 with round 14) is unreleased. **No brief is active.**
-The owner tested round 13 on 2026-11-15 (KI-30). Round 14 (the fixes from that test, every open item of
-`KNOWN_ISSUES.md`, and six items from a second test on the 7862) was done in one session from a plan agreed
-with the owner and **waits for its device review** (P-16).
+Since round 24 most rounds were planned and implemented in one session from a plan agreed with the owner; round 29
+(2026-11-27) **waits for its device review** (`KNOWN_ISSUES.md` KI-55), and the owner's results for rounds 27 and 28
+on the A55 are in KI-51.
 
 ## Completed milestones
 
@@ -37,6 +37,7 @@ with the owner and **waits for its device review** (P-16).
 | 2026-11-10 → 11-12 | Knowledge base in `claude/`; reference material gathered in `archive/`; 15 conversation reports archived and consolidated | `a30c9a72`, `8bfc5a8d`, `754c8258`, `e3ba694e` and the commit after it |
 | 2026-11-12 → 11-13 | Round 13, the owner's 19 tasks: rows and columns of the home screen with the bars cut out of the grid; a colour of one's own and any text colour for the widgets, the bars and the stats window; the wallpaper from one source; fixes to the bar windows, the settings and the stats window. Tested by the owner on 2026-11-15: 12 of 19 work, the rest fixed in round 14 | `4e73d1178` … `ca27a7637`; `reports/implementation_report_2026-11-13.md` |
 | 2026-11-15 | Round 14: the round-13 fixes (Restart text, keyboard, colour tile, wallpaper and night mode, icon size, the bars in the overview), the open `KNOWN_ISSUES.md` items, and the 7862's second test (one bar while the pages move, the vertical bar's edge and width, play/pause, "Unknown" titles, the stats window's alpha). **Implemented, CI green, not yet tested on a device** | `6fbd5605b` … `c7ed19880`; `reports/implementation_report_2026-11-15.md` |
+| 2026-11-15 → 11-27 | Rounds 15–29, each after the owner's test on the 7862 or the A55: the bars on every page and their windows, the statistics window, the home screen's check without timers, the GPS only while needed, the order of the bar's elements, the settings through a turn, the 7870's media, the position slider for every player, "Start on wake"; round 28's crashes, accent colour, gestures, app drawer, badges; round 29's widgets by pixels, the drawer's list of widgets, the bars' switches, the settings' text size and the memory work | `prompts/README.md`; `reports/implementation_report_2026-11-15.md`, sections "Round 15" … "Round 29" |
 
 ## Next: confirmed
 
@@ -52,7 +53,7 @@ with the owner and **waits for its device review** (P-16).
 | P-8 | Cold-start profiling. Partly addressed in `69aac3b1` | brief 2026-11-03 crash-loop §3, analysis 2026-11-03 §3 [H] | profiling on a device |
 | P-9 | A build for custom ROMs signed with their own platform key | `README.MD`: "No such build exists yet" [V] | only the ROM's maintainer has the key |
 | P-10 | *Deferred by the owner:* Shizuku Next start-up fixes ("temat na później"); a "stopped" state for the "Display media Titles" app ("zajmiemy się kiedy indziej") | CHAT_05 [H] | other projects' code |
-| P-11 | *Said by the owner, no result on record:* a wake test after a long sleep ("Sprawdzę później jak to wygląda przy dłuższym okresie uśpienia") | CHAT_03 [H] | owner |
+| P-11 | ~~*Said by the owner, no result on record:* a wake test after a long sleep ("Sprawdzę później jak to wygląda przy dłuższym okresie uśpienia")~~ **Done 2026-11-27:** the owner reports it works (A55) | CHAT_03 [H]; the owner, 2026-11-27 | — |
 | P-12 | ~~**Remove the unused Room and Compose set-up** (Room runtime and its KSP processor; the Compose BOM, runtime, tooling, plugin and `compose = true`). KSP stays for Glide~~ **Done 2026-11-12** | the owner, 2026-11-12: "Not planned, might be removed if it is unused"; KI-03, D-51 | a brief or a direct request; CI is the check |
 | P-13 | The tester's answer on what did not work on the 7870 | the owner, 2026-11-12 | the tester |
 | P-14 | ~~**The owner's device review of round 13** (KI-30)~~ **Done 2026-11-15** (12 of 19 work; the rest went into round 14). The owner's word on D-57 is still open | the round's report | — |

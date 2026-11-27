@@ -1,6 +1,6 @@
 # Known issues
 
-As of 2026-11-26 (`testBranch` after round 28; none of it tried on a device but the A55's boot hang of A7, KI-54; the 7870 tester's results are awaited, see `checks/7870.md`). KI-46 closed 2026-11-25 by the 7862's log. One list of what is open today,
+As of 2026-11-27 (`testBranch` after round 29, none of which was tried on a device; the owner's A55 results for rounds 27 and 28 are in KI-51; the 7870 tester's results are awaited, see `checks/7870.md`). KI-46 closed 2026-11-25 by the 7862's log; KI-22, KI-28, KI-37, KI-50 and KI-52 closed 2026-11-27 (the round 29 report). One list of what is open today,
 rewritten on 2026-11-18 at the owner's request. What was fixed or closed has been taken out; it stays in git
 and in the reports (`reports/`, `chat_archive/`). Sources: the code, git, CI, the briefs, the chat reports and
 the owner's results.
@@ -32,24 +32,23 @@ file and named in the round's report.
 | KI-17 | Lint is weak in this project | problem | open | — |
 | KI-18 | Framework warnings in logs | limit | accepted (D-15) | — |
 | KI-21 | The stats window on the 7862 while pages scroll | limit | accepted | — |
-| KI-22 | Two side effects of the pinned-PiP keyboard fix | unverified | open | a check on the 7862 |
 | KI-23 | Translations are machine-written and unreviewed | problem | partial (a machine check) | native speakers |
 | KI-25 | Older changes with no device confirmation on record | unverified | open | the owner's result for each |
 | KI-26 | Code observations from reviews | unverified | partial | a re-check of the four left |
 | KI-27 | Limits of the home-screen guard | limit | accepted (D-28) | — |
-| KI-28 | A workspace load that bound nothing for 30 s | unverified | watching | a log of the next case |
 | KI-29 | "Changes do not work on the 7870" | unverified | open | the tester's reply |
 | KI-31 | StrictMode reports inside the framework (A55 log of 2026-11-09) | problem | partial | — |
 | KI-33 | Some settings of the home screen only with the user layout on | limit | accepted (D-85) | — |
-| KI-37 | A widget lay over icons after a change of the grid | unverified | watching | a log with `Item out of place` |
 | KI-44 | The GPS of the fuel statistics only while something needs it | unverified | partial | a unit whose code check waits for a drive |
 | KI-48 | The 7870's covers and the position slider | unverified | watching | the tester's result and log (round 26) |
 | KI-49 | The canbus script's `--launcher .` needs the decompiled folders, now zips | limit | accepted (the owner, 2026-11-22) | — |
-| KI-50 | The position slider for every player, and "Start on wake" | unverified | watching | the owner's test on the A55 and the 7862's log (round 27) |
-| KI-51 | Round 28 on a device: crashes, the black window before the unlock, the settings' look, the gestures, the drawer, the badges | unverified | watching | the owner's test on the A55 and the 7862 (the lists in the round's report) |
-| KI-52 | Round 28's brief only partly built: E1 horizontal, E2, E3, G1 | problem | open | a round with a device to try the bar and the drag on |
+| KI-51 | Round 28 on a device: what the A55 has not shown yet | unverified | watching | the owner's results for A3, A6, A7, D1 to D3, I1, I2 (the A55) and the 7862 |
 | KI-53 | The release build of the settings' preferences (A3) cannot be tried in a session | unverified | watching | a release build by the owner |
-| KI-54 | Direct boot hung the A55 at boot (round 28, A7) | problem | watching | the owner's A55 test with a debug build, with and without a PIN |
+| KI-54 | Direct boot hung the A55 at boot (round 28, A7), then a crash at the unlock | problem | watching | the owner's A55 test of round 29's debug build, with and without a PIN |
+| KI-55 | Round 29 on a device | unverified | watching | the owner's test on the A55 and the 7862 (the list below) |
+| KI-56 | The 7862's keyboard above the bars rests on an assumption about Android 10 | unverified | watching | the 7862: a keyboard from a PiP with the bars shown |
+| KI-57 | The drawer's changes of round 29 have no view test | unverified | watching | the owner's test of the drawer on the A55 and the 7862 |
+| KI-58 | R8 keeps every CAN bus callback in a release | limit | open (the owner's call) | — |
 
 ## Problems
 
@@ -93,7 +92,8 @@ risk). No review is planned.
 ### KI-31 StrictMode reports inside the framework
 From the A55 log of 2026-11-09 [H]: `WindowHostVdShizuku.maybeBind` is fixed (`0905bff8f`). Left as described
 [V]: `VdHostProtocol$Proxy.startActivity` (the start of a pane; it would need the way panes start rebuilt), and
-the reads under `LauncherAppWidgetHostView.onLayout` and in a toast, both inside Samsung's framework code.
+the reads under `LauncherAppWidgetHostView.onLayout` and in a toast, both inside Samsung's framework code. The A55's
+`start_full` log of 2026-11-27 [V] shows the toast's again: Samsung's `Toast.show` of the toast about a crash.
 
 ### KI-33 Some settings of the home screen only with the user layout on
 The second settings screen opens only with "User layout" on [V]. Its "Home screen layout" holds the grid, the
@@ -102,26 +102,18 @@ cannot be changed. **Accepted 2026-11-25 (D-85):** that is the rule now; "Stock 
 creator, and since round 28 their stored values no longer apply to it either (`CreatorPrefs`).
 
 ### KI-51 Round 28 on a device
-Round 28 is built and its tests are green, but none of it was tried on a device [V: every commit says so]. What to look
-at, by the owner's points: the crashes (A1 to A3, the settings of a release build included), the vertical bar at a
-swipe (A4), the statistics window after a restart (A5), the logcat stop after a restart (A6), the black window before
-and after the unlock, with a PIN and without (A7); the slider's colour, centre, touch and area (B1, B2); the accent and the
-switches (C1, C2), "Stock layout" (C3); the colour of the icons' names, the two swipes, the double tap: lock, turn off, turn
-on (D1 to D3); folders (D4, D5); free widgets and overlap with its question (D6, D7); "Start on wake" with BOOT_COMPLETED
-(I1), the welcome texts (I2); the badges (H1, H2); the drawer: vertical, the letters, the search bar, the grid, the
-tabs and their creator, the lists of apps (F1 to F6). On the 7862: the double tap "Turn off screen" is the tile's
-command and the same double tap brings the screen back; the swipe down is the quick settings panel; the slider
-of com.syu.music has no knob. The unit tests do not tell whether a swipe of a finger is taken by the right view.
-
-### KI-52 Round 28's brief only partly built
-Built: A1 to A8, B1, B2, C1 to C3, D1 to D7, F1 to F6, H1, H2, I1, I2, and "Display vertical bar" (the vertical half of
-E1). **Not built:** the horizontal half of E1 (the switch "Display horizontal bar" with the launcher not building the
-bar and giving its room to the grid, and `DrawerAccess` in the settings), E2 (hide the app drawer button), E3 (hide the
-music widget, and `BarShares` used by the page's layout, the window's, the apps list's room, the tiles and the music
-widget's size) and G1 (the widget list). What exists of them is the tested models `BarShares` and `WidgetGroups` (D-87,
-D-89), which nothing calls yet. Reason: the bar's placement is decided at about a dozen places in `Workspace`, `Helpers`
-and `Launcher`, and the widget picker is the way widgets get onto the home screen; neither can be tried without a
-device, and a regression there would be in the 7862's home screen. A round with a device should take them one by one.
+The owner's test of round 28 on the A55, 2026-11-27 [H]:
+- **Works:** A4 (the vertical bar at a swipe), A5 (the statistics window after a restart), B1 and B2 (the slider); and
+  of the rounds before: round 27's slider, "Start on wake" and "Start on boot" (KI-50 closed), KI-22, KI-28 and KI-37
+  (closed), P-11.
+- **Partly:** C1 to C3 (the accent, the switches, "Stock layout"), D4 to D7 (folders, free widgets, overlap) and F (the
+  drawer): what was wrong is fixed in round 29 (KI-55).
+- **Not built in round 28:** E1's horizontal half, E2, E3 and G1 (KI-52): built in round 29.
+- **No result yet:** A3 (a release build's settings, KI-53), A6 (the logcat stop after a restart), A7 (the black window
+  before and after the unlock, KI-54), D1 to D3 (the colour of the icons' names, the two swipes, the double tap: lock,
+  turn off, turn on), I1 (BOOT_COMPLETED at a wake), I2 (the welcome texts); and KI-44, P-3, P-5.
+- On the 7862 nothing of round 28 has been reported: the double tap "Turn off screen" is the tile's command and the same
+  double tap brings the screen back; the swipe down is the quick settings panel; the slider of com.syu.music has no knob.
 
 ### KI-53 The release build of the settings' preferences (A3)
 The second settings screen crashed in the A55's release build (standard release 1.2.1, Android 17, the owner's crash log of 2026-11-25): R8 removed the `(Context, AttributeSet)` constructor of a preference, which the inflater calls by reflection.
@@ -144,6 +136,13 @@ encrypted file `HelpersPrefsSus` in a static field. Android refuses that before 
   The wallpaper should show before the unlock, the home screen after it, with `Launcher: direct boot, waiting for the
   user's unlock` and `LauncherApplication: unlocked, starting` in the log. If it hangs again: `adb logcat -b all` during
   the boot (adb works before the unlock), then safe mode and One UI Home as the home app to get out.
+- **The owner's debug build, 2026-11-27** [H, crash log `2._crash_pid_27-11-2026_00-45-13`, V]: the boot no longer hangs,
+  but after the unlock the launcher came up where it was not the home app, slowly, and crashed: a
+  `NullPointerException` in `Workspace.onAttachedToWindow` (no drag controller yet) in `setContentView` of
+  `handleRelaunchActivity`. The locked activity's `recreate()` at the unlock relaunched it with its window kept.
+  `35366adbf` (round 29, D-99): at the unlock the activity ends (`finish()`) and the system starts the home the user chose;
+  `Workspace.onAttachedToWindow` no longer needs the drag controller. To try again as above, with the home app set to
+  another launcher once.
 
 ## Limits
 
@@ -222,14 +221,19 @@ An app `com.syu.ms` noted and the user opens within 3 s of the wake is sent back
 autostart list stay in front after a cold start; nothing is guarded on a phone without privileges; steering-wheel
 buttons and `adb shell am start` produce no input the launcher can see.
 
+### KI-58 R8 keeps every CAN bus callback in a release
+Measured on 2026-11-27 [V] with `:app:minifyStandardReleaseWithR8` (`usage.txt`, `mapping.txt`, `seeds.txt`): of the 726
+`com.syu.module.canbus.Callback_*` classes 724 stay, 721 of them as seeds of the rule
+`-keep class * implements android.os.IInterface { *; }` (they extend `IModuleCallback.Stub`); without the rule they would
+stay too, since `HandlerCanbus` (795) and `HandlerCanbus7870` (873) make each with `new` behind the car's id, which R8
+cannot know. The rule only keeps all their members. Of `com.syu.ui` 12 classes stay and 522 go. The dex files are 2.8 MB
+and 3.7 MB. Nothing was changed: narrowing the rule would risk the `IllegalAccessError` it guards against (an inlined
+`Stub.asInterface()`, see `proguard-rules.pro`), and dropping the callbacks would need a lookup by name. `largeHeap` is already `false`.
+
 ## Unverified
 
 ### KI-05 Android 8–10 through the VD host never run on a device
 Written from the AOSP sources only. Checklist in `vdhost/README.md` ("Still to test on a device").
-
-### KI-22 Two side effects of the pinned-PiP keyboard fix
-`PinnedPipFocus` is confirmed (D-44). Not checked: launcher dialogs with text fields while the pinned PiP is shown;
-with the accessibility fallback, the foreground package may alternate between the PiP app and the launcher.
 
 ### KI-25 Older changes with no device confirmation on record
 The commits exist [V]; no result was reported [U]: the navigation app no longer overwritten (`44833aa0`), the
@@ -246,23 +250,10 @@ unavailable, and `swapActivityViewSurfaces` blocks the main thread up to 1000 ms
 changed blind); `Launcher.refreshBtInfo` takes the 7870's Bluetooth milliseconds for seconds (waits for KI-29);
 a YouTube ReVanced crash during a fast pane rebuild, taken for the app's own bug.
 
-### KI-28 A workspace load that bound nothing for 30 s
-After leaving the settings (`e3136f45`, logs `Loader <id> …`): mitigated with a guard and logging [V], cause
-unknown [U]. The owner's report of the vertical bar on the right with the setting "left" is not explained by the
-cause fixed on 2026-11-13 [U].
-
 ### KI-29 "Changes do not work on the 7870"
 The tester did not say which (2026-11-12) [H]. Open questions for the 7870's logs: does `com.syu.ms` push the
 current values when the launcher registers; does `com.syu.media` give up its channel when it pauses for a pane
 app; Bluetooth times in milliseconds (KI-26).
-
-### KI-37 A widget lay over icons after a change of the grid
-The owner, 2026-11-15 [H]. `GridOverflowPropertyTest` finds no overlap in 3000 random screens [V]; the way it
-happened is unknown [U]. Every page moves an item that shares a cell or lies outside its grid after every load,
-drop and resize (`CellOverlap`, `PageFit`) and logs `Item out of place on page …` with the item and the way (the
-line was `Items sharing cells` before round 20). **The owner's log of 2026-11-19 13:16 [V]:** two changes of the
-grid (3×8 → 7×12 and 7×12 → 5×8, the second giving 4 icons of the first page a new cell) and no such line, so
-nothing shared a cell after either load.
 
 ### KI-44 The GPS of the fuel statistics only while something needs it
 The owner's A55 asked for the GPS every 500 ms whenever the statistics' service ran (2026-11-19) [V], also with no
@@ -298,17 +289,33 @@ owner's `2d222c6ac`, and section 5 since round 27) tells how to unpack them unde
 Checked on 2026-11-22 [V]: unpacked that way, `--launcher .` and `--launcher . --platform 7870` give both assets byte
 for byte. The built-in assets are not affected: nothing rebuilds them by itself.
 
-### KI-50 The position slider for every player, and "Start on wake"
-Round 27 [V in the code, not on a device]:
-- the slider is on every unit (`7ec71e8dc`); it moves a session's own app where its session has a length and allows
-  `ACTION_SEEK_TO` (`8f2259db1`), shows the position where it does not, and is empty without a length or for a live
-  stream. **com.syu.music on the 7862 cannot be moved from outside** [V, 2026-11-25, in the owner's
-  `archive/decompiled/com.syu.music.zip`]: its exported `MService` takes only playpause, stop, next, prev, path and
-  widget actions; its `MediaSession` (`MediaManager`) only handles media buttons, with no playback state, no length
-  and no `onSeekTo`; it seeks only from its own screens (`Page_Player`, `Page_Id3`, `Page_Player_HalfScreen` →
-  `App_Music.seekTo`). The slider therefore shows its position without a knob (SHOW);
-- on the 7862 the widget's position row is higher (0.09 of the height instead of 0.04), the cover, text and buttons a
-  little lower;
-- "Start on wake" (`65a43ebc4`, `58b5c3365`): its apps compete for the front with the app from before the sleep, so
-  they start 3 s after the wake and the launcher or that app comes back only when the user did nothing. To look at:
-  `ColdStart: Wake autostart …` lines after a wake, nothing of it after a restart of the device.
+### KI-55 Round 29 on a device
+Round 29 (2026-11-27) is built, its tests are green and CI ran on every batch, but none of it was tried on a device [V:
+every commit says so]. What to look at, by the plan's points:
+- the start after a restart with a PIN and without (KI-54), the heart of a liked song, the theme colour of the PiP and
+  widget rows' buttons, the dimmed rows that are off, the two swipes (a long press and a move is no swipe; the drawer
+  opens while the finger moves);
+- folders with "Follow home screen grid", "Freeform widgets" (the drop, the frame of a resize, a new widget's frame) and
+  "Allow widgets to overlap" (nothing pushed, a widget off a PiP), with the log's `FreeformWidgets` lines;
+- the drawer (KI-57), the tab creator and its lists, the badges' slider, "Estimate below the car's threshold", the
+  settings' text size at 150 % on both screens;
+- "Display horizontal bar", "Hide the app drawer button" and "Hide the music widget", in both orientations and on the
+  7862's home screen (the page and the bar's window alike);
+- on the 7862, the keyboard of a PiP above the bars (KI-56).
+
+### KI-56 The 7862's keyboard above the bars rests on an assumption about Android 10
+The owner, 2026-11-27 [H]: on the 7862 a keyboard opened from a PiP comes up under the vertical and the horizontal bars.
+The cause is read from Android 10's window manager [A, no log]: the keyboard is layered just above its target, the
+topmost window that may take it, and the panes of the PiPs may while the bars' windows above them may not. `ImeAnchor`
+(`f727fc0ed`, D-100) adds a 1×1 window of the bars' type above them that is such a target and takes no touch or focus.
+To check on the 7862: the keyboard from a PiP's app with the bars shown; that the launcher's own dialogs with a text
+field still get their keyboard; nothing of it on the A55 (Android 11 and later have no anchor).
+
+### KI-57 The drawer's changes of round 29 have no view test
+The drawer's pane (`AppsCustomizeTabHost`) does not inflate in Robolectric, so the view tests stop at its parts
+(`AppsVerticalView`, `LetterScroller`, `WidgetsListView`, `DrawerTabsFragment`) [V]. Not tried as a whole: the drag from
+the vertical list (`27f51efc0`), the letter scroller following the list (`f921f41d6`), the spacing (`2d48449f4`), the
+apps of a new tab after a swipe (`25c25f633`), the widgets' list with its drag (`5c3c8bc19`), and the pager's pages left
+empty while a list covers it and filled when it is shown, with the fix of the pager showing under the widgets' list
+when the drawer opened on them (`77f440135`). To look at: a switch of "Scrolling" between vertical and horizontal while
+the launcher runs, the widgets' tab, and the drag of an app and of a widget to the home screen.

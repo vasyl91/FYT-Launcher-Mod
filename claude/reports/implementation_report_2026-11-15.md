@@ -792,3 +792,94 @@ finger's swipe is taken by the right view. The list is in KI-51; the points that
 tap on the 7862 (the quick settings panel, "Turn off screen" and the same double tap bringing the screen back), the tab
 swipe and the strip's place in the drawer, free and overlapping widgets, the slider of `com.syu.music` (no knob), and the
 settings of a release build (A3, KI-53).
+
+## Round 29 (2026-11-27): the A55's results, the start at the unlock, widgets by pixels, the drawer, the bars' switches, the text size
+
+The owner's message of 2026-11-27 [H]: the A55 results of rounds 27 and 28 (KI-51), a crash log of the debug build after a
+restart, observations and fixes, two new options (the fuel estimate's switch, the settings' text size), seven points of
+performance, the CI's speed, what round 28 left out (E1 horizontal, E2, E3, G1), and the request to plan it in detail and
+implement it in this session. During the round the owner added the 7862's keyboard under the bars. The plan, in Polish, is
+`../prompts/archive/plan-2026-11-27-round-29.md`; the owner chose CI in batches with a faster CI (D-93) and tabs that split
+the strip evenly.
+
+Built in a cloud session with the Android SDK: every commit with code was compiled and its own tests run; the whole suite
+and both debug builds ran at the end of every batch, and CI ran once per batch on its last commit.
+
+| Batch | Commits | CI run |
+|---|---|---|
+| P0 | `e13ee4080` CI: one Gradle run, a cache written on testBranch, Robolectric's jar through Gradle; `50c7ddc0e` Docs: CI in batches | 624 green (7 min 43 s; run 623 before it took 11 min 47 s) |
+| P1 | `35366adbf` Start: after the first unlock the home the user chose, no relaunch; `12c0f0b7d` Music widget: a liked heart keeps its own red; `69fbd7bb6` Theme: the PiP and widget rows' buttons in the theme colour; `2295aac0c` Settings: rows of their own layout look dimmed when off; `f220a590a` Home: a swipe from a clear move only, the drawer at once | 625 green |
+| P2 | `75da43320` Folders: the home screen's icons and text inside with "Follow home screen grid"; `658a08b68` Widgets: "Freeform widgets", the frame and the widget move together; `fe496ccba` Widgets: overlapping widgets go exactly where they are dropped, nothing is pushed | 626 green |
+| P3 | `27f51efc0` App drawer: icons drag from the vertical list to the home screen; `f921f41d6` App drawer: the letter scroller moves smoothly and hides when nothing scrolls; `2d48449f4` App drawer: the search bar, the tabs and the apps evenly spaced; `25c25f633` App drawer: the apps of a new tab show at once after a swipe; `3524adeb1` App drawer: "Keep apps in main app tab" only where the rule needs it, the rule in a sentence; `7dabc2158` Settings: the tab creator's sizes, its dialogs after a turn and the lists of apps | 627 green |
+| P4, P5 and the keyboard | `a016cc7f7` Badges: size by a slider of 15–35 % of the icon, the number at 85 %, wider towards the icon; `34d4be595` Fuel statistics: the estimate below the threshold only when switched on; `f727fc0ed` Bars: the keyboard of a PiP above the bars on the 7862 | 628 green |
+| P5 | `76a4a7fbc` Settings: the text size of the settings, 70–150 % | 629 green |
+| P6 | `fe456f31f` Bars: "Display horizontal bar"; `a149a178c` Bars: the app drawer button and the music widget may be hidden, the room shared by one rule | 630 green |
+| P6 | `5c3c8bc19` Widgets: a list of apps with their widgets and shortcuts, with search | 631 green |
+| P7 | `7c1092873` Memory: wallpapers decoded at the screen's size; `9b6b4b000` Memory: widget previews in a cache counted in bytes, freed on trim; `e4889251e` Workspace: the settings of a touch read once, kept until they change; `77f440135` App drawer: the pages of the horizontal drawer made only when it is shown | 632 |
+
+Then the `Docs:` commits (the README, the project library with this report), which start no run. At the end of P7 the
+suite had 1660 tests, all green (1557 at the start of the round).
+
+**What was built [V: code and tests; none of it tried on a device]:**
+- **CI (D-93):** one Gradle run, the cache written on `testBranch`, Robolectric's `android-all-instrumented` resolved by
+  Gradle and read offline (the 429s of runs 574, 601 and 622), the tests in half the cores' forks. The runs of the round
+  took 6 to 9 minutes.
+- **The start (D-99, KI-54):** at the unlock the locked activity ends and the system starts the chosen home; the crash of
+  the relaunch with a kept window (`Workspace.onAttachedToWindow` without the drag controller) cannot come back.
+- **P1:** the liked heart keeps `music_favorite_p`'s red; the five `Custom*Preference` rows read `ThemeAccent` when their
+  buttons are sized; rows of their own layout are dimmed to 0.38 when off (`SettingsRowDim`, `DimmingPreferenceAdapter`);
+  `HomeSwipe` takes a swipe only before the long press timeout and fires on the move.
+- **P2:** folders follow the page's icon size, text size, colour and shadow with "Follow home screen grid"
+  (`FolderItemLook`); freeform and overlapping widgets by pixels (D-96: `FreePlace`, `ResizeGeometry`, `PipEdge`, no reorder
+  while an overlapping widget is dragged).
+- **P3:** the drawer's drag from the vertical list (`VerticalDrag`, `beginVerticalDrag`), the letter scroller by the
+  list's scroll fraction (`ScrollFraction`), one 8 dp gap (`DrawerSpacing`), a new tab's page at once, the keep rule
+  (D-94, `ListText`), the tab creator's 48 dp buttons, its checkbox beside the text, its dialogs after a turn and its
+  lists with a preference title's text.
+- **P4, P5:** the badges' slider (D-95, `VisibleBounds`, `BadgeSizeSeekBarPreference`), the fuel estimate's switch (D-97),
+  the settings' text size (D-98).
+- **The 7862's keyboard (D-100, [A]):** `ImeAnchor`, a 1×1 target for the keyboard above the bars on Android 10 and
+  older.
+- **P6:** "Display horizontal bar" (the bar gone from the pages and the window, the grid gets its room, its rows
+  hidden, the swipe up locked on), the drawer button and the music widget hidden with `BarShares` (D-87), the widgets'
+  list (D-89).
+- **P7:** wallpapers for a backdrop decoded to cover the screen (`SampleSize`; "Save the day / night wallpaper" whole,
+  the night mode at half size as before and smaller only for huge pictures); widget previews in an `LruCache` counted in
+  bytes, keyed by size and name, emptied from "running low" on (`PreviewCachePolicy`); the bars' sides, the corner cell
+  and the swipes kept between changes of the settings (`KeptReading`, `TouchSettings`) for `CellLayout`'s search for a
+  cell and `HomeGestures`; one rule for the drawer's three views (`DrawerContent`) with the pager's pages left empty while
+  a list covers it.
+- **Measured, no code:** R8 keeps 724 of the 726 `Callback_*` classes (reached by `new` in `HandlerCanbus*`, and seeds of
+  the `IInterface` rule) and 12 classes of `com.syu.ui` (KI-58); `largeHeap` is `false`; the large logcat buffers are set
+  only with the boot log.
+
+**Deviations from the plan:**
+- Per commit the changed code was compiled and its own tests run; the whole suite and both builds ran at the end of every
+  batch, not after every commit.
+- No view test of the double tap, of the drag from the vertical list, of the drawer's spacing or of a tab's first page:
+  the Launcher activity and the drawer's pane (`AppsCustomizeTabHost`) do not inflate in Robolectric. Their rules have
+  plain Java tests (`DoubleTapTest`, `VerticalDragTest`, `DrawerSpacingTest`, `DrawerTabGeometryTest`); KI-57.
+- Commit 15 is two: `3524adeb1` (the keep rule and its sentence) and `7dabc2158` (the sizes, the dialogs, the lists). The
+  names are joined by `list_separator` and `list_last` with `drawer_tab_quoted`, not `list_pair`.
+- "Freeform widgets" is the new English title only; the other languages keep their translation of the old one.
+- E2 and E3 are one commit (`a149a178c`). The hidden drawer button keeps no width but stays VISIBLE (the auto-hide bar and
+  the bar's order depend on it). `BarShares` is used only while the button or the music widget is hidden; otherwise the
+  bar is laid out as before.
+- The text of the settings wraps without a limit only above 100 %.
+- The widgets' list counts without plural forms ("Widgets: 1, Shortcuts: 3") and has no description line.
+- A widget added from the list still lands on cells with overlap on (its drop goes through the widget's configuration).
+- `ImeAnchor` runs only on Android 10 and older; it rests on a reading of Android 10's window manager [A].
+- The fuel estimate is off by default, so a user who saw it before sees it only after turning the switch on. The old
+  `badges_size` is not read any more and not migrated.
+- P7, item 23: the change is in `CellLayout` and `HomeGestures`; `Workspace`, `PagedView` and `DragLayer` read no setting on
+  a move. The test counts the readings of a counting `SharedPreferences`, not through the test application.
+- P7, item 24: the icon cache is not changed: each icon is held by its `AppInfo` or `ShortcutInfo` too, so evicting it
+  would free nothing, and reading it again could reach the disk cache on the main thread.
+- P7, item 25: the night mode keeps its half size as a floor, so nothing looks different on the 7862.
+- P7, item 26: the pages are still made, as empty frames, so the code that asks for a page finds one. The commit also
+  fixes G1's pager showing under the widgets' list when the drawer opened on the widgets.
+- P7, items 27 and 28: no code; the facts are above and in KI-58.
+
+**Not tested on a device:** all of it. The owner's lists are in `../PROJECT_STATE.md` ("Active tasks") and KI-55 to
+KI-57; the 7870's in `../checks/7870.md`.
+
