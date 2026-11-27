@@ -621,6 +621,9 @@
     <string name="drawer_tabs_summary">ເພີ່ມ, ປ່ຽນຊື່ ແລະ ຈັດລຽງແຖບຂອງລິ້ນຊັກແອັບ</string>
     <string name="icon_text_size">ຕັ້ງຂະໜາດຕົວອັກສອນໄອຄອນ</string>
     <string name="search_apps_hint">ຄົ້ນຫາແອັບ</string>
+    <string name="search_widgets_hint">ຊອກຫາວິດເຈັດ</string>
+    <string name="widget_list_widgets">ວິດເຈັດ: %1$d</string>
+    <string name="widget_list_shortcuts">ທາງລັດ: %1$d</string>
     <string name="hide_apps">ເຊື່ອງແອັບ</string>
     <string name="show_hidden_apps">ສະແດງແອັບທີ່ເຊື່ອງໄວ້</string>
     <string name="drawer_tab_main">ແອັບ</string>

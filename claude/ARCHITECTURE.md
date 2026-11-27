@@ -231,6 +231,10 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   An icon of the list is dragged through `AppsCustomizePagedView.beginVerticalDrag` (round 29, `L/VerticalDrag`),
   not through the pager's long-press checks.
   The grid is `L/AppsGrid` (plain Java) through `DeviceProfile.updateAllAppsGrid` and the keys `all_apps_grid_*`.
+- **Widgets (round 29, G1 of round 28):** `L/WidgetsListView` in `apps_customize_pane.xml` shows the widgets as a list
+  of apps (search, rows that open one at a time, the letter scroller) instead of the pager's widget pages;
+  `L/WidgetGroups` (plain Java) groups, orders and filters; the cells are the pager's own `PagedViewWidget`s made by
+  `AppsCustomizePagedView.mWidgetsListHost` (dragged through `beginListDrag`, previews on a single background thread).
 - **Tabs:** `L/DrawerTabs` (plain Java, tested: the rules of D-88), `L/DrawerTabsStore` (one string under `drawer_tabs`,
   read through `CreatorPrefs`), `L/DrawerTabGeometry` (plain Java: sizes and swipe decisions), `L/DrawerTabStrip` (the
   strip, in `apps_customize_pane.xml`, moved above or below the apps by `AppsCustomizePagedView.placeStrip`;

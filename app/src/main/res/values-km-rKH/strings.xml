@@ -621,6 +621,9 @@
     <string name="drawer_tabs_summary">បន្ថែម ប្តូរឈ្មោះ និងរៀបចំផ្ទាំងនៃថតកម្មវិធី</string>
     <string name="icon_text_size">កំណត់ទំហំអក្សររូបតំណាង</string>
     <string name="search_apps_hint">ស្វែងរកកម្មវិធី</string>
+    <string name="search_widgets_hint">ស្វែងរកធាតុក្រាហ្វិក</string>
+    <string name="widget_list_widgets">ធាតុក្រាហ្វិក៖ %1$d</string>
+    <string name="widget_list_shortcuts">ផ្លូវកាត់៖ %1$d</string>
     <string name="hide_apps">លាក់កម្មវិធី</string>
     <string name="show_hidden_apps">បង្ហាញកម្មវិធីដែលបានលាក់</string>
     <string name="drawer_tab_main">កម្មវិធី</string>

@@ -621,6 +621,9 @@
     <string name="drawer_tabs_summary">Az alkalmazásfiók lapjainak hozzáadása, átnevezése és rendezése</string>
     <string name="icon_text_size">Ikonszöveg méretének beállítása</string>
     <string name="search_apps_hint">Alkalmazások keresése</string>
+    <string name="search_widgets_hint">Widgetek keresése</string>
+    <string name="widget_list_widgets">Widgetek: %1$d</string>
+    <string name="widget_list_shortcuts">Parancsikonok: %1$d</string>
     <string name="hide_apps">Alkalmazások elrejtése</string>
     <string name="show_hidden_apps">Rejtett alkalmazások megjelenítése</string>
     <string name="drawer_tab_main">Alkalmazások</string>

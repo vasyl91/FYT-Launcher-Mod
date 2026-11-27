@@ -621,6 +621,9 @@
     <string name="drawer_tabs_summary">Adăugați, redenumiți și aranjați filele sertarului de aplicații</string>
     <string name="icon_text_size">Setați dimensiunea textului pictogramelor</string>
     <string name="search_apps_hint">Căutați aplicații</string>
+    <string name="search_widgets_hint">Caută widgeturi</string>
+    <string name="widget_list_widgets">Widgeturi: %1$d</string>
+    <string name="widget_list_shortcuts">Comenzi rapide: %1$d</string>
     <string name="hide_apps">Ascundeți aplicațiile</string>
     <string name="show_hidden_apps">Afișați aplicațiile ascunse</string>
     <string name="drawer_tab_main">Aplicații</string>

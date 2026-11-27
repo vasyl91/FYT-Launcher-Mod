@@ -621,6 +621,9 @@
     <string name="drawer_tabs_summary">アプリドロワーのタブを追加・名前変更・並べ替えします</string>
     <string name="icon_text_size">アイコンの文字サイズを設定</string>
     <string name="search_apps_hint">アプリを検索</string>
+    <string name="search_widgets_hint">ウィジェットを検索</string>
+    <string name="widget_list_widgets">ウィジェット：%1$d</string>
+    <string name="widget_list_shortcuts">ショートカット：%1$d</string>
     <string name="hide_apps">アプリを非表示</string>
     <string name="show_hidden_apps">非表示のアプリを表示</string>
     <string name="drawer_tab_main">アプリ</string>

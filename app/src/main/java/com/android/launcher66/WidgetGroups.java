@@ -101,6 +101,24 @@ final class WidgetGroups {
         return groups;
     }
 
+    /**
+     * The line under an app's name: "Widgets: 1, Shortcuts: 3" from the language's two patterns, a count of none left
+     * out.
+     */
+    static String counts(int widgets, int shortcuts, String widgetsPattern, String shortcutsPattern, String separator) {
+        StringBuilder text = new StringBuilder();
+        if (widgets > 0) {
+            text.append(String.format(widgetsPattern, widgets));
+        }
+        if (shortcuts > 0) {
+            if (text.length() > 0) {
+                text.append(separator);
+            }
+            text.append(String.format(shortcutsPattern, shortcuts));
+        }
+        return text.toString();
+    }
+
     /** The names of the groups, for the letter scroller (LetterIndex). */
     static List<String> titles(List<Group> groups) {
         List<String> titles = new ArrayList<>(groups.size());

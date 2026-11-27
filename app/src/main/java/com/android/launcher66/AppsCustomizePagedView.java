@@ -543,6 +543,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
             mNeedToUpdatePageCountsAndInvalidateData = false;
         }
         syncVertical();
+        syncWidgetsList();
     }
 
     // ---- the drawer scrolling vertically (F2: AppsVerticalView), the default; the pager is the horizontal one
@@ -908,6 +909,171 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         }
         return handled;
     }
+
+    // ---- the widgets as a list of apps (G1: WidgetsListView), instead of the pager's widget pages
+
+    private WidgetsListView mWidgetsList;
+    /** The previews of the list, one at a time, never on the main thread (KI-46). */
+    private java.util.concurrent.ExecutorService mListPreviews;
+
+    private WidgetsListView widgetsList() {
+        if (mWidgetsList == null) {
+            AppsCustomizeTabHost host = getTabHost();
+            View found = host == null ? null : host.findViewById(R.id.widgets_list);
+            if (found instanceof WidgetsListView) {
+                mWidgetsList = (WidgetsListView) found;
+                mWidgetsList.setHost(mWidgetsListHost);
+            }
+        }
+        return mWidgetsList;
+    }
+
+    /** The widgets show as the list, the pager stays for the apps (the pager's widget pages are not shown then). */
+    private void syncWidgetsList() {
+        WidgetsListView list = widgetsList();
+        if (list == null) {
+            return;
+        }
+        if (mContentType == ContentType.Widgets) {
+            list.setWidgets(mWidgets);
+            list.setVisibility(View.VISIBLE);
+            if (getVisibility() != View.INVISIBLE) {
+                setVisibility(View.INVISIBLE);
+            }
+        } else if (list.getVisibility() != View.GONE) {
+            list.setVisibility(View.GONE);
+            list.reset();
+        }
+    }
+
+    /** A long press of a widget or a shortcut of the list: dragged as from a page, without the pager's checks. */
+    private boolean beginListDrag(View v) {
+        DragController drag = mLauncher.getDragController();
+        if (!v.isInTouchMode() || !mLauncher.isAllAppsVisible() || !mLauncher.isDraggingEnabled()
+                || (drag != null && drag.isDragging())) {
+            Log.i(TAG, "Widget list: no drag of " + v.getTag());
+            return false;
+        }
+        cancelDragging();
+        boolean started = beginDragging(v);
+        Log.i(TAG, "Widget list: " + (started ? "dragging " : "no drag (no preview yet) of ") + v.getTag());
+        return started;
+    }
+
+    private final WidgetsListView.Host mWidgetsListHost = new WidgetsListView.Host() {
+        @Override
+        public View makeCell(Object rawInfo, ViewGroup parent, int width, int height) {
+            PagedViewWidget widget = (PagedViewWidget) mLayoutInflater.inflate(R.layout.apps_customize_widget, parent,
+                    false);
+            if (rawInfo instanceof AppWidgetProviderInfo) {
+                AppWidgetProviderInfo info = (AppWidgetProviderInfo) rawInfo;
+                PendingAddItemInfo createItemInfo = new PendingAddWidgetInfo(info, null, null);
+                int[] spanXY = Launcher.getSpanForWidget(mLauncher, info);
+                createItemInfo.spanX = spanXY[0];
+                createItemInfo.spanY = spanXY[1];
+                int[] minSpanXY = Launcher.getMinSpanForWidget(mLauncher, info);
+                createItemInfo.minSpanX = minSpanXY[0];
+                createItemInfo.minSpanY = minSpanXY[1];
+                widget.applyFromAppWidgetProviderInfo(info, -1, spanXY, mWidgetPreviewLoader);
+                widget.setTag(createItemInfo);
+                widget.setShortPressListener(AppsCustomizePagedView.this);
+            } else if (rawInfo instanceof ResolveInfo) {
+                ResolveInfo info = (ResolveInfo) rawInfo;
+                PendingAddItemInfo createItemInfo = new PendingAddShortcutInfo(info.activityInfo);
+                createItemInfo.itemType = LauncherSettings.Favorites.ITEM_TYPE_SHORTCUT;
+                createItemInfo.componentName = new ComponentName(info.activityInfo.packageName, info.activityInfo.name);
+                widget.applyFromResolveInfo(mPackageManager, info, mWidgetPreviewLoader);
+                widget.setTag(createItemInfo);
+            }
+            widget.setOnClickListener(AppsCustomizePagedView.this);
+            widget.setOnLongClickListener(v -> beginListDrag(v));
+            widget.setOnTouchListener(AppsCustomizePagedView.this);
+            widget.setOnKeyListener(AppsCustomizePagedView.this);
+            return widget;
+        }
+
+        @Override
+        public void loadPreview(View cell, Object rawInfo) {
+            if (!(cell instanceof PagedViewWidget) || mWidgetPreviewLoader == null) {
+                return;
+            }
+            final PagedViewWidget widget = (PagedViewWidget) cell;
+            int[] size = widget.getPreviewSize();
+            if (size[0] <= 0 || size[1] <= 0) {
+                return;
+            }
+            // The pager's widget pages are not shown while the list is: the loader takes the list's size
+            mWidgetPreviewLoader.setPreviewSize(size[0], size[1], mWidgetSpacingLayout);
+            final Object tag = widget.getTag();
+            if (mListPreviews == null) {
+                mListPreviews = java.util.concurrent.Executors.newSingleThreadExecutor();
+            }
+            final WidgetPreviewLoader loader = mWidgetPreviewLoader;
+            mListPreviews.execute(() -> {
+                final Bitmap preview = loader.getPreview(rawInfo);
+                if (preview == null) {
+                    return;
+                }
+                widget.post(() -> {
+                    if (widget.getTag() == tag && widget.isAttachedToWindow()) {
+                        widget.applyPreview(new FastBitmapDrawable(preview), 0);
+                    }
+                });
+            });
+        }
+
+        @Override
+        public android.graphics.drawable.Drawable appIcon(String packageName) {
+            for (AppInfo app : mAllApps) {
+                if (packageName.equals(app.getPackageName()) && app.iconBitmap != null) {
+                    return new FastBitmapDrawable(app.iconBitmap);
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public String appLabel(String packageName) {
+            for (AppInfo app : mAllApps) {
+                if (packageName.equals(app.getPackageName()) && app.title != null) {
+                    return app.title.toString();
+                }
+            }
+            try {
+                return mPackageManager.getApplicationLabel(mPackageManager.getApplicationInfo(packageName, 0)).toString();
+            } catch (android.content.pm.PackageManager.NameNotFoundException e) {
+                return packageName;
+            }
+        }
+
+        @Override
+        public String entryLabel(Object rawInfo) {
+            if (rawInfo instanceof AppWidgetProviderInfo) {
+                return ((AppWidgetProviderInfo) rawInfo).loadLabel(mPackageManager);
+            }
+            if (rawInfo instanceof ResolveInfo) {
+                CharSequence label = ((ResolveInfo) rawInfo).loadLabel(mPackageManager);
+                return label == null ? "" : label.toString();
+            }
+            return "";
+        }
+
+        @Override
+        public String packageOf(Object rawInfo) {
+            if (rawInfo instanceof AppWidgetProviderInfo && ((AppWidgetProviderInfo) rawInfo).provider != null) {
+                return ((AppWidgetProviderInfo) rawInfo).provider.getPackageName();
+            }
+            if (rawInfo instanceof ResolveInfo && ((ResolveInfo) rawInfo).activityInfo != null) {
+                return ((ResolveInfo) rawInfo).activityInfo.packageName;
+            }
+            return null;
+        }
+
+        @Override
+        public boolean isShortcut(Object rawInfo) {
+            return rawInfo instanceof ResolveInfo;
+        }
+    };
 
     /** Whether the apps are shown in the vertical list: "App drawer: Scrolling direction" is vertical (the default). */
     private boolean verticalWanted() {
@@ -1562,6 +1728,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         mContentType = type;
         invalidatePageData(page, true);
         syncVertical();
+        syncWidgetsList();
         // the strip of tabs is for the apps only: the widgets have none
         syncTabs();
     }

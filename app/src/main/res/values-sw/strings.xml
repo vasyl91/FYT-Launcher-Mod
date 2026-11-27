@@ -621,6 +621,9 @@
     <string name="drawer_tabs_summary">Ongeza, badilisha jina na panga vichupo vya droo ya programu</string>
     <string name="icon_text_size">Weka ukubwa wa maandishi ya aikoni</string>
     <string name="search_apps_hint">Tafuta programu</string>
+    <string name="search_widgets_hint">Tafuta wijeti</string>
+    <string name="widget_list_widgets">Wijeti: %1$d</string>
+    <string name="widget_list_shortcuts">Njia za mkato: %1$d</string>
     <string name="hide_apps">Ficha programu</string>
     <string name="show_hidden_apps">Onyesha programu zilizofichwa</string>
     <string name="drawer_tab_main">Programu</string>

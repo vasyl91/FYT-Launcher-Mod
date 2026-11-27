@@ -621,6 +621,9 @@
     <string name="drawer_tabs_summary">برگه‌های کشوی برنامه‌ها را اضافه، تغییر نام و مرتب کنید</string>
     <string name="icon_text_size">تنظیم اندازهٔ نوشتهٔ نمادها</string>
     <string name="search_apps_hint">جستجوی برنامه‌ها</string>
+    <string name="search_widgets_hint">جستجوی ویجت‌ها</string>
+    <string name="widget_list_widgets">ویجت‌ها: %1$d</string>
+    <string name="widget_list_shortcuts">میان‌برها: %1$d</string>
     <string name="hide_apps">پنهان کردن برنامه‌ها</string>
     <string name="show_hidden_apps">نمایش برنامه‌های پنهان</string>
     <string name="drawer_tab_main">برنامه‌ها</string>

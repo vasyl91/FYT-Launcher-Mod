@@ -621,6 +621,9 @@
     <string name="drawer_tabs_summary">Magdagdag, palitan ang pangalan at ayusin ang mga tab ng app drawer</string>
     <string name="icon_text_size">Itakda ang laki ng text ng icon</string>
     <string name="search_apps_hint">Maghanap ng app</string>
+    <string name="search_widgets_hint">Maghanap ng widget</string>
+    <string name="widget_list_widgets">Mga widget: %1$d</string>
+    <string name="widget_list_shortcuts">Mga shortcut: %1$d</string>
     <string name="hide_apps">Itago ang mga app</string>
     <string name="show_hidden_apps">Ipakita ang mga nakatagong app</string>
     <string name="drawer_tab_main">Mga app</string>

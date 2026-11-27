@@ -633,6 +633,9 @@
     <string name="drawer_tabs_summary">Add, rename and arrange the app drawer\'s tabs</string>
     <string name="icon_text_size">Set icon text size</string>
     <string name="search_apps_hint">Search applications</string>
+    <string name="search_widgets_hint">Search widgets</string>
+    <string name="widget_list_widgets">Widgets: %1$d</string>
+    <string name="widget_list_shortcuts">Shortcuts: %1$d</string>
     <string name="hide_apps">Hide apps</string>
     <string name="show_hidden_apps">Show hidden apps</string>
     <string name="drawer_tab_main">Apps</string>

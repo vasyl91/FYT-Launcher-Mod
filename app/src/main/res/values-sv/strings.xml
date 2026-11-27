@@ -621,6 +621,9 @@
     <string name="drawer_tabs_summary">Lägg till, byt namn på och ordna appladans flikar</string>
     <string name="icon_text_size">Ange storlek på ikontext</string>
     <string name="search_apps_hint">Sök appar</string>
+    <string name="search_widgets_hint">Sök widgetar</string>
+    <string name="widget_list_widgets">Widgetar: %1$d</string>
+    <string name="widget_list_shortcuts">Genvägar: %1$d</string>
     <string name="hide_apps">Dölj appar</string>
     <string name="show_hidden_apps">Visa dolda appar</string>
     <string name="drawer_tab_main">Appar</string>

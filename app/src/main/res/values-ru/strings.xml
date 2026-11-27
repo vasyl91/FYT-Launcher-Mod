@@ -621,6 +621,9 @@
     <string name="drawer_tabs_summary">Добавляйте, переименовывайте и упорядочивайте вкладки меню приложений</string>
     <string name="icon_text_size">Задать размер текста значков</string>
     <string name="search_apps_hint">Поиск приложений</string>
+    <string name="search_widgets_hint">Поиск виджетов</string>
+    <string name="widget_list_widgets">Виджеты: %1$d</string>
+    <string name="widget_list_shortcuts">Ярлыки: %1$d</string>
     <string name="hide_apps">Скрыть приложения</string>
     <string name="show_hidden_apps">Показать скрытые приложения</string>
     <string name="drawer_tab_main">Приложения</string>

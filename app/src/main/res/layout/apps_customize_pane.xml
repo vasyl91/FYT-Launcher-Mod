@@ -74,6 +74,14 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent" />
 
+            <!-- The widgets as a list of apps (G1): shown instead of the pager for the widgets by
+                 AppsCustomizePagedView.syncWidgetsList() -->
+            <com.android.launcher66.WidgetsListView
+                android:id="@+id/widgets_list"
+                android:visibility="gone"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" />
+
             <FrameLayout
                 android:id="@+id/animation_buffer"
                 android:background="#00000000"

@@ -621,6 +621,9 @@
     <string name="drawer_tabs_summary">Voeg tabbladen van de app-lade toe, hernoem ze en rangschik ze</string>
     <string name="icon_text_size">Tekstgrootte van pictogrammen instellen</string>
     <string name="search_apps_hint">Apps zoeken</string>
+    <string name="search_widgets_hint">Widgets zoeken</string>
+    <string name="widget_list_widgets">Widgets: %1$d</string>
+    <string name="widget_list_shortcuts">Snelkoppelingen: %1$d</string>
     <string name="hide_apps">Apps verbergen</string>
     <string name="show_hidden_apps">Verborgen apps tonen</string>
     <string name="drawer_tab_main">Apps</string>

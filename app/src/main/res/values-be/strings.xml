@@ -621,6 +621,9 @@
     <string name="drawer_tabs_summary">Дадавайце, перайменоўвайце і ўпарадкоўвайце ўкладкі меню праграм</string>
     <string name="icon_text_size">Задаць памер тэксту значкоў</string>
     <string name="search_apps_hint">Пошук праграм</string>
+    <string name="search_widgets_hint">Пошук віджэтаў</string>
+    <string name="widget_list_widgets">Віджэты: %1$d</string>
+    <string name="widget_list_shortcuts">Ярлыкі: %1$d</string>
     <string name="hide_apps">Схаваць праграмы</string>
     <string name="show_hidden_apps">Паказаць схаваныя праграмы</string>
     <string name="drawer_tab_main">Праграмы</string>

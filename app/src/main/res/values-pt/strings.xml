@@ -621,6 +621,9 @@
     <string name="drawer_tabs_summary">Adicione, mude o nome e organize os separadores da gaveta de aplicações</string>
     <string name="icon_text_size">Definir o tamanho do texto dos ícones</string>
     <string name="search_apps_hint">Pesquisar aplicações</string>
+    <string name="search_widgets_hint">Pesquisar widgets</string>
+    <string name="widget_list_widgets">Widgets: %1$d</string>
+    <string name="widget_list_shortcuts">Atalhos: %1$d</string>
     <string name="hide_apps">Ocultar aplicações</string>
     <string name="show_hidden_apps">Mostrar aplicações ocultas</string>
     <string name="drawer_tab_main">Aplicações</string>

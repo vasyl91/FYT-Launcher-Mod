@@ -621,6 +621,9 @@
     <string name="drawer_tabs_summary">Προσθέστε, μετονομάστε και τακτοποιήστε τις καρτέλες του συρταριού εφαρμογών</string>
     <string name="icon_text_size">Ορισμός μεγέθους κειμένου εικονιδίων</string>
     <string name="search_apps_hint">Αναζήτηση εφαρμογών</string>
+    <string name="search_widgets_hint">Αναζήτηση widget</string>
+    <string name="widget_list_widgets">Widget: %1$d</string>
+    <string name="widget_list_shortcuts">Συντομεύσεις: %1$d</string>
     <string name="hide_apps">Απόκρυψη εφαρμογών</string>
     <string name="show_hidden_apps">Εμφάνιση κρυφών εφαρμογών</string>
     <string name="drawer_tab_main">Εφαρμογές</string>

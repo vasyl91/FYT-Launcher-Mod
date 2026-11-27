@@ -621,6 +621,9 @@
     <string name="drawer_tabs_summary">Dodajte, preimenujte in razporedite zavihke predala z aplikacijami</string>
     <string name="icon_text_size">Nastavi velikost besedila ikon</string>
     <string name="search_apps_hint">Išči aplikacije</string>
+    <string name="search_widgets_hint">Iskanje pripomočkov</string>
+    <string name="widget_list_widgets">Pripomočki: %1$d</string>
+    <string name="widget_list_shortcuts">Bližnjice: %1$d</string>
     <string name="hide_apps">Skrij aplikacije</string>
     <string name="show_hidden_apps">Pokaži skrite aplikacije</string>
     <string name="drawer_tab_main">Aplikacije</string>
