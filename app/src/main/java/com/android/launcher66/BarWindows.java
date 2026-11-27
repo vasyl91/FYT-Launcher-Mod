@@ -26,6 +26,9 @@ import android.view.WindowManager;
  * swipe (the owner, 7862). The auto-hide bar and the edge handle stay panels. If the system refuses a type, the
  * window takes the next one down ({@link #addEveryPageBar}) and the log says so.
  *
+ * <p>The keyboard is kept above the bars by ImeAnchor, a window of one pixel above them that is the keyboard's target
+ * (Android 10 and older; the owner on the 7862, 2026-11-27).
+ *
  * <p>A sub-window needs the launcher's window to be there (its token), and nothing else: no permission to
  * draw over other apps. It goes with the launcher's window. The coordinates stay the screen's: the windows keep
  * FLAG_LAYOUT_IN_SCREEN.
@@ -79,6 +82,8 @@ public final class BarWindows {
                 if (i > 0) {
                     Log.w(TAG, what + ": added with the window type " + params.type);
                 }
+                // The keyboard stays above it (ImeAnchor): the anchor is put above the window just added
+                ImeAnchor.raise(windowManager, root.getContext(), params.token);
                 return;
             } catch (RuntimeException e) {
                 if (i == EVERY_PAGE_TYPES.length - 1) {

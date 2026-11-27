@@ -282,7 +282,9 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
     panes of the PiPs (panels), the statistics window on the home screen (`BarWindows.HOME_STATS_TYPE`, a
     sub-panel added by `CanbusService.addHomeStatsWindow`), the bars on every page (`EVERY_PAGE_TYPE`, the
     layer above sub-panels, falling back to lower layers if refused); the auto-hide bar and the edge handle
-    are panels. The statistics over an app stay an overlay.
+    are panels. The statistics over an app stay an overlay. On Android 10 and older `L/ImeAnchor` (round 29) is
+    the top of those layers: a one-pixel window that may take the input method, added again after every bar and the
+    statistics window, so the keyboard (drawn above its target window) is above all of them.
   - `L/PageBarSwap` (2026-11-15): while a bar's window is shown, the first page's own bar is hidden; it is
     hidden from the moment the page is built (the windows are built in the page's first frame) and seen
     only while the window steps aside (overview, drag, folder, all apps) or could not be added. A swap

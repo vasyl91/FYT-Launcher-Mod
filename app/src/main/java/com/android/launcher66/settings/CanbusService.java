@@ -1108,6 +1108,8 @@ public class CanbusService extends Service implements PropertyChangeListener {
                 launcher.getWindowManager().addView(window, statsLayoutParams);
                 statsAsSubWindow = true;
                 Log.i(TAG, "stats window: a sub-window of the launcher's window, under the bars");
+                // The keyboard stays above it, as above the bars (ImeAnchor)
+                com.android.launcher66.ImeAnchor.raise(launcher.getWindowManager(), launcher, statsLayoutParams.token);
                 return;
             } catch (RuntimeException e) {
                 Log.w(TAG, "stats window: not added to the launcher's window (" + e + "), an overlay");
