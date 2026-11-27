@@ -7302,8 +7302,11 @@ public class Workspace extends SmoothPagedView
                 int[] resultSpan = new int[2];
                 if (cell instanceof LauncherAppWidgetHostView && !hasMovedIntoHotseat
                         && FreeformWidgets.overlapOn(mLauncher)) {
-                    // "Allow widgets to overlap": a widget takes no cell, nothing is pushed aside, it goes to the cells
-                    // nearest to the drop whatever lies there
+                    // "Allow widgets to overlap": a widget takes no cell, nothing is pushed aside (a reorder shown before
+                    // is given up), and it goes to the pixels it is let go at (placeOnDrop below), the cells nearest
+                    // to the drop only standing for it until then
+                    mReorderAlarm.cancelAlarm();
+                    dropTargetLayout.revertTempState();
                     mTargetCell = findNearestArea((int) mDragViewVisualCenter[0], (int) mDragViewVisualCenter[1],
                             spanX, spanY, dropTargetLayout, mTargetCell);
                     resultSpan[0] = spanX;
@@ -7947,7 +7950,16 @@ public class Workspace extends SmoothPagedView
                     mDragViewVisualCenter[0], (int) mDragViewVisualCenter[1], item.spanX,
                     item.spanY, child, mTargetCell);
 
-            if (!nearestDropOccupied) {
+            // "Allow widgets to overlap": a widget of the page goes exactly where it is let go, over whatever lies
+            // there (FreeformWidgets.placeOnDrop): nothing is pushed aside while it moves, and no cells are outlined,
+            // the dragged widget itself shows where it lands
+            boolean widgetOverlap = child instanceof LauncherAppWidgetHostView
+                    && !mLauncher.isHotseatLayout(mDragTargetLayout) && FreeformWidgets.overlapOn(mLauncher);
+            if (widgetOverlap) {
+                mReorderAlarm.cancelAlarm();
+                mDragTargetLayout.revertTempState();
+                mDragTargetLayout.clearDragOutlines();
+            } else if (!nearestDropOccupied) {
                 mDragTargetLayout.visualizeDropLocation(child, mDragOutline,
                         (int) mDragViewVisualCenter[0], (int) mDragViewVisualCenter[1],
                         mTargetCell[0], mTargetCell[1], item.spanX, item.spanY, false,

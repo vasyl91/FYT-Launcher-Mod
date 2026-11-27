@@ -42,10 +42,14 @@ final class FreeformWidgets {
     private FreeformWidgets() {
     }
 
-    /** Whether widgets are placed freely now. */
+    /**
+     * Whether widgets are placed by pixels now: with "Freeform widgets", and with "Allow widgets to overlap", where a
+     * widget goes exactly where it is let go and is not snapped to the grid (the owner on the A55, 2026-11-27).
+     */
     static boolean enabled(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return CreatorPrefs.of(prefs).getBoolean(Keys.WIDGET_FREEFORM, false);
+        CreatorPrefs creator = CreatorPrefs.of(prefs);
+        return creator.getBoolean(Keys.WIDGET_FREEFORM, false) || creator.getBoolean(Keys.WIDGET_OVERLAP, false);
     }
 
     /**
@@ -105,12 +109,22 @@ final class FreeformWidgets {
         int[] rect = FreePlace.place(left, top, w, h, cw, ch, edges[0], edges[1], edges[2], edges[3],
                 overlap ? null : page.occupiedWithout(view));
         String how = "at the drop";
+        if (rect != null && overlap) {
+            // Over icons and widgets it may lie, not over a PiP window: moved edge to edge with it (PipEdge)
+            int[] clear = PipEdge.clear(rect, page.pipRects(), cw, ch);
+            if (clear == null) {
+                how = "at the drop, over a PiP: no place beside it in the page";
+            } else if (clear != rect) {
+                rect = clear;
+                how = "beside the PiP it was let go over";
+            }
+        }
         if (rect == null) {
             // No place over free cells only: the cells the grid found, as a widget in cells
             rect = new int[] {area[0], area[1], Math.min(w, area[2]), Math.min(h, area[3])};
             how = "in the cells found, no free place nearer";
-        } else if (rect[0] != Math.max(0, Math.min(left, cw - rect[2]))
-                || rect[1] != Math.max(0, Math.min(top, ch - rect[3]))) {
+        } else if (!overlap && (rect[0] != Math.max(0, Math.min(left, cw - rect[2]))
+                || rect[1] != Math.max(0, Math.min(top, ch - rect[3])))) {
             how = "at the nearest place over free cells";
         }
         WidgetFrame frame = WidgetFrame.ofPixels(rect[0], rect[1], rect[0] + rect[2], rect[1] + rect[3], cw, ch);

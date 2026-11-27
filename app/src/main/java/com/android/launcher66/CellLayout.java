@@ -4863,6 +4863,19 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
         return new int[][] {colLeft, colRight, rowTop, rowBottom};
     }
 
+    /** The rectangles {left, top, width, height} of the PiP windows on this page, in the container (PipEdge). */
+    java.util.List<int[]> pipRects() {
+        java.util.List<int[]> rects = new ArrayList<>();
+        for (View pip : new View[] {mDualPipPlaceholder, mFirstPipPlaceholder, mSecondPipPlaceholder,
+                mThirdPipPlaceholder, mFourthPipPlaceholder}) {
+            if (pip != null && pip.getParent() == mShortcutsAndWidgets && pip.getVisibility() == VISIBLE
+                    && pip.getWidth() > 0 && pip.getHeight() > 0) {
+                rects.add(new int[] {pip.getLeft(), pip.getTop(), pip.getWidth(), pip.getHeight()});
+            }
+        }
+        return rects;
+    }
+
     /** The cells the other items of the page hold, counted from them, the given view left out (FreePlace). */
     boolean[][] occupiedWithout(View view) {
         boolean[][] held = new boolean[mCountX][mCountY];
