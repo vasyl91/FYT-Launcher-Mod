@@ -7,14 +7,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceGroupAdapter;
 import androidx.preference.PreferenceViewHolder;
 
 import java.util.HashMap;
 import java.util.Map;
 
+/** The rows of the first settings screen, dimmed while off (DimmingPreferenceAdapter), some in a colour of their own. */
 @SuppressLint("RestrictedApi")
-public class CustomPreferenceColorAdapter extends PreferenceGroupAdapter {
+public class CustomPreferenceColorAdapter extends DimmingPreferenceAdapter {
     private final Map<String, Integer> titleColors = new HashMap<>();
     private final Map<String, Integer> summaryColors = new HashMap<>();
 

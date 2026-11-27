@@ -505,6 +505,9 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
     attached, every switch, the dialogs; the colour is the user's only with the creator on), and the screens that are
     not preference lists (`S/DrawerTabsFragment`, `S/DrawerAppsFragment`, `S/NotificationBadgesFragment`'s rows) use
     `AccentPainter.attach` too; `S/SettingsSystemBars` gives a screen of that kind the room of the system bars.
+  - Since round 29: a row that is off is drawn at 38 % (`S/SettingsRowDim`), applied on every bind by
+    `S/DimmingPreferenceAdapter`, the adapter of the three preference screens (`S/CustomPreferenceColorAdapter` of
+    the first screen extends it). The theme's text colours have no disabled state, so nothing else dims a row.
   - Small pieces: `S/ButtonTextFit` (the text of the small buttons in a row), `S/CompatInfoText` (FYT-only
     lines of two info texts), `S/BackgroundSelectorDialog` with `S/ColorTileDrawable` and
     `S/SelectedFrameDrawable`, `L/FabButtons`.

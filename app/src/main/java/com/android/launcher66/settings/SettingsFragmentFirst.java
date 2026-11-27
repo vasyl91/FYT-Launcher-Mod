@@ -758,14 +758,8 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
     @NonNull
     @Override
     protected RecyclerView.Adapter onCreateAdapter(@NonNull PreferenceScreen preferenceScreen) {
+        // The creator's row is off with "Stock layout": the adapter dims it as every row that is off (SettingsRowDim)
         customAdapter = new CustomPreferenceColorAdapter(this);
-        if (settingsSecondFragment != null) {
-            if (userLayoutBool) {
-                customAdapter.setPreferenceTitleColor(Keys.CREATOR_FIRST, Color.WHITE);
-            } else {
-                customAdapter.setPreferenceTitleColor(Keys.CREATOR_FIRST, Color.GRAY);
-            }
-        }
         return customAdapter;
     }
 
@@ -783,11 +777,9 @@ public class SettingsFragmentFirst extends PreferenceFragmentCompat implements P
                 if (userLayoutBool) {
                     String summaryText = getString(R.string.layout_summary_enabled);
                     settingsSecondFragment.setSummary(Html.fromHtml(summaryText, Html.FROM_HTML_MODE_LEGACY));
-                    customAdapter.setPreferenceTitleColor(Keys.CREATOR_FIRST, Color.WHITE);
                 } else {
                     String summaryText = getString(R.string.layout_summary_disabled);
                     settingsSecondFragment.setSummary(Html.fromHtml(summaryText, Html.FROM_HTML_MODE_LEGACY));
-                    customAdapter.setPreferenceTitleColor(Keys.CREATOR_FIRST, Color.GRAY);
                     editor.putString(Keys.START_PAGE, "1");
                     editor.putInt(Keys.PIP_FIRST_SCREEN, 1);
                     editor.apply(); 

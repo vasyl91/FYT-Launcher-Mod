@@ -386,6 +386,13 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
     }
 
+    /** The rows are drawn dimmed while they are off (SettingsRowDim). */
+    @NonNull
+    @Override
+    protected RecyclerView.Adapter onCreateAdapter(@NonNull androidx.preference.PreferenceScreen preferenceScreen) {
+        return new DimmingPreferenceAdapter(preferenceScreen);
+    }
+
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         CanbusLibrary.preload(requireContext());
