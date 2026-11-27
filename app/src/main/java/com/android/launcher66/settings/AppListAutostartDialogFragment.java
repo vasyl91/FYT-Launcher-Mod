@@ -389,6 +389,9 @@ public class AppListAutostartDialogFragment extends DialogFragment
 
         // attachToRoot false: DialogFragment adds the returned view itself.
         View view = inflater.inflate(R.layout.dialog_bootlist, container, false);
+        // As large as the background selector and the colour picker (SettingsDialogSize)
+        DialogFrames.fitAppList(view, getResources().getConfiguration().orientation
+                == android.content.res.Configuration.ORIENTATION_LANDSCAPE);
         mRootView = view;
         if (KEY_WAKE_AUTOSTART_APPS.equals(listKey())) {
             TextView title = view.findViewById(R.id.bootlist_title);

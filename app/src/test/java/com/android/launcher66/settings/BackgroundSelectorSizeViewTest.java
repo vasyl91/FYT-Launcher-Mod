@@ -58,7 +58,7 @@ public class BackgroundSelectorSizeViewTest {
 
         WindowManager.LayoutParams landscape = layout(dialog);
         assertEquals("0.7 of the window's width", 1400, landscape.width);
-        assertEquals("0.8 of its height", 960, landscape.height);
+        assertEquals("0.9 of its height, as the colour picker and the lists of apps", 1080, landscape.height);
         assertTrue("wider than high", landscape.width > landscape.height);
 
         RuntimeEnvironment.setQualifiers("w1200dp-h2000dp-port-mdpi");

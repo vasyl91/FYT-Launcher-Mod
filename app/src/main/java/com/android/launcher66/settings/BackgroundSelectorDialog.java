@@ -58,9 +58,10 @@ import java.util.concurrent.Executors;
  * "Choose background for …": the backgrounds of a part of the home screen as tiles over the wallpaper.
  *
  * <p>The rule for its size and its backdrop (the owner, 2026-11-21): <b>the dialog is sized for the orientation it is
- * shown in, and the wallpaper behind the tiles is never stretched.</b> Its width is 0.7 of the settings' window in
- * landscape and 0.8 in portrait, its height 0.8, from the window as it is now (a turn on a phone creates the dialog
- * again); the wallpaper is drawn center-crop at the size the dialog has at each draw (CenterCropDrawable).
+ * shown in, and the wallpaper behind the tiles is never stretched.</b> Its size is {@link SettingsDialogSize}'s (since
+ * 2026-11-27: 0.7 x 0.9 of the settings' window in landscape, as the colour picker and the lists of apps, and 0.8 x 0.8
+ * in portrait), from the window as it is now (a turn on a phone creates the dialog again); the wallpaper is drawn
+ * center-crop at the size the dialog has at each draw (CenterCropDrawable).
  */
 public class BackgroundSelectorDialog extends DialogFragment {
     private static final String TAG = "BgWidgetsSelector";
@@ -241,12 +242,10 @@ public class BackgroundSelectorDialog extends DialogFragment {
 
         orientation = requireContext().getResources().getConfiguration().orientation;
         int[] window = windowSize(requireActivity());
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            dialogWidthPx = (int) (window[0] * 0.8);
-        } else {
-            dialogWidthPx = (int) (window[0] * 0.7);
-        }
-        dialogHeightPx = (int) (window[1] * 0.8);
+        // As large as the colour picker and the lists of apps in landscape, as wide in portrait (SettingsDialogSize)
+        int[] size = SettingsDialogSize.pixels(SettingsDialogSize.Kind.BACKGROUND, window[0], window[1]);
+        dialogWidthPx = size[0];
+        dialogHeightPx = size[1];
 
         Window dialogWindow = getDialog() != null ? getDialog().getWindow() : null;
         if (dialogWindow != null) dialogWindow.setLayout(dialogWidthPx, dialogHeightPx);

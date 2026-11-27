@@ -119,6 +119,9 @@ public class AppListStatsDialogFragment extends DialogFragment implements Adapte
         // The two-argument inflate() defaults to attachToRoot=true and made the view
         // land in the container twice on some recreation paths.
         View view = inflater.inflate(R.layout.dialog_applist, container, false);
+        // As large as the background selector and the colour picker (SettingsDialogSize)
+        DialogFrames.fitAppList(view, getResources().getConfiguration().orientation
+                == android.content.res.Configuration.ORIENTATION_LANDSCAPE);
         mRootView = view;
 
         // Snapshot instead of aliasing the global list. AllAppsList.data is rebuilt on

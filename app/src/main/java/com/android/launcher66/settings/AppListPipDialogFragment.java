@@ -164,6 +164,9 @@ public class AppListPipDialogFragment extends DialogFragment implements AdapterV
         // The two-argument inflate() defaults to attachToRoot=true and made the view
         // land in the container twice on some recreation paths.
         View view = inflater.inflate(R.layout.dialog_piplist, container, false);
+        // As large as the background selector and the colour picker (SettingsDialogSize)
+        DialogFrames.fitAppList(view, getResources().getConfiguration().orientation
+                == android.content.res.Configuration.ORIENTATION_LANDSCAPE);
         mRootView = view;
 
         // Initialize UI components

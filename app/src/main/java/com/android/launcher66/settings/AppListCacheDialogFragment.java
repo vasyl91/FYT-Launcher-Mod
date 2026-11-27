@@ -247,6 +247,9 @@ public class AppListCacheDialogFragment extends DialogFragment
 
         // attachToRoot false: DialogFragment adds the returned view itself.
         View view = inflater.inflate(R.layout.dialog_cachelist, container, false);
+        // As large as the background selector and the colour picker (SettingsDialogSize)
+        DialogFrames.fitAppList(view, getResources().getConfiguration().orientation
+                == android.content.res.Configuration.ORIENTATION_LANDSCAPE);
         mRootView = view;
 
         mData = buildVisibleApps();

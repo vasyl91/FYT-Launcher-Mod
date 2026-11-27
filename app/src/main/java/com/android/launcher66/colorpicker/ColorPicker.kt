@@ -347,8 +347,13 @@ class ColorPicker : DialogFragment(), OnSeekBarChangeListener {
                 }
             }
 
-            val width = (metrics.widthPixels * 0.7).toInt()
-            val height = (metrics.heightPixels * 0.6).toInt()
+            // As large as the background selector and the lists of apps in landscape, as wide in portrait
+            // (SettingsDialogSize)
+            val size = com.android.launcher66.settings.SettingsDialogSize.pixels(
+                com.android.launcher66.settings.SettingsDialogSize.Kind.COLOR_PICKER,
+                metrics.widthPixels, metrics.heightPixels)
+            val width = size[0]
+            val height = size[1]
             
             dialog?.window?.apply {
                 setLayout(width, height)
