@@ -33,6 +33,21 @@ class PreviewCachePolicyTest {
     }
 
     @Test
+    void aRequestCarriesItsSizeAsItsKeyAndItsColumn() {
+        assertEquals("300x200", PreviewCachePolicy.size(300, 200));
+        assertEquals(PreviewCachePolicy.key("300x200", "Widget:a/b"),
+                PreviewCachePolicy.key(PreviewCachePolicy.size(300, 200), "Widget:a/b"));
+    }
+
+    @Test
+    void onlyABitmapOfExactlyTheRequestsSizeFitsIt() {
+        assertEquals(true, PreviewCachePolicy.fits(300, 200, 300, 200));
+        // The crash of 2026-11-27: a bitmap made for one cell checked against the size another cell set meanwhile
+        assertEquals(false, PreviewCachePolicy.fits(300, 200, 120, 120));
+        assertEquals(false, PreviewCachePolicy.fits(300, 201, 300, 200));
+    }
+
+    @Test
     void fromRunningLowOnNothingIsKept() {
         for (int level : new int[] {10, 15, 20, 40, 60, 80}) {
             assertEquals(0, PreviewCachePolicy.keepAfterTrim(level, 1000), "level " + level);

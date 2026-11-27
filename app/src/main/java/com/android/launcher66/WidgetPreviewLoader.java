@@ -178,15 +178,41 @@ public class WidgetPreviewLoader {
                 + mLoadedPreviews.size() / 1024 + " KB");
     }
 
-    public void setPreviewSize(int previewWidth, int previewHeight,
+    /**
+     * The size the pager's pages ask for, and the layout that estimates the cells of a widget. A request in the
+     * background never reads these fields: it takes its size along ({@link #getPreview(Object, int, int)}). The list of
+     * widgets sets a size for each of its cells on the main thread while a preview of another size is made in the
+     * background, and a size read twice there was the crash "Improperly sized bitmap" (the owner on the A55,
+     * 2026-11-27).
+     */
+    public synchronized void setPreviewSize(int previewWidth, int previewHeight,
             PagedViewCellLayout widgetSpacingLayout) {
         mPreviewBitmapWidth = previewWidth;
         mPreviewBitmapHeight = previewHeight;
-        mSize = previewWidth + "x" + previewHeight;
+        mSize = PreviewCachePolicy.size(previewWidth, previewHeight);
         mWidgetSpacingLayout = widgetSpacingLayout;
     }
 
+    /** The size set last, {width, height}, read once. */
+    private synchronized int[] previewSize() {
+        return new int[] {mPreviewBitmapWidth, mPreviewBitmapHeight};
+    }
+
+    /** The preview at the size set last (setPreviewSize), taken once at the start. */
     public Bitmap getPreview(final Object o) {
+        int[] size = previewSize();
+        return getPreview(o, size[0], size[1]);
+    }
+
+    /**
+     * The preview of a widget or shortcut at this size: the size goes with the request to the cache, the database and
+     * the drawing, so another size set meanwhile changes nothing of it.
+     */
+    public Bitmap getPreview(final Object o, final int width, final int height) {
+        if (width <= 0 || height <= 0) {
+            return null;
+        }
+        final String size = PreviewCachePolicy.size(width, height);
         final String name = getObjectName(o);
         final String packageName = getObjectPackage(o);
         // check if the package is valid
@@ -198,20 +224,19 @@ public class WidgetPreviewLoader {
             return null;
         }
         // The preview of this size, if it is still kept
-        final String key = PreviewCachePolicy.key(mSize, name);
+        final String key = PreviewCachePolicy.key(size, name);
         Bitmap cached = mLoadedPreviews.get(key);
         if (cached != null) {
             return cached;
         }
 
         // Not kept: read from the db or made, into a bitmap of its own
-        Bitmap unusedBitmap = Bitmap.createBitmap(mPreviewBitmapWidth, mPreviewBitmapHeight,
-                Bitmap.Config.ARGB_8888);
+        Bitmap unusedBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 
         Bitmap preview = null;
 
         if (packageValid) {
-            preview = readFromDb(name, unusedBitmap);
+            preview = readFromDb(name, size, unusedBitmap);
         }
 
         if (preview != null) {
@@ -219,7 +244,7 @@ public class WidgetPreviewLoader {
             return preview;
         } else {
             // it's not in the db... we need to generate it
-            final Bitmap generatedPreview = generatePreview(o, unusedBitmap);
+            final Bitmap generatedPreview = generatePreview(o, unusedBitmap, width, height);
             preview = generatedPreview;
             if (preview != unusedBitmap) {
                 throw new RuntimeException("generatePreview is not recycling the bitmap " + o);
@@ -231,7 +256,7 @@ public class WidgetPreviewLoader {
             // of the first time widget previews are loaded
             new AsyncTask<Void, Void, Void>(){
                 public Void doInBackground(Void[] args) {
-                    writeToDb(o, generatedPreview);
+                    writeToDb(o, generatedPreview, size);
                     return null;
                 }
 
@@ -325,7 +350,7 @@ public class WidgetPreviewLoader {
         }
     }
 
-    private void writeToDb(Object o, Bitmap preview) {
+    private void writeToDb(Object o, Bitmap preview, String size) {
         String name = getObjectName(o);
         SQLiteDatabase db = mDb.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -334,7 +359,7 @@ public class WidgetPreviewLoader {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         preview.compress(Bitmap.CompressFormat.PNG, 100, stream);
         values.put(CacheDb.COLUMN_PREVIEW_BITMAP, stream.toByteArray());
-        values.put(CacheDb.COLUMN_SIZE, mSize);
+        values.put(CacheDb.COLUMN_SIZE, size);
         db.insert(CacheDb.TABLE_NAME, null, values);
     }
 
@@ -402,7 +427,7 @@ public class WidgetPreviewLoader {
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void) null);
     }
 
-    private Bitmap readFromDb(String name, Bitmap b) {
+    private Bitmap readFromDb(String name, String size, Bitmap b) {
         if (mCachedSelectQuery == null) {
             mCachedSelectQuery = CacheDb.COLUMN_NAME + " = ? AND " +
                     CacheDb.COLUMN_SIZE + " = ?";
@@ -411,7 +436,7 @@ public class WidgetPreviewLoader {
         Cursor result = db.query(CacheDb.TABLE_NAME,
                 new String[] { CacheDb.COLUMN_PREVIEW_BITMAP }, // cols to return
                 mCachedSelectQuery, // select query
-                new String[] { name, mSize }, // args to select query
+                new String[] { name, size }, // args to select query
                 null,
                 null,
                 null,
@@ -436,35 +461,49 @@ public class WidgetPreviewLoader {
     }
 
     public Bitmap generatePreview(Object info, Bitmap preview) {
-        if (preview != null &&
-                (preview.getWidth() != mPreviewBitmapWidth ||
-                preview.getHeight() != mPreviewBitmapHeight)) {
+        int[] size = previewSize();
+        return generatePreview(info, preview, size[0], size[1]);
+    }
+
+    /** A preview drawn into a bitmap of exactly this size (PreviewCachePolicy.fits). */
+    private Bitmap generatePreview(Object info, Bitmap preview, int width, int height) {
+        if (preview != null && !PreviewCachePolicy.fits(preview.getWidth(), preview.getHeight(), width, height)) {
             throw new RuntimeException("Improperly sized bitmap passed as argument");
         }
         if (info instanceof AppWidgetProviderInfo) {
-            return generateWidgetPreview((AppWidgetProviderInfo) info, preview);
+            return generateWidgetPreview((AppWidgetProviderInfo) info, preview, width, height);
         } else {
-            return generateShortcutPreview(
-                    (ResolveInfo) info, mPreviewBitmapWidth, mPreviewBitmapHeight, preview);
+            return generateShortcutPreview((ResolveInfo) info, width, height, preview);
         }
     }
 
     public Bitmap generateWidgetPreview(AppWidgetProviderInfo info, Bitmap preview) {
+        int[] size = previewSize();
+        return generateWidgetPreview(info, preview, size[0], size[1]);
+    }
+
+    private Bitmap generateWidgetPreview(AppWidgetProviderInfo info, Bitmap preview, int width, int height) {
         int[] cellSpans = Launcher.getSpanForWidget(mContext, info);
-        int maxWidth = maxWidthForWidgetPreview(cellSpans[0]);
-        int maxHeight = maxHeightForWidgetPreview(cellSpans[1]);
+        int maxWidth = maxWidthForWidgetPreview(cellSpans[0], width);
+        int maxHeight = maxHeightForWidgetPreview(cellSpans[1], height);
         return generateWidgetPreview(info.provider, info.previewImage, info.icon,
                 cellSpans[0], cellSpans[1], maxWidth, maxHeight, preview, null);
     }
 
     public int maxWidthForWidgetPreview(int spanX) {
-        return Math.min(mPreviewBitmapWidth,
-                mWidgetSpacingLayout.estimateCellWidth(spanX));
+        return maxWidthForWidgetPreview(spanX, previewSize()[0]);
+    }
+
+    private int maxWidthForWidgetPreview(int spanX, int width) {
+        return Math.min(width, mWidgetSpacingLayout.estimateCellWidth(spanX));
     }
 
     public int maxHeightForWidgetPreview(int spanY) {
-        return Math.min(mPreviewBitmapHeight,
-                mWidgetSpacingLayout.estimateCellHeight(spanY));
+        return maxHeightForWidgetPreview(spanY, previewSize()[1]);
+    }
+
+    private int maxHeightForWidgetPreview(int spanY, int height) {
+        return Math.min(height, mWidgetSpacingLayout.estimateCellHeight(spanY));
     }
 
     /** The upscale used to make the previews in the widget tray look bigger. */

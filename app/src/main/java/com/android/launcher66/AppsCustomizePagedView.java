@@ -991,8 +991,11 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
                 mListPreviews = java.util.concurrent.Executors.newSingleThreadExecutor();
             }
             final WidgetPreviewLoader loader = mWidgetPreviewLoader;
+            // The cell's own size goes with the request: the next cell sets another one before this runs
+            final int width = size[0];
+            final int height = size[1];
             mListPreviews.execute(() -> {
-                final Bitmap preview = loader.getPreview(rawInfo);
+                final Bitmap preview = loader.getPreview(rawInfo, width, height);
                 if (preview == null) {
                     return;
                 }
@@ -2061,7 +2064,8 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
                 task.syncThreadPriority();
             }
 
-            images.add(mWidgetPreviewLoader.getPreview(items.get(i)));
+            // At the size this page's task was made for, whatever was set since (the list sets its cells' sizes)
+            images.add(mWidgetPreviewLoader.getPreview(items.get(i), data.maxImageWidth, data.maxImageHeight));
         }
     }
 

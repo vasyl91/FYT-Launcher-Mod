@@ -10,7 +10,8 @@ package com.android.launcher66;
  *       large widget can weigh as much as twenty small ones. The budget is a sixteenth of what the process may
  *       use (Runtime.maxMemory()), at least {@link #MIN_BYTES}; past it the preview used longest ago goes.</li>
  *   <li>A preview is kept under its size and its name together ({@link #key}): the list of widgets and the
- *       pages of the drawer ask for previews of different sizes, and one must never get the other's.</li>
+ *       pages of the drawer ask for previews of different sizes, and one must never get the other's. The size goes
+ *       with the request ({@link #size}), never read again from the loader on the way.</li>
  *   <li>A trim of memory ({@link #keepAfterTrim}): from "running low" (10) on, which includes the launcher's
  *       screen being hidden (20) and every level of a process in the background, nothing is kept; at
  *       "running moderate" (5) half is kept. A preview shown on the screen stays on it either way: its view
@@ -35,6 +36,20 @@ public final class PreviewCachePolicy {
     public static int budgetBytes(long maxMemory) {
         long budget = maxMemory / 16;
         return (int) Math.max(MIN_BYTES, Math.min(Integer.MAX_VALUE, budget));
+    }
+
+    /**
+     * The size of a request as its key and its database column ("WIDTHxHEIGHT"). A request carries its size from start
+     * to end (WidgetPreviewLoader.getPreview(Object, int, int)): the list of widgets and the pages ask for different
+     * sizes at the same time, and a size read from the loader's fields twice could differ the second time.
+     */
+    public static String size(int width, int height) {
+        return width + "x" + height;
+    }
+
+    /** Whether a bitmap is the one for a request of this size: exactly as wide and as high. */
+    public static boolean fits(int bitmapWidth, int bitmapHeight, int width, int height) {
+        return bitmapWidth == width && bitmapHeight == height;
     }
 
     /** @return the key of the preview of this name at this size ("WIDTHxHEIGHT") */
