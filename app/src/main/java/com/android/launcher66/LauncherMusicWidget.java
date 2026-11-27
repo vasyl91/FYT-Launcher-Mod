@@ -1609,8 +1609,12 @@ final class LauncherMusicWidget {
         updateFavoriteButtonState(favoriteState, true);
     }
 
+    /** The track shown is liked: its heart keeps its own red (HeartTint). */
+    private boolean mHeartLiked;
+
     void updateFavoriteButtonState(int favoriteState, boolean enabled) {
-        int drawable = favoriteState == MediaFavoriteController.FAVORITE_STATE_FAVORITED
+        mHeartLiked = favoriteState == MediaFavoriteController.FAVORITE_STATE_FAVORITED;
+        int drawable = mHeartLiked
                 ? R.drawable.music_favorite_p
                 : R.drawable.btn_ic_favorite;
         setFavoriteButtonBackground(mMusicFavoriteButton, drawable, false, enabled);
@@ -1625,9 +1629,11 @@ final class LauncherMusicWidget {
         button.setAlpha(enabled ? 1f : 0.45f);
         button.setBackground(SkinUtils.getDrawable(drawable));
         if (barView) {
-            setBarButtonsTint(button);
+            barTint = WidgetStyler.barTint(mLauncher.mPrefs);
+            ViewTint.tintBackground(button, HeartTint.of(mHeartLiked, barTint));
         } else {
-            setWidgetButtonsTint(button);
+            widgetTint = WidgetStyler.widgetsTint(mLauncher.mPrefs);
+            ViewTint.tintBackground(button, HeartTint.of(mHeartLiked, widgetTint));
         }
     }
 
@@ -1837,15 +1843,18 @@ final class LauncherMusicWidget {
     void applyStyle(WidgetStyle style, int[] count) {
         widgetTint = style.tint(WidgetStyle.Role.WIDGET_BUTTON);
         barTint = style.tint(WidgetStyle.Role.BAR_BUTTON);
-        for (Button button : new Button[] {mPlayPauseButton, mMusicPrevButton, mMusicNextButton, mMusicFavoriteButton}) {
+        for (Button button : new Button[] {mPlayPauseButton, mMusicPrevButton, mMusicNextButton}) {
             ViewTint.tintBackground(button, widgetTint);
             count[0] += button != null ? 1 : 0;
         }
-        for (Button button : new Button[] {mPlayPauseButtonTwo, mMusicPrevButtonTwo, mMusicNextButtonTwo,
-                mMusicFavoriteButtonTwo}) {
+        for (Button button : new Button[] {mPlayPauseButtonTwo, mMusicPrevButtonTwo, mMusicNextButtonTwo}) {
             ViewTint.tintBackground(button, barTint);
             count[0] += button != null ? 1 : 0;
         }
+        // A liked heart keeps its own red whatever the buttons' colour (HeartTint)
+        ViewTint.tintBackground(mMusicFavoriteButton, HeartTint.of(mHeartLiked, widgetTint));
+        ViewTint.tintBackground(mMusicFavoriteButtonTwo, HeartTint.of(mHeartLiked, barTint));
+        count[0] += (mMusicFavoriteButton != null ? 1 : 0) + (mMusicFavoriteButtonTwo != null ? 1 : 0);
         ViewTint.tintProgress(musicProgress, style.tint(WidgetStyle.Role.WIDGET_PROGRESS));
         // The slider's played part and its knob take the same colour (the knob is not a progress layer)
         PositionSliderLook.tint(musicPosition, style.tint(WidgetStyle.Role.WIDGET_PROGRESS));
