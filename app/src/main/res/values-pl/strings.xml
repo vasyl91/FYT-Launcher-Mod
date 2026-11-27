@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Lewy dolny róg</string>
     <string name="badges_bottom_right">Prawy dolny róg</string>
     <string name="badges_size">Rozmiar</string>
-    <string name="badges_small">Mała</string>
-    <string name="badges_medium">Średnia</string>
-    <string name="badges_large">Duża</string>
     <string name="badges_corner">Promień narożników</string>
     <string name="badges_color">Kolor plakietki</string>
     <string name="badges_outline">Obrys</string>

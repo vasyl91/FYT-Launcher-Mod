@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Левый нижний угол</string>
     <string name="badges_bottom_right">Правый нижний угол</string>
     <string name="badges_size">Размер</string>
-    <string name="badges_small">Маленький</string>
-    <string name="badges_medium">Средний</string>
-    <string name="badges_large">Большой</string>
     <string name="badges_corner">Радиус углов</string>
     <string name="badges_color">Цвет значка</string>
     <string name="badges_outline">Контур</string>

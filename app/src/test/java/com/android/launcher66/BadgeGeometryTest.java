@@ -8,24 +8,45 @@ import org.junit.jupiter.api.Test;
 class BadgeGeometryTest {
 
     @Test
-    void theHeightIsAShareOfTheIconsHeight() {
-        assertEquals(20f, BadgeGeometry.height(BadgeGeometry.Size.SMALL, 100f), 0.001f);
-        assertEquals(25f, BadgeGeometry.height(BadgeGeometry.Size.MEDIUM, 100f), 0.001f);
-        assertEquals(33.333f, BadgeGeometry.height(BadgeGeometry.Size.LARGE, 100f), 0.01f);
+    void theHeightIsTheSlidersShareOfTheSeenIconsHeight() {
+        assertEquals(15f, BadgeGeometry.height(15, 100f), 0.001f);
+        assertEquals(25f, BadgeGeometry.height(25, 100f), 0.001f);
+        assertEquals(35f, BadgeGeometry.height(35, 100f), 0.001f);
         // the bars' icons are another size
-        assertEquals(12.5f, BadgeGeometry.height(BadgeGeometry.Size.MEDIUM, 50f), 0.001f);
+        assertEquals(12.5f, BadgeGeometry.height(25, 50f), 0.001f);
     }
 
     @Test
-    void theSizeAndThePositionComeFromTheirStoredValuesAndDefaultToMediumAndTopRight() {
-        assertEquals(BadgeGeometry.Size.SMALL, BadgeGeometry.Size.parse("small"));
-        assertEquals(BadgeGeometry.Size.LARGE, BadgeGeometry.Size.parse("large"));
-        assertEquals(BadgeGeometry.Size.MEDIUM, BadgeGeometry.Size.parse("medium"));
-        assertEquals(BadgeGeometry.Size.MEDIUM, BadgeGeometry.Size.parse(null));
+    void theSliderIsHeldToFifteenToThirtyFiveAndTheDefaultIsTwentyFive() {
+        assertEquals(15, BadgeGeometry.percent(3));
+        assertEquals(35, BadgeGeometry.percent(80));
+        assertEquals(22, BadgeGeometry.percent(22));
+        assertEquals(25, BadgeGeometry.DEFAULT_PERCENT);
+        assertEquals(15f, BadgeGeometry.height(0, 100f), 0.001f);
+    }
+
+    @Test
+    void theNumberIsEightyFivePerCentOfTheBadge() {
+        assertEquals(0.85f, BadgeGeometry.TEXT_SHARE, 0f);
+    }
+
+    @Test
+    void thePositionComesFromItsStoredValueAndDefaultsToTopRight() {
         assertEquals(BadgeGeometry.Position.TOP_LEFT, BadgeGeometry.Position.parse("top_left"));
         assertEquals(BadgeGeometry.Position.BOTTOM_LEFT, BadgeGeometry.Position.parse("bottom_left"));
         assertEquals(BadgeGeometry.Position.BOTTOM_RIGHT, BadgeGeometry.Position.parse("bottom_right"));
         assertEquals(BadgeGeometry.Position.TOP_RIGHT, BadgeGeometry.Position.parse("anything"));
+    }
+
+    @Test
+    void aWiderBadgeGrowsFromItsCornerTowardsTheMiddle() {
+        // the outer edges stay on the corner's: a right corner grows to the left, a left one to the right
+        float[] narrow = BadgeGeometry.place(BadgeGeometry.Position.TOP_RIGHT, 0f, 0f, 100f, 100f, 25f, 25f);
+        float[] wide = BadgeGeometry.place(BadgeGeometry.Position.TOP_RIGHT, 0f, 0f, 100f, 100f, 45f, 25f);
+        assertEquals(narrow[2], wide[2], 0.001f);
+        assertEquals(55f, wide[0], 0.001f);
+        float[] left = BadgeGeometry.place(BadgeGeometry.Position.BOTTOM_LEFT, 0f, 0f, 100f, 100f, 45f, 25f);
+        assertArrayEquals(new float[] {0f, 75f, 45f, 100f}, left, 0.001f);
     }
 
     @Test

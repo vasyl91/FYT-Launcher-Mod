@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Coin inférieur gauche</string>
     <string name="badges_bottom_right">Coin inférieur droit</string>
     <string name="badges_size">Taille</string>
-    <string name="badges_small">Petite</string>
-    <string name="badges_medium">Moyenne</string>
-    <string name="badges_large">Grande</string>
     <string name="badges_corner">Rayon des coins</string>
     <string name="badges_color">Couleur de la pastille</string>
     <string name="badges_outline">Contour</string>

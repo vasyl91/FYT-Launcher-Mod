@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Canto inferior esquerdo</string>
     <string name="badges_bottom_right">Canto inferior direito</string>
     <string name="badges_size">Tamanho</string>
-    <string name="badges_small">Pequeno</string>
-    <string name="badges_medium">Médio</string>
-    <string name="badges_large">Grande</string>
     <string name="badges_corner">Raio dos cantos</string>
     <string name="badges_color">Cor do emblema</string>
     <string name="badges_outline">Contorno</string>

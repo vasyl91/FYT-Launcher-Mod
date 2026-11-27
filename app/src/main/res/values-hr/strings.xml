@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Donji lijevi kut</string>
     <string name="badges_bottom_right">Donji desni kut</string>
     <string name="badges_size">Veličina</string>
-    <string name="badges_small">Mala</string>
-    <string name="badges_medium">Srednja</string>
-    <string name="badges_large">Velika</string>
     <string name="badges_corner">Polumjer kutova</string>
     <string name="badges_color">Boja značke</string>
     <string name="badges_outline">Obrub</string>

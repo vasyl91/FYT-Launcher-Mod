@@ -47,17 +47,18 @@ public class NotificationBadgesFragmentTest {
         prefs().edit().clear().commit();
         ActivityController<SettingsActivity> controller = Robolectric.buildActivity(SettingsActivity.class).setup();
         NotificationBadgesFragment screen = open(controller);
-        for (String key : new String[] {Keys.BADGES_ENABLED, Keys.BADGES_PREVIEW, Keys.BADGES_POSITION, Keys.BADGES_SIZE,
-                Keys.BADGES_CORNER, Keys.BADGES_COLOR, Keys.BADGES_OUTLINE}) {
+        for (String key : new String[] {Keys.BADGES_ENABLED, Keys.BADGES_PREVIEW, Keys.BADGES_POSITION,
+                Keys.BADGES_SIZE_TITLE, Keys.BADGES_SIZE_PERCENT, Keys.BADGES_CORNER, Keys.BADGES_COLOR,
+                Keys.BADGES_OUTLINE}) {
             assertNotNull(key + " is a row of the screen", screen.findPreference(key));
         }
         assertTrue(prefs().getBoolean(Keys.BADGES_ENABLED, true));
         androidx.preference.ListPreference position = screen.findPreference(Keys.BADGES_POSITION);
         assertEquals("top_right", position.getValue());
-        androidx.preference.ListPreference size = screen.findPreference(Keys.BADGES_SIZE);
-        assertEquals("medium", size.getValue());
         assertEquals(4, position.getEntries().length);
-        assertEquals(3, size.getEntries().length);
+        // the size is a slider of 15 to 35 per cent, 25 by default (the owner, 2026-11-27)
+        assertTrue(screen.findPreference(Keys.BADGES_SIZE_PERCENT) instanceof BadgeSizeSeekBarPreference);
+        assertEquals(25, com.android.launcher66.BadgeGeometry.DEFAULT_PERCENT);
         controller.pause().stop().destroy();
     }
 
@@ -66,8 +67,8 @@ public class NotificationBadgesFragmentTest {
         prefs().edit().clear().putBoolean(Keys.BADGES_ENABLED, false).commit();
         ActivityController<SettingsActivity> controller = Robolectric.buildActivity(SettingsActivity.class).setup();
         NotificationBadgesFragment screen = open(controller);
-        for (String key : new String[] {Keys.BADGES_POSITION, Keys.BADGES_SIZE, Keys.BADGES_CORNER, Keys.BADGES_COLOR,
-                Keys.BADGES_OUTLINE}) {
+        for (String key : new String[] {Keys.BADGES_POSITION, Keys.BADGES_SIZE_PERCENT, Keys.BADGES_CORNER,
+                Keys.BADGES_COLOR, Keys.BADGES_OUTLINE}) {
             Preference row = screen.findPreference(key);
             assertNotNull(row);
             assertTrue(row.isVisible());
@@ -80,8 +81,8 @@ public class NotificationBadgesFragmentTest {
     @Test
     public void theBadgeSettingsAreNotTheCreators() {
         // CreatorKeys has none of them: the badges work with the stock layout too
-        for (String key : new String[] {Keys.BADGES_ENABLED, Keys.BADGES_POSITION, Keys.BADGES_SIZE, Keys.BADGES_CORNER,
-                Keys.BADGES_COLOR, Keys.BADGES_OUTLINE}) {
+        for (String key : new String[] {Keys.BADGES_ENABLED, Keys.BADGES_POSITION, Keys.BADGES_SIZE_PERCENT,
+                Keys.BADGES_CORNER, Keys.BADGES_COLOR, Keys.BADGES_OUTLINE}) {
             assertFalse(key, com.android.launcher66.CreatorKeys.contains(key));
         }
     }

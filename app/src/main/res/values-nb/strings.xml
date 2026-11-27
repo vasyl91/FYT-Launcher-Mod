@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Nedre venstre hjørne</string>
     <string name="badges_bottom_right">Nedre høyre hjørne</string>
     <string name="badges_size">Størrelse</string>
-    <string name="badges_small">Liten</string>
-    <string name="badges_medium">Middels</string>
-    <string name="badges_large">Stor</string>
     <string name="badges_corner">Hjørneradius</string>
     <string name="badges_color">Merkefarge</string>
     <string name="badges_outline">Omriss</string>

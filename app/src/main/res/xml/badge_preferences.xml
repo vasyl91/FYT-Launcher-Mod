@@ -31,13 +31,13 @@
             android:entries="@array/badges_position_entries"
             android:entryValues="@array/badges_position_values"
             app:layout="@layout/preference_no_switch" />
-        <com.android.launcher66.settings.CustomThreePreference
-            android:key="badges_size"
-            android:defaultValue="medium"
+        <!-- The size: a slider of 15 to 35 per cent of the seen icon (BadgeGeometry), under badges_size_percent -->
+        <Preference
+            android:key="badges_size_title"
             android:title="@string/badges_size"
-            android:entries="@array/badges_size_entries"
-            android:entryValues="@array/badges_size_values"
-            app:layout="@layout/preference_no_switch" />
+            android:selectable="false" />
+        <com.android.launcher66.settings.BadgeSizeSeekBarPreference
+            android:key="badges_size_percent" />
         <Preference
             android:key="badges_corner_title"
             android:title="@string/badges_corner"

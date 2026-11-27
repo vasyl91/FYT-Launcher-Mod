@@ -74,7 +74,7 @@ public class SettingsRowDimViewTest {
         return alpha * row.getAlpha();
     }
 
-    private static final String[] BELOW = {Keys.BADGES_POSITION, Keys.BADGES_SIZE, Keys.BADGES_COLOR,
+    private static final String[] BELOW = {Keys.BADGES_POSITION, Keys.BADGES_SIZE_PERCENT, Keys.BADGES_COLOR,
             Keys.BADGES_OUTLINE, Keys.BADGES_CORNER};
 
     @Test

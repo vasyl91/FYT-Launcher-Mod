@@ -95,7 +95,9 @@ public final class Keys {
     public static final String BADGES_PREVIEW = "badges_preview";
     public static final String BADGES_CORNER_TITLE = "badges_corner_title";
     public static final String BADGES_POSITION = "badges_position";
-    public static final String BADGES_SIZE = "badges_size";
+    /** The badge's height, per cent of the seen icon (15..35, 25 by default); "badges_size" (small, medium, large) before. */
+    public static final String BADGES_SIZE_PERCENT = "badges_size_percent";
+    public static final String BADGES_SIZE_TITLE = "badges_size_title";
     public static final String BADGES_CORNER = "badges_corner";
     /** The badge's colour (an opaque int); none means the settings' accent (ThemeAccent). */
     public static final String BADGES_COLOR = "badges_color";

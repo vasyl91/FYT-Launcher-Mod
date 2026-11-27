@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Доњи леви угао</string>
     <string name="badges_bottom_right">Доњи десни угао</string>
     <string name="badges_size">Величина</string>
-    <string name="badges_small">Мала</string>
-    <string name="badges_medium">Средња</string>
-    <string name="badges_large">Велика</string>
     <string name="badges_corner">Полупречник углова</string>
     <string name="badges_color">Боја значке</string>
     <string name="badges_outline">Контура</string>

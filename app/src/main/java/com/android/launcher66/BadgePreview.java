@@ -41,6 +41,8 @@ public final class BadgePreview {
         }
         BadgeDrawable drawable = new BadgeDrawable(context);
         drawable.setBounds(0, 0, sizePx, sizePx);
+        // sized by the picture as it is seen, as on the home screen
+        drawable.setVisible(IconBounds.of(icon.getDrawable()));
         drawable.set(NUMBER, BadgeStyle.load(context), BadgeModel.iconTextColor(context));
         icon.getOverlay().add(drawable);
         icon.setTag(R.id.badge_host, drawable);

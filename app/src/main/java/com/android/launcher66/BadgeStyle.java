@@ -19,16 +19,17 @@ final class BadgeStyle {
 
     final boolean enabled;
     final BadgeGeometry.Position position;
-    final BadgeGeometry.Size size;
+    /** The badge's height as a share of the seen icon's, per cent (BadgeGeometry). */
+    final int sizePercent;
     final int corner;
     final int color;
     final boolean outline;
 
-    BadgeStyle(boolean enabled, BadgeGeometry.Position position, BadgeGeometry.Size size, int corner, int color,
+    BadgeStyle(boolean enabled, BadgeGeometry.Position position, int sizePercent, int corner, int color,
                boolean outline) {
         this.enabled = enabled;
         this.position = position;
-        this.size = size;
+        this.sizePercent = BadgeGeometry.percent(sizePercent);
         this.corner = Math.max(0, Math.min(100, corner));
         this.color = color;
         this.outline = outline;
@@ -40,13 +41,13 @@ final class BadgeStyle {
                 : ThemeAccent.color(context);
         return new BadgeStyle(prefs.getBoolean(Keys.BADGES_ENABLED, true),
                 BadgeGeometry.Position.parse(prefs.getString(Keys.BADGES_POSITION, "top_right")),
-                BadgeGeometry.Size.parse(prefs.getString(Keys.BADGES_SIZE, "medium")),
+                prefs.getInt(Keys.BADGES_SIZE_PERCENT, BadgeGeometry.DEFAULT_PERCENT),
                 prefs.getInt(Keys.BADGES_CORNER, DEFAULT_CORNER), color, prefs.getBoolean(Keys.BADGES_OUTLINE, false));
     }
 
     /** Whether a key is one of the badge settings. */
     static boolean isBadgeSetting(String key) {
-        return Keys.BADGES_ENABLED.equals(key) || Keys.BADGES_POSITION.equals(key) || Keys.BADGES_SIZE.equals(key)
+        return Keys.BADGES_ENABLED.equals(key) || Keys.BADGES_POSITION.equals(key) || Keys.BADGES_SIZE_PERCENT.equals(key)
                 || Keys.BADGES_CORNER.equals(key) || Keys.BADGES_COLOR.equals(key) || Keys.BADGES_OUTLINE.equals(key)
                 || ThemeAccent.KEY.equals(key) || Keys.USER_LAYOUT.equals(key);
     }

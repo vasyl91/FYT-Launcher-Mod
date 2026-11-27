@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Sol alt köşe</string>
     <string name="badges_bottom_right">Sağ alt köşe</string>
     <string name="badges_size">Boyut</string>
-    <string name="badges_small">Küçük</string>
-    <string name="badges_medium">Orta</string>
-    <string name="badges_large">Büyük</string>
     <string name="badges_corner">Köşe yarıçapı</string>
     <string name="badges_color">Rozet rengi</string>
     <string name="badges_outline">Kenar çizgisi</string>

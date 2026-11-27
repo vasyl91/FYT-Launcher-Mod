@@ -29,7 +29,7 @@ import org.robolectric.annotation.Config;
 public class BadgeDrawableTest {
 
     private static BadgeStyle style(boolean enabled, BadgeGeometry.Position position) {
-        return new BadgeStyle(enabled, position, BadgeGeometry.Size.MEDIUM, 50, 0xff4285f4, false);
+        return new BadgeStyle(enabled, position, 25, 50, 0xff4285f4, false);
     }
 
     private static BadgeDrawable badge(int count, BadgeStyle style) {
@@ -75,6 +75,34 @@ public class BadgeDrawableTest {
     }
 
     @Test
+    public void theBadgeIsSizedAndPlacedByTheSeenIconNotByThePicturesSquare() {
+        // a round icon that fills the middle 60 % of its square (20 % margin each side)
+        BadgeDrawable drawable = badge(4, style(true, BadgeGeometry.Position.TOP_RIGHT));
+        drawable.setVisible(new float[] {0.2f, 0.2f, 0.8f, 0.8f});
+        float[] r = drawable.badgeRect();
+        assertEquals("a quarter of the 60 px the icon is seen", 15f, r[3] - r[1], 0.01f);
+        assertEquals("in the seen icon's corner", 180f, r[2], 0.01f);
+        assertEquals(220f, r[1], 0.01f);
+    }
+
+    @Test
+    public void theSeenPartOfAPictureIsItsPixelsThatAreNotTransparent() {
+        android.graphics.Bitmap bitmap = android.graphics.Bitmap.createBitmap(10, 10, android.graphics.Bitmap.Config.ARGB_8888);
+        for (int x = 2; x < 8; x++) {
+            for (int y = 3; y < 9; y++) {
+                bitmap.setPixel(x, y, 0xff00ff00);
+            }
+        }
+        float[] seen = IconBounds.of(new android.graphics.drawable.BitmapDrawable(
+                RuntimeEnvironment.getApplication().getResources(), bitmap));
+        assertNotNull(seen);
+        assertEquals(0.2f, seen[0], 0.001f);
+        assertEquals(0.3f, seen[1], 0.001f);
+        assertEquals(0.8f, seen[2], 0.001f);
+        assertEquals(0.9f, seen[3], 0.001f);
+    }
+
+    @Test
     public void theStyleIsReadFromTheSettings() {
         Context context = RuntimeEnvironment.getApplication();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -82,17 +110,17 @@ public class BadgeDrawableTest {
         BadgeStyle defaults = BadgeStyle.load(context);
         assertTrue(defaults.enabled);
         assertEquals(BadgeGeometry.Position.TOP_RIGHT, defaults.position);
-        assertEquals(BadgeGeometry.Size.MEDIUM, defaults.size);
+        assertEquals(25, defaults.sizePercent);
         assertEquals(50, defaults.corner);
         assertFalse(defaults.outline);
         assertEquals("the accent while no colour was chosen", ThemeAccent.color(context), defaults.color);
         prefs.edit().putBoolean(Keys.BADGES_ENABLED, false).putString(Keys.BADGES_POSITION, "bottom_left")
-                .putString(Keys.BADGES_SIZE, "large").putInt(Keys.BADGES_CORNER, 0)
+                .putInt(Keys.BADGES_SIZE_PERCENT, 33).putInt(Keys.BADGES_CORNER, 0)
                 .putInt(Keys.BADGES_COLOR, 0x00ff0000).putBoolean(Keys.BADGES_OUTLINE, true).commit();
         BadgeStyle chosen = BadgeStyle.load(context);
         assertFalse(chosen.enabled);
         assertEquals(BadgeGeometry.Position.BOTTOM_LEFT, chosen.position);
-        assertEquals(BadgeGeometry.Size.LARGE, chosen.size);
+        assertEquals(33, chosen.sizePercent);
         assertEquals(0, chosen.corner);
         assertEquals("opaque", 0xffff0000, chosen.color);
         assertTrue(chosen.outline);

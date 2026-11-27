@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Ikhona engezansi kwesokunxele</string>
     <string name="badges_bottom_right">Ikhona engezansi kwesokudla</string>
     <string name="badges_size">Usayizi</string>
-    <string name="badges_small">Esincane</string>
-    <string name="badges_medium">Maphakathi</string>
-    <string name="badges_large">Esikhulu</string>
     <string name="badges_corner">Irediyasi yekhona</string>
     <string name="badges_color">Umbala webheji</string>
     <string name="badges_outline">Umbhalo wangaphandle</string>

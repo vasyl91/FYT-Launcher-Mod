@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">왼쪽 아래 모서리</string>
     <string name="badges_bottom_right">오른쪽 아래 모서리</string>
     <string name="badges_size">크기</string>
-    <string name="badges_small">작게</string>
-    <string name="badges_medium">보통</string>
-    <string name="badges_large">크게</string>
     <string name="badges_corner">모서리 반경</string>
     <string name="badges_color">배지 색상</string>
     <string name="badges_outline">윤곽선</string>

@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Vasen alakulma</string>
     <string name="badges_bottom_right">Oikea alakulma</string>
     <string name="badges_size">Koko</string>
-    <string name="badges_small">Pieni</string>
-    <string name="badges_medium">Keskikokoinen</string>
-    <string name="badges_large">Suuri</string>
     <string name="badges_corner">Kulmien pyöristys</string>
     <string name="badges_color">Merkin väri</string>
     <string name="badges_outline">Ääriviiva</string>

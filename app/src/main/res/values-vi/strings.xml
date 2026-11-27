@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Góc dưới bên trái</string>
     <string name="badges_bottom_right">Góc dưới bên phải</string>
     <string name="badges_size">Kích thước</string>
-    <string name="badges_small">Nhỏ</string>
-    <string name="badges_medium">Vừa</string>
-    <string name="badges_large">Lớn</string>
     <string name="badges_corner">Bán kính góc</string>
     <string name="badges_color">Màu huy hiệu</string>
     <string name="badges_outline">Viền</string>

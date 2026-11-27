@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Apakšējais kreisais stūris</string>
     <string name="badges_bottom_right">Apakšējais labais stūris</string>
     <string name="badges_size">Izmērs</string>
-    <string name="badges_small">Maza</string>
-    <string name="badges_medium">Vidēja</string>
-    <string name="badges_large">Liela</string>
     <string name="badges_corner">Stūru rādiuss</string>
     <string name="badges_color">Nozīmītes krāsa</string>
     <string name="badges_outline">Kontūra</string>

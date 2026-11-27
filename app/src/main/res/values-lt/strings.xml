@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Apatinis kairysis kampas</string>
     <string name="badges_bottom_right">Apatinis dešinysis kampas</string>
     <string name="badges_size">Dydis</string>
-    <string name="badges_small">Maža</string>
-    <string name="badges_medium">Vidutinė</string>
-    <string name="badges_large">Didelė</string>
     <string name="badges_corner">Kampų spindulys</string>
     <string name="badges_color">Ženkliuko spalva</string>
     <string name="badges_outline">Kontūras</string>

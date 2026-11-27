@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">左下隅</string>
     <string name="badges_bottom_right">右下隅</string>
     <string name="badges_size">サイズ</string>
-    <string name="badges_small">小</string>
-    <string name="badges_medium">中</string>
-    <string name="badges_large">大</string>
     <string name="badges_corner">角の丸み</string>
     <string name="badges_color">バッジの色</string>
     <string name="badges_outline">アウトライン</string>

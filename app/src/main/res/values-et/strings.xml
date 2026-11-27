@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Vasak alanurk</string>
     <string name="badges_bottom_right">Parem alanurk</string>
     <string name="badges_size">Suurus</string>
-    <string name="badges_small">Väike</string>
-    <string name="badges_medium">Keskmine</string>
-    <string name="badges_large">Suur</string>
     <string name="badges_corner">Nurga raadius</string>
     <string name="badges_color">Märgi värv</string>
     <string name="badges_outline">Kontuur</string>

@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Esquina inferior izquierda</string>
     <string name="badges_bottom_right">Esquina inferior derecha</string>
     <string name="badges_size">Tamaño</string>
-    <string name="badges_small">Pequeño</string>
-    <string name="badges_medium">Mediano</string>
-    <string name="badges_large">Grande</string>
     <string name="badges_corner">Radio de las esquinas</string>
     <string name="badges_color">Color de la insignia</string>
     <string name="badges_outline">Contorno</string>

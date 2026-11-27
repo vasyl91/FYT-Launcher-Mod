@@ -133,6 +133,7 @@ public class PagedViewIcon extends androidx.appcompat.widget.AppCompatTextView {
                 + (getWidth() - getCompoundPaddingLeft() - getCompoundPaddingRight() - w) / 2;
         int y = getScrollY() + getPaddingTop();
         mBadge.setBounds(x, y, x + w, y + h);
+        mBadge.setVisible(IconBounds.of(icon));
         // the colour of the number is the drawer's own text colour
         mBadge.set(count, model.style(getContext()), getCurrentTextColor());
         mBadge.draw(canvas);

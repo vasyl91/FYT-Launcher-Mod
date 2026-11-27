@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Kaliwang ibabang sulok</string>
     <string name="badges_bottom_right">Kanang ibabang sulok</string>
     <string name="badges_size">Laki</string>
-    <string name="badges_small">Maliit</string>
-    <string name="badges_medium">Katamtaman</string>
-    <string name="badges_large">Malaki</string>
     <string name="badges_corner">Radius ng sulok</string>
     <string name="badges_color">Kulay ng badge</string>
     <string name="badges_outline">Outline</string>

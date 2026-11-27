@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Зүүн доод булан</string>
     <string name="badges_bottom_right">Баруун доод булан</string>
     <string name="badges_size">Хэмжээ</string>
-    <string name="badges_small">Жижиг</string>
-    <string name="badges_medium">Дунд</string>
-    <string name="badges_large">Том</string>
     <string name="badges_corner">Булангийн радиус</string>
     <string name="badges_color">Тэмдгийн өнгө</string>
     <string name="badges_outline">Ирмэг</string>

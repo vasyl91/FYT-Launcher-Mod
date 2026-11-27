@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Colțul din stânga jos</string>
     <string name="badges_bottom_right">Colțul din dreapta jos</string>
     <string name="badges_size">Dimensiune</string>
-    <string name="badges_small">Mică</string>
-    <string name="badges_medium">Medie</string>
-    <string name="badges_large">Mare</string>
     <string name="badges_corner">Raza colțurilor</string>
     <string name="badges_color">Culoarea insignei</string>
     <string name="badges_outline">Contur</string>

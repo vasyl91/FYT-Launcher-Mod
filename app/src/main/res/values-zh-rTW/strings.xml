@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">左下角</string>
     <string name="badges_bottom_right">右下角</string>
     <string name="badges_size">大小</string>
-    <string name="badges_small">小</string>
-    <string name="badges_medium">中</string>
-    <string name="badges_large">大</string>
     <string name="badges_corner">圓角半徑</string>
     <string name="badges_color">徽章顏色</string>
     <string name="badges_outline">外框</string>

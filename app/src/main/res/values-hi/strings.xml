@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">नीचे बायाँ कोना</string>
     <string name="badges_bottom_right">नीचे दायाँ कोना</string>
     <string name="badges_size">आकार</string>
-    <string name="badges_small">छोटा</string>
-    <string name="badges_medium">मध्यम</string>
-    <string name="badges_large">बड़ा</string>
     <string name="badges_corner">कोने की त्रिज्या</string>
     <string name="badges_color">बैज का रंग</string>
     <string name="badges_outline">रूपरेखा</string>

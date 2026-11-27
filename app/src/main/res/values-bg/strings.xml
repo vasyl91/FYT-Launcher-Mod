@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Долен ляв ъгъл</string>
     <string name="badges_bottom_right">Долен десен ъгъл</string>
     <string name="badges_size">Размер</string>
-    <string name="badges_small">Малък</string>
-    <string name="badges_medium">Среден</string>
-    <string name="badges_large">Голям</string>
     <string name="badges_corner">Радиус на ъглите</string>
     <string name="badges_color">Цвят на значката</string>
     <string name="badges_outline">Контур</string>

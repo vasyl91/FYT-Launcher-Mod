@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Ստորին ձախ անկյուն</string>
     <string name="badges_bottom_right">Ստորին աջ անկյուն</string>
     <string name="badges_size">Չափ</string>
-    <string name="badges_small">Փոքր</string>
-    <string name="badges_medium">Միջին</string>
-    <string name="badges_large">Մեծ</string>
     <string name="badges_corner">Անկյունների շառավիղ</string>
     <string name="badges_color">Նշանի գույն</string>
     <string name="badges_outline">Եզրագիծ</string>

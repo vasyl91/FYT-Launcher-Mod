@@ -607,9 +607,6 @@
     <string name="badges_bottom_left">Bottom left corner</string>
     <string name="badges_bottom_right">Bottom right corner</string>
     <string name="badges_size">Size</string>
-    <string name="badges_small">Small</string>
-    <string name="badges_medium">Medium</string>
-    <string name="badges_large">Large</string>
     <string name="badges_corner">Corner radius</string>
     <string name="badges_color">Badge color</string>
     <string name="badges_outline">Outline</string>

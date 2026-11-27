@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Κάτω αριστερή γωνία</string>
     <string name="badges_bottom_right">Κάτω δεξιά γωνία</string>
     <string name="badges_size">Μέγεθος</string>
-    <string name="badges_small">Μικρό</string>
-    <string name="badges_medium">Μεσαίο</string>
-    <string name="badges_large">Μεγάλο</string>
     <string name="badges_corner">Ακτίνα γωνιών</string>
     <string name="badges_color">Χρώμα σήματος</string>
     <string name="badges_outline">Περίγραμμα</string>

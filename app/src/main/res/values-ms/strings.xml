@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Penjuru kiri bawah</string>
     <string name="badges_bottom_right">Penjuru kanan bawah</string>
     <string name="badges_size">Saiz</string>
-    <string name="badges_small">Kecil</string>
-    <string name="badges_medium">Sederhana</string>
-    <string name="badges_large">Besar</string>
     <string name="badges_corner">Jejari penjuru</string>
     <string name="badges_color">Warna lencana</string>
     <string name="badges_outline">Garis luar</string>

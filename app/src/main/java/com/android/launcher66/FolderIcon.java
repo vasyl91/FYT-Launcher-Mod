@@ -629,6 +629,7 @@ public class FolderIcon extends LinearLayout implements FolderListener {
         }
         mBadge.setBounds(mPreviewBackground.getLeft(), mPreviewBackground.getTop(), mPreviewBackground.getRight(),
                 mPreviewBackground.getBottom());
+        mBadge.setVisible(IconBounds.of(mPreviewBackground.getDrawable()));
         mBadge.set(count, model.style(getContext()), BadgeModel.iconTextColor(getContext()));
         mBadge.draw(canvas);
     }

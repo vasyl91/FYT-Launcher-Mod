@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Cantonada inferior esquerra</string>
     <string name="badges_bottom_right">Cantonada inferior dreta</string>
     <string name="badges_size">Mida</string>
-    <string name="badges_small">Petita</string>
-    <string name="badges_medium">Mitjana</string>
-    <string name="badges_large">Gran</string>
     <string name="badges_corner">Radi de les cantonades</string>
     <string name="badges_color">Color de la insígnia</string>
     <string name="badges_outline">Contorn</string>

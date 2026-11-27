@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Левы ніжні кут</string>
     <string name="badges_bottom_right">Правы ніжні кут</string>
     <string name="badges_size">Памер</string>
-    <string name="badges_small">Малы</string>
-    <string name="badges_medium">Сярэдні</string>
-    <string name="badges_large">Вялікі</string>
     <string name="badges_corner">Радыус кутоў</string>
     <string name="badges_color">Колер значка</string>
     <string name="badges_outline">Контур</string>

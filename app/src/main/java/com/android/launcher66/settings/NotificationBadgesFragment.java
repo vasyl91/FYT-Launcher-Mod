@@ -24,8 +24,9 @@ import com.android.launcher66.colorpicker.ColorPicker;
  * The screen "Notification badges" (H2): the number of notifications on the icons (BadgeModel, BadgeDrawable).
  *
  * <p>One category, in this order: "Enable notification badges"; a preview, the launcher's icon in the size of the icons of
- * the home screen with a badge of "4" made from the settings below it (each change shows at once); the corner; the size; the
- * corner radius (a slider, 0 a square, 100 a circle); the colour of the badge (the accent while none was chosen); the outline.
+ * the home screen with a badge of "4" made from the settings below it (each change shows at once); the corner; the size
+ * (a slider, 15 to 35 per cent of the seen icon); the corner radius (a slider, 0 a square, 100 a circle); the colour of
+ * the badge (the accent while none was chosen); the outline.
  * With the first switch off everything below it is dimmed (SettingsRowDim) and does not respond, and is still seen. The settings are
  * the launcher's own and not the creator's: they work with the stock layout too (CreatorKeys has none). Back goes to
  * "Launcher settings".
@@ -33,7 +34,8 @@ import com.android.launcher66.colorpicker.ColorPicker;
 public class NotificationBadgesFragment extends PreferenceFragmentCompat {
 
     private static final String[] BELOW = {
-            Keys.BADGES_PREVIEW, Keys.BADGES_POSITION, Keys.BADGES_SIZE, Keys.BADGES_CORNER_TITLE, Keys.BADGES_CORNER,
+            Keys.BADGES_PREVIEW, Keys.BADGES_POSITION, Keys.BADGES_SIZE_TITLE, Keys.BADGES_SIZE_PERCENT,
+            Keys.BADGES_CORNER_TITLE, Keys.BADGES_CORNER,
             Keys.BADGES_COLOR, Keys.BADGES_OUTLINE
     };
 

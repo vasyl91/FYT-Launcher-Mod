@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Levý dolní roh</string>
     <string name="badges_bottom_right">Pravý dolní roh</string>
     <string name="badges_size">Velikost</string>
-    <string name="badges_small">Malá</string>
-    <string name="badges_medium">Střední</string>
-    <string name="badges_large">Velká</string>
     <string name="badges_corner">Poloměr rohů</string>
     <string name="badges_color">Barva odznaku</string>
     <string name="badges_outline">Obrys</string>

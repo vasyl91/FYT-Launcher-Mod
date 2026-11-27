@@ -3,29 +3,32 @@ package com.android.launcher66;
 /**
  * The shape and the place of a notification badge on an icon.
  *
- * <p>The rules (the owner's, 2026-11-25): the badge's height is a share of the icon's height where it lies
- * ({@link Size}: a fifth, a quarter or a third; the bars have other icon sizes than the home screen); its width is the
- * height, or the width of its text and its padding when that is more, so that "99+" is not squeezed; the
- * corner radius follows the slider, 0 a square and 100 a circle (a radius of half the height); and the badge
- * lies in a corner of the icon's rectangle, inside it. Pure Java, so that it has a test.
+ * <p>The rules (the owner's, 2026-11-25 and 2026-11-27):
+ * <ul>
+ *   <li>The badge's height is a share of the icon's height as it is seen ({@link VisibleBounds}: not the picture's whole
+ *       square), set with a slider from {@link #MIN_PERCENT} to {@link #MAX_PERCENT} per cent, {@link #DEFAULT_PERCENT} by
+ *       default. The bars have other icon sizes than the home screen; the share is the same.</li>
+ *   <li>The number's height is {@link #TEXT_SHARE} of the badge's.</li>
+ *   <li>Its width is the height, or the width of its text and its padding when that is more, so that "99+" is not
+ *       squeezed: a wider badge grows from its corner towards the icon's middle, and the number is in its middle.</li>
+ *   <li>The corner radius follows its slider, 0 a square and 100 a circle (a radius of half the height).</li>
+ *   <li>The badge lies in a corner of the seen icon, inside it.</li>
+ * </ul>
+ * Pure Java, so that it has a test.
  */
-final class BadgeGeometry {
+public final class BadgeGeometry {
 
-    enum Size {
-        SMALL(1f / 5f), MEDIUM(1f / 4f), LARGE(1f / 3f);
+    public static final int MIN_PERCENT = 15;
+    public static final int MAX_PERCENT = 35;
+    public static final int DEFAULT_PERCENT = 25;
+    /** The number's text size, as a share of the badge's height. */
+    static final float TEXT_SHARE = 0.85f;
+    /** The room each side of the number, as a share of the badge's height. */
+    static final float PADDING_SHARE = 0.2f;
 
-        final float share;
-
-        Size(float share) {
-            this.share = share;
-        }
-
-        static Size parse(String value) {
-            if ("small".equals(value)) {
-                return SMALL;
-            }
-            return "large".equals(value) ? LARGE : MEDIUM;
-        }
+    /** The slider's value held to its range. */
+    public static int percent(int value) {
+        return Math.max(MIN_PERCENT, Math.min(MAX_PERCENT, value));
     }
 
     enum Position {
@@ -48,9 +51,9 @@ final class BadgeGeometry {
     private BadgeGeometry() {
     }
 
-    /** The badge's height for an icon of this height. */
-    static float height(Size size, float iconHeightPx) {
-        return Math.max(1f, size.share * iconHeightPx);
+    /** The badge's height for an icon seen this high, at a size of {@code percent} per cent (held to its range). */
+    static float height(int percent, float iconHeightPx) {
+        return Math.max(1f, percent(percent) / 100f * iconHeightPx);
     }
 
     /** The badge's width: its height, or its text and padding when they need more. */
@@ -65,8 +68,9 @@ final class BadgeGeometry {
     }
 
     /**
-     * The badge's rectangle {left, top, right, bottom} in a corner of the icon's rectangle, inside it. A badge wider
-     * or higher than the icon is cut to it.
+     * The badge's rectangle {left, top, right, bottom} in a corner of the icon's rectangle, inside it: its outer edges on
+     * the corner's, so a wider badge reaches towards the icon's middle. A badge wider or higher than the icon is cut to
+     * it.
      */
     static float[] place(Position position, float iconLeft, float iconTop, float iconRight, float iconBottom,
                          float widthPx, float heightPx) {

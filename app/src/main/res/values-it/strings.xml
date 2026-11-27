@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Angolo in basso a sinistra</string>
     <string name="badges_bottom_right">Angolo in basso a destra</string>
     <string name="badges_size">Dimensione</string>
-    <string name="badges_small">Piccola</string>
-    <string name="badges_medium">Media</string>
-    <string name="badges_large">Grande</string>
     <string name="badges_corner">Raggio degli angoli</string>
     <string name="badges_color">Colore del badge</string>
     <string name="badges_outline">Contorno</string>

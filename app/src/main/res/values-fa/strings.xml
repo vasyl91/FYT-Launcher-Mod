@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">گوشهٔ پایین چپ</string>
     <string name="badges_bottom_right">گوشهٔ پایین راست</string>
     <string name="badges_size">اندازه</string>
-    <string name="badges_small">کوچک</string>
-    <string name="badges_medium">متوسط</string>
-    <string name="badges_large">بزرگ</string>
     <string name="badges_corner">شعاع گوشه</string>
     <string name="badges_color">رنگ نشان</string>
     <string name="badges_outline">دورخط</string>

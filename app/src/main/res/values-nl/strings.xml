@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Linkeronderhoek</string>
     <string name="badges_bottom_right">Rechteronderhoek</string>
     <string name="badges_size">Grootte</string>
-    <string name="badges_small">Klein</string>
-    <string name="badges_medium">Gemiddeld</string>
-    <string name="badges_large">Groot</string>
     <string name="badges_corner">Hoekstraal</string>
     <string name="badges_color">Badgekleur</string>
     <string name="badges_outline">Omtrek</string>

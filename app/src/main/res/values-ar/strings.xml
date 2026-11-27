@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">الزاوية السفلية اليسرى</string>
     <string name="badges_bottom_right">الزاوية السفلية اليمنى</string>
     <string name="badges_size">الحجم</string>
-    <string name="badges_small">صغير</string>
-    <string name="badges_medium">متوسط</string>
-    <string name="badges_large">كبير</string>
     <string name="badges_corner">نصف قطر الزاوية</string>
     <string name="badges_color">لون الشارة</string>
     <string name="badges_outline">حد خارجي</string>

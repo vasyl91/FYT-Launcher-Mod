@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Nedre vänstra hörnet</string>
     <string name="badges_bottom_right">Nedre högra hörnet</string>
     <string name="badges_size">Storlek</string>
-    <string name="badges_small">Liten</string>
-    <string name="badges_medium">Medel</string>
-    <string name="badges_large">Stor</string>
     <string name="badges_corner">Hörnradie</string>
     <string name="badges_color">Märkets färg</string>
     <string name="badges_outline">Kontur</string>

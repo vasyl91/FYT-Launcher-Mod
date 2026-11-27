@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Pojok kiri bawah</string>
     <string name="badges_bottom_right">Pojok kanan bawah</string>
     <string name="badges_size">Ukuran</string>
-    <string name="badges_small">Kecil</string>
-    <string name="badges_medium">Sedang</string>
-    <string name="badges_large">Besar</string>
     <string name="badges_corner">Radius sudut</string>
     <string name="badges_color">Warna lencana</string>
     <string name="badges_outline">Garis tepi</string>

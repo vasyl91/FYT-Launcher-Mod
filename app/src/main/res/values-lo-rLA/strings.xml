@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">ມຸມລຸ່ມຊ້າຍ</string>
     <string name="badges_bottom_right">ມຸມລຸ່ມຂວາ</string>
     <string name="badges_size">ຂະໜາດ</string>
-    <string name="badges_small">ນ້ອຍ</string>
-    <string name="badges_medium">ກາງ</string>
-    <string name="badges_large">ໃຫຍ່</string>
     <string name="badges_corner">ລັດສະໝີມຸມ</string>
     <string name="badges_color">ສີປ້າຍ</string>
     <string name="badges_outline">ເສັ້ນຂອບ</string>

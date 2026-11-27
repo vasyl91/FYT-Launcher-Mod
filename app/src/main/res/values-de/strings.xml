@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Ecke unten links</string>
     <string name="badges_bottom_right">Ecke unten rechts</string>
     <string name="badges_size">Größe</string>
-    <string name="badges_small">Klein</string>
-    <string name="badges_medium">Mittel</string>
-    <string name="badges_large">Groß</string>
     <string name="badges_corner">Eckenradius</string>
     <string name="badges_color">Badge-Farbe</string>
     <string name="badges_outline">Umriss</string>

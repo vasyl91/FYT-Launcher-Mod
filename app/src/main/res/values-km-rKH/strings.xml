@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">ជ្រុងខាងក្រោមឆ្វេង</string>
     <string name="badges_bottom_right">ជ្រុងខាងក្រោមស្តាំ</string>
     <string name="badges_size">ទំហំ</string>
-    <string name="badges_small">តូច</string>
-    <string name="badges_medium">មធ្យម</string>
-    <string name="badges_large">ធំ</string>
     <string name="badges_corner">កាំជ្រុង</string>
     <string name="badges_color">ពណ៌ស្លាក</string>
     <string name="badges_outline">គ្រោង</string>

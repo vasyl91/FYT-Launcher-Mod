@@ -209,6 +209,9 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   (`L/FolderItemLook`, round 29: the page's icon size, the icon text colour and shadow).
 - **Badges:** `NotificationListener` tells `L/BadgeModel`, which counts on a thread of its own (`L/BadgeCounts`, plain
   Java) and tells the views registered in `L/BadgeViews`; `L/BadgeDrawable` draws a badge in an icon's rectangle.
+  Since round 29 its size is a slider of 15–35 % (`badges_size_percent`, `S/BadgeSizeSeekBarPreference`) of the icon
+  as it is seen: `L/VisibleBounds` (plain Java) finds the opaque part of the picture, `L/IconBounds` keeps it per
+  bitmap; `L/BadgeGeometry` has the rules (the number at 85 %, a wider badge grows towards the icon's middle).
 - **"Stock layout"** (D-85): `L/CreatorKeys` (every key of the creator's XML, checked by a test) and `L/CreatorPrefs`
   (the read-only wrapper through which the launcher reads them) give the defaults while the creator is off.
 - **Direct boot:** in debug builds only (`launcherDirectBoot` in `app/build.gradle.kts`, since 2026-11-26: the first

@@ -26,6 +26,8 @@ final class BadgeDrawable extends Drawable {
     private int mCount;
     private BadgeStyle mStyle;
     private int mTextColor = 0xffffffff;
+    /** The seen part of the icon's picture (VisibleBounds); null for the whole bounds. */
+    private float[] mVisible;
 
     BadgeDrawable(Context context) {
         mDensity = context.getResources().getDisplayMetrics().density;
@@ -48,6 +50,14 @@ final class BadgeDrawable extends Drawable {
         return true;
     }
 
+    /**
+     * The part of the bounds the icon is seen in, as fractions {left, top, right, bottom} (IconBounds); null for all of
+     * them. The badge is sized by that part's height and lies in its corner.
+     */
+    void setVisible(float[] fractions) {
+        mVisible = fractions;
+    }
+
     /** Whether it draws anything now. */
     boolean isShown() {
         return mCount > 0 && mStyle != null && mStyle.enabled && !getBounds().isEmpty();
@@ -61,11 +71,13 @@ final class BadgeDrawable extends Drawable {
         if (!isShown()) {
             return null;
         }
-        float height = BadgeGeometry.height(mStyle.size, getBounds().height());
-        mText.setTextSize(height * 0.62f);
-        float width = BadgeGeometry.width(height, mText.measureText(BadgeCounts.label(mCount)), height * 0.3f);
-        return BadgeGeometry.place(mStyle.position, getBounds().left, getBounds().top, getBounds().right,
-                getBounds().bottom, width, height);
+        float[] seen = VisibleBounds.in(getBounds().left, getBounds().top, getBounds().right, getBounds().bottom,
+                mVisible);
+        float height = BadgeGeometry.height(mStyle.sizePercent, seen[3] - seen[1]);
+        mText.setTextSize(height * BadgeGeometry.TEXT_SHARE);
+        float width = BadgeGeometry.width(height, mText.measureText(BadgeCounts.label(mCount)),
+                height * BadgeGeometry.PADDING_SHARE);
+        return BadgeGeometry.place(mStyle.position, seen[0], seen[1], seen[2], seen[3], width, height);
     }
 
     @Override
@@ -84,7 +96,7 @@ final class BadgeDrawable extends Drawable {
             canvas.drawRoundRect(mRect, radius, radius, mStroke);
         }
         mText.setColor(mTextColor);
-        mText.setTextSize(height * 0.62f);
+        mText.setTextSize(height * BadgeGeometry.TEXT_SHARE);
         Paint.FontMetrics metrics = mText.getFontMetrics();
         canvas.drawText(BadgeCounts.label(mCount), mRect.centerX(), mRect.centerY() - (metrics.ascent + metrics.descent) / 2f, mText);
     }

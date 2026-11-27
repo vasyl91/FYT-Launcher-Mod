@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Kona ya chini kushoto</string>
     <string name="badges_bottom_right">Kona ya chini kulia</string>
     <string name="badges_size">Ukubwa</string>
-    <string name="badges_small">Ndogo</string>
-    <string name="badges_medium">Wastani</string>
-    <string name="badges_large">Kubwa</string>
     <string name="badges_corner">Kipenyo cha pembe</string>
     <string name="badges_color">Rangi ya beji</string>
     <string name="badges_outline">Muhtasari</string>

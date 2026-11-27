@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Bal alsó sarok</string>
     <string name="badges_bottom_right">Jobb alsó sarok</string>
     <string name="badges_size">Méret</string>
-    <string name="badges_small">Kicsi</string>
-    <string name="badges_medium">Közepes</string>
-    <string name="badges_large">Nagy</string>
     <string name="badges_corner">Sarokkerekítés</string>
     <string name="badges_color">Jelvény színe</string>
     <string name="badges_outline">Körvonal</string>

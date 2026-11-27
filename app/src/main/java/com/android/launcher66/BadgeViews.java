@@ -73,7 +73,8 @@ public final class BadgeViews {
             this.icon = icon;
             this.drawable = new BadgeDrawable(icon.getContext());
             icon.getOverlay().add(drawable);
-            icon.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> drawable.setBounds(0, 0, r - l, b - t));
+            // a new size of the icon places the picture anew: the badge follows it
+            icon.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> refreshBadge());
             icon.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
                 @Override
                 public void onViewAttachedToWindow(View v) {
@@ -98,7 +99,19 @@ public final class BadgeViews {
         public void refreshBadge() {
             BadgeModel model = BadgeModel.get();
             int count = packageName == null ? 0 : model.count(packageName);
-            drawable.setBounds(0, 0, icon.getWidth(), icon.getHeight());
+            // The picture as the ImageView draws it (scaled into its padding), and the seen part of it
+            android.graphics.drawable.Drawable picture = icon.getDrawable();
+            if (picture != null && picture.getIntrinsicWidth() > 0 && picture.getIntrinsicHeight() > 0) {
+                android.graphics.RectF r = new android.graphics.RectF(0, 0, picture.getIntrinsicWidth(),
+                        picture.getIntrinsicHeight());
+                icon.getImageMatrix().mapRect(r);
+                r.offset(icon.getPaddingLeft(), icon.getPaddingTop());
+                drawable.setBounds(Math.round(r.left), Math.round(r.top), Math.round(r.right), Math.round(r.bottom));
+                drawable.setVisible(IconBounds.of(picture));
+            } else {
+                drawable.setBounds(0, 0, icon.getWidth(), icon.getHeight());
+                drawable.setVisible(null);
+            }
             // the text colour of the bars' icons is the home screen's (the icon text colour)
             drawable.set(count, model.style(icon.getContext()), BadgeModel.iconTextColor(icon.getContext()));
         }

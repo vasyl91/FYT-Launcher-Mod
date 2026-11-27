@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">Chantun sut a sanestra</string>
     <string name="badges_bottom_right">Chantun sut a dretga</string>
     <string name="badges_size">Grondezza</string>
-    <string name="badges_small">Pitschna</string>
-    <string name="badges_medium">Mesauna</string>
-    <string name="badges_large">Gronda</string>
     <string name="badges_corner">Radius dals chantuns</string>
     <string name="badges_color">Colur da badge</string>
     <string name="badges_outline">Contura</string>

@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">มุมล่างซ้าย</string>
     <string name="badges_bottom_right">มุมล่างขวา</string>
     <string name="badges_size">ขนาด</string>
-    <string name="badges_small">เล็ก</string>
-    <string name="badges_medium">กลาง</string>
-    <string name="badges_large">ใหญ่</string>
     <string name="badges_corner">รัศมีมุม</string>
     <string name="badges_color">สีป้าย</string>
     <string name="badges_outline">เส้นขอบ</string>

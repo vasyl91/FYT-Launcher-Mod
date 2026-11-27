@@ -595,9 +595,6 @@
     <string name="badges_bottom_left">የታች ግራ ማዕዘን</string>
     <string name="badges_bottom_right">የታች ቀኝ ማዕዘን</string>
     <string name="badges_size">መጠን</string>
-    <string name="badges_small">ትንሽ</string>
-    <string name="badges_medium">መካከለኛ</string>
-    <string name="badges_large">ትልቅ</string>
     <string name="badges_corner">የማዕዘን ራዲየስ</string>
     <string name="badges_color">የባጅ ቀለም</string>
     <string name="badges_outline">ቅርጽ መስመር</string>

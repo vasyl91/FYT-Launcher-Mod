@@ -390,6 +390,7 @@ public class BubbleTextView extends androidx.appcompat.widget.AppCompatTextView 
                 + (getWidth() - getCompoundPaddingLeft() - getCompoundPaddingRight() - w) / 2;
         int y = getScrollY() + getPaddingTop();
         mBadge.setBounds(x, y, x + w, y + h);
+        mBadge.setVisible(IconBounds.of(icon));
         mBadge.set(count, model.style(getContext()), BadgeModel.iconTextColor(getContext()));
         mBadge.draw(canvas);
     }
