@@ -460,7 +460,12 @@ public class BubbleTextView extends androidx.appcompat.widget.AppCompatTextView 
 
     public void setShadowsEnabled(boolean enabled) {
         mShadowsEnabled = enabled;
-        getPaint().clearShadowLayer();
+        if (enabled) {
+            // The shadow of the home screen's labels, as init() gives it (a folder that follows the home screen)
+            setShadowLayer(SHADOW_LARGE_RADIUS, 0.0f, SHADOW_Y_OFFSET, SHADOW_LARGE_COLOUR);
+        } else {
+            getPaint().clearShadowLayer();
+        }
         invalidate();
     }
 

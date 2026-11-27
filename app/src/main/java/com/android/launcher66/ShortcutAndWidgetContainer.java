@@ -34,6 +34,11 @@ public class ShortcutAndWidgetContainer extends ViewGroup {
     /** The size of the icons of this page (IconFit); 0 leaves every icon at its standard size. */
     private int mFitIconPx;
 
+    /** The size this page gives its icons, 0 for the standard one (a folder that follows the home screen asks it). */
+    int fitIconPx() {
+        return mFitIconPx;
+    }
+
     /** The page's size for its icons, smaller than the standard one where a denser grid needs it (IconFit). */
     void setFitIconPx(int px) {
         if (px != mFitIconPx) {

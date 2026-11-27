@@ -211,25 +211,60 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
     private void applyOwnBackground() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         setBackground(BarBackground.folders(getContext(), prefs));
-        int text = itemTextColor();
         if (mFolderName != null) {
-            mFolderName.setTextColor(text);
+            // The name is the folder's, on its background, whether the icons follow the home screen or not
+            mFolderName.setTextColor(look(false).textColor);
         }
-        if (mContent != null) {
-            for (int i = 0; i < mContent.getShortcutsAndWidgets().getChildCount(); i++) {
-                View child = mContent.getShortcutsAndWidgets().getChildAt(i);
-                if (child instanceof BubbleTextView) {
-                    ((BubbleTextView) child).setTextColor(text);
-                }
-            }
-        }
+        applyItemLook();
     }
 
-    /** The colour of the labels in the folder: the dark grey of the light default background, or the icon text colour. */
-    private int itemTextColor() {
+    /**
+     * How the icons are drawn (FolderItemLook): as on the home screen with "Follow home screen grid inside folders",
+     * else the folder's own way.
+     */
+    private FolderItemLook itemLook() {
+        return look(followsHomeGrid());
+    }
+
+    private FolderItemLook look(boolean follow) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        return BarBackground.foldersOwn(prefs) ? IconTextColor.workspace(prefs, getContext())
-                : ContextCompat.getColor(getContext(), R.color.folder_items_text_color);
+        return FolderItemLook.of(follow, BarBackground.foldersOwn(prefs), follow ? pageIconPx() : 0,
+                IconTextColor.workspace(prefs, getContext()),
+                ContextCompat.getColor(getContext(), R.color.folder_items_text_color));
+    }
+
+    /** The size the current page of the home screen gives its icons (IconFit), 0 for the standard one. */
+    private int pageIconPx() {
+        Workspace workspace = mLauncher == null ? null : mLauncher.getWorkspace();
+        if (workspace != null && workspace.getCurrentPage() >= 0
+                && workspace.getCurrentPage() < workspace.getChildCount()
+                && workspace.getChildAt(workspace.getCurrentPage()) instanceof CellLayout) {
+            return ((CellLayout) workspace.getChildAt(workspace.getCurrentPage())).getShortcutsAndWidgets().fitIconPx();
+        }
+        return 0;
+    }
+
+    /** Gives every icon of the folder its look: the label's colour and shadow, and the picture's size. */
+    private void applyItemLook() {
+        if (mContent == null) {
+            return;
+        }
+        FolderItemLook look = itemLook();
+        ShortcutAndWidgetContainer items = mContent.getShortcutsAndWidgets();
+        for (int i = 0; i < items.getChildCount(); i++) {
+            View child = items.getChildAt(i);
+            if (child instanceof BubbleTextView) {
+                applyItemLook((BubbleTextView) child, look);
+            }
+        }
+        // The container gives its icons this size when it measures them (ShortcutAndWidgetContainer.measureChild)
+        items.setFitIconPx(look.iconPx);
+    }
+
+    private static void applyItemLook(BubbleTextView item, FolderItemLook look) {
+        item.setTextColor(look.textColor);
+        item.setShadowsEnabled(look.shadows);
+        item.setFitIconPx(look.iconPx);
     }
 
     /**
@@ -239,7 +274,11 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
      * in the empty half opened the app above it.
      */
     private int[] itemCellSize(DeviceProfile grid) {
-        int iconSize = Utilities.sIconTextureWidth;
+        return itemCellSize(grid, Utilities.sIconTextureWidth);
+    }
+
+    /** The cell of an item whose picture is {@code iconSize} pixels (the home screen's size with "Follow ..."). */
+    private int[] itemCellSize(DeviceProfile grid, int iconSize) {
         if (iconSize <= 0) return new int[] { grid.folderCellWidthPx, grid.folderCellHeightPx };
         BubbleTextView probe = (BubbleTextView) mInflater.inflate(R.layout.application, this, false);
         Drawable icon = new android.graphics.drawable.ColorDrawable();
@@ -521,6 +560,9 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
         applyOwnBackground();
         if (followsHomeGrid() != mFollowApplied) {
             setupContentDimensions(getItemCount());   // the setting was changed since the folder was arranged
+        } else if (mFollowApplied) {
+            // The page may have been measured, or its grid changed, since the folder was arranged: its cells and icons now
+            sizeCellsToPage(mContent.getCountX());
         }
         positionAndSizeAsIcon();
 
@@ -630,8 +672,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
                 Utilities.createIconDrawable(item.getIcon(mIconCache)), null, null);
         textView.setText(item.title);
         textView.setTag(item);
-        textView.setTextColor(itemTextColor());
-        textView.setShadowsEnabled(false);
+        applyItemLook(textView, itemLook());
 
         textView.setOnClickListener(this);
         textView.setOnLongClickListener(this);
@@ -952,8 +993,9 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
 
     /**
      * "Follow home screen grid inside folders" (D5, a creator setting; the stock layout never follows it): the
-     * folder has the home screen's columns whatever the number of icons, as many rows as they need, and cells as wide
-     * as those of the current page. Otherwise it grows nearly square (FolderGrid.own), as it always did.
+     * folder has the home screen's columns whatever the number of icons, as many rows as they need, cells as wide
+     * as those of the current page, and icons drawn as on the home screen (FolderItemLook). Otherwise it grows nearly
+     * square (FolderGrid.own), as it always did.
      */
     private boolean followsHomeGrid() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -995,7 +1037,14 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
                 }
             }
         }
-        mContent.setCellDimensions(cellWidth, mOwnCell[1]);
+        // As tall as an item with the page's picture needs (FolderItemLook), not more
+        int iconPx = pageIconPx();
+        int cellHeight = mOwnCell[1];
+        if (iconPx > 0) {
+            DeviceProfile grid = LauncherAppState.getInstance().getDynamicGrid().getDeviceProfile();
+            cellHeight = itemCellSize(grid, iconPx)[1];
+        }
+        mContent.setCellDimensions(cellWidth, cellHeight);
     }
 
     private void setupContentDimensions(int count) {
@@ -1013,6 +1062,7 @@ public class Folder extends LinearLayout implements DragSource, View.OnClickList
             }
         }
         mFollowApplied = follow;
+        applyItemLook();
         mContent.setGridSize(grid[0], grid[1]);
         arrangeChildren(list);
     }

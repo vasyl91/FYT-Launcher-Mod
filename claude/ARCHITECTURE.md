@@ -201,7 +201,8 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   (the file `widget_frames`); `CellLayout.isPixelPlaced()` and `ShortcutAndWidgetContainer` lay out by pixels the
   elements of the user's layout and those widgets; with "Allow widgets to overlap" `CellLayout.takesCells()` is false
   for an app widget, `PageFit.toMove(..., widgetsMayOverlap)` and `L/GridRefit` handle the rest. `Folder` has its own
-  background (`BarBackground.folders()`) and may follow the home screen's grid (`L/FolderGrid`).
+  background (`BarBackground.folders()`) and may follow the home screen's grid (`L/FolderGrid`), its icons then drawn as there
+  (`L/FolderItemLook`, round 29: the page's icon size, the icon text colour and shadow).
 - **Badges:** `NotificationListener` tells `L/BadgeModel`, which counts on a thread of its own (`L/BadgeCounts`, plain
   Java) and tells the views registered in `L/BadgeViews`; `L/BadgeDrawable` draws a badge in an icon's rectangle.
 - **"Stock layout"** (D-85): `L/CreatorKeys` (every key of the creator's XML, checked by a test) and `L/CreatorPrefs`
