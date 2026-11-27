@@ -31,7 +31,7 @@ public class DimmingPreferenceAdapter extends PreferenceGroupAdapter {
     public void onBindViewHolder(@NonNull PreferenceViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
         Preference preference = getItem(position);
-        SettingsRowDim.apply(holder.itemView, preference == null || preference.isEnabled());
+        SettingsRowDim.apply(holder.itemView, SettingsRowDim.looksOn(preference));
         if (mWrapAll) {
             // With a larger text no title or summary is cut: it wraps (SettingsTextScale)
             wrap(holder.findViewById(android.R.id.title));

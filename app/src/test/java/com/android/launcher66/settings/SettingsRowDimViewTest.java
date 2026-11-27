@@ -109,6 +109,22 @@ public class SettingsRowDimViewTest {
     }
 
     @Test
+    public void aCategorysTitleIsNeverDimmed() {
+        prefs().edit().clear().putBoolean(Keys.BADGES_ENABLED, false).commit();
+        ActivityController<SettingsActivity> controller = Robolectric.buildActivity(SettingsActivity.class).setup();
+        NotificationBadgesFragment screen = open(controller, new NotificationBadgesFragment());
+        assertEquals("its rows are off", SettingsRowDim.DIMMED, alpha(row(screen, Keys.BADGES_POSITION)), 0.001f);
+        assertEquals("the category's title is not", 1f, alpha(row(screen, "notification_badges_category")), 0.001f);
+        controller.pause().stop().destroy();
+
+        prefs().edit().clear().putBoolean(Keys.USER_LAYOUT, true).commit();
+        controller = Robolectric.buildActivity(SettingsActivity.class).setup();
+        SettingsFragmentSecond creator = open(controller, new SettingsFragmentSecond());
+        assertEquals(1f, alpha(row(creator, "bars_category")), 0.001f);
+        controller.pause().stop().destroy();
+    }
+
+    @Test
     public void theAlphaOfARow() {
         assertEquals(1f, SettingsRowDim.alpha(true), 0f);
         assertEquals(0.38f, SettingsRowDim.alpha(false), 0f);

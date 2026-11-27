@@ -17,6 +17,8 @@ import android.view.ViewGroup;
  *       opacity when it shows a change (a change of the switch above rebinds the rows below) and leaves it at 1.</li>
  *   <li>Every row of a list of settings is bound through {@link DimmingPreferenceAdapter}, which applies this on each
  *       bind, so a row that is reused shows its own state.</li>
+ *   <li>A category's title is never dimmed ({@link #looksOn}): androidx.preference's {@code PreferenceCategory} says it is
+ *       not enabled whatever its rows are, since it cannot be tapped, and its title went grey (the owner, 2026-11-27).</li>
  * </ul>
  */
 public final class SettingsRowDim {
@@ -25,6 +27,12 @@ public final class SettingsRowDim {
     public static final float DIMMED = 0.38f;
 
     private SettingsRowDim() {
+    }
+
+    /** Whether a row is drawn as on: a row that is enabled, and a category's title always. */
+    public static boolean looksOn(androidx.preference.Preference preference) {
+        return preference == null || preference instanceof androidx.preference.PreferenceCategory
+                || preference.isEnabled();
     }
 
     /** The opacity of a row's content. */
