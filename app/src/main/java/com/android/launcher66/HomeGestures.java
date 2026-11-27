@@ -59,21 +59,13 @@ final class HomeGestures {
         return mWorkspace.homePrefs();
     }
 
+    /** The settings are kept between their changes (TouchSettings): this is asked at every touch. */
     private boolean wantsUp() {
-        SharedPreferences prefs = prefs();
-        if (prefs == null) {
-            return false;
-        }
-        CreatorPrefs creator = CreatorPrefs.of(prefs);
-        boolean stored = creator.getBoolean(Keys.SWIPE_UP_APP_DRAWER, false);
-        // Without the horizontal bar (and its drawer button) the swipe is the way to the drawer (DrawerAccess)
-        return DrawerAccess.swipeUpActive(stored, creator.getBoolean(Keys.DISPLAY_HORIZONTAL_BAR, true),
-                prefs.getBoolean(Keys.USER_LAYOUT, false) && creator.getBoolean(Keys.HORIZONTAL_BAR_NO_DRAWER, false));
+        return prefs() != null && TouchSettings.swipeUp(mWorkspace.getContext());
     }
 
     private boolean wantsDown() {
-        SharedPreferences prefs = prefs();
-        return prefs != null && CreatorPrefs.of(prefs).getBoolean(Keys.SWIPE_DOWN_NOTIFICATIONS, false);
+        return prefs() != null && TouchSettings.swipeDown(mWorkspace.getContext());
     }
 
     /** Whether a touch that begins at x, y (the workspace's coordinates) may become a gesture. */

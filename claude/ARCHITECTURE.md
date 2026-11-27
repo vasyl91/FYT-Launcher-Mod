@@ -197,6 +197,9 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   `L/DoubleTap` and `L/ScreenOffPlan` (plain Java) decide the double tap and what "Turn off screen" does on this unit;
   the accessibility service (`S/StateAccessibilityService.sInstance`) locks the screen, and `LauncherPermissionFlow`
   has a step `ACCESSIBILITY`.
+- **Settings on the touch path (round 29):** `L/TouchSettings` keeps the gestures' switches, the bars' sides and the
+  auto-hide bar's corner cell (`L/KeptReading`, plain Java) until any default preference changes; `L/HomeGestures` and
+  `CellLayout`'s search for a cell (`findNearestArea`, the reorder) ask it instead of the preferences.
 - **Widgets:** `L/WidgetFrame` / `L/WidgetFrames` keep a freely placed widget as fractions of the page's content area
   (the file `widget_frames`); since round 29 ("Freeform widgets") `L/FreePlace` (plain Java) puts a dropped widget
   at the pixels it was let go, or at the nearest place over free cells, and `L/ResizeGeometry` (plain Java) keeps the

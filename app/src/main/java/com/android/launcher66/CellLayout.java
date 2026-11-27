@@ -1754,8 +1754,8 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
 
     /** The sides of the bars and of the handle, from the one place that reads them (BarLayouts). */
     private BarLayout barSides() {
-        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(getContext());
-        return BarLayouts.sides(p, p.getBoolean(Keys.VERTICAL_BAR, false));
+        // Kept between changes of the settings: the search for a cell asks for every move (TouchSettings)
+        return TouchSettings.barSides(getContext());
     }
 
     /**
@@ -1777,7 +1777,7 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
      */
     private boolean shouldExcludeFirstBottomCell() {
         int page = shownWorkspacePage();
-        return page >= 0 && WorkspaceGrids.cornerCell(prefs, page == 0);
+        return page >= 0 && TouchSettings.cornerCell(getContext(), page == 0);
     }
 
     /**
@@ -1832,8 +1832,11 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
 
         final int countX = mCountX;
         final int countY;
-        // Only the corner cell of an auto-hide bar is left out; a bar's row is not in the grid
-        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        // Only the corner cell of an auto-hide bar is left out; a bar's row is not in the grid. The
+        // preferences are looked up once: this runs hundreds of times for one move of a reorder
+        if (prefs == null) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        }
         boolean shouldExcludeFirstCell = shouldExcludeFirstBottomCell();
 
         final int cornerX = cornerCellX();
@@ -1989,8 +1992,11 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
 
         final int countX = mCountX;
         final int countY;
-        // Only the corner cell of an auto-hide bar is left out; a bar's row is not in the grid
-        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        // Only the corner cell of an auto-hide bar is left out; a bar's row is not in the grid. The
+        // preferences are looked up once: this runs hundreds of times for one move of a reorder
+        if (prefs == null) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        }
         boolean shouldExcludeFirstCell = shouldExcludeFirstBottomCell();
 
         final int cornerX = cornerCellX();
@@ -3419,7 +3425,9 @@ public class CellLayout extends ViewGroup implements View.OnLongClickListener {
         // mark space take by ignoreView as available (method checks if ignoreView is null)
         markCellsAsUnoccupiedForView(ignoreView, occupied);
 
-        prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        if (prefs == null) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        }
         boolean shouldExcludeFirstCell = shouldExcludeFirstBottomCell();
         final int excludedCornerX = cornerCellX();
         final int excludedCornerY = cornerCellY();
@@ -4931,8 +4939,7 @@ out:            for (int i = x; i < x + spanX - 1 && x < xCount; i++) {
      * (WorkspaceGrid.cornerCell). A bar that does not hide takes a row, which is not in the grid at all.
      */
     private boolean isFirstBottomCellExcluded(int pageIndex) {
-        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(getContext());
-        return WorkspaceGrids.cornerCell(p, pageIndex == 0);
+        return TouchSettings.cornerCell(getContext(), pageIndex == 0);
     }
 
     /** A copy of mOccupied with the corner cell of an auto-hide bar marked as taken. */
