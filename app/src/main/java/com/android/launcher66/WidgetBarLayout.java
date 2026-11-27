@@ -206,7 +206,15 @@ final class WidgetBarLayout {
      * stays hidden.
      */
     static int appsListVisibility(SharedPreferences prefs) {
-        return appsHidden(prefs) ? View.GONE : View.VISIBLE;
+        return appsHidden(prefs) || !horizontalDisplayed(prefs) ? View.GONE : View.VISIBLE;
+    }
+
+    /**
+     * "Display horizontal bar" (a creator setting, on by default): off, nothing of the bar is shown, its apps list
+     * neither, which the bars' set-up and the home screen's recovery showed again (the owner on the A55, 2026-11-27).
+     */
+    static boolean horizontalDisplayed(SharedPreferences prefs) {
+        return prefs == null || CreatorPrefs.of(prefs).getBoolean(Keys.DISPLAY_HORIZONTAL_BAR, true);
     }
 
     /** "Fit the apps to their icons" (only with the widget bar, where this class is used). */

@@ -51,11 +51,14 @@ public final class BarLayouts {
      */
     public static BarLayout of(BarPrefs prefs, int rootWidth, int rootHeight, int barHeight,
                                int verticalBarWidth, boolean verticalBar, boolean horizontalOnPage) {
+        // "Display horizontal bar" off: the horizontal bar is on no page, whatever the caller asked about the page (the
+        // vertical bar's window and the settings' slider asked with true and kept room for it, the owner on the A55,
+        // 2026-11-27)
         return new BarLayout(rootWidth, rootHeight, barHeight, verticalBarWidth,
                 prefs.bool(Keys.HORIZONTAL_BAR_TOP),
                 prefs.bool(Keys.VERTICAL_BAR_RIGHT),
                 prefs.bool(Keys.EDGE_HANDLE_RIGHT),
-                verticalBar, horizontalOnPage, prefs.bool(Keys.AUTO_HIDE_HORIZONTAL_BAR));
+                verticalBar, horizontalOnPage && prefs.horizontalDisplayed(), prefs.bool(Keys.AUTO_HIDE_HORIZONTAL_BAR));
     }
 
     public static BarLayout of(SharedPreferences prefs, int rootWidth, int rootHeight, int barHeight,

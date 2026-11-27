@@ -22,6 +22,12 @@ class VerticalBarCornerTest {
     }
 
     @Test
+    void withoutTheHorizontalBarThereIsNoCornerToLeave() {
+        assertTrue(VerticalBarCorner.applies(true, true, false, false, true, true));
+        assertFalse(VerticalBarCorner.applies(true, true, false, false, true, false));
+    }
+
+    @Test
     void theShiftIsHowFarTheFirstPageHasMovedFromItsRest() {
         assertEquals(0, VerticalBarCorner.shift(0, 0));
         assertEquals(-300, VerticalBarCorner.shift(0, 300));

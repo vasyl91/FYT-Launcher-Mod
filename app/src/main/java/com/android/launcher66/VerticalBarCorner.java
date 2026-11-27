@@ -25,7 +25,17 @@ final class VerticalBarCorner {
      */
     static boolean applies(boolean verticalBar, boolean verticalEveryPage, boolean horizontalEveryPage,
                            boolean autoHide, boolean userLayout) {
-        return userLayout && verticalBar && verticalEveryPage && !horizontalEveryPage && !autoHide;
+        return applies(verticalBar, verticalEveryPage, horizontalEveryPage, autoHide, userLayout, true);
+    }
+
+    /**
+     * The same, with "Display horizontal bar": without the horizontal bar there is no corner to leave to it, and the
+     * vertical bar has the whole height on every page (the owner on the A55, 2026-11-27: with the bar off the vertical
+     * bar still kept its corner).
+     */
+    static boolean applies(boolean verticalBar, boolean verticalEveryPage, boolean horizontalEveryPage,
+                           boolean autoHide, boolean userLayout, boolean horizontalDisplayed) {
+        return horizontalDisplayed && userLayout && verticalBar && verticalEveryPage && !horizontalEveryPage && !autoHide;
     }
 
     /**

@@ -1821,8 +1821,10 @@ public class Workspace extends SmoothPagedView
         }
         boolean top = CreatorPrefs.of(mPrefs).getBoolean(Keys.HORIZONTAL_BAR_TOP, false);
         boolean right = verticalBarOn && BarLayouts.sides(mPrefs, true).right;
-        // An auto-hide bar with no button in the corner leaves it free: the vertical bar fills it
-        boolean fullHeight = verticalBarOn && autoHideApplies && !BarLayouts.sides(mPrefs, true).cornerTaken();
+        // An auto-hide bar with no button in the corner leaves it free: the vertical bar fills it; so does no
+        // horizontal bar at all ("Display horizontal bar" off)
+        boolean fullHeight = verticalBarOn && ((autoHideApplies && !BarLayouts.sides(mPrefs, true).cornerTaken())
+                || !mHorizontalShown);
         // The first page of the user layout: its vertical bar as wide as the launcher counts it (BarConstraints)
         int verticalWidth = autoHideApplies && verticalBarOn ? Launcher.calculatedVerticalBarWidth : 0;
         BarConstraints.apply((androidx.constraintlayout.widget.ConstraintLayout) layoutRoot, R.id.iv_list_bg, 0, top,
@@ -3736,7 +3738,8 @@ public class Workspace extends SmoothPagedView
     /** The vertical bar on every page with the horizontal bar on the first page only (VerticalBarCorner). */
     private boolean verticalCornerApplies() {
         return mPrefs != null && VerticalBarCorner.applies(mVerticalBar, mVerticalEveryPage, mEveryPage,
-                mPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false), mPrefs.getBoolean(Keys.USER_LAYOUT, false));
+                mPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false), mPrefs.getBoolean(Keys.USER_LAYOUT, false),
+                mHorizontalShown);
     }
 
     /** Whether the corner was last given to the horizontal bar, for the log line at each change. */
