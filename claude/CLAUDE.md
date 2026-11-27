@@ -62,8 +62,11 @@ present [A] as [V]. A report that says something was implemented is [H] until a 
 - **CI only after a change of the code** (the owner, 2026-11-20). The code is everything that goes into a
   build or changes how it builds or runs: the modules, the Gradle files, resources and assets, the scripts
   that generate assets, `.github/`.
-  - A commit with code: the tests and both builds locally, push, and green CI before the next commit with
-    code. Fix a red build with a new commit.
+  - A commit with code: the tests and both builds locally, every time.
+  - **CI in batches** (the owner, 2026-11-27): related commits with code are pushed together, and CI runs once,
+    on the last of them (`concurrency` cancels the runs of the ones before). The next batch is pushed only after
+    the CI of the previous one is green. Fix a red build with a new commit; a failure of the infrastructure (a
+    429 from Maven, a broken download) is re-run, not fixed.
   - A commit of documentation only (`claude/`, `*.md`, `*.MD`), or work that does not touch the code and what
     it does: no local Gradle run, no CI, no waiting. Push it at once, also while the CI of the code pushed
     before it still runs: such a push starts no run, so it cancels none.
