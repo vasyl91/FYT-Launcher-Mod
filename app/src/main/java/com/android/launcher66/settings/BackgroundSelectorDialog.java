@@ -10,6 +10,7 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Outline;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -102,7 +103,8 @@ public class BackgroundSelectorDialog extends DialogFragment {
         loaderExecutor.submit(() -> {
             // The home screen's wallpaper, by the best way this device has (HomeWallpaperSource); null
             // where it cannot be read, and the dialog then shows its colours and the "Pick wallpaper" button
-            Bitmap bmp = HomeWallpaperSource.read(ctx);
+            Point screen = HomeWallpaperSource.screenSize(ctx);
+            Bitmap bmp = HomeWallpaperSource.read(ctx, screen.x, screen.y);
 
             final Bitmap finalBmp = bmp;
             mainHandler.post(() -> {
@@ -314,7 +316,8 @@ public class BackgroundSelectorDialog extends DialogFragment {
         loaderExecutor.submit(() -> {
             final Context context = getContext();
             if (context == null) return;
-            Bitmap bmp = HomeWallpaperSource.read(context);
+            Point screen = HomeWallpaperSource.screenSize(context);
+            Bitmap bmp = HomeWallpaperSource.read(context, screen.x, screen.y);
 
             final Bitmap finalBmp = bmp;
             mainHandler.post(() -> {

@@ -147,8 +147,11 @@ public final class OwnWallpaperCopy {
         }
     }
 
-    /** The copy, if the wallpaper it was made of is still the one that is set; else null. */
-    static Bitmap read(Context context) {
+    /**
+     * The copy, if the wallpaper it was made of is still the one that is set; else null. Decoded no bigger than
+     * it must be to cover the size given (SampleSize), whole with 0.
+     */
+    static Bitmap read(Context context, int coverWidth, int coverHeight) {
         Context app = context.getApplicationContext();
         synchronized (LOCK) {
             File dir = new File(app.getFilesDir(), DIR);
@@ -175,7 +178,15 @@ public final class OwnWallpaperCopy {
                 Log.i(TAG, "The copy is of another wallpaper (id " + noted + ", now " + current + "): not used");
                 return null;
             }
-            return BitmapFactory.decodeFile(image.getAbsolutePath());
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            if (coverWidth > 0 && coverHeight > 0) {
+                options.inJustDecodeBounds = true;
+                BitmapFactory.decodeFile(image.getAbsolutePath(), options);
+                options.inSampleSize = SampleSize.toCover(options.outWidth, options.outHeight, coverWidth,
+                        coverHeight);
+                options.inJustDecodeBounds = false;
+            }
+            return BitmapFactory.decodeFile(image.getAbsolutePath(), options);
         }
     }
 }

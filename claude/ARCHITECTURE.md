@@ -483,6 +483,10 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   mode without a saved picture leaves the wallpaper (`S/NightWallpaperRule`). From 2026-11-16 the permission
   flow (`L/LauncherPermissionFlow`, step `ALL_FILES`) asks for access to all files on Android 13+, which the
   system API needs for the picture: through the host's `allowAppOp`, else on the screen of Settings.
+  Since 2026-11-27 (round 29) the backdrop of the background selectors is decoded no bigger than it must be to
+  cover the real screen (`S/SampleSize`, plain Java: the largest power of two that still covers it), and the
+  night mode's decode keeps its half size but goes smaller for a picture far bigger than the screen turned
+  either way. "Save the day / night wallpaper" still reads the picture whole.
 - **Diagnostics added 2026-11-15:** `L/HiddenApiProbe` (one compat report when a hidden member the launcher
   looks up is missing; system flavour) and `L/PinnedPipHealth` (a log line when a pinned app keeps coming
   to the front).

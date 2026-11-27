@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -476,15 +477,25 @@ public class SunTask extends AsyncTask<String, Void, String> {
         return file.exists() && file.length() > 0  && !defaultWallpapers;
     }
 
+    /** The night mode's pictures are set at half their size at least, as before (smaller ones too). */
+    private static final int NIGHT_SAMPLE = 2;
+
     private Bitmap decodeBitmapSafely(File image) {
         synchronized (LOCK) {
             if (!isFileValid(image)) return null;
             
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            options.inSampleSize = 2; 
-            
+
             try {
+                // Half size, as the night mode has always set it; a picture far bigger than the screen is
+                // decoded smaller still, as long as it covers the screen turned either way (SampleSize)
+                options.inJustDecodeBounds = true;
+                BitmapFactory.decodeFile(image.getAbsolutePath(), options);
+                Point screen = HomeWallpaperSource.screenSize(mContext);
+                options.inSampleSize = Math.max(NIGHT_SAMPLE, SampleSize.toCoverTurned(options.outWidth,
+                        options.outHeight, screen.x, screen.y));
+                options.inJustDecodeBounds = false;
                 Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), options);
                 if (bitmap == null || bitmap.getWidth() <= 0 || bitmap.getHeight() <= 0) {
                     return null;
