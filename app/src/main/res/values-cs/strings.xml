@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Skrýt datum</string>
     <string name="widget_bar_no_weather">Skrýt počasí</string>
     <string name="widget_bar_hidden_on">Jeho místo zaujme widget hudby</string>
+    <string name="horizontal_bar_no_drawer">Skrýt tlačítko šuplíku aplikací</string>
+    <string name="horizontal_bar_no_drawer_on">Jeho místo zaujmou ostatní prvky; přejetím nahoru se šuplík otevře</string>
+    <string name="widget_bar_no_music">Skrýt hudební widget</string>
+    <string name="widget_bar_no_music_on">Jeho místo zaujmou ostatní prvky</string>
+    <string name="horizontal_bar_turned_off">Na vodorovném panelu nic nezůstalo: je vypnutý</string>
     <string name="widget_bar_no_apps">Skrýt aplikace</string>
     <string name="widget_bar_no_apps_on">Lišta nezobrazuje žádné aplikace; jejich místo připadne widgetům</string>
     <string name="widget_bar_no_apps_off">Lišta zobrazuje aplikace</string>

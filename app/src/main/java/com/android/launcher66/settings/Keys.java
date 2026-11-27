@@ -290,6 +290,10 @@ public final class Keys {
     public static final String VERTICAL_BAR_EVERY_PAGE = "vertical_bar_every_page";
     /** "Display horizontal bar" (a creator setting, true by default): off, the user layout has no horizontal bar. */
     public static final String DISPLAY_HORIZONTAL_BAR = "display_horizontal_bar";
+    /** "Hide the app drawer button" (a creator setting, off by default; WidgetBarLayout.drawerHidden). */
+    public static final String HORIZONTAL_BAR_NO_DRAWER = "horizontal_bar_no_drawer";
+    /** "Hide the music widget" of the widget bar (a creator setting, off by default; WidgetBarLayout.musicHidden). */
+    public static final String WIDGET_BAR_NO_MUSIC = "widget_bar_no_music";
     public static final String HORIZONTAL_BAR_EVERY_PAGE = "bottom_bar_every_page";
     /** The box of the first page last measured, "WIDTHxHEIGHT", per orientation (HorizontalBarDimensions). */
     public static final String BAR_ROOT_BOX_PORTRAIT = "bar_root_box_portrait";

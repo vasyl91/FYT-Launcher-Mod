@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Огноог нуух</string>
     <string name="widget_bar_no_weather">Цаг агаарыг нуух</string>
     <string name="widget_bar_hidden_on">Түүний оронд хөгжмийн виджет байрлана</string>
+    <string name="horizontal_bar_no_drawer">Аппын жагсаалтын товчийг нуух</string>
+    <string name="horizontal_bar_no_drawer_on">Түүний байрыг бусад элемент эзэлнэ; дээш шударвал жагсаалт нээгдэнэ</string>
+    <string name="widget_bar_no_music">Хөгжмийн виджетийг нуух</string>
+    <string name="widget_bar_no_music_on">Түүний байрыг бусад элемент эзэлнэ</string>
+    <string name="horizontal_bar_turned_off">Хэвтээ самбарт юу ч үлдсэнгүй: унтраалаа</string>
     <string name="widget_bar_no_apps">Аппуудыг нуух</string>
     <string name="widget_bar_no_apps_on">Самбар апп харуулахгүй; тэдний зай виджетүүдэд очно</string>
     <string name="widget_bar_no_apps_off">Самбар аппуудыг харуулна</string>

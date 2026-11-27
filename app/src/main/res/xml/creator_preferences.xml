@@ -229,6 +229,13 @@
             android:key="display_horizontal_bar"
             android:defaultValue="true"
             android:title="@string/display_horizontal_bar" />
+        <!-- The bar without its app drawer button: the swipe up opens the drawer then (DrawerAccess) -->
+        <com.android.launcher66.settings.CustomSwitchPreference
+            android:key="horizontal_bar_no_drawer"
+            android:defaultValue="false"
+            android:title="@string/horizontal_bar_no_drawer"
+            android:summaryOn="@string/horizontal_bar_no_drawer_on"
+            app:layout="@layout/nested_preference_category_switch" />
         <com.android.launcher66.settings.CustomNoSwitchPreference
             android:key="horizontal_bar_top"
             android:defaultValue="false"
@@ -299,6 +306,12 @@
             android:key="widget_bar"
             android:defaultValue="false"
             android:title="@string/widget_bar" />
+        <com.android.launcher66.settings.CustomSwitchPreference
+            android:key="widget_bar_no_music"
+            android:defaultValue="false"
+            android:title="@string/widget_bar_no_music"
+            android:summaryOn="@string/widget_bar_no_music_on"
+            app:layout="@layout/nested_preference_category_switch" />
         <com.android.launcher66.settings.CustomSwitchPreference
             android:key="widget_bar_no_cover"
             android:defaultValue="false"

@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">إخفاء التاريخ</string>
     <string name="widget_bar_no_weather">إخفاء الطقس</string>
     <string name="widget_bar_hidden_on">تشغل أداة الموسيقى مكانه</string>
+    <string name="horizontal_bar_no_drawer">إخفاء زر درج التطبيقات</string>
+    <string name="horizontal_bar_no_drawer_on">تأخذ العناصر الأخرى مكانه، والسحب للأعلى يفتح الدرج</string>
+    <string name="widget_bar_no_music">إخفاء أداة الموسيقى</string>
+    <string name="widget_bar_no_music_on">تأخذ العناصر الأخرى مكانه</string>
+    <string name="horizontal_bar_turned_off">لم يبقَ شيء في الشريط الأفقي: تم إيقافه</string>
     <string name="widget_bar_no_apps">إخفاء التطبيقات</string>
     <string name="widget_bar_no_apps_on">لا يعرض الشريط أي تطبيقات؛ تذهب مساحتها إلى الأدوات</string>
     <string name="widget_bar_no_apps_off">يعرض الشريط التطبيقات</string>

@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">隐藏日期</string>
     <string name="widget_bar_no_weather">隐藏天气</string>
     <string name="widget_bar_hidden_on">由音乐小部件占用其位置</string>
+    <string name="horizontal_bar_no_drawer">隐藏应用抽屉按钮</string>
+    <string name="horizontal_bar_no_drawer_on">其他元素占用它的位置；向上滑动可打开抽屉</string>
+    <string name="widget_bar_no_music">隐藏音乐小部件</string>
+    <string name="widget_bar_no_music_on">其他元素占用它的位置</string>
+    <string name="horizontal_bar_turned_off">横栏上已无内容：已关闭</string>
     <string name="widget_bar_no_apps">隐藏应用</string>
     <string name="widget_bar_no_apps_on">栏中不显示应用；其空间留给小部件</string>
     <string name="widget_bar_no_apps_off">栏中显示应用</string>

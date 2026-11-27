@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Dátum elrejtése</string>
     <string name="widget_bar_no_weather">Időjárás elrejtése</string>
     <string name="widget_bar_hidden_on">A helyét a zenei widget foglalja el</string>
+    <string name="horizontal_bar_no_drawer">Az alkalmazásfiók gombjának elrejtése</string>
+    <string name="horizontal_bar_no_drawer_on">A helyét a többi elem veszi át; felfelé húzás nyitja a fiókot</string>
+    <string name="widget_bar_no_music">A zenewidget elrejtése</string>
+    <string name="widget_bar_no_music_on">A helyét a többi elem veszi át</string>
+    <string name="horizontal_bar_turned_off">Semmi sem maradt a vízszintes sávon: kikapcsolva</string>
     <string name="widget_bar_no_apps">Alkalmazások elrejtése</string>
     <string name="widget_bar_no_apps_on">A sáv nem mutat alkalmazásokat; a helyük a widgeteké</string>
     <string name="widget_bar_no_apps_off">A sáv mutatja az alkalmazásokat</string>

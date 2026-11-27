@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Piilota päivämäärä</string>
     <string name="widget_bar_no_weather">Piilota sää</string>
     <string name="widget_bar_hidden_on">Musiikkiwidget ottaa sen paikan</string>
+    <string name="horizontal_bar_no_drawer">Piilota sovelluslaatikon painike</string>
+    <string name="horizontal_bar_no_drawer_on">Muut osat vievät sen paikan; pyyhkäisy ylös avaa laatikon</string>
+    <string name="widget_bar_no_music">Piilota musiikkiwidget</string>
+    <string name="widget_bar_no_music_on">Muut osat vievät sen paikan</string>
+    <string name="horizontal_bar_turned_off">Vaakapalkkiin ei jäänyt mitään: se on poistettu käytöstä</string>
     <string name="widget_bar_no_apps">Piilota sovellukset</string>
     <string name="widget_bar_no_apps_on">Palkki ei näytä sovelluksia; niiden tila menee widgeteille</string>
     <string name="widget_bar_no_apps_off">Palkki näyttää sovellukset</string>

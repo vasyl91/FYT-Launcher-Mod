@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Nascondi la data</string>
     <string name="widget_bar_no_weather">Nascondi il meteo</string>
     <string name="widget_bar_hidden_on">Il widget musicale prende il suo posto</string>
+    <string name="horizontal_bar_no_drawer">Nascondi il pulsante del cassetto app</string>
+    <string name="horizontal_bar_no_drawer_on">Gli altri elementi ne prendono il posto; uno scorrimento in su apre il cassetto</string>
+    <string name="widget_bar_no_music">Nascondi il widget musica</string>
+    <string name="widget_bar_no_music_on">Gli altri elementi ne prendono il posto</string>
+    <string name="horizontal_bar_turned_off">Non resta nulla sulla barra orizzontale: è stata disattivata</string>
     <string name="widget_bar_no_apps">Nascondi le app</string>
     <string name="widget_bar_no_apps_on">La barra non mostra app; il loro spazio va ai widget</string>
     <string name="widget_bar_no_apps_off">La barra mostra le app</string>

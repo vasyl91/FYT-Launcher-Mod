@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Amaga la data</string>
     <string name="widget_bar_no_weather">Amaga el temps</string>
     <string name="widget_bar_hidden_on">El giny de música ocupa el seu lloc</string>
+    <string name="horizontal_bar_no_drawer">Amaga el botó del calaix d’aplicacions</string>
+    <string name="horizontal_bar_no_drawer_on">Els altres elements n’ocupen el lloc; lliscar amunt obre el calaix</string>
+    <string name="widget_bar_no_music">Amaga el giny de música</string>
+    <string name="widget_bar_no_music_on">Els altres elements n’ocupen el lloc</string>
+    <string name="horizontal_bar_turned_off">No queda res a la barra horitzontal: s’ha desactivat</string>
     <string name="widget_bar_no_apps">Amaga les aplicacions</string>
     <string name="widget_bar_no_apps_on">La barra no mostra aplicacions; el seu espai és per als ginys</string>
     <string name="widget_bar_no_apps_off">La barra mostra les aplicacions</string>

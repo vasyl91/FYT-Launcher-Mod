@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Datum ausblenden</string>
     <string name="widget_bar_no_weather">Wetter ausblenden</string>
     <string name="widget_bar_hidden_on">Das Musik-Widget nimmt seinen Platz ein</string>
+    <string name="horizontal_bar_no_drawer">Schaltfläche der App-Übersicht ausblenden</string>
+    <string name="horizontal_bar_no_drawer_on">Die anderen Elemente nehmen ihren Platz ein; nach oben wischen öffnet die Übersicht</string>
+    <string name="widget_bar_no_music">Musik-Widget ausblenden</string>
+    <string name="widget_bar_no_music_on">Die anderen Elemente nehmen seinen Platz ein</string>
+    <string name="horizontal_bar_turned_off">Auf der horizontalen Leiste ist nichts mehr: sie ist ausgeschaltet</string>
     <string name="widget_bar_no_apps">Apps ausblenden</string>
     <string name="widget_bar_no_apps_on">Die Leiste zeigt keine Apps; ihr Platz geht an die Widgets</string>
     <string name="widget_bar_no_apps_off">Die Leiste zeigt die Apps</string>

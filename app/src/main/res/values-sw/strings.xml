@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Ficha tarehe</string>
     <string name="widget_bar_no_weather">Ficha hali ya hewa</string>
     <string name="widget_bar_hidden_on">Wijeti ya muziki huchukua nafasi yake</string>
+    <string name="horizontal_bar_no_drawer">Ficha kitufe cha droo ya programu</string>
+    <string name="horizontal_bar_no_drawer_on">Vipengele vingine vinachukua nafasi yake; kutelezesha juu hufungua droo</string>
+    <string name="widget_bar_no_music">Ficha wijeti ya muziki</string>
+    <string name="widget_bar_no_music_on">Vipengele vingine vinachukua nafasi yake</string>
+    <string name="horizontal_bar_turned_off">Hakuna kilichobaki kwenye upau mlalo: umezimwa</string>
     <string name="widget_bar_no_apps">Ficha programu</string>
     <string name="widget_bar_no_apps_on">Upau hauonyeshi programu; nafasi yake inaenda kwa wijeti</string>
     <string name="widget_bar_no_apps_off">Upau unaonyesha programu</string>

@@ -116,10 +116,19 @@ public final class BarOrder {
      */
     public static List<Element> shown(List<Element> order, boolean widgetBar, boolean portrait, boolean noDate,
                                       boolean noWeather, boolean noApps) {
+        return shown(order, widgetBar, portrait, noDate, noWeather, noApps, false);
+    }
+
+    /**
+     * As above; {@code noMusic}: "Hide the music widget" (round 29), which counts only with the widget bar. A hidden
+     * drawer button stays in the order at no width (WidgetBarLayout.drawerHidden): the others are tied to it.
+     */
+    public static List<Element> shown(List<Element> order, boolean widgetBar, boolean portrait, boolean noDate,
+                                      boolean noWeather, boolean noApps, boolean noMusic) {
         List<Element> shown = new ArrayList<>();
         for (Element e : order) {
             if (e == Element.DRAWER || e == Element.APPS && !(widgetBar && noApps)
-                    || widgetBar && (e == Element.MUSIC
+                    || widgetBar && (e == Element.MUSIC && !noMusic
                     || e == Element.DATE && !portrait && !noDate
                     || e == Element.WEATHER && !noWeather)) {
                 shown.add(e);

@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Sembunyikan tarikh</string>
     <string name="widget_bar_no_weather">Sembunyikan cuaca</string>
     <string name="widget_bar_hidden_on">Widget muzik mengambil tempatnya</string>
+    <string name="horizontal_bar_no_drawer">Sembunyikan butang laci apl</string>
+    <string name="horizontal_bar_no_drawer_on">Elemen lain mengambil tempatnya; leret ke atas membuka laci</string>
+    <string name="widget_bar_no_music">Sembunyikan widget muzik</string>
+    <string name="widget_bar_no_music_on">Elemen lain mengambil tempatnya</string>
+    <string name="horizontal_bar_turned_off">Tiada apa-apa tinggal pada bar mendatar: ia dimatikan</string>
     <string name="widget_bar_no_apps">Sembunyikan apl</string>
     <string name="widget_bar_no_apps_on">Bar tidak menunjukkan apl; ruangnya diberikan kepada widget</string>
     <string name="widget_bar_no_apps_off">Bar menunjukkan apl</string>

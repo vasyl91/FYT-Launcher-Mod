@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Datum verbergen</string>
     <string name="widget_bar_no_weather">Weer verbergen</string>
     <string name="widget_bar_hidden_on">De muziekwidget neemt zijn plaats in</string>
+    <string name="horizontal_bar_no_drawer">Knop van de app-lade verbergen</string>
+    <string name="horizontal_bar_no_drawer_on">De andere elementen nemen zijn plaats in; omhoog vegen opent de lade</string>
+    <string name="widget_bar_no_music">Muziekwidget verbergen</string>
+    <string name="widget_bar_no_music_on">De andere elementen nemen zijn plaats in</string>
+    <string name="horizontal_bar_turned_off">Er staat niets meer op de horizontale balk: hij is uitgeschakeld</string>
     <string name="widget_bar_no_apps">Apps verbergen</string>
     <string name="widget_bar_no_apps_on">De balk toont geen apps; hun ruimte gaat naar de widgets</string>
     <string name="widget_bar_no_apps_off">De balk toont de apps</string>

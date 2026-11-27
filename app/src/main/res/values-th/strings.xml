@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">ซ่อนวันที่</string>
     <string name="widget_bar_no_weather">ซ่อนสภาพอากาศ</string>
     <string name="widget_bar_hidden_on">วิดเจ็ตเพลงจะใช้พื้นที่ของส่วนนั้นแทน</string>
+    <string name="horizontal_bar_no_drawer">ซ่อนปุ่มลิ้นชักแอป</string>
+    <string name="horizontal_bar_no_drawer_on">องค์ประกอบอื่นใช้ที่ของมัน ปัดขึ้นเพื่อเปิดลิ้นชัก</string>
+    <string name="widget_bar_no_music">ซ่อนวิดเจ็ตเพลง</string>
+    <string name="widget_bar_no_music_on">องค์ประกอบอื่นใช้ที่ของมัน</string>
+    <string name="horizontal_bar_turned_off">ไม่มีอะไรเหลือบนแถบแนวนอน จึงปิดแถบแล้ว</string>
     <string name="widget_bar_no_apps">ซ่อนแอป</string>
     <string name="widget_bar_no_apps_on">แถบไม่แสดงแอป พื้นที่ของแอปจะเป็นของวิดเจ็ต</string>
     <string name="widget_bar_no_apps_off">แถบแสดงแอป</string>

@@ -811,9 +811,12 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             widgetBarButtonsBesidePreference.setOnPreferenceClickListener(this);
         }
         updateWidgetBarRows();
-        Preference displayHorizontal = findPreference(Keys.DISPLAY_HORIZONTAL_BAR);
-        if (displayHorizontal != null) {
-            displayHorizontal.setOnPreferenceClickListener(this);
+        for (String key : new String[] {Keys.DISPLAY_HORIZONTAL_BAR, Keys.HORIZONTAL_BAR_NO_DRAWER,
+                Keys.WIDGET_BAR_NO_MUSIC}) {
+            Preference row = findPreference(key);
+            if (row != null) {
+                row.setOnPreferenceClickListener(this);
+            }
         }
         updateHorizontalBarRows();
         if (margin != null) {
@@ -1036,6 +1039,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                     barOrderDialog.updateSummary();
                 }
                 break;
+            case Keys.HORIZONTAL_BAR_NO_DRAWER:
+            case Keys.WIDGET_BAR_NO_MUSIC:
             case Keys.WIDGET_BAR_NO_COVER:
             case Keys.WIDGET_BAR_NO_DATE:
             case Keys.WIDGET_BAR_NO_WEATHER:
@@ -1043,7 +1048,10 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             case Keys.WIDGET_BAR_FIT_APPS:
                 // The layout row below appears (or goes) at once with the first hidden widget; with the apps
                 // hidden, their fitting and their number of icons go too
+                turnOffEmptyBar();
                 updateWidgetBarRows();
+                // After the widget bar's rows: a bar that was just turned off hides them all
+                updateHorizontalBarRows();
                 updateBarIconSliders();
                 if (barOrderDialog != null) {
                     barOrderDialog.updateSummary();
@@ -1597,7 +1605,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             "horizontal_bar_icons", "choose_bar_background", "choose_bar_tint", Keys.HORIZONTAL_BAR_ORDER,
             "widget_bar_separator", Keys.WIDGET_BAR, Keys.WIDGET_BAR_NO_COVER, Keys.WIDGET_BAR_NO_DATE,
             Keys.WIDGET_BAR_NO_WEATHER, Keys.WIDGET_BAR_NO_APPS, "widget_bar_fit_apps", Keys.WIDGET_BAR_BUTTONS_BESIDE,
-            "widget_bar_buttons_one_line", "widget_bar_line_mode", "widget_bar_large_text"};
+            "widget_bar_buttons_one_line", "widget_bar_line_mode", "widget_bar_large_text",
+            Keys.HORIZONTAL_BAR_NO_DRAWER, Keys.WIDGET_BAR_NO_MUSIC};
 
     /** How each bar row was shown before "Display horizontal bar" hid it; given back when the bar is shown again. */
     private final java.util.Map<String, Boolean> barRowsBefore = new java.util.HashMap<>();
@@ -1608,6 +1617,35 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
      * of the widget bar is hidden; on, each comes back as it was. Without the bar the swipe up is the way to the drawer
      * (DrawerAccess): its row is on and cannot be turned off, and says why.
      */
+    /**
+     * A bar with every part hidden (its drawer button too) is no bar: "Display horizontal bar" is turned off and a toast
+     * says so (the owner's rule for E3 of round 28, BarShares.empty).
+     */
+    private void turnOffEmptyBar() {
+        if (!sharedPrefs.getBoolean(Keys.DISPLAY_HORIZONTAL_BAR, true)
+                || !sharedPrefs.getBoolean(Keys.HORIZONTAL_BAR_NO_DRAWER, false)
+                || !sharedPrefs.getBoolean(Keys.WIDGET_BAR, false)) {
+            return;   // the bar is off already, or its button or its apps list (without widgets) is there
+        }
+        boolean portrait = getResources().getConfiguration().orientation
+                == android.content.res.Configuration.ORIENTATION_PORTRAIT;
+        boolean empty = com.android.launcher66.BarShares.empty(portrait, true,
+                WidgetBarPlan.appsHidden(true, true, sharedPrefs.getBoolean(Keys.WIDGET_BAR_NO_APPS, false)),
+                sharedPrefs.getBoolean(Keys.WIDGET_BAR_NO_MUSIC, false),
+                WidgetBarPlan.dateHidden(sharedPrefs.getBoolean(Keys.WIDGET_BAR_NO_DATE, false), portrait),
+                sharedPrefs.getBoolean(Keys.WIDGET_BAR_NO_WEATHER, false));
+        if (!empty) {
+            return;
+        }
+        sharedPrefs.edit().putBoolean(Keys.DISPLAY_HORIZONTAL_BAR, false).apply();
+        Preference display = findPreference(Keys.DISPLAY_HORIZONTAL_BAR);
+        if (display instanceof TwoStatePreference) {
+            ((TwoStatePreference) display).setChecked(false);
+        }
+        Toast.makeText(requireContext().getApplicationContext(), R.string.horizontal_bar_turned_off,
+                Toast.LENGTH_LONG).show();
+    }
+
     private void updateHorizontalBarRows() {
         boolean shown = sharedPrefs.getBoolean(Keys.DISPLAY_HORIZONTAL_BAR, true);
         for (String key : HORIZONTAL_BAR_ROWS) {
@@ -1633,7 +1671,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             if (swipeUpSummaryOn == null) {
                 swipeUpSummaryOn = row.getSummaryOn();
             }
-            if (com.android.launcher66.DrawerAccess.swipeUpRequired(shown, false)) {
+            if (com.android.launcher66.DrawerAccess.swipeUpRequired(shown,
+                    sharedPrefs.getBoolean(Keys.HORIZONTAL_BAR_NO_DRAWER, false))) {
                 row.setChecked(true);
                 row.setEnabled(false);
                 row.setSummaryOn(R.string.swipe_up_app_drawer_required);
@@ -1648,8 +1687,14 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         boolean widgetBar = sharedPrefs.getBoolean(Keys.WIDGET_BAR, false);
         boolean portrait = getResources().getConfiguration().orientation
                 == android.content.res.Configuration.ORIENTATION_PORTRAIT;
+        boolean noMusic = sharedPrefs.getBoolean(Keys.WIDGET_BAR_NO_MUSIC, false);
+        Preference noMusicRow = findPreference(Keys.WIDGET_BAR_NO_MUSIC);
+        if (noMusicRow != null) {
+            noMusicRow.setVisible(widgetBar);
+        }
         if (widgetBarNoCoverPreference != null) {
-            widgetBarNoCoverPreference.setVisible(widgetBar);
+            // Without the music widget there is no cover to hide
+            widgetBarNoCoverPreference.setVisible(widgetBar && !noMusic);
         }
         if (widgetBarNoDatePreference != null) {
             widgetBarNoDatePreference.setVisible(widgetBar && !portrait);

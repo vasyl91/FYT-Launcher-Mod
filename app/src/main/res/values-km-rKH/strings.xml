@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">លាក់កាលបរិច្ឆេទ</string>
     <string name="widget_bar_no_weather">លាក់អាកាសធាតុ</string>
     <string name="widget_bar_hidden_on">ធាតុក្រាហ្វិកតន្ត្រីយកកន្លែងរបស់វា</string>
+    <string name="horizontal_bar_no_drawer">លាក់ប៊ូតុងថតកម្មវិធី</string>
+    <string name="horizontal_bar_no_drawer_on">ធាតុផ្សេងទៀតយកកន្លែងរបស់វា អូសឡើងលើដើម្បីបើកថត</string>
+    <string name="widget_bar_no_music">លាក់ធាតុក្រាហ្វិកតន្ត្រី</string>
+    <string name="widget_bar_no_music_on">ធាតុផ្សេងទៀតយកកន្លែងរបស់វា</string>
+    <string name="horizontal_bar_turned_off">គ្មានអ្វីនៅសល់លើរបារផ្ដេកទេ៖ វាត្រូវបានបិទ</string>
     <string name="widget_bar_no_apps">លាក់កម្មវិធី</string>
     <string name="widget_bar_no_apps_on">របារមិនបង្ហាញកម្មវិធីទេ កន្លែងរបស់វាត្រូវផ្តល់ឱ្យធាតុក្រាហ្វិក</string>
     <string name="widget_bar_no_apps_off">របារបង្ហាញកម្មវិធី</string>

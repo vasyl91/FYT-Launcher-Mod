@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Versteek die datum</string>
     <string name="widget_bar_no_weather">Versteek die weer</string>
     <string name="widget_bar_hidden_on">Die musiekwidget neem sy plek in</string>
+    <string name="horizontal_bar_no_drawer">Versteek die programlaai-knoppie</string>
+    <string name="horizontal_bar_no_drawer_on">Die ander elemente neem sy plek in; ’n swiep op maak die laai oop</string>
+    <string name="widget_bar_no_music">Versteek die musiekwidget</string>
+    <string name="widget_bar_no_music_on">Die ander elemente neem sy plek in</string>
+    <string name="horizontal_bar_turned_off">Niks is oor op die horisontale balk nie: dit is afgeskakel</string>
     <string name="widget_bar_no_apps">Versteek die programme</string>
     <string name="widget_bar_no_apps_on">Die balk wys geen programme nie; hul plek gaan na die widgets</string>
     <string name="widget_bar_no_apps_off">Die balk wys die programme</string>

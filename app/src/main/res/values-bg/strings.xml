@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Скриване на датата</string>
     <string name="widget_bar_no_weather">Скриване на времето</string>
     <string name="widget_bar_hidden_on">Мястото му се заема от музикалния уиджет</string>
+    <string name="horizontal_bar_no_drawer">Скриване на бутона за приложенията</string>
+    <string name="horizontal_bar_no_drawer_on">Другите елементи заемат мястото му; плъзгане нагоре отваря чекмеджето</string>
+    <string name="widget_bar_no_music">Скриване на музикалната джаджа</string>
+    <string name="widget_bar_no_music_on">Другите елементи заемат мястото ѝ</string>
+    <string name="horizontal_bar_turned_off">На хоризонталната лента не остана нищо: тя е изключена</string>
     <string name="widget_bar_no_apps">Скриване на приложенията</string>
     <string name="widget_bar_no_apps_on">Лентата не показва приложения; мястото им отива за уиджетите</string>
     <string name="widget_bar_no_apps_off">Лентата показва приложенията</string>

@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Slėpti datą</string>
     <string name="widget_bar_no_weather">Slėpti orus</string>
     <string name="widget_bar_hidden_on">Jo vietą užima muzikos valdiklis</string>
+    <string name="horizontal_bar_no_drawer">Slėpti programų stalčiaus mygtuką</string>
+    <string name="horizontal_bar_no_drawer_on">Jo vietą užima kiti elementai; perbraukus aukštyn atsidaro stalčius</string>
+    <string name="widget_bar_no_music">Slėpti muzikos valdiklį</string>
+    <string name="widget_bar_no_music_on">Jo vietą užima kiti elementai</string>
+    <string name="horizontal_bar_turned_off">Horizontaliojoje juostoje nieko neliko: ji išjungta</string>
     <string name="widget_bar_no_apps">Slėpti programas</string>
     <string name="widget_bar_no_apps_on">Juosta nerodo programų; jų vieta atitenka valdikliams</string>
     <string name="widget_bar_no_apps_off">Juosta rodo programas</string>

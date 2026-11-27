@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Sakrij datum</string>
     <string name="widget_bar_no_weather">Sakrij vrijeme</string>
     <string name="widget_bar_hidden_on">Njegovo mjesto zauzima glazbeni widget</string>
+    <string name="horizontal_bar_no_drawer">Sakrij gumb ladice aplikacija</string>
+    <string name="horizontal_bar_no_drawer_on">Ostali elementi zauzimaju njegovo mjesto; prelazak prema gore otvara ladicu</string>
+    <string name="widget_bar_no_music">Sakrij glazbeni widget</string>
+    <string name="widget_bar_no_music_on">Ostali elementi zauzimaju njegovo mjesto</string>
+    <string name="horizontal_bar_turned_off">Na vodoravnoj traci nije ništa ostalo: isključena je</string>
     <string name="widget_bar_no_apps">Sakrij aplikacije</string>
     <string name="widget_bar_no_apps_on">Traka ne prikazuje aplikacije; njihov prostor ide widgetima</string>
     <string name="widget_bar_no_apps_off">Traka prikazuje aplikacije</string>

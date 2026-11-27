@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">ເຊື່ອງວັນທີ</string>
     <string name="widget_bar_no_weather">ເຊື່ອງສະພາບອາກາດ</string>
     <string name="widget_bar_hidden_on">ວິດເຈັດເພງຈະມາແທນບ່ອນຂອງມັນ</string>
+    <string name="horizontal_bar_no_drawer">ເຊື່ອງປຸ່ມລາຍການແອັບ</string>
+    <string name="horizontal_bar_no_drawer_on">ອົງປະກອບອື່ນໃຊ້ບ່ອນຂອງມັນ, ປັດຂຶ້ນເພື່ອເປີດລາຍການ</string>
+    <string name="widget_bar_no_music">ເຊື່ອງວິດເຈັດເພງ</string>
+    <string name="widget_bar_no_music_on">ອົງປະກອບອື່ນໃຊ້ບ່ອນຂອງມັນ</string>
+    <string name="horizontal_bar_turned_off">ບໍ່ມີຫຍັງເຫຼືອຢູ່ແຖບແນວນອນ: ປິດແລ້ວ</string>
     <string name="widget_bar_no_apps">ເຊື່ອງແອັບ</string>
     <string name="widget_bar_no_apps_on">ແຖບບໍ່ສະແດງແອັບ; ບ່ອນຂອງມັນໃຫ້ວິດເຈັດ</string>
     <string name="widget_bar_no_apps_off">ແຖບສະແດງແອັບ</string>

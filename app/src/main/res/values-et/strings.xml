@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Peida kuupäev</string>
     <string name="widget_bar_no_weather">Peida ilm</string>
     <string name="widget_bar_hidden_on">Selle koha võtab muusikavidin</string>
+    <string name="horizontal_bar_no_drawer">Peida rakenduste sahtli nupp</string>
+    <string name="horizontal_bar_no_drawer_on">Selle koha võtavad teised elemendid; pühkimine üles avab sahtli</string>
+    <string name="widget_bar_no_music">Peida muusikavidin</string>
+    <string name="widget_bar_no_music_on">Selle koha võtavad teised elemendid</string>
+    <string name="horizontal_bar_turned_off">Horisontaalsele ribale ei jäänud midagi: see on välja lülitatud</string>
     <string name="widget_bar_no_apps">Peida rakendused</string>
     <string name="widget_bar_no_apps_on">Riba ei näita rakendusi; nende ruum läheb vidinatele</string>
     <string name="widget_bar_no_apps_off">Riba näitab rakendusi</string>

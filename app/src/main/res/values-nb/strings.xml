@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Skjul datoen</string>
     <string name="widget_bar_no_weather">Skjul været</string>
     <string name="widget_bar_hidden_on">Musikkwidgeten tar plassen</string>
+    <string name="horizontal_bar_no_drawer">Skjul knappen for appskuffen</string>
+    <string name="horizontal_bar_no_drawer_on">De andre elementene tar plassen; sveip opp åpner skuffen</string>
+    <string name="widget_bar_no_music">Skjul musikkwidgeten</string>
+    <string name="widget_bar_no_music_on">De andre elementene tar plassen</string>
+    <string name="horizontal_bar_turned_off">Ingenting er igjen på det horisontale feltet: det er slått av</string>
     <string name="widget_bar_no_apps">Skjul appene</string>
     <string name="widget_bar_no_apps_on">Linjen viser ingen apper; plassen deres går til modulene</string>
     <string name="widget_bar_no_apps_off">Linjen viser appene</string>

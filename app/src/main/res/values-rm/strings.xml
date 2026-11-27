@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Zuppar la data</string>
     <string name="widget_bar_no_weather">Zuppar il temp</string>
     <string name="widget_bar_hidden_on">Il widget da musica prenda il lieu</string>
+    <string name="horizontal_bar_no_drawer">Zuppentar il buttun da las applicaziuns</string>
+    <string name="horizontal_bar_no_drawer_on">Ils auters elements prendan ses lieu; stritgar ensi avra las applicaziuns</string>
+    <string name="widget_bar_no_music">Zuppentar il widget da musica</string>
+    <string name="widget_bar_no_music_on">Ils auters elements prendan ses lieu</string>
+    <string name="horizontal_bar_turned_off">I na resta nagut sin la bara orizontala: ella è deactivada</string>
     <string name="widget_bar_no_apps">Zuppentar las apps</string>
     <string name="widget_bar_no_apps_on">La trav na mussa nagina app; lur plaz va als widgets</string>
     <string name="widget_bar_no_apps_off">La trav mussa las apps</string>

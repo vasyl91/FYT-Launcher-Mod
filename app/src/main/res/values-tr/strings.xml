@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Tarihi gizle</string>
     <string name="widget_bar_no_weather">Hava durumunu gizle</string>
     <string name="widget_bar_hidden_on">Yerini müzik widget\'ı alır</string>
+    <string name="horizontal_bar_no_drawer">Uygulama çekmecesi düğmesini gizle</string>
+    <string name="horizontal_bar_no_drawer_on">Yerini diğer öğeler alır; yukarı kaydırma çekmeceyi açar</string>
+    <string name="widget_bar_no_music">Müzik widget’ını gizle</string>
+    <string name="widget_bar_no_music_on">Yerini diğer öğeler alır</string>
+    <string name="horizontal_bar_turned_off">Yatay çubukta bir şey kalmadı: kapatıldı</string>
     <string name="widget_bar_no_apps">Uygulamaları gizle</string>
     <string name="widget_bar_no_apps_on">Çubuk uygulama göstermez; yerleri widget\'lara gider</string>
     <string name="widget_bar_no_apps_off">Çubuk uygulamaları gösterir</string>

@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Ukryj datę</string>
     <string name="widget_bar_no_weather">Ukryj pogodę</string>
     <string name="widget_bar_hidden_on">Jego miejsce zajmuje widżet muzyki</string>
+    <string name="horizontal_bar_no_drawer">Ukryj przycisk szuflady aplikacji</string>
+    <string name="horizontal_bar_no_drawer_on">Jego miejsce zajmują pozostałe elementy; przesunięcie w górę otwiera szufladę</string>
+    <string name="widget_bar_no_music">Ukryj widżet muzyki</string>
+    <string name="widget_bar_no_music_on">Jego miejsce zajmują pozostałe elementy</string>
+    <string name="horizontal_bar_turned_off">Na pasku poziomym nic nie zostało: pasek wyłączono</string>
     <string name="widget_bar_no_apps">Ukryj aplikacje</string>
     <string name="widget_bar_no_apps_on">Pasek nie pokazuje aplikacji; ich miejsce zajmują widżety</string>
     <string name="widget_bar_no_apps_off">Pasek pokazuje aplikacje</string>

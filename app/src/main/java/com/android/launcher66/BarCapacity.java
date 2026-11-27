@@ -154,6 +154,10 @@ public final class BarCapacity {
         int min = minBottomSlots(portrait, widgetMode);
 
         int available = bottomRecyclerWidth(portrait, widgetMode);
+        if (widgetMode && prefs != null) {
+            // Wider with the drawer button or the music widget hidden (BarShares): room for more icons
+            available = Math.round(available * WidgetBarLayout.appsWidthFactor(prefs, portrait));
+        }
         int iconSize = bottomIconSize(prefs, portrait, userLayout);
         int capacity = min;
         if (available > 0 && iconSize > 0) {

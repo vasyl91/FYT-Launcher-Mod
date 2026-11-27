@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">तारीख़ छिपाएँ</string>
     <string name="widget_bar_no_weather">मौसम छिपाएँ</string>
     <string name="widget_bar_hidden_on">उसकी जगह म्यूज़िक विजेट ले लेता है</string>
+    <string name="horizontal_bar_no_drawer">ऐप ड्रॉअर बटन छिपाएं</string>
+    <string name="horizontal_bar_no_drawer_on">बाकी तत्व उसकी जगह लेते हैं; ऊपर स्वाइप करने से ड्रॉअर खुलता है</string>
+    <string name="widget_bar_no_music">संगीत विजेट छिपाएं</string>
+    <string name="widget_bar_no_music_on">बाकी तत्व उसकी जगह लेते हैं</string>
+    <string name="horizontal_bar_turned_off">क्षैतिज बार पर कुछ नहीं बचा: वह बंद कर दिया गया</string>
     <string name="widget_bar_no_apps">ऐप्स छिपाएँ</string>
     <string name="widget_bar_no_apps_on">बार कोई ऐप नहीं दिखाता; उनकी जगह विजेट को मिलती है</string>
     <string name="widget_bar_no_apps_off">बार ऐप्स दिखाता है</string>

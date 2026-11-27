@@ -954,6 +954,10 @@ public class Workspace extends SmoothPagedView
                 mLauncher.preSetMusicWidgets();
                 mBarWeatherWidget = workspaceView.findViewById(R.id.bar_widget_weather);
             }
+            if (!widgetBar) {
+                // The bar without the widgets: the apps get a hidden drawer button's room (WidgetBarLayout.applyPlain)
+                WidgetBarLayout.applyPlain(workspaceView, mPrefs);
+            }
             // The elements in the order chosen in the settings, tied as the window ties them (BarOrderLayout)
             BarOrderLayout.apply(workspaceView, mPrefs, orientation == Configuration.ORIENTATION_PORTRAIT);
             // After the widget bar has chosen its variant: the bars to their edges
@@ -2070,6 +2074,9 @@ public class Workspace extends SmoothPagedView
                 WidgetBarLayout.apply(barContent, inflater, mPrefs,
                         orientation == Configuration.ORIENTATION_PORTRAIT);
                 WidgetBarLayout.arrangeLines(barContent, mPrefs);
+            } else {
+                // The bar without the widgets: the apps get a hidden drawer button's room, as on the page
+                WidgetBarLayout.applyPlain(barContent, mPrefs);
             }
             applyBarConstraints(barContent, false);
             final BarSwipeFrame barFrame = new BarSwipeFrame(getContext(), mBarSwipeHost);

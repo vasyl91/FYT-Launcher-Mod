@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Slēpt datumu</string>
     <string name="widget_bar_no_weather">Slēpt laikapstākļus</string>
     <string name="widget_bar_hidden_on">Tā vietu ieņem mūzikas logrīks</string>
+    <string name="horizontal_bar_no_drawer">Paslēpt lietotņu atvilktnes pogu</string>
+    <string name="horizontal_bar_no_drawer_on">Tās vietu ieņem citi elementi; vilkšana uz augšu atver atvilktni</string>
+    <string name="widget_bar_no_music">Paslēpt mūzikas logrīku</string>
+    <string name="widget_bar_no_music_on">Tā vietu ieņem citi elementi</string>
+    <string name="horizontal_bar_turned_off">Uz horizontālās joslas nekas nav palicis: tā ir izslēgta</string>
     <string name="widget_bar_no_apps">Paslēpt lietotnes</string>
     <string name="widget_bar_no_apps_on">Josla nerāda lietotnes; to vieta tiek logrīkiem</string>
     <string name="widget_bar_no_apps_off">Josla rāda lietotnes</string>

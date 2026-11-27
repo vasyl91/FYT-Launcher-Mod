@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">ቀኑን ደብቅ</string>
     <string name="widget_bar_no_weather">የአየር ሁኔታን ደብቅ</string>
     <string name="widget_bar_hidden_on">የሙዚቃ ምግብር ቦታውን ይወስዳል</string>
+    <string name="horizontal_bar_no_drawer">የመተግበሪያ መሳቢያ አዝራሩን ደብቅ</string>
+    <string name="horizontal_bar_no_drawer_on">ሌሎቹ ክፍሎች ቦታውን ይይዛሉ፤ ወደ ላይ ማንሸራተት መሳቢያውን ይከፍታል</string>
+    <string name="widget_bar_no_music">የሙዚቃ ምግብሩን ደብቅ</string>
+    <string name="widget_bar_no_music_on">ሌሎቹ ክፍሎች ቦታውን ይይዛሉ</string>
+    <string name="horizontal_bar_turned_off">በአግድም አሞሌው ላይ ምንም አልቀረም፤ ጠፍቷል</string>
     <string name="widget_bar_no_apps">መተግበሪያዎቹን ደብቅ</string>
     <string name="widget_bar_no_apps_on">አሞሌው ምንም መተግበሪያ አያሳይም፤ ቦታቸው ለንዑስ ፕሮግራሞቹ ይሰጣል</string>
     <string name="widget_bar_no_apps_off">አሞሌው መተግበሪያዎቹን ያሳያል</string>

@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Dölj datumet</string>
     <string name="widget_bar_no_weather">Dölj vädret</string>
     <string name="widget_bar_hidden_on">Musikwidgeten tar dess plats</string>
+    <string name="horizontal_bar_no_drawer">Dölj knappen för applådan</string>
+    <string name="horizontal_bar_no_drawer_on">De andra elementen tar dess plats; svep uppåt öppnar lådan</string>
+    <string name="widget_bar_no_music">Dölj musikwidgeten</string>
+    <string name="widget_bar_no_music_on">De andra elementen tar dess plats</string>
+    <string name="horizontal_bar_turned_off">Inget finns kvar på det horisontella fältet: det är avstängt</string>
     <string name="widget_bar_no_apps">Dölj apparna</string>
     <string name="widget_bar_no_apps_on">Fältet visar inga appar; deras plats går till widgetarna</string>
     <string name="widget_bar_no_apps_off">Fältet visar apparna</string>

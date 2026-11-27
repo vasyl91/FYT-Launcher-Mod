@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Απόκρυψη ημερομηνίας</string>
     <string name="widget_bar_no_weather">Απόκρυψη καιρού</string>
     <string name="widget_bar_hidden_on">Τη θέση του παίρνει το γραφικό στοιχείο μουσικής</string>
+    <string name="horizontal_bar_no_drawer">Απόκρυψη κουμπιού εφαρμογών</string>
+    <string name="horizontal_bar_no_drawer_on">Τα άλλα στοιχεία παίρνουν τη θέση του· σάρωση προς τα πάνω ανοίγει τις εφαρμογές</string>
+    <string name="widget_bar_no_music">Απόκρυψη widget μουσικής</string>
+    <string name="widget_bar_no_music_on">Τα άλλα στοιχεία παίρνουν τη θέση του</string>
+    <string name="horizontal_bar_turned_off">Δεν έμεινε τίποτα στην οριζόντια γραμμή: απενεργοποιήθηκε</string>
     <string name="widget_bar_no_apps">Απόκρυψη εφαρμογών</string>
     <string name="widget_bar_no_apps_on">Η γραμμή δεν δείχνει εφαρμογές· ο χώρος τους πηγαίνει στα γραφικά στοιχεία</string>
     <string name="widget_bar_no_apps_off">Η γραμμή δείχνει τις εφαρμογές</string>

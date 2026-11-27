@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Ẩn ngày</string>
     <string name="widget_bar_no_weather">Ẩn thời tiết</string>
     <string name="widget_bar_hidden_on">Tiện ích nhạc sẽ chiếm chỗ của nó</string>
+    <string name="horizontal_bar_no_drawer">Ẩn nút ngăn ứng dụng</string>
+    <string name="horizontal_bar_no_drawer_on">Các phần khác chiếm chỗ của nó; vuốt lên để mở ngăn</string>
+    <string name="widget_bar_no_music">Ẩn widget nhạc</string>
+    <string name="widget_bar_no_music_on">Các phần khác chiếm chỗ của nó</string>
+    <string name="horizontal_bar_turned_off">Thanh ngang không còn gì: đã tắt</string>
     <string name="widget_bar_no_apps">Ẩn ứng dụng</string>
     <string name="widget_bar_no_apps_on">Thanh không hiển thị ứng dụng; chỗ của chúng dành cho tiện ích</string>
     <string name="widget_bar_no_apps_off">Thanh hiển thị ứng dụng</string>

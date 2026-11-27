@@ -269,7 +269,12 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   - "Display horizontal bar" (round 29, `display_horizontal_bar`, a creator setting): off, `HorizontalBarPlacement`
     gives no bar and no reserved cell on any page, `Workspace.createUserPage` takes the layout without the widget bar
     and hides the bar's views, and `DrawerAccess` makes the swipe up the way to the drawer;
-    `SettingsFragmentSecond.updateHorizontalBarRows` hides the bar's rows.
+    `SettingsFragmentSecond.updateHorizontalBarRows` hides the bar's rows. "Hide the app drawer button"
+    (`horizontal_bar_no_drawer`) and "Hide the music widget" (`widget_bar_no_music`): `WidgetBarLayout.applyShared`
+    gives every element of the widget bar its width by `L/BarShares` (the button stays at no width, the music widget
+    is gone), `WidgetBarLayout.applyPlain` gives the bar without widgets the button's room, `BarCapacity` counts the
+    wider list, and a bar with nothing left turns "Display horizontal bar" off. Without them hidden the old path
+    (`WidgetBarPlan.shares`) runs unchanged.
   - `L/HorizontalBarPlacement` and `L/VerticalBarPlacement` decide where each bar is drawn. A bar on every
     page is its window on every page, the first one too, moving or at rest (2026-11-16): the pages move
     under it and nothing is swapped while they move (`PersistentBarWindow.action`). With the vertical bar on

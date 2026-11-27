@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">پنهان کردن تاریخ</string>
     <string name="widget_bar_no_weather">پنهان کردن آب‌وهوا</string>
     <string name="widget_bar_hidden_on">ابزارک موسیقی جای آن را می‌گیرد</string>
+    <string name="horizontal_bar_no_drawer">پنهان کردن دکمه کشوی برنامه‌ها</string>
+    <string name="horizontal_bar_no_drawer_on">عناصر دیگر جای آن را می‌گیرند؛ کشیدن به بالا کشو را باز می‌کند</string>
+    <string name="widget_bar_no_music">پنهان کردن ویجت موسیقی</string>
+    <string name="widget_bar_no_music_on">عناصر دیگر جای آن را می‌گیرند</string>
+    <string name="horizontal_bar_turned_off">چیزی روی نوار افقی نماند: خاموش شد</string>
     <string name="widget_bar_no_apps">پنهان کردن برنامه‌ها</string>
     <string name="widget_bar_no_apps_on">نوار هیچ برنامه‌ای نشان نمی‌دهد؛ جای آن‌ها به ابزارک‌ها می‌رسد</string>
     <string name="widget_bar_no_apps_off">نوار برنامه‌ها را نشان می‌دهد</string>

@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">თარიღის დამალვა</string>
     <string name="widget_bar_no_weather">ამინდის დამალვა</string>
     <string name="widget_bar_hidden_on">მის ადგილს მუსიკის ვიჯეტი იკავებს</string>
+    <string name="horizontal_bar_no_drawer">აპების უჯრის ღილაკის დამალვა</string>
+    <string name="horizontal_bar_no_drawer_on">მის ადგილს სხვა ელემენტები იკავებს; ზემოთ გადაფურცვლა უჯრას ხსნის</string>
+    <string name="widget_bar_no_music">მუსიკის ვიჯეტის დამალვა</string>
+    <string name="widget_bar_no_music_on">მის ადგილს სხვა ელემენტები იკავებს</string>
+    <string name="horizontal_bar_turned_off">ჰორიზონტალურ ზოლზე აღარაფერი დარჩა: გამორთულია</string>
     <string name="widget_bar_no_apps">აპების დამალვა</string>
     <string name="widget_bar_no_apps_on">ზოლი არ აჩვენებს აპებს; მათი ადგილი ვიჯეტებს ეძლევა</string>
     <string name="widget_bar_no_apps_off">ზოლი აჩვენებს აპებს</string>

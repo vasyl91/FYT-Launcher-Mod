@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Itago ang petsa</string>
     <string name="widget_bar_no_weather">Itago ang panahon</string>
     <string name="widget_bar_hidden_on">Ang music widget ang pumapalit sa puwesto nito</string>
+    <string name="horizontal_bar_no_drawer">Itago ang button ng drawer ng mga app</string>
+    <string name="horizontal_bar_no_drawer_on">Ang ibang elemento ang kukuha ng puwesto nito; ang pag-swipe pataas ang magbubukas ng drawer</string>
+    <string name="widget_bar_no_music">Itago ang widget ng musika</string>
+    <string name="widget_bar_no_music_on">Ang ibang elemento ang kukuha ng puwesto nito</string>
+    <string name="horizontal_bar_turned_off">Walang natira sa pahalang na bar: pinatay ito</string>
     <string name="widget_bar_no_apps">Itago ang mga app</string>
     <string name="widget_bar_no_apps_on">Walang app na ipinapakita ang bar; ang puwang nila ay napupunta sa mga widget</string>
     <string name="widget_bar_no_apps_off">Ipinapakita ng bar ang mga app</string>

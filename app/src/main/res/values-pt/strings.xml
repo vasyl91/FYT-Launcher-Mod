@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Ocultar a data</string>
     <string name="widget_bar_no_weather">Ocultar o clima</string>
     <string name="widget_bar_hidden_on">O widget de música ocupa o lugar</string>
+    <string name="horizontal_bar_no_drawer">Ocultar o botão da gaveta de aplicações</string>
+    <string name="horizontal_bar_no_drawer_on">Os outros elementos ocupam o seu lugar; deslizar para cima abre a gaveta</string>
+    <string name="widget_bar_no_music">Ocultar o widget de música</string>
+    <string name="widget_bar_no_music_on">Os outros elementos ocupam o seu lugar</string>
+    <string name="horizontal_bar_turned_off">Não resta nada na barra horizontal: foi desativada</string>
     <string name="widget_bar_no_apps">Ocultar os apps</string>
     <string name="widget_bar_no_apps_on">A barra não mostra apps; o espaço deles vai para os widgets</string>
     <string name="widget_bar_no_apps_off">A barra mostra os apps</string>

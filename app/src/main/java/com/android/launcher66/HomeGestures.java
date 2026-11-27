@@ -67,7 +67,8 @@ final class HomeGestures {
         CreatorPrefs creator = CreatorPrefs.of(prefs);
         boolean stored = creator.getBoolean(Keys.SWIPE_UP_APP_DRAWER, false);
         // Without the horizontal bar (and its drawer button) the swipe is the way to the drawer (DrawerAccess)
-        return DrawerAccess.swipeUpActive(stored, creator.getBoolean(Keys.DISPLAY_HORIZONTAL_BAR, true), false);
+        return DrawerAccess.swipeUpActive(stored, creator.getBoolean(Keys.DISPLAY_HORIZONTAL_BAR, true),
+                prefs.getBoolean(Keys.USER_LAYOUT, false) && creator.getBoolean(Keys.HORIZONTAL_BAR_NO_DRAWER, false));
     }
 
     private boolean wantsDown() {

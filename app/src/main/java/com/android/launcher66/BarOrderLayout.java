@@ -34,7 +34,7 @@ public final class BarOrderLayout {
     public static List<BarOrder.Element> shown(SharedPreferences prefs, boolean portrait) {
         return BarOrder.shown(order(prefs, portrait), prefs.getBoolean(Keys.WIDGET_BAR, false), portrait,
                 WidgetBarLayout.dateHidden(prefs, portrait), WidgetBarLayout.weatherHidden(prefs),
-                WidgetBarLayout.appsHidden(prefs));
+                WidgetBarLayout.appsHidden(prefs), WidgetBarLayout.musicHidden(prefs));
     }
 
     /** The view of an element (no resource id in a switch: they are no constants with this build). */

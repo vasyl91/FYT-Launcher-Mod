@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Сакриј датум</string>
     <string name="widget_bar_no_weather">Сакриј време</string>
     <string name="widget_bar_hidden_on">Његово место заузима музички виџет</string>
+    <string name="horizontal_bar_no_drawer">Сакриј дугме фиоке апликација</string>
+    <string name="horizontal_bar_no_drawer_on">Његово место заузимају остали елементи; превлачење нагоре отвара фиоку</string>
+    <string name="widget_bar_no_music">Сакриј музички виџет</string>
+    <string name="widget_bar_no_music_on">Његово место заузимају остали елементи</string>
+    <string name="horizontal_bar_turned_off">На хоризонталној траци ништа није остало: искључена је</string>
     <string name="widget_bar_no_apps">Сакриј апликације</string>
     <string name="widget_bar_no_apps_on">Трака не приказује апликације; њихов простор иде виџетима</string>
     <string name="widget_bar_no_apps_off">Трака приказује апликације</string>

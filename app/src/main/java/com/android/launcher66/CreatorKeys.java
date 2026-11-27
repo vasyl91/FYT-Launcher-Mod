@@ -59,7 +59,7 @@ public final class CreatorKeys {
             "widget_bar_buttons_beside", "widget_bar_buttons_one_line", "widget_bar_line_mode",
             "widget_bar_large_text", "left_bar", "vertical_bar_right", "vertical_bar_every_page",
             "resizable_vertical_bar", "vertical_bar_width", "vertical_bar_icons_title", "vertical_bar_icons",
-            "choose_vertical_bar_background", "display_horizontal_bar", "widget_bar_separator", "user_stats", "stats_display", "stats_codes", "extra_stats_codes", "fuel_estimate",
+            "choose_vertical_bar_background", "display_horizontal_bar", "widget_bar_separator", "horizontal_bar_no_drawer", "widget_bar_no_music", "user_stats", "stats_display", "stats_codes", "extra_stats_codes", "fuel_estimate",
             "main_screen_stats", "choose_stats_background", "color_picker", "app_list", "app_stats_coordinates",
             "display_canbus_reader", "codes_guide", "skip_codes", "canbus_library_import", "canbus_library_export",
             "canbus_library_reset", "code_inspector", "code_inspector_data", "skip_zero_codes"

@@ -512,6 +512,11 @@
     <string name="widget_bar_no_date">Hide the date</string>
     <string name="widget_bar_no_weather">Hide the weather</string>
     <string name="widget_bar_hidden_on">The music widget takes its place</string>
+    <string name="horizontal_bar_no_drawer">Hide the app drawer button</string>
+    <string name="horizontal_bar_no_drawer_on">The other elements take its place; a swipe up opens the drawer</string>
+    <string name="widget_bar_no_music">Hide the music widget</string>
+    <string name="widget_bar_no_music_on">The other elements take its place</string>
+    <string name="horizontal_bar_turned_off">Nothing is left on the horizontal bar: it is turned off</string>
     <string name="widget_bar_no_apps">Hide the apps</string>
     <string name="widget_bar_no_apps_on">The bar shows no apps; their room goes to the widgets</string>
     <string name="widget_bar_no_apps_off">The bar shows the apps</string>

@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Masquer la date</string>
     <string name="widget_bar_no_weather">Masquer la météo</string>
     <string name="widget_bar_hidden_on">Le widget musique prend sa place</string>
+    <string name="horizontal_bar_no_drawer">Masquer le bouton du tiroir d’applications</string>
+    <string name="horizontal_bar_no_drawer_on">Les autres éléments prennent sa place ; un glissement vers le haut ouvre le tiroir</string>
+    <string name="widget_bar_no_music">Masquer le widget musique</string>
+    <string name="widget_bar_no_music_on">Les autres éléments prennent sa place</string>
+    <string name="horizontal_bar_turned_off">Il ne reste rien sur la barre horizontale : elle est désactivée</string>
     <string name="widget_bar_no_apps">Masquer les applications</string>
     <string name="widget_bar_no_apps_on">La barre n\'affiche aucune application ; leur place va aux widgets</string>
     <string name="widget_bar_no_apps_off">La barre affiche les applications</string>

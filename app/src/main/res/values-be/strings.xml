@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Схаваць дату</string>
     <string name="widget_bar_no_weather">Схаваць надвор\'е</string>
     <string name="widget_bar_hidden_on">Яго месца займае віджэт музыкі</string>
+    <string name="horizontal_bar_no_drawer">Схаваць кнопку спісу праграм</string>
+    <string name="horizontal_bar_no_drawer_on">Іншыя элементы займаюць яе месца; свайп уверх адкрывае спіс</string>
+    <string name="widget_bar_no_music">Схаваць музычны віджэт</string>
+    <string name="widget_bar_no_music_on">Іншыя элементы займаюць яго месца</string>
+    <string name="horizontal_bar_turned_off">На гарызантальнай панэлі нічога не засталося: яна выключана</string>
     <string name="widget_bar_no_apps">Схаваць праграмы</string>
     <string name="widget_bar_no_apps_on">Панэль не паказвае праграм; іх месца аддаецца віджэтам</string>
     <string name="widget_bar_no_apps_off">Панэль паказвае праграмы</string>

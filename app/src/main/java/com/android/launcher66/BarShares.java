@@ -23,7 +23,7 @@ package com.android.launcher66;
  * that is. A share that no rule names goes equally to the elements that are shown. The total does not change.
  * One element left gets the whole bar; none left is {@link Result#empty()}. Pure Java, so that it has a test.
  */
-final class BarShares {
+public final class BarShares {
 
     enum Element { DRAWER, APPS, MUSIC, DATE, WEATHER }
 
@@ -65,6 +65,16 @@ final class BarShares {
     }
 
     private BarShares() {
+    }
+
+    /**
+     * Whether the widget bar has nothing left to show with these hidden (the settings then turn "Display horizontal
+     * bar" off and say so, round 29).
+     */
+    public static boolean empty(boolean portrait, boolean drawerHidden, boolean appsHidden, boolean musicHidden,
+                                boolean dateHidden, boolean weatherHidden) {
+        return of(portrait, drawerHidden, appsHidden, appsHidden ? 0f : usual(Element.APPS, portrait), musicHidden,
+                dateHidden, weatherHidden).empty();
     }
 
     // The usual shares are the constraintWidth_percent of custom_layout_two_user in layout-land and layout-port; they

@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Թաքցնել ամսաթիվը</string>
     <string name="widget_bar_no_weather">Թաքցնել եղանակը</string>
     <string name="widget_bar_hidden_on">Նրա տեղը զբաղեցնում է երաժշտության վիջեթը</string>
+    <string name="horizontal_bar_no_drawer">Թաքցնել հավելվածների ցանկի կոճակը</string>
+    <string name="horizontal_bar_no_drawer_on">Մյուս տարրերը զբաղեցնում են դրա տեղը, վերև սահեցնելը բացում է ցանկը</string>
+    <string name="widget_bar_no_music">Թաքցնել երաժշտության վիջեթը</string>
+    <string name="widget_bar_no_music_on">Մյուս տարրերը զբաղեցնում են դրա տեղը</string>
+    <string name="horizontal_bar_turned_off">Հորիզոնական գոտում ոչինչ չմնաց․ այն անջատված է</string>
     <string name="widget_bar_no_apps">Թաքցնել հավելվածները</string>
     <string name="widget_bar_no_apps_on">Վահանակը հավելվածներ չի ցույցադրում, նրանց տեղը տրվում է վիջեթներին</string>
     <string name="widget_bar_no_apps_off">Վահանակը ցույցադրում է հավելվածները</string>

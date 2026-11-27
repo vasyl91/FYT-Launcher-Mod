@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">날짜 숨기기</string>
     <string name="widget_bar_no_weather">날씨 숨기기</string>
     <string name="widget_bar_hidden_on">그 자리를 음악 위젯이 차지합니다</string>
+    <string name="horizontal_bar_no_drawer">앱 서랍 버튼 숨기기</string>
+    <string name="horizontal_bar_no_drawer_on">다른 요소가 그 자리를 차지하며, 위로 스와이프하면 서랍이 열립니다</string>
+    <string name="widget_bar_no_music">음악 위젯 숨기기</string>
+    <string name="widget_bar_no_music_on">다른 요소가 그 자리를 차지합니다</string>
+    <string name="horizontal_bar_turned_off">가로 바에 남은 것이 없어 꺼졌습니다</string>
     <string name="widget_bar_no_apps">앱 숨기기</string>
     <string name="widget_bar_no_apps_on">바에 앱을 표시하지 않습니다. 그 자리는 위젯이 사용합니다</string>
     <string name="widget_bar_no_apps_off">바에 앱을 표시합니다</string>

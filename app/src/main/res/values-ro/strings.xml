@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Ascunde data</string>
     <string name="widget_bar_no_weather">Ascunde vremea</string>
     <string name="widget_bar_hidden_on">Locul lui este luat de widgetul de muzică</string>
+    <string name="horizontal_bar_no_drawer">Ascunde butonul sertarului de aplicații</string>
+    <string name="horizontal_bar_no_drawer_on">Celelalte elemente îi iau locul; o glisare în sus deschide sertarul</string>
+    <string name="widget_bar_no_music">Ascunde widgetul de muzică</string>
+    <string name="widget_bar_no_music_on">Celelalte elemente îi iau locul</string>
+    <string name="horizontal_bar_turned_off">Nu a mai rămas nimic pe bara orizontală: a fost dezactivată</string>
     <string name="widget_bar_no_apps">Ascunde aplicațiile</string>
     <string name="widget_bar_no_apps_on">Bara nu afișează aplicații; locul lor revine widgeturilor</string>
     <string name="widget_bar_no_apps_off">Bara afișează aplicațiile</string>

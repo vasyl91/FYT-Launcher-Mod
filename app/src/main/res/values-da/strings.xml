@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">Skjul datoen</string>
     <string name="widget_bar_no_weather">Skjul vejret</string>
     <string name="widget_bar_hidden_on">Musikwidgetten tager dens plads</string>
+    <string name="horizontal_bar_no_drawer">Skjul knappen til appskuffen</string>
+    <string name="horizontal_bar_no_drawer_on">De andre elementer tager dens plads; et stryg opad åbner skuffen</string>
+    <string name="widget_bar_no_music">Skjul musikwidgetten</string>
+    <string name="widget_bar_no_music_on">De andre elementer tager dens plads</string>
+    <string name="horizontal_bar_turned_off">Der er intet tilbage på den vandrette bjælke: den er slået fra</string>
     <string name="widget_bar_no_apps">Skjul apps</string>
     <string name="widget_bar_no_apps_on">Bjælken viser ingen apps; deres plads går til widgets</string>
     <string name="widget_bar_no_apps_off">Bjælken viser apps</string>

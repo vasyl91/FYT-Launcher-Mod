@@ -502,6 +502,11 @@
     <string name="widget_bar_no_date">日付を非表示</string>
     <string name="widget_bar_no_weather">天気を非表示</string>
     <string name="widget_bar_hidden_on">その場所をミュージックウィジェットが使います</string>
+    <string name="horizontal_bar_no_drawer">アプリ一覧ボタンを隠す</string>
+    <string name="horizontal_bar_no_drawer_on">ほかの要素がその場所を使います。上にスワイプで一覧が開きます</string>
+    <string name="widget_bar_no_music">音楽ウィジェットを隠す</string>
+    <string name="widget_bar_no_music_on">ほかの要素がその場所を使います</string>
+    <string name="horizontal_bar_turned_off">横バーに何も残っていないため、オフにしました</string>
     <string name="widget_bar_no_apps">アプリを非表示</string>
     <string name="widget_bar_no_apps_on">バーにアプリを表示しません。その場所はウィジェットに使われます</string>
     <string name="widget_bar_no_apps_off">バーにアプリを表示します</string>
