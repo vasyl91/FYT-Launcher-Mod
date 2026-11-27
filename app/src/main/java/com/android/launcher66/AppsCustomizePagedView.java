@@ -606,6 +606,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         boolean wanted = mContentType == ContentType.Applications && !DISABLE_ALL_APPS
                 && CreatorPrefs.of(prefs).getBoolean(Keys.ALL_APPS_SEARCH, false);
         mSearch.setVisibility(wanted ? View.VISIBLE : View.GONE);
+        applySpacing();
         if (!wanted && !mQuery.isEmpty()) {
             mSearch.clear();
             setQuery("");
@@ -715,6 +716,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         }
         mStripOnTop = top;
         mStripShown = wanted;
+        applySpacing();
         String key = tabsKey();
         if (!key.equals(mTabsKey)) {
             mTabsKey = key;
@@ -733,6 +735,39 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     private String tabName(int id) {
         return mTabs.nameOf(id, getContext().getString(R.string.drawer_tab_main),
                 getContext().getString(R.string.drawer_tab_default));
+    }
+
+    /** One gap between the search bar, the strip and the apps (DrawerSpacing), as they are shown now. */
+    private void applySpacing() {
+        AppsCustomizeTabHost host = getTabHost();
+        View content = host == null ? null : host.findViewById(android.R.id.tabcontent);
+        if (content == null) {
+            return;
+        }
+        boolean search = mSearch != null && mSearch.getVisibility() == View.VISIBLE;
+        boolean strip = mStrip != null && mStrip.getVisibility() == View.VISIBLE;
+        int gap = Math.round(DrawerSpacing.GAP_DP * getResources().getDisplayMetrics().density);
+        DrawerSpacing spacing = DrawerSpacing.of(search, strip, mStripOnTop, gap);
+        if (mSearch != null) {
+            mSearch.setPadding(mSearch.getPaddingLeft(), mSearch.getPaddingTop(), mSearch.getPaddingRight(),
+                    spacing.searchBottom);
+        }
+        if (mStrip != null) {
+            margins(mStrip, spacing.stripTop, spacing.stripBottom);
+        }
+        margins(content, spacing.appsTop, spacing.appsBottom);
+    }
+
+    private static void margins(View view, int top, int bottom) {
+        if (!(view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams)) {
+            return;
+        }
+        ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        if (lp.topMargin != top || lp.bottomMargin != bottom) {
+            lp.topMargin = top;
+            lp.bottomMargin = bottom;
+            view.setLayoutParams(lp);
+        }
     }
 
     /** The strip above the apps or below them: its place among the pane's children. */

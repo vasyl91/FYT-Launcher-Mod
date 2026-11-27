@@ -230,7 +230,8 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   The grid is `L/AppsGrid` (plain Java) through `DeviceProfile.updateAllAppsGrid` and the keys `all_apps_grid_*`.
 - **Tabs:** `L/DrawerTabs` (plain Java, tested: the rules of D-88), `L/DrawerTabsStore` (one string under `drawer_tabs`,
   read through `CreatorPrefs`), `L/DrawerTabGeometry` (plain Java: sizes and swipe decisions), `L/DrawerTabStrip` (the
-  strip, in `apps_customize_pane.xml`, moved above or below the apps by `AppsCustomizePagedView.placeStrip`).
+  strip, in `apps_customize_pane.xml`, moved above or below the apps by `AppsCustomizePagedView.placeStrip`;
+  `L/DrawerSpacing`, plain Java since round 29, gives one 8 dp gap between the search bar, the strip and the apps).
   `AppsCustomizePagedView.syncTabs()` reads the tabs when the drawer opens and when `Launcher`'s preference listener
   sees a key of the tabs.
 - **Settings:** "App drawer" is a category of the creator's second screen. "Tabs" opens `S/DrawerTabsFragment` (the tab
