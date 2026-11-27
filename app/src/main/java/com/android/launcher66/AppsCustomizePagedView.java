@@ -564,11 +564,16 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
 
                     @Override
                     public boolean onIconLongClick(View icon) {
-                        return AppsCustomizePagedView.this.onLongClick(icon);
+                        return beginVerticalDrag(icon);
                     }
 
                     @Override
                     public void onIconTouch(View icon, android.view.MotionEvent event) {
+                        if (event.getActionMasked() == android.view.MotionEvent.ACTION_DOWN) {
+                            // The pager's dragging state is cleared by a touch on the pager only: a touch in the list
+                            // clears it too, or the pager would not scroll after a drag from the list
+                            cancelDragging();
+                        }
                         AppsCustomizePagedView.this.onTouch(icon, event);
                     }
 
@@ -980,6 +985,47 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         // Disable dragging by pulling an app down for now.
     }
 
+    /**
+     * A long press of an icon in the vertical list (VerticalDrag): the icon is dragged to the home screen, as from a page
+     * of the pager, without the pager's checks of its own pages.
+     */
+    private boolean beginVerticalDrag(View v) {
+        DragController drag = mLauncher.getDragController();
+        String refusal = VerticalDrag.refusal(v.isInTouchMode(), mLauncher.isAllAppsVisible(),
+                mLauncher.getWorkspace() == null || mLauncher.getWorkspace().isSwitchingState(),
+                mLauncher.isDraggingEnabled(), v instanceof PagedViewIcon, drag != null && drag.isDragging());
+        if (refusal != null) {
+            Log.i(TAG, "Vertical drawer: no drag of " + v.getTag() + ", " + refusal);
+            return false;
+        }
+        Log.i(TAG, "Vertical drawer: dragging " + v.getTag() + " to the home screen");
+        beginDraggingApplication(v);
+        enterSpringLoadedSoon();
+        return true;
+    }
+
+    /**
+     * Into the spring-loaded mode (the drawer gives way to the pages) shortly after a drag began, to keep the UI thread
+     * free for the drag's start; not when the drag has been cancelled meanwhile.
+     */
+    private void enterSpringLoadedSoon() {
+        postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (mLauncher == null || mLauncher.getDragController() == null) {
+                    return;
+                }
+                if (mLauncher.getDragController().isDragging()) {
+                    // Reset the alpha on the dragged icon before we drag
+                    resetDrawableState();
+
+                    // Go into spring loaded mode (must happen before we startDrag())
+                    mLauncher.enterSpringLoadedDragMode();
+                }
+            }
+        }, 150);
+    }
+
     private void beginDraggingApplication(View v) {
         mLauncher.getWorkspace().onDragStartedWithItem(v);
         mLauncher.getWorkspace().beginDragShared(v, this, 1.0f);
@@ -1306,22 +1352,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
 
         // We delay entering spring-loaded mode slightly to make sure the UI
         // thready is free of any work.
-        postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // We don't enter spring-loaded mode if the drag has been cancelled
-                if (mLauncher == null || mLauncher.getDragController() == null) {
-                    return;
-                }
-                if (mLauncher.getDragController().isDragging()) {
-                    // Reset the alpha on the dragged icon before we drag
-                    resetDrawableState();
-
-                    // Go into spring loaded mode (must happen before we startDrag())
-                    mLauncher.enterSpringLoadedDragMode();
-                }
-            }
-        }, 150);
+        enterSpringLoadedSoon();
 
         return true;
     }

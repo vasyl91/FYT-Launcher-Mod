@@ -223,6 +223,8 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   (`L/AppSearch`, `L/AppSearchBar`); every change of the list goes through it.
 - **Vertical by default:** `L/AppsVerticalView` (a `RecyclerView` in a `FrameLayout`, with the swipe that changes the
   tab) and `L/LetterScroller` (the letters and the bubble, `L/LetterIndex`); the pager is the horizontal choice.
+  An icon of the list is dragged through `AppsCustomizePagedView.beginVerticalDrag` (round 29, `L/VerticalDrag`),
+  not through the pager's long-press checks.
   The grid is `L/AppsGrid` (plain Java) through `DeviceProfile.updateAllAppsGrid` and the keys `all_apps_grid_*`.
 - **Tabs:** `L/DrawerTabs` (plain Java, tested: the rules of D-88), `L/DrawerTabsStore` (one string under `drawer_tabs`,
   read through `CreatorPrefs`), `L/DrawerTabGeometry` (plain Java: sizes and swipe decisions), `L/DrawerTabStrip` (the
