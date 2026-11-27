@@ -543,7 +543,6 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
             mNeedToUpdatePageCountsAndInvalidateData = false;
         }
         syncVertical();
-        syncWidgetsList();
     }
 
     // ---- the drawer scrolling vertically (F2: AppsVerticalView), the default; the pager is the horizontal one
@@ -929,23 +928,6 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     }
 
     /** The widgets show as the list, the pager stays for the apps (the pager's widget pages are not shown then). */
-    private void syncWidgetsList() {
-        WidgetsListView list = widgetsList();
-        if (list == null) {
-            return;
-        }
-        if (mContentType == ContentType.Widgets) {
-            list.setWidgets(mWidgets);
-            list.setVisibility(View.VISIBLE);
-            if (getVisibility() != View.INVISIBLE) {
-                setVisibility(View.INVISIBLE);
-            }
-        } else if (list.getVisibility() != View.GONE) {
-            list.setVisibility(View.GONE);
-            list.reset();
-        }
-    }
-
     /** A long press of a widget or a shortcut of the list: dragged as from a page, without the pager's checks. */
     private boolean beginListDrag(View v) {
         DragController drag = mLauncher.getDragController();
@@ -1089,28 +1071,55 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     private void syncVertical() {
         syncSearch();
         AppsVerticalView list = vertical();
-        if (list == null) {
-            return;
+        WidgetsListView widgets = widgetsList();
+        // One rule for the three views (DrawerContent): exactly one of them shows the content. The widgets' list
+        // is decided here too, or opening the drawer on the widgets (onLauncherTransitionPrepare) showed the pager
+        // again under the list
+        DrawerContent.Shown shown = DrawerContent.shown(mContentType == ContentType.Widgets, verticalWanted(),
+                list != null, widgets != null);
+        if (list != null) {
+            if (shown == DrawerContent.Shown.APPS_LIST) {
+                LauncherAppState app = LauncherAppState.getInstanceNoCreate();
+                if (app != null && app.getDynamicGrid() != null) {
+                    DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
+                    list.setGrid((int) grid.allAppsNumCols, (int) grid.allAppsNumRows);
+                }
+                list.setContentPadding(mPageLayoutPaddingLeft, mPageLayoutPaddingTop, mPageLayoutPaddingRight,
+                        mPageLayoutPaddingBottom);
+                list.setApps(mApps);
+                list.setVisibility(View.VISIBLE);
+            } else {
+                list.setVisibility(View.GONE);
+            }
         }
-        if (verticalWanted()) {
-            LauncherAppState app = LauncherAppState.getInstanceNoCreate();
-            if (app != null && app.getDynamicGrid() != null) {
-                DeviceProfile grid = app.getDynamicGrid().getDeviceProfile();
-                list.setGrid((int) grid.allAppsNumCols, (int) grid.allAppsNumRows);
-            }
-            list.setContentPadding(mPageLayoutPaddingLeft, mPageLayoutPaddingTop, mPageLayoutPaddingRight,
-                    mPageLayoutPaddingBottom);
-            list.setApps(mApps);
-            list.setVisibility(View.VISIBLE);
-            if (getVisibility() != View.INVISIBLE) {
-                setVisibility(View.INVISIBLE);
-            }
-        } else {
-            list.setVisibility(View.GONE);
-            if (getVisibility() != View.VISIBLE) {
-                setVisibility(View.VISIBLE);
+        if (widgets != null) {
+            if (shown == DrawerContent.Shown.WIDGETS_LIST) {
+                widgets.setWidgets(mWidgets);
+                widgets.setVisibility(View.VISIBLE);
+            } else if (widgets.getVisibility() != View.GONE) {
+                widgets.setVisibility(View.GONE);
+                widgets.reset();
             }
         }
+        boolean pagerShown = DrawerContent.fillsPages(shown);
+        int pager = pagerShown ? View.VISIBLE : View.INVISIBLE;
+        if (getVisibility() != pager) {
+            setVisibility(pager);
+        }
+        if (pagerShown && mPageItemsLeftEmpty) {
+            // Its pages were left empty while a list covered it: filled now that it is shown
+            mPageItemsLeftEmpty = false;
+            Log.i(TAG, "The drawer's pages are filled now that the pager is shown");
+            invalidatePageData(Math.max(0, getCurrentPage()), false);
+        }
+    }
+
+    /** The pager's pages were left without their icons or previews while a list covered it (syncPageItems). */
+    private boolean mPageItemsLeftEmpty;
+
+    /** Whether a list covers the pager now: only syncVertical makes it INVISIBLE, and only for that. */
+    private boolean pagerCovered() {
+        return getVisibility() == View.INVISIBLE;
     }
 
     @Override
@@ -1735,7 +1744,6 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         mContentType = type;
         invalidatePageData(page, true);
         syncVertical();
-        syncWidgetsList();
         // the strip of tabs is for the apps only: the widgets have none
         syncTabs();
     }
@@ -2122,6 +2130,11 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
 
     @Override
     public void syncPageItems(int page, boolean immediate) {
+        if (pagerCovered()) {
+            // A list shows the content (DrawerContent): the page stays an empty frame until the pager is shown
+            mPageItemsLeftEmpty = true;
+            return;
+        }
         if (mContentType == ContentType.Widgets) {
             syncWidgetPageItems(page, immediate);
         } else {
