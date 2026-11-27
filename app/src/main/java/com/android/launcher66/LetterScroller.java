@@ -33,6 +33,7 @@ final class LetterScroller extends View {
     private static final long FADE_DELAY_MS = 350L;
     private static final long FADE_MS = 180L;
 
+    /** The pixels of one of its dp (ScrollerSize.unit). */
     private final float mDensity;
     private final Paint mTrack = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint mHandle = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -69,7 +70,9 @@ final class LetterScroller extends View {
 
     LetterScroller(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mDensity = context.getResources().getDisplayMetrics().density;
+        // Its dp drawn at least as large against the screen as on the A55 (ScrollerSize): on the 7862 it was too thin
+        android.util.DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        mDensity = ScrollerSize.unit(Math.min(metrics.widthPixels, metrics.heightPixels), metrics.density);
         mTrack.setColor(0x66ffffff);
         mTrack.setStyle(Paint.Style.FILL);
         mHandle.setStyle(Paint.Style.FILL);
