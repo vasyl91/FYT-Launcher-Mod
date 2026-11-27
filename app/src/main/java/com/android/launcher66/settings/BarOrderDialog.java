@@ -125,7 +125,7 @@ final class BarOrderDialog {
         AlertDialog.Builder builder = SettingsDialogs.builder(context);
         View view = LayoutInflater.from(builder.getContext()).inflate(R.layout.dialog_bar_order, null);
         TextView hint = view.findViewById(R.id.bar_order_hint);
-        hint.setTextSize(TypedValue.COMPLEX_UNIT_SP, SettingsActivity.dialogTextView);
+        DialogText.body(hint);
         RecyclerView list = view.findViewById(R.id.bar_order_list);
         list.setLayoutManager(new LinearLayoutManager(builder.getContext()));
         Adapter adapter = new Adapter(BarOrderLayout.shown(prefs, portrait));
@@ -227,7 +227,7 @@ final class BarOrderDialog {
         @Override
         public void onBindViewHolder(@NonNull Holder holder, int position) {
             holder.name.setText(nameOf(items.get(position)));
-            holder.name.setTextSize(TypedValue.COMPLEX_UNIT_SP, SettingsActivity.dialogTextView);
+            DialogText.body(holder.name);
             holder.handle.setOnTouchListener((v, event) -> {
                 if (event.getActionMasked() == MotionEvent.ACTION_DOWN && dragger != null) {
                     dragger.startDrag(holder);

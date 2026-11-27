@@ -76,8 +76,6 @@ public class SettingsActivity extends AppCompatActivity {
     public static int progressHeight;
     public static int nestedPaddingStart;
     public static int nestedPaddingEnd;
-    public static int dialogTitle;
-    public static int dialogTextView;
     public static int dialogMargin;
     public static int dialogPadding;
     public static int adaptiveCoordinatesSize;
@@ -368,8 +366,6 @@ public class SettingsActivity extends AppCompatActivity {
         nestedPaddingStart = calculateDimension(indentBase, 6.5);
         nestedPaddingEnd = calculateDimension(indentBase, 0.8);
 
-        dialogTitle = calculateAdaptiveTextSize(textWidth, 20);
-        dialogTextView = calculateAdaptiveTextSize(textWidth, 16);
         dialogMargin = calculateDimension(orientationDimension, 0.95);
         dialogPadding = calculateDimension(orientationDimension, 0.9);
 

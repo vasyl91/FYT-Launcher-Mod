@@ -142,11 +142,9 @@ public final class DrawerTabDialogs {
             View row = root.findViewById(R.id.drawer_tab_keep_row);
             TextView note = root.findViewById(R.id.drawer_tab_keep_note);
             TextView text = root.findViewById(R.id.drawer_tab_keep_text);
-            if (SettingsActivity.dialogTextView > 0) {
-                float size = SettingsActivity.dialogTextView;
-                name.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
-                text.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
-            }
+            // The size of the settings' rows (DialogText)
+            DialogText.body(name);
+            DialogText.body(text);
             // a longer name that is typed or pasted is cut to the longest there is
             name.setFilters(new InputFilter[]{new InputFilter.LengthFilter(DrawerTabs.MAX_NAME)});
             applies = model.keepApplies();

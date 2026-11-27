@@ -2389,8 +2389,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         libraryImportBar = dialogView.findViewById(R.id.canbus_library_import_progress);
         ConstraintLayout constraint = dialogView.findViewById(R.id.constraint_library_import);
         constraint.setPadding(padding, padding, padding, padding);
-        setCalculatedSizes(dialogView, R.id.canbus_library_import_title, SettingsActivity.dialogTitle, SettingsActivity.dialogMargin);
-        setCalculatedSizes(dialogView, R.id.canbus_library_import_status, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
+        setCalculatedSizes(dialogView, R.id.canbus_library_import_title, true, SettingsActivity.dialogMargin);
+        setCalculatedSizes(dialogView, R.id.canbus_library_import_status, false, SettingsActivity.dialogMargin);
 
         builder.setView(dialogView)
                 .setCancelable(false)
@@ -2611,16 +2611,16 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         ConstraintLayout constraintInspector = dialogView.findViewById(R.id.constraint_codes);
         constraintInspector.setPadding(padding, padding, padding, padding);
 
-        setCalculatedSizes(dialogView, R.id.stats_dialog_title, SettingsActivity.dialogTitle, SettingsActivity.dialogMargin);
+        setCalculatedSizes(dialogView, R.id.stats_dialog_title, true, SettingsActivity.dialogMargin);
         // A label may wrap; it takes at most a part of the window and the field the rest
         int labelWidth = Math.round(dialogWidth() * 0.4f);
         for (int id : new int[]{R.id.fuel_code_text, R.id.range_code_text, R.id.speed_code_text, R.id.rpm_code_text,
                 R.id.cmdInt_code_text, R.id.cmdArr_code_text}) {
-            setCalculatedSizes(dialogView, id, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
+            setCalculatedSizes(dialogView, id, false, SettingsActivity.dialogMargin);
             ((TextView) dialogView.findViewById(id)).setMaxWidth(labelWidth);
         }
-        setCalculatedSizes(dialogView, R.id.known_requests_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
-        setCalculatedSizes(dialogView, R.id.codes_info_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
+        setCalculatedSizes(dialogView, R.id.known_requests_text, false, SettingsActivity.dialogMargin);
+        setCalculatedSizes(dialogView, R.id.codes_info_text, false, SettingsActivity.dialogMargin);
 
         dialogCodesEditText(fuelCodeInt);
         dialogCodesEditText(rangeCodeInt);
@@ -2710,15 +2710,15 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         ConstraintLayout constraintExtra = dialogView.findViewById(R.id.constraint_extra);
         constraintExtra.setPadding(padding, padding, padding, padding);
 
-        setCalculatedSizes(dialogView, R.id.canbus_optional, SettingsActivity.dialogTitle, SettingsActivity.dialogMargin);
+        setCalculatedSizes(dialogView, R.id.canbus_optional, true, SettingsActivity.dialogMargin);
         // A label may wrap; it takes at most a part of the window and the field the rest
         int labelWidth = Math.round(dialogWidth() * 0.4f);
         for (int id : new int[]{R.id.vehicle_mass_code_text, R.id.engine_displacement_code_text}) {
-            setCalculatedSizes(dialogView, id, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
+            setCalculatedSizes(dialogView, id, false, SettingsActivity.dialogMargin);
             ((TextView) dialogView.findViewById(id)).setMaxWidth(labelWidth);
         }
-        setCalculatedSizes(dialogView, R.id.canbus_optional_description, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
-        setCalculatedSizes(dialogView, R.id.car_data_source, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
+        setCalculatedSizes(dialogView, R.id.canbus_optional_description, false, SettingsActivity.dialogMargin);
+        setCalculatedSizes(dialogView, R.id.car_data_source, false, SettingsActivity.dialogMargin);
 
         dialogExtraCodesEditText(vehicleMassInt);
         dialogExtraCodesEditText(engineDisplacementInt);
@@ -2850,8 +2850,8 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         ConstraintLayout constraintInspector = dialogView.findViewById(R.id.constraint_inspector);
         constraintInspector.setPadding(padding, padding, padding, padding);
 
-        setCalculatedSizes(dialogView, R.id.code_inspector_data_title, SettingsActivity.dialogTitle, SettingsActivity.dialogMargin);
-        setCalculatedSizes(dialogView, R.id.code_inspector_timeout_text, SettingsActivity.dialogTextView, SettingsActivity.dialogMargin);
+        setCalculatedSizes(dialogView, R.id.code_inspector_data_title, true, SettingsActivity.dialogMargin);
+        setCalculatedSizes(dialogView, R.id.code_inspector_timeout_text, false, SettingsActivity.dialogMargin);
 
         dialogCodesInspectorEditText(inspectorTimeoutEdit);
         inspectorTimeoutEdit.setText(codeInspectorTimeoutStr);
@@ -2870,9 +2870,14 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
         return builder;
     }
 
-    private void setCalculatedSizes(View view, int textViewId, int textSize, int margin) {
+    /** A text of a dialog at the size of the settings' rows (DialogText), a title a quarter larger, and its margin. */
+    private void setCalculatedSizes(View view, int textViewId, boolean title, int margin) {
         TextView textView = view.findViewById(textViewId);
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+        if (title) {
+            DialogText.title(textView);
+        } else {
+            DialogText.body(textView);
+        }
 
         if (textView.getLayoutParams() instanceof ConstraintLayout.LayoutParams params) {
             if (textViewId == R.id.code_inspector_data_title

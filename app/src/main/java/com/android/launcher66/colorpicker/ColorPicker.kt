@@ -238,6 +238,9 @@ class ColorPicker : DialogFragment(), OnSeekBarChangeListener {
             textSize = (deviceWidth * 0.015).toInt()
             padding = (deviceWidth * 0.02).toInt()
         }
+        // The text as large as a settings row's title (DialogText), with "Settings text size"; textSize stays the
+        // buttons' side padding it was
+        val textPx = com.android.launcher66.settings.DialogText.bodyPx(view.context)
 
         val pickerContainer = view.findViewById<FlexboxLayout>(R.id.pickerContainer)
         pickerContainer?.updatePadding(
@@ -270,7 +273,7 @@ class ColorPicker : DialogFragment(), OnSeekBarChangeListener {
         )
 
         alphaLabel = view.findViewById(R.id.alphaLabel)
-        alphaLabel?.textSize = textSize.toFloat()
+        alphaLabel?.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, textPx)
 
         alphaSeekBar?.setOnSeekBarChangeListener(this)
         redSeekBar?.setOnSeekBarChangeListener(this)
@@ -278,13 +281,13 @@ class ColorPicker : DialogFragment(), OnSeekBarChangeListener {
         blueSeekBar?.setOnSeekBarChangeListener(this)
 
         textView = view.findViewById(R.id.textView)
-        textView?.textSize = textSize.toFloat()
+        textView?.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, textPx)
 
         hexCode = view.findViewById(R.id.hexCode)
         activity?.let {
             hexCode?.setTextColor(ContextCompat.getColor(it, R.color.white))   // the settings' dark dialog (SettingsDialogs)
         }
-        hexCode?.textSize = textSize.toFloat()
+        hexCode?.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, textPx)
         hexCode?.filters = arrayOf(InputFilter.LengthFilter(6))
         hexCode?.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH ||
@@ -302,7 +305,7 @@ class ColorPicker : DialogFragment(), OnSeekBarChangeListener {
         }
 
         val okColor = view.findViewById<Button>(R.id.okColorButton)
-        okColor?.textSize = textSize.toFloat()
+        okColor?.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, textPx)
         okColor?.setOnClickListener {
             sendColor()
         }
@@ -312,7 +315,7 @@ class ColorPicker : DialogFragment(), OnSeekBarChangeListener {
         )
 
         val defaultColor = view.findViewById<Button>(R.id.defaultColorButton)
-        defaultColor?.textSize = textSize.toFloat()
+        defaultColor?.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, textPx)
         defaultColor?.updatePadding(
             left = textSize,
             right = textSize
