@@ -1012,13 +1012,21 @@ public class LauncherApplication extends Application {
      */
     public static boolean canHostPips() {
         if (com.syu.util.WindowHostVdClient.canHostPanes()) return true;
-        if (isRooted() && !sNoPaneHostLogged) {
+        if (!sNoPaneHostLogged) {
+            // Once per process, and the files of su are looked at on a thread of their own: this is asked on the main
+            // thread (WindowUtil.removePip), where StrictMode reported the seven File.exists() of isRooted() at every
+            // call (the A55's restart log of 2026-11-27)
             sNoPaneHostLogged = true;
-            Log.w(TAG, "PiP panes need the FYT VDHost Magisk module or Shizuku; neither is available");
+            new Thread(() -> {
+                if (isRooted()) {
+                    Log.w(TAG, "PiP panes need the FYT VDHost Magisk module or Shizuku; neither is available");
+                }
+            }, "PaneHostNote").start();
         }
         return false;
     }
 
+    /** Whether su is there or the build is a test one. It reads the file system: never on the main thread. */
     public static boolean isRooted() {
         String[] paths = {
             "/system/bin/su",
