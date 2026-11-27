@@ -36,6 +36,14 @@ public final class DrawerTabGeometry {
         return Math.round(Math.min(screenWidth, screenHeight) * HEIGHT_SHARE);
     }
 
+    /**
+     * The page a tab opens on after a swipe of the pager past the end of the tab before it: the first page, or the last
+     * one when the swipe went back past the first page of the tab after it.
+     */
+    public static int pageAfterTab(boolean lastPage, int pageCount) {
+        return lastPage ? Math.max(0, pageCount - 1) : 0;
+    }
+
     /** One tab's width: the bar shared by the tabs that show, at most {@link #visibleTabs} of them. */
     public static int tabWidth(int barWidth, int count, boolean portrait) {
         int shown = Math.max(1, Math.min(count, visibleTabs(portrait)));

@@ -93,4 +93,11 @@ class DrawerTabGeometryTest {
         assertEquals(0, DrawerTabGeometry.target(0, -1, 4));
         assertEquals(1, DrawerTabGeometry.target(1, 0, 4));
     }
+
+    @Test
+    void aTabOpensOnItsFirstPageOrOnItsLastWhenTheSwipeCameBack() {
+        assertEquals(0, DrawerTabGeometry.pageAfterTab(false, 4));
+        assertEquals(3, DrawerTabGeometry.pageAfterTab(true, 4));
+        assertEquals(0, DrawerTabGeometry.pageAfterTab(true, 0), "a tab without pages");
+    }
 }

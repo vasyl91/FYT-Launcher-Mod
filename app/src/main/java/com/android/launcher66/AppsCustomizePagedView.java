@@ -807,8 +807,21 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         if (strip != null) {
             strip.select(Math.max(0, mTabs.ids().indexOf(mTabId)), true);
         }
+        // The page of the new tab now, with its pages around it filled now: the data were made anew around the page the
+        // old tab was on, and the page set only later (a post) was empty until the next swipe loaded it (the owner on the
+        // A55, 2026-11-27). Once more after the layout, which the new page count asks for.
         final boolean last = lastPage;
-        post(() -> setCurrentPage(last ? Math.max(0, getPageCount() - 1) : 0));
+        showTabPage(DrawerTabGeometry.pageAfterTab(last, getPageCount()));
+        post(() -> showTabPage(DrawerTabGeometry.pageAfterTab(last, getPageCount())));
+    }
+
+    /** A page of the tab just shown: there at once, any page animation ended, it and its neighbours filled. */
+    private void showTabPage(int page) {
+        if (getPageCount() <= 0) {
+            return;
+        }
+        setCurrentPage(page);
+        loadAssociatedPages(getCurrentPage());
     }
 
     /** A tap on the tab that is selected: its dialog, as in the tab creator (the owner, 2026-11-25). */
