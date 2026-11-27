@@ -60,6 +60,8 @@ public class AppWidgetResizeFrame extends FrameLayout {
     private int mWidgetPaddingRight;
     private int mWidgetPaddingTop;
     private LauncherAppWidgetHostView mWidgetView;
+    /** A handle of a freely placed widget's frame was moved since the frame was shown (resizeFreeform). */
+    private boolean mFreeformMoved;
     /** In the middle of the frame: fits the widget's content to its cells, or stops doing so. */
     private ImageView mFitToggle;
 
@@ -223,20 +225,25 @@ public class AppWidgetResizeFrame extends FrameLayout {
         if (before == null) {
             return false;
         }
+        if (onDismiss && !this.mFreeformMoved) {
+            // Put away with no handle moved (a tap beside it): nothing to write. The frame's own rectangle was taken as
+            // a resize and moved the widget to it (the owner's log of 2026-11-27: "resized" with no resize)
+            return true;
+        }
         DragLayer.LayoutParams frame = (DragLayer.LayoutParams) getLayoutParams();
         this.mTmpPt[0] = 0;
         this.mTmpPt[1] = 0;
         this.mDragLayer.getDescendantCoordRelativeToSelf(this.mCellLayout.getShortcutsAndWidgets(), this.mTmpPt);
-        boolean scaled = LauncherAppWidgetHostView.isScaled(this.mWidgetView);
-        int[] pad = scaled ? new int[4] : new int[] {this.mWidgetPaddingLeft, this.mWidgetPaddingTop,
-                this.mWidgetPaddingRight, this.mWidgetPaddingBottom};
-        float scale = scaled ? this.mWidgetView.getScaleToFit() : 1f;
+        // The widget's frame is the rectangle it is seen in (FreeformLayout): the resize frame lies round it by its own
+        // padding, with no scale and no padding of the widget to count
+        int[] pad = new int[4];
         int[] asked = ResizeGeometry.widgetOf(new int[] {frame.x, frame.y, frame.width, frame.height},
-                this.mBackgroundPadding, pad, scale, this.mTmpPt[0], this.mTmpPt[1]);
+                this.mBackgroundPadding, pad, 1f, this.mTmpPt[0], this.mTmpPt[1]);
         int[] got = FreeformWidgets.resizeTo(this.mCellLayout, this.mWidgetView, asked[0], asked[1], asked[2],
                 asked[3], onDismiss);
+        this.mFreeformMoved = !onDismiss;
         // The frame round what the widget has: the new rectangle, or the one it kept when the resize was refused
-        int[] round = ResizeGeometry.frameOf(got != null ? got : before, this.mBackgroundPadding, pad, scale,
+        int[] round = ResizeGeometry.frameOf(got != null ? got : before, this.mBackgroundPadding, pad, 1f,
                 this.mTmpPt[0], this.mTmpPt[1]);
         frame.x = round[0];
         frame.y = round[1];
@@ -402,7 +409,18 @@ public class AppWidgetResizeFrame extends FrameLayout {
         int newX;
         int newY;
 
-        if (mWidgetView instanceof LauncherAppWidgetHostView) {
+        int[] free = mCellLayout.freeformRect(mWidgetView);
+        if (free != null) {
+            // A widget placed freely: round its frame, the rectangle it is seen in (FreeformLayout), not round the view's
+            // place, which is the old one until the page has laid it out again after a drop
+            mTmpPt[0] = free[0];
+            mTmpPt[1] = free[1];
+            mDragLayer.getDescendantCoordRelativeToSelf(mCellLayout.getShortcutsAndWidgets(), mTmpPt);
+            newX = mTmpPt[0] - mBackgroundPadding;
+            newY = mTmpPt[1] - mBackgroundPadding;
+            newWidth = free[2] + 2 * mBackgroundPadding;
+            newHeight = free[3] + 2 * mBackgroundPadding;
+        } else if (mWidgetView instanceof LauncherAppWidgetHostView) {
             final LauncherAppWidgetHostView hostView = (LauncherAppWidgetHostView) mWidgetView;
             if (LauncherAppWidgetHostView.isScaled(hostView)) {
                 float scale = hostView.getScaleToFit();

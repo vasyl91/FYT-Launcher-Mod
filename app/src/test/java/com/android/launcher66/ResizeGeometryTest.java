@@ -36,4 +36,17 @@ class ResizeGeometryTest {
         assertArrayEquals(new int[] {-14, -4, 148, 98}, ResizeGeometry.frameOf(widget, FRAME_PAD, none, 0.5f, 0, 0));
         assertArrayEquals(widget, ResizeGeometry.widgetOf(new int[] {-14, -4, 148, 98}, FRAME_PAD, none, 0.5f, 0, 0));
     }
+
+    @Test
+    void aFreeformWidgetsFrameIsItsSeenRectangleWithTheFramesPaddingOnly() {
+        // Round 30: the widget's frame is the rectangle it is seen in (FreeformLayout), so no scale and no padding of
+        // the widget count; frame and widget are each other's inverse, to the pixel, anywhere in the drag layer
+        int[] none = new int[4];
+        for (int[] seen : new int[][] {{258, 1308, 447, 643}, {107, 768, 543, 731}, {0, 0, 48, 48}}) {
+            int[] frame = ResizeGeometry.frameOf(seen, FRAME_PAD, none, 1f, 40, 89);
+            assertArrayEquals(new int[] {seen[0] - FRAME_PAD + 40, seen[1] - FRAME_PAD + 89, seen[2] + 2 * FRAME_PAD,
+                    seen[3] + 2 * FRAME_PAD}, frame);
+            assertArrayEquals(seen, ResizeGeometry.widgetOf(frame, FRAME_PAD, none, 1f, 40, 89));
+        }
+    }
 }
