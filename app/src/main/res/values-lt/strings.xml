@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">dar nepatvirtinta</string>
     <string name="stats_codes_reader_line">Canbus skaitytuvo rasti kodai %1$s: %2$s</string>
     <string name="extra_stats_codes">Papildomi statistikos duomenys <b>(neprivaloma)</b></string>
+    <string name="fuel_estimate">Įvertis žemiau automobilio slenksčio</string>
+    <string name="fuel_estimate_summary">Kai automobilis mažu greičiu sąnaudų neduoda, rodyti iš jo paties verčių išmoktas sąnaudas (~)</string>
     <string name="canbus_optional"><b>Neprivalomi duomenys (turi būti 0, jei nenaudojami):</b></string>
     <string name="canbus_optional_description">Naudokite, jei jūsų canbus nustoja siųsti degalų sąnaudų duomenis, pavyzdžiui, žemiau tam tikro greičio.</string>
     <string name="vehicle_mass_code_text">Transporto priemonės masė (kg):</string>

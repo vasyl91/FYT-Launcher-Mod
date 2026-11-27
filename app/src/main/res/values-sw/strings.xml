@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">bado haijathibitishwa</string>
     <string name="stats_codes_reader_line">Misimbo iliyopatikana na kisomaji cha canbus kwenye %1$s: %2$s</string>
     <string name="extra_stats_codes">Data ya ziada ya takwimu <b>(si lazima)</b></string>
+    <string name="fuel_estimate">Makadirio chini ya kizingiti cha gari</string>
+    <string name="fuel_estimate_summary">Gari lisipotoa matumizi kwa kasi ndogo, onyesha matumizi yaliyojifunzwa kutoka kwa thamani zake (~)</string>
     <string name="canbus_optional"><b>Data ya hiari (inapaswa kuwa 0 ikiwa haitumiki):</b></string>
     <string name="canbus_optional_description">Tumia hii ikiwa canbus yako itaacha kutuma data ya matumizi ya mafuta, kwa mfano chini ya kasi fulani.</string>
     <string name="vehicle_mass_code_text">Uzito wa gari (kwa kg):</string>

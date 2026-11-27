@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">nog nie bevestig nie</string>
     <string name="stats_codes_reader_line">Kodes wat die canbus-leser op %1$s gevind het: %2$s</string>
     <string name="extra_stats_codes">Bykomende statistiekdata <b>(opsioneel)</b></string>
+    <string name="fuel_estimate">Skatting onder die motor se drempel</string>
+    <string name="fuel_estimate_summary">Waar die motor teen lae spoed geen verbruik gee nie, wys een wat uit sy eie waardes geleer is (~)</string>
     <string name="canbus_optional"><b>Opsionele data (moet 0 wees indien nie gebruik nie):</b></string>
     <string name="canbus_optional_description">Gebruik dit as jou canbus ophou om brandstofverbruikdata te stuur, byvoorbeeld onder \'n sekere spoed.</string>
     <string name="vehicle_mass_code_text">Voertuigmassa (in kg):</string>

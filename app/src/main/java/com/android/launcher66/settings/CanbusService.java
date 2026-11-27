@@ -1842,11 +1842,16 @@ public class CanbusService extends Service implements PropertyChangeListener {
     }
 
     /**
-     * The estimate in the widget, where the car gives no value and the model has learned enough of the car's
-     * own values; false (nothing shown) otherwise. Main thread.
+     * The estimate in the widget, where the car gives no value, the model has learned enough of the car's own values and
+     * the setting is on; false (nothing shown) otherwise. Main thread.
      */
     private boolean showFuelEstimate() {
         fuelRefreshedAt = System.currentTimeMillis();
+        if (fuelModel != null && prefs != null) {
+            // "Estimate below the car's threshold" (a creator setting, off by default): read each time, so a change
+            // shows at the next tick
+            fuelModel.setEstimateOn(com.android.launcher66.CreatorPrefs.of(prefs).getBoolean(Keys.FUEL_ESTIMATE, false));
+        }
         FuelModel.Estimate e = fuelModel != null ? fuelModel.estimate(fuelRefreshedAt) : null;
         if (e == null || consumptionTextView == null) {
             return false;

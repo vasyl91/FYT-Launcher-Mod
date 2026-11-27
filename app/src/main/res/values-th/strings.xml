@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">ยังไม่ได้ยืนยัน</string>
     <string name="stats_codes_reader_line">รหัสที่ตัวอ่าน canbus พบบน %1$s: %2$s</string>
     <string name="extra_stats_codes">ข้อมูลสถิติเพิ่มเติม <b>(ไม่บังคับ)</b></string>
+    <string name="fuel_estimate">ประมาณค่าต่ำกว่าเกณฑ์ของรถ</string>
+    <string name="fuel_estimate_summary">เมื่อรถไม่ให้ค่าการสิ้นเปลืองที่ความเร็วต่ำ ให้แสดงค่าที่เรียนรู้จากค่าของรถเอง (~)</string>
     <string name="canbus_optional"><b>ข้อมูลที่ไม่บังคับ (ควรเป็น 0 หากไม่ใช้):</b></string>
     <string name="canbus_optional_description">ใช้เมื่อ canbus ของคุณหยุดส่งข้อมูลการสิ้นเปลืองเชื้อเพลิง เช่น เมื่อต่ำกว่าความเร็วระดับหนึ่ง</string>
     <string name="vehicle_mass_code_text">มวลรถ (กก.):</string>

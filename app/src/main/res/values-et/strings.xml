@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">pole veel kinnitatud</string>
     <string name="stats_codes_reader_line">Canbus-lugeja leitud koodid autol %1$s: %2$s</string>
     <string name="extra_stats_codes">Täiendavad statistikaandmed <b>(valikuline)</b></string>
+    <string name="fuel_estimate">Hinnang auto läve all</string>
+    <string name="fuel_estimate_summary">Kui auto madalal kiirusel kulu ei anna, näita tema enda väärtustest õpitud kulu (~)</string>
     <string name="canbus_optional"><b>Valikulised andmed (peaksid olema 0, kui neid ei kasutata):</b></string>
     <string name="canbus_optional_description">Kasutage seda, kui teie canbus lõpetab kütusekulu andmete saatmise, näiteks teatud kiirusest allpool.</string>
     <string name="vehicle_mass_code_text">Sõiduki mass (kg):</string>

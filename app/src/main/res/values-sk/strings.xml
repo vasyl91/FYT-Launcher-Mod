@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">zatiaľ nepotvrdené</string>
     <string name="stats_codes_reader_line">Kódy, ktoré čítačka canbus našla pre %1$s: %2$s</string>
     <string name="extra_stats_codes">Ďalšie štatistické údaje <b>(voliteľné)</b></string>
+    <string name="fuel_estimate">Odhad pod prahom vozidla</string>
+    <string name="fuel_estimate_summary">Kde vozidlo pri nízkej rýchlosti nedáva spotrebu, zobraziť spotrebu naučenú z jeho vlastných hodnôt (~)</string>
     <string name="canbus_optional"><b>Voliteľné údaje (ak sa nepoužívajú, majú byť 0):</b></string>
     <string name="canbus_optional_description">Použite, ak váš canbus prestane odosielať údaje o spotrebe paliva, napríklad pod určitou rýchlosťou.</string>
     <string name="vehicle_mass_code_text">Hmotnosť vozidla (v kg):</string>

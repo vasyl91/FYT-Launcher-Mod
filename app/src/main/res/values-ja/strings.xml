@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">未確認</string>
     <string name="stats_codes_reader_line">CANBUSリーダーが%1$sで見つけたコード: %2$s</string>
     <string name="extra_stats_codes">追加の統計データ<b>（任意）</b></string>
+    <string name="fuel_estimate">車のしきい値未満で推定</string>
+    <string name="fuel_estimate_summary">低速で車が燃費を出さないとき、車自身の値から学んだ燃費を表示します（~）</string>
     <string name="canbus_optional"><b>任意のデータ（使用しない場合は0）:</b></string>
     <string name="canbus_optional_description">特定の速度を下回るなど、canbusが燃費データを送信しなくなる場合に使用します。</string>
     <string name="vehicle_mass_code_text">車両質量（kg）:</string>

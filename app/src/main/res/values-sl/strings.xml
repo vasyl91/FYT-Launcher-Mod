@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">še ni potrjeno</string>
     <string name="stats_codes_reader_line">Kode, ki jih je bralnik canbus našel na %1$s: %2$s</string>
     <string name="extra_stats_codes">Dodatni statistični podatki <b>(izbirno)</b></string>
+    <string name="fuel_estimate">Ocena pod pragom avtomobila</string>
+    <string name="fuel_estimate_summary">Kjer avtomobil pri nizki hitrosti ne da porabe, prikaži porabo, naučeno iz njegovih lastnih vrednosti (~)</string>
     <string name="canbus_optional"><b>Izbirni podatki (naj bodo 0, če se ne uporabljajo):</b></string>
     <string name="canbus_optional_description">Uporabite, če vaš canbus preneha pošiljati podatke o porabi goriva, na primer pod določeno hitrostjo.</string>
     <string name="vehicle_mass_code_text">Masa vozila (v kg):</string>

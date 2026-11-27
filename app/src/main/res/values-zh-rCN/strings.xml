@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">尚未确认</string>
     <string name="stats_codes_reader_line">canbus 读取器在 %1$s 上找到的代码：%2$s</string>
     <string name="extra_stats_codes">附加统计数据<b>（可选）</b></string>
+    <string name="fuel_estimate">在车辆阈值以下估算</string>
+    <string name="fuel_estimate_summary">车辆在低速时不提供油耗时，显示根据其自身数值学习得出的油耗（~）</string>
     <string name="canbus_optional"><b>可选数据（不使用请填 0）：</b></string>
     <string name="canbus_optional_description">当 CAN 总线在某个速度以下停止发送油耗数据时使用。</string>
     <string name="vehicle_mass_code_text">车重（公斤）：</string>

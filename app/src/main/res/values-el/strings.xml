@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">δεν έχει επιβεβαιωθεί ακόμη</string>
     <string name="stats_codes_reader_line">Κωδικοί που βρήκε ο αναγνώστης canbus στο %1$s: %2$s</string>
     <string name="extra_stats_codes">Πρόσθετα στατιστικά δεδομένα <b>(προαιρετικά)</b></string>
+    <string name="fuel_estimate">Εκτίμηση κάτω από το όριο του αυτοκινήτου</string>
+    <string name="fuel_estimate_summary">Όπου το αυτοκίνητο δεν δίνει κατανάλωση σε χαμηλή ταχύτητα, εμφάνιση μιας που μαθεύτηκε από τις δικές του τιμές (~)</string>
     <string name="canbus_optional"><b>Προαιρετικά δεδομένα (να είναι 0 αν δεν χρησιμοποιούνται):</b></string>
     <string name="canbus_optional_description">Χρησιμοποιήστε το αν το canbus σταματά να στέλνει δεδομένα κατανάλωσης καυσίμου, π.χ. κάτω από μια ορισμένη ταχύτητα.</string>
     <string name="vehicle_mass_code_text">Μάζα οχήματος (σε kg):</string>

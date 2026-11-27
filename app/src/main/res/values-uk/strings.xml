@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">ще не підтверджено</string>
     <string name="stats_codes_reader_line">Коди, знайдені зчитувачем canbus на %1$s: %2$s</string>
     <string name="extra_stats_codes">Додаткові дані статистики <b>(необов’язково)</b></string>
+    <string name="fuel_estimate">Оцінка нижче порогу автомобіля</string>
+    <string name="fuel_estimate_summary">Коли автомобіль не дає витрату на малій швидкості, показувати витрату, вивчену з його власних значень (~)</string>
     <string name="canbus_optional"><b>Необов’язкові дані (0, якщо не використовуються):</b></string>
     <string name="canbus_optional_description">Використовуйте, якщо ваш canbus перестає передавати дані про витрату пального, наприклад нижче певної швидкості.</string>
     <string name="vehicle_mass_code_text">Маса автомобіля (у кг):</string>

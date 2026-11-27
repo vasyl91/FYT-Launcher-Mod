@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">non ancora confermato</string>
     <string name="stats_codes_reader_line">Codici trovati dal lettore canbus su %1$s: %2$s</string>
     <string name="extra_stats_codes">Dati statistici aggiuntivi <b>(facoltativo)</b></string>
+    <string name="fuel_estimate">Stima sotto la soglia dell\'auto</string>
+    <string name="fuel_estimate_summary">Dove l\'auto non dà il consumo a bassa velocità, mostrarne uno appreso dai suoi stessi valori (~)</string>
     <string name="canbus_optional"><b>Dati facoltativi (devono essere 0 se non usati):</b></string>
     <string name="canbus_optional_description">Usalo se il tuo canbus smette di inviare i dati sul consumo, ad esempio sotto una certa velocità.</string>
     <string name="vehicle_mass_code_text">Massa del veicolo (in kg):</string>

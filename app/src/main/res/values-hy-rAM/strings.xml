@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">դեռ չի հաստատվել</string>
     <string name="stats_codes_reader_line">Canbus ընթերցիչի գտած կոդերը %1$s-ում՝ %2$s</string>
     <string name="extra_stats_codes">Լրացուցիչ վիճակագրական տվյալներ <b>(ըստ ցանկության)</b></string>
+    <string name="fuel_estimate">Գնահատում մեքենայի շեմից ցածր</string>
+    <string name="fuel_estimate_summary">Երբ մեքենան ցածր արագության դեպքում ծախս չի տալիս, ցույց տալ նրա սեփական արժեքներից սովորած ծախսը (~)</string>
     <string name="canbus_optional"><b>Ըստ ցանկության տվյալներ (չօգտագործվելու դեպքում պետք է լինեն 0).</b></string>
     <string name="canbus_optional_description">Օգտագործեք սա, եթե ձեր canbus-ը դադարում է ուղարկել վառելիքի ծախսի տվյալներ, օրինակ՝ որոշակի արագությունից ցածր։</string>
     <string name="vehicle_mass_code_text">Մեքենայի զանգված (կգ).</string>

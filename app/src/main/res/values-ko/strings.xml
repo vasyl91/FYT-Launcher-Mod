@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">아직 확인되지 않음</string>
     <string name="stats_codes_reader_line">canbus 리더가 %1$s에서 찾은 코드: %2$s</string>
     <string name="extra_stats_codes">추가 통계 데이터 <b>(선택 사항)</b></string>
+    <string name="fuel_estimate">차량 임계값 미만에서 추정</string>
+    <string name="fuel_estimate_summary">저속에서 차량이 연비를 주지 않을 때 차량 자체 값에서 학습한 연비를 표시합니다(~)</string>
     <string name="canbus_optional"><b>선택 데이터(사용하지 않으면 0):</b></string>
     <string name="canbus_optional_description">특정 속도 이하 등에서 canbus가 연료 소비 데이터를 보내지 않을 때 사용하세요.</string>
     <string name="vehicle_mass_code_text">차량 질량(kg):</string>

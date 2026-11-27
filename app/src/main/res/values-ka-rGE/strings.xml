@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">ჯერ არ არის დადასტურებული</string>
     <string name="stats_codes_reader_line">კოდები, რომლებიც canbus წამკითხველმა იპოვა %1$s-ზე: %2$s</string>
     <string name="extra_stats_codes">დამატებითი სტატისტიკური მონაცემები <b>(არასავალდებულო)</b></string>
+    <string name="fuel_estimate">შეფასება მანქანის ზღვარს ქვემოთ</string>
+    <string name="fuel_estimate_summary">როცა მანქანა დაბალ სიჩქარეზე ხარჯს არ იძლევა, ნაჩვენებია მისივე მნიშვნელობებიდან ნასწავლი ხარჯი (~)</string>
     <string name="canbus_optional"><b>არასავალდებულო მონაცემები (თუ არ გამოიყენება, უნდა იყოს 0):</b></string>
     <string name="canbus_optional_description">გამოიყენეთ ეს, თუ თქვენი canbus საწვავის ხარჯის მონაცემების გაგზავნას წყვეტს, მაგალითად, გარკვეულ სიჩქარეზე ქვემოთ.</string>
     <string name="vehicle_mass_code_text">ავტომობილის მასა (კგ-ში):</string>

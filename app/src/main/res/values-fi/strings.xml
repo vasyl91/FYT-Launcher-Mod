@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">ei vielä vahvistettu</string>
     <string name="stats_codes_reader_line">Canbus-lukijan löytämät koodit kohteessa %1$s: %2$s</string>
     <string name="extra_stats_codes">Lisätilastotiedot <b>(valinnainen)</b></string>
+    <string name="fuel_estimate">Arvio auton kynnyksen alapuolella</string>
+    <string name="fuel_estimate_summary">Kun auto ei anna kulutusta pienellä nopeudella, näytetään sen omista arvoista opittu kulutus (~)</string>
     <string name="canbus_optional"><b>Valinnaiset tiedot (pitäisi olla 0, jos ei käytetä):</b></string>
     <string name="canbus_optional_description">Käytä tätä, jos canbus lakkaa lähettämästä polttoaineenkulutustietoja, esimerkiksi tietyn nopeuden alapuolella.</string>
     <string name="vehicle_mass_code_text">Ajoneuvon massa (kg):</string>

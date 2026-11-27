@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">ገና አልተረጋገጠም</string>
     <string name="stats_codes_reader_line">የcanbus አንባቢ በ%1$s ላይ ያገኛቸው ኮዶች፦ %2$s</string>
     <string name="extra_stats_codes">ተጨማሪ የስታቲስቲክስ ውሂብ <b>(አማራጭ)</b></string>
+    <string name="fuel_estimate">ከመኪናው ገደብ በታች ግምት</string>
+    <string name="fuel_estimate_summary">መኪናው በዝቅተኛ ፍጥነት ፍጆታ በማይሰጥበት ጊዜ ከራሱ እሴቶች የተማረውን አሳይ (~)</string>
     <string name="canbus_optional"><b>አማራጭ ውሂብ (ጥቅም ላይ ካልዋለ 0 መሆን አለበት)፦</b></string>
     <string name="canbus_optional_description">canbusዎ የነዳጅ ፍጆታ ውሂብ መላክ ካቆመ ይህን ይጠቀሙ፣ ለምሳሌ ከተወሰነ ፍጥነት በታች።</string>
     <string name="vehicle_mass_code_text">የተሽከርካሪ ክብደት (በኪግ)፦</string>

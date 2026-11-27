@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">akukaqinisekiswa</string>
     <string name="stats_codes_reader_line">Amakhodi atholwe isifundi se-canbus ku-%1$s: %2$s</string>
     <string name="extra_stats_codes">Idatha eyengeziwe yezibalo <b>(akuphoqelekile)</b></string>
+    <string name="fuel_estimate">Isilinganiso ngaphansi komkhawulo wemoto</string>
+    <string name="fuel_estimate_summary">Lapho imoto inganiki ukusetshenziswa ngesivinini esiphansi, bonisa okufundwe kumanani ayo (~)</string>
     <string name="canbus_optional"><b>Idatha ekhethwayo (kufanele ibe ngu-0 uma ingasetshenziswa):</b></string>
     <string name="canbus_optional_description">Sebenzisa lokhu uma i-canbus yakho iyeka ukuthumela idatha yokusetshenziswa kukaphethiloli, isibonelo ngezansi kwejubane elithile.</string>
     <string name="vehicle_mass_code_text">Isisindo semoto (nge-kg):</string>

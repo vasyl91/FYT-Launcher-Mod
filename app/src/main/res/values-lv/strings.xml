@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">vēl nav apstiprināts</string>
     <string name="stats_codes_reader_line">Canbus lasītāja atrastie kodi uz %1$s: %2$s</string>
     <string name="extra_stats_codes">Papildu statistikas dati <b>(neobligāti)</b></string>
+    <string name="fuel_estimate">Novērtējums zem automašīnas sliekšņa</string>
+    <string name="fuel_estimate_summary">Kur automašīna mazā ātrumā nedod patēriņu, rādīt no tās pašas vērtībām iemācītu patēriņu (~)</string>
     <string name="canbus_optional"><b>Neobligāti dati (jābūt 0, ja netiek izmantoti):</b></string>
     <string name="canbus_optional_description">Izmantojiet, ja jūsu canbus pārstāj sūtīt degvielas patēriņa datus, piemēram, zem noteikta ātruma.</string>
     <string name="vehicle_mass_code_text">Transportlīdzekļa masa (kg):</string>

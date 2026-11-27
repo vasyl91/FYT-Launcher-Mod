@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">anc betg confermà</string>
     <string name="stats_codes_reader_line">Codes che il lectur canbus ha chattà sin %1$s: %2$s</string>
     <string name="extra_stats_codes">Datas supplementaras da statistica <b>(opziunal)</b></string>
+    <string name="fuel_estimate">Stimaziun sut la sava da l\'auto</string>
+    <string name="fuel_estimate_summary">Nua che l\'auto na dat nagin consum a pitschna sveltezza, mussar in consum emprendì da sias atgnas valurs (~)</string>
     <string name="canbus_optional"><b>Datas opziunalas (duain esser 0, sch\'ellas na vegnan betg duvradas):</b></string>
     <string name="canbus_optional_description">Utilisescha quai, sche tes canbus smetta da trametter datas dal consum da carburant, p.ex. sut ina certa sveltezza.</string>
     <string name="vehicle_mass_code_text">Massa dal vehichel (en kg):</string>

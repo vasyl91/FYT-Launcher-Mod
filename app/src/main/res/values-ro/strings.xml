@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">încă neconfirmat</string>
     <string name="stats_codes_reader_line">Coduri găsite de cititorul canbus pe %1$s: %2$s</string>
     <string name="extra_stats_codes">Date statistice suplimentare <b>(opțional)</b></string>
+    <string name="fuel_estimate">Estimare sub pragul mașinii</string>
+    <string name="fuel_estimate_summary">Unde mașina nu dă consumul la viteză mică, afișează unul învățat din propriile ei valori (~)</string>
     <string name="canbus_optional"><b>Date opționale (trebuie să fie 0 dacă nu se folosesc):</b></string>
     <string name="canbus_optional_description">Folosiți dacă canbusul dvs. nu mai trimite date despre consumul de combustibil, de exemplu sub o anumită viteză.</string>
     <string name="vehicle_mass_code_text">Masa vehiculului (în kg):</string>

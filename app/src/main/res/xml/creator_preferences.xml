@@ -478,6 +478,14 @@
             android:key="extra_stats_codes"
             android:title="@string/extra_stats_codes"
             android:maxLines="5" />
+        <!-- The estimate of the consumption where the car gives none below its threshold speed (FuelModel), off by
+             default (the owner, 2026-11-27) -->
+        <SwitchPreferenceCompat
+            app:singleLineTitle="false"
+            android:key="fuel_estimate"
+            android:defaultValue="false"
+            android:title="@string/fuel_estimate"
+            android:summary="@string/fuel_estimate_summary" />
         <SwitchPreferenceCompat
             app:singleLineTitle="false"
             android:key="main_screen_stats"

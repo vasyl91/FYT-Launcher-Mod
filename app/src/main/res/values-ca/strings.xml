@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">encara sense confirmar</string>
     <string name="stats_codes_reader_line">Codis que el lector canbus ha trobat a %1$s: %2$s</string>
     <string name="extra_stats_codes">Dades estadístiques addicionals <b>(opcional)</b></string>
+    <string name="fuel_estimate">Estimació per sota del llindar del cotxe</string>
+    <string name="fuel_estimate_summary">Quan el cotxe no dona el consum a poca velocitat, mostra\'n un après dels seus propis valors (~)</string>
     <string name="canbus_optional"><b>Dades opcionals (han de ser 0 si no s\'utilitzen):</b></string>
     <string name="canbus_optional_description">Utilitza-ho si el teu canbus deixa d\'enviar dades de consum de combustible, per exemple per sota d\'una certa velocitat.</string>
     <string name="vehicle_mass_code_text">Massa del vehicle (en kg):</string>

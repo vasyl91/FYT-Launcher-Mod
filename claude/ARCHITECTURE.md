@@ -435,7 +435,9 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   - `S/CanbusAutoCheck` runs the reader once per car while driving.
   - Files go to `Download/Launcher66_Canbus`.
 - **Estimate** (where the car gives no value): `S/FuelModel` (v3, power-based), `S/FuelSpeedThreshold`,
-  `S/RoadGrade`, `S/FuelUnit`, `S/ConsumptionUnits`.
+  `S/RoadGrade`, `S/FuelUnit`, `S/ConsumptionUnits`. Shown only with "Estimate below the car's threshold"
+  (`fuel_estimate`, a creator setting, off by default since round 29: `FuelModel.setEstimateOn`, read by
+  `CanbusService.showFuelEstimate`); the model learns either way.
 - **GPS** (2026-11-20): `S/LocationNeed` (pure, tested) says how often the service asks for it: none on a unit without
   a canbus or when nothing needs it, every 5 s while only a drive has to be seen (the code check waiting, the pair of
   codes counting its driving time), every 0.5 s for the estimate's speed or altitude, the scale of the speed code and

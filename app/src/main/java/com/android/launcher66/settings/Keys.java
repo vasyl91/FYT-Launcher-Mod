@@ -138,6 +138,8 @@ public final class Keys {
     public static final String USER_DATE = "user_date";
     public static final String USER_MUSIC = "user_music";
     public static final String USER_RADIO = "user_radio";
+    /** "Estimate below the car's threshold" (Fuel statistics, a creator setting, off by default): FuelModel.setEstimateOn. */
+    public static final String FUEL_ESTIMATE = "fuel_estimate";
     public static final String USER_STATS = "user_stats";
     public static final String STATS_DISPLAY = "stats_display";
     public static final String DATE_SCREEN = "date_screen";

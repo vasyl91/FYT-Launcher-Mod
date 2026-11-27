@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">belum disahkan</string>
     <string name="stats_codes_reader_line">Kod yang ditemui pembaca canbus pada %1$s: %2$s</string>
     <string name="extra_stats_codes">Data statistik tambahan <b>(pilihan)</b></string>
+    <string name="fuel_estimate">Anggaran di bawah ambang kereta</string>
+    <string name="fuel_estimate_summary">Apabila kereta tidak memberi penggunaan pada kelajuan rendah, tunjukkan yang dipelajari daripada nilainya sendiri (~)</string>
     <string name="canbus_optional"><b>Data pilihan (hendaklah 0 jika tidak digunakan):</b></string>
     <string name="canbus_optional_description">Gunakan ini jika canbus anda berhenti menghantar data penggunaan bahan api, contohnya di bawah kelajuan tertentu.</string>
     <string name="vehicle_mass_code_text">Jisim kenderaan (dalam kg):</string>

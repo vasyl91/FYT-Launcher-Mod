@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">ຍັງບໍ່ໄດ້ຢືນຢັນ</string>
     <string name="stats_codes_reader_line">ລະຫັດທີ່ຕົວອ່ານ canbus ພົບໃນ %1$s: %2$s</string>
     <string name="extra_stats_codes">ຂໍ້ມູນສະຖິຕິເພີ່ມເຕີມ <b>(ທາງເລືອກ)</b></string>
+    <string name="fuel_estimate">ການຄາດຄະເນຕ່ຳກວ່າເກນຂອງລົດ</string>
+    <string name="fuel_estimate_summary">ເມື່ອລົດບໍ່ໃຫ້ການໃຊ້ນ້ຳມັນທີ່ຄວາມໄວຕ່ຳ, ສະແດງຄ່າທີ່ຮຽນຮູ້ຈາກຄ່າຂອງລົດເອງ (~)</string>
     <string name="canbus_optional"><b>ຂໍ້ມູນທາງເລືອກ (ຄວນເປັນ 0 ຖ້າບໍ່ໃຊ້):</b></string>
     <string name="canbus_optional_description">ໃຊ້ອັນນີ້ຖ້າ canbus ຂອງທ່ານຢຸດສົ່ງຂໍ້ມູນການໃຊ້ນ້ຳມັນ ເຊັ່ນ: ເມື່ອຄວາມໄວຕ່ຳກວ່າຄ່າໜຶ່ງ.</string>
     <string name="vehicle_mass_code_text">ມວນລົດ (ເປັນ kg):</string>

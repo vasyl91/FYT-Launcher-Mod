@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">غير مؤكد بعد</string>
     <string name="stats_codes_reader_line">الرموز التي وجدها قارئ canbus على %1$s: %2$s</string>
     <string name="extra_stats_codes">بيانات إحصائية إضافية <b>(اختياري)</b></string>
+    <string name="fuel_estimate">تقدير تحت عتبة السيارة</string>
+    <string name="fuel_estimate_summary">حين لا تعطي السيارة استهلاكًا بسرعة منخفضة، اعرض استهلاكًا مُتعلَّمًا من قيمها نفسها (~)</string>
     <string name="canbus_optional"><b>بيانات اختيارية (يجب أن تكون 0 إذا لم تُستخدم):</b></string>
     <string name="canbus_optional_description">استخدم هذا إذا توقف canbus عن إرسال بيانات استهلاك الوقود، مثلًا دون سرعة معينة.</string>
     <string name="vehicle_mass_code_text">كتلة المركبة (بالكيلوغرام):</string>

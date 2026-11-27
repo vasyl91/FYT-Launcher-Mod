@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">chưa xác nhận</string>
     <string name="stats_codes_reader_line">Các mã trình đọc canbus tìm thấy trên %1$s: %2$s</string>
     <string name="extra_stats_codes">Dữ liệu thống kê bổ sung <b>(tùy chọn)</b></string>
+    <string name="fuel_estimate">Ước tính dưới ngưỡng của xe</string>
+    <string name="fuel_estimate_summary">Khi xe không cho mức tiêu thụ ở tốc độ thấp, hiển thị mức học được từ chính các giá trị của xe (~)</string>
     <string name="canbus_optional"><b>Dữ liệu tùy chọn (nên là 0 nếu không dùng):</b></string>
     <string name="canbus_optional_description">Dùng khi canbus của bạn ngừng gửi dữ liệu tiêu thụ nhiên liệu, ví dụ dưới một tốc độ nhất định.</string>
     <string name="vehicle_mass_code_text">Khối lượng xe (kg):</string>

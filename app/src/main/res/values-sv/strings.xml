@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">inte bekräftad än</string>
     <string name="stats_codes_reader_line">Koder som canbus-läsaren hittade på %1$s: %2$s</string>
     <string name="extra_stats_codes">Ytterligare statistikdata <b>(valfritt)</b></string>
+    <string name="fuel_estimate">Uppskattning under bilens tröskel</string>
+    <string name="fuel_estimate_summary">Där bilen inte ger någon förbrukning vid låg fart visas en som lärts av dess egna värden (~)</string>
     <string name="canbus_optional"><b>Valfria data (ska vara 0 om de inte används):</b></string>
     <string name="canbus_optional_description">Använd detta om din canbus slutar skicka bränsleförbrukningsdata, till exempel under en viss hastighet.</string>
     <string name="vehicle_mass_code_text">Fordonsmassa (i kg):</string>

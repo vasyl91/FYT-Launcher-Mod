@@ -247,6 +247,8 @@
     <string name="stats_codes_pair_unconfirmed">not confirmed yet</string>
     <string name="stats_codes_reader_line">Codes the canbus reader found on %1$s: %2$s</string>
     <string name="extra_stats_codes">Additional statistics data <b>(optional)</b></string>
+    <string name="fuel_estimate">Estimate below the car\'s threshold</string>
+    <string name="fuel_estimate_summary">Where the car gives no consumption at low speed, show one learned from its own values (~)</string>
     <string name="canbus_optional"><b>Optional data (should be 0 if not used):</b></string>
     <string name="canbus_optional_description">Use that if your canbus stops sending fuel consumption data, e.g., below a certain speed.</string>
     <string name="vehicle_mass_code_text">Vehicle mass (in kg):</string>

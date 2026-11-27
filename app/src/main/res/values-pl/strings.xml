@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">jeszcze niepotwierdzone</string>
     <string name="stats_codes_reader_line">Kody znalezione przez czytnik canbus dla %1$s: %2$s</string>
     <string name="extra_stats_codes">Dodatkowe dane <b>(opcjonalne)</b></string>
+    <string name="fuel_estimate">Szacowanie poniżej progu auta</string>
+    <string name="fuel_estimate_summary">Gdy auto nie podaje spalania przy małej prędkości, pokaż spalanie wyuczone z jego własnych wartości (~)</string>
     <string name="canbus_optional"><b>Dodatkowe dane (zostaw 0 jesli nie używasz tej sekcji):</b></string>
     <string name="canbus_optional_description">Używaj w przypadku gdy canbus przestaje wysyłać dane dotyczące spalania paliwa np. poniżej określonej prędkości</string>
     <string name="vehicle_mass_code_text">Masa pojazdu (kg):</string>

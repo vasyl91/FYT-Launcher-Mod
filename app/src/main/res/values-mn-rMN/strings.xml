@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">хараахан баталгаажаагүй</string>
     <string name="stats_codes_reader_line">canbus уншигчийн %1$s дээр олсон кодууд: %2$s</string>
     <string name="extra_stats_codes">Нэмэлт статистик өгөгдөл <b>(заавал биш)</b></string>
+    <string name="fuel_estimate">Машины босгоос доош тооцоолол</string>
+    <string name="fuel_estimate_summary">Машин бага хурдад зарцуулалт өгөхгүй үед түүний өөрийн утгаас сурсан зарцуулалтыг харуулна (~)</string>
     <string name="canbus_optional"><b>Нэмэлт өгөгдөл (ашиглахгүй бол 0 байх ёстой):</b></string>
     <string name="canbus_optional_description">Таны canbus түлшний зарцуулалтын өгөгдөл илгээхээ зогсоосон тохиолдолд, жишээлбэл тодорхой хурдаас доош, үүнийг ашиглана уу.</string>
     <string name="vehicle_mass_code_text">Машины жин (кг-аар):</string>

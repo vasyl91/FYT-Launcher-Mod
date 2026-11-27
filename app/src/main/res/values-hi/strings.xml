@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">अभी पुष्टि नहीं हुई</string>
     <string name="stats_codes_reader_line">%1$s पर canbus रीडर को मिले कोड: %2$s</string>
     <string name="extra_stats_codes">अतिरिक्त आँकड़ों का डेटा <b>(वैकल्पिक)</b></string>
+    <string name="fuel_estimate">कार की सीमा से नीचे अनुमान</string>
+    <string name="fuel_estimate_summary">जहाँ कार कम गति पर खपत नहीं देती, उसके अपने मानों से सीखी गई खपत दिखाएँ (~)</string>
     <string name="canbus_optional"><b>वैकल्पिक डेटा (उपयोग न होने पर 0 होना चाहिए):</b></string>
     <string name="canbus_optional_description">इसका उपयोग तब करें जब आपका canbus ईंधन खपत का डेटा भेजना बंद कर दे, जैसे किसी निश्चित गति से नीचे।</string>
     <string name="vehicle_mass_code_text">वाहन का द्रव्यमान (किग्रा में):</string>

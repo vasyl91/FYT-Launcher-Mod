@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">មិនទាន់បានបញ្ជាក់</string>
     <string name="stats_codes_reader_line">កូដដែលកម្មវិធីអាន canbus រកឃើញនៅលើ %1$s៖ %2$s</string>
     <string name="extra_stats_codes">ទិន្នន័យស្ថិតិបន្ថែម <b>(ស្រេចចិត្ត)</b></string>
+    <string name="fuel_estimate">ការប៉ាន់ស្មានក្រោមកម្រិតរបស់រថយន្ត</string>
+    <string name="fuel_estimate_summary">នៅពេលរថយន្តមិនផ្ដល់ការប្រើប្រាស់នៅល្បឿនទាប បង្ហាញការប្រើប្រាស់ដែលបានរៀនពីតម្លៃរបស់វាផ្ទាល់ (~)</string>
     <string name="canbus_optional"><b>ទិន្នន័យស្រេចចិត្ត (គួរតែជា 0 ប្រសិនបើមិនប្រើ)៖</b></string>
     <string name="canbus_optional_description">ប្រើវាប្រសិនបើ canbus របស់អ្នកឈប់ផ្ញើទិន្នន័យការប្រើប្រាស់ឥន្ធនៈ ឧទាហរណ៍ ក្រោមល្បឿនជាក់លាក់។</string>
     <string name="vehicle_mass_code_text">ម៉ាសរថយន្ត (គិតជា kg)៖</string>

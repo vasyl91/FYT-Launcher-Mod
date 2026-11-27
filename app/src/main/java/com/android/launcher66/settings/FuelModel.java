@@ -8,7 +8,9 @@ import java.util.Locale;
  * An estimate of the fuel consumption for the moments the car gives none (many cars report it only above some
  * speed; the owner's PSA from ~30 km/h, "no value" below). It is a fallback only: it is learned from the
  * car's own values and shown only for a car that gives values from a threshold speed and has learned enough of
- * them, never for a car that gives none or that is silent at speed (that is a fault, not a threshold).
+ * them, never for a car that gives none or that is silent at speed (that is a fault, not a threshold). And only when
+ * the user switched it on ("Estimate below the car's threshold", off by default, the owner 2026-11-27,
+ * {@link #setEstimateOn}): off, the model goes on learning, and the car's value or "no value" is shown.
  *
  * <p>The model, in L/h, with v the speed (m/s), aEff the acceleration over the last ~2 s plus the grade, and n the
  * RPM/1000 when the car reports plausible RPM. It follows the power model of Akçelik (ARRB, {@code f = α + β1·P +
@@ -775,9 +777,20 @@ public final class FuelModel {
         return fuelSaysNothing || (lastFuelT >= 0 && now - lastFuelT > CUTOFF_SILENCE_MS);
     }
 
-    /** The estimate to show now, or null: not a threshold car, not calibrated, silent at speed, or the car gives a value. */
+    /** Whether an estimate is shown at all (the setting); the model learns either way. */
+    private boolean estimateOn = true;
+
+    /** The setting "Estimate below the car's threshold": off, {@link #estimate} gives none. */
+    public void setEstimateOn(boolean on) {
+        estimateOn = on;
+    }
+
+    /**
+     * The estimate to show now, or null: switched off, not a threshold car, not calibrated, silent at speed, or the car
+     * gives a value.
+     */
     public Estimate estimate(long now) {
-        if (!thresholdCar() || !carGivesNoValue(now) || speeds.isEmpty()) {
+        if (!estimateOn || !thresholdCar() || !carGivesNoValue(now) || speeds.isEmpty()) {
             return null;
         }
         double kmh = kmh();

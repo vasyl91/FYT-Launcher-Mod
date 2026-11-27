@@ -1426,4 +1426,20 @@ class FuelModelTest {
         long ft = onTheRoad(flat, 50_000_000L, 20, 0);
         assertEquals(flat.litresPerHour(ft - 200), m.litresPerHour(t - 200), 0.3);
     }
+
+    @Test
+    void theEstimateIsShownOnlyWhenItIsSwitchedOnAndTheModelLearnsEitherWay() {
+        // the owner, 2026-11-27: "Estimate below the car's threshold", off by default in the settings
+        FuelModel m = new FuelModel();
+        long t = drive(m, new Random(1), 0, 900, 30, 0.9);
+        assertTrue(m.calibrated());
+        assertTrue(m.thresholdCar());
+        m.setEstimateOn(false);
+        assertNull(silentAt(m, t, 20, 0), "off: no estimate, the car's value or none is shown");
+        int samples = m.samples();
+        t = drive(m, new Random(2), t + 1000, 60, 30, 0.9);
+        assertTrue(m.samples() > samples, "it goes on learning while off");
+        m.setEstimateOn(true);
+        assertNotNull(silentAt(m, t + 1000, 20, 0), "on again: the estimate is there at once");
+    }
 }

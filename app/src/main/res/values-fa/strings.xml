@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">هنوز تأیید نشده</string>
     <string name="stats_codes_reader_line">کدهایی که خوانندهٔ canbus در %1$s یافت: %2$s</string>
     <string name="extra_stats_codes">داده‌های آماری اضافی <b>(اختیاری)</b></string>
+    <string name="fuel_estimate">تخمین زیر آستانه خودرو</string>
+    <string name="fuel_estimate_summary">جایی که خودرو در سرعت کم مصرفی نمی‌دهد، مصرفی آموخته از مقادیر خود آن نشان داده شود (~)</string>
     <string name="canbus_optional"><b>داده‌های اختیاری (در صورت استفاده‌نشدن باید ۰ باشد):</b></string>
     <string name="canbus_optional_description">اگر canbus شما داده‌های مصرف سوخت را ارسال نمی‌کند، مثلاً زیر یک سرعت مشخص، از این استفاده کنید.</string>
     <string name="vehicle_mass_code_text">جرم خودرو (به کیلوگرم):</string>

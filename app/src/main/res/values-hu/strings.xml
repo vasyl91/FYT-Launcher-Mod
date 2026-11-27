@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">még nincs megerősítve</string>
     <string name="stats_codes_reader_line">A canbus-olvasó által talált kódok itt: %1$s: %2$s</string>
     <string name="extra_stats_codes">További statisztikai adatok <b>(opcionális)</b></string>
+    <string name="fuel_estimate">Becslés az autó küszöbe alatt</string>
+    <string name="fuel_estimate_summary">Ahol az autó kis sebességnél nem ad fogyasztást, a saját értékeiből tanult fogyasztás látszik (~)</string>
     <string name="canbus_optional"><b>Opcionális adatok (0 legyen, ha nincs használatban):</b></string>
     <string name="canbus_optional_description">Használja, ha a canbus leáll az üzemanyag-fogyasztási adatok küldésével, például egy bizonyos sebesség alatt.</string>
     <string name="vehicle_mass_code_text">Jármű tömege (kg):</string>

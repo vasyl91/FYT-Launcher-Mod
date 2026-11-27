@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">hindi pa kumpirmado</string>
     <string name="stats_codes_reader_line">Mga code na nakita ng canbus reader sa %1$s: %2$s</string>
     <string name="extra_stats_codes">Karagdagang data ng istatistika <b>(opsyonal)</b></string>
+    <string name="fuel_estimate">Tantiya sa ilalim ng hangganan ng kotse</string>
+    <string name="fuel_estimate_summary">Kapag walang konsumo ang kotse sa mababang bilis, ipakita ang natutunan mula sa sarili nitong mga halaga (~)</string>
     <string name="canbus_optional"><b>Opsyonal na data (dapat 0 kung hindi ginagamit):</b></string>
     <string name="canbus_optional_description">Gamitin ito kung hihinto ang iyong canbus sa pagpapadala ng data ng konsumo ng gasolina, halimbawa sa ibaba ng isang partikular na bilis.</string>
     <string name="vehicle_mass_code_text">Bigat ng sasakyan (sa kg):</string>

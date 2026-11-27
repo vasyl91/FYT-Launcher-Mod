@@ -459,6 +459,8 @@
     <string name="stats_codes_pair_unconfirmed">endnu ikke bekræftet</string>
     <string name="stats_codes_reader_line">Koder canbus-læseren fandt på %1$s: %2$s</string>
     <string name="extra_stats_codes">Yderligere statistikdata <b>(valgfrit)</b></string>
+    <string name="fuel_estimate">Skøn under bilens tærskel</string>
+    <string name="fuel_estimate_summary">Hvor bilen ikke giver et forbrug ved lav hastighed, vises et, der er lært af dens egne værdier (~)</string>
     <string name="canbus_optional"><b>Valgfrie data (skal være 0, hvis de ikke bruges):</b></string>
     <string name="canbus_optional_description">Brug dette, hvis din canbus holder op med at sende data om brændstofforbrug, f.eks. under en bestemt hastighed.</string>
     <string name="vehicle_mass_code_text">Køretøjets masse (i kg):</string>
