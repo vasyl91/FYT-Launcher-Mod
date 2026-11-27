@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Povlecite navzgor za odprtje predala z aplikacijami</string>
     <string name="swipe_up_app_drawer_on">Vlečenje navzgor na začetnem zaslonu odpre predal z aplikacijami</string>
     <string name="swipe_up_app_drawer_off">Vlečenje navzgor ne naredi ničesar</string>
+    <string name="swipe_up_app_drawer_required">Vklopljeno: brez vodoravne vrstice je to pot do predala aplikacij</string>
     <string name="swipe_down_notifications">Povlecite navzdol za obvestila</string>
     <string name="swipe_down_notifications_on">Vlečenje navzdol na začetnem zaslonu odpre ploščo z obvestili</string>
     <string name="swipe_down_notifications_off">Vlečenje navzdol ne naredi ničesar</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Mesto vrstice zavihkov</string>
     <string name="drawer_tab_bar_top">Zgoraj</string>
     <string name="drawer_tab_bar_bottom">Spodaj</string>
+    <string name="display_horizontal_bar">Prikaži vodoravno vrstico</string>
     <string name="display_vertical_bar">Prikaži navpično vrstico</string>
     <string name="folder_follow_grid_on">Mape razporejajo ikone v vrstice in stolpce domačega zaslona</string>
     <string name="folder_follow_grid_off">Mape uporabljajo lastno mrežo</string>

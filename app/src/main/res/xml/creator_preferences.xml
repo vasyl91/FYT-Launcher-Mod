@@ -222,6 +222,13 @@
         app:key="bars_category"
         app:title="@string/bars_category">
 
+        <!-- "Display horizontal bar" (HorizontalBarPlacement): off, the rows of the horizontal bar and of the widget bar
+             are hidden (SettingsFragmentSecond.updateHorizontalBarRows) -->
+        <SwitchPreferenceCompat
+            app:singleLineTitle="false"
+            android:key="display_horizontal_bar"
+            android:defaultValue="true"
+            android:title="@string/display_horizontal_bar" />
         <com.android.launcher66.settings.CustomNoSwitchPreference
             android:key="horizontal_bar_top"
             android:defaultValue="false"
@@ -284,6 +291,7 @@
             android:persistent="false"
             android:title="@string/horizontal_bar_order" />
         <Preference
+            android:key="widget_bar_separator"
             android:layout="@layout/preference_separator_within"
             android:selectable="false" />
         <SwitchPreferenceCompat

@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">위로 스와이프하여 앱 서랍 열기</string>
     <string name="swipe_up_app_drawer_on">홈 화면에서 위로 스와이프하면 앱 서랍이 열립니다</string>
     <string name="swipe_up_app_drawer_off">위로 스와이프해도 아무 일도 일어나지 않습니다</string>
+    <string name="swipe_up_app_drawer_required">켜짐: 가로 바가 없으면 이것이 앱 서랍으로 가는 방법입니다</string>
     <string name="swipe_down_notifications">아래로 스와이프하여 알림 보기</string>
     <string name="swipe_down_notifications_on">홈 화면에서 아래로 스와이프하면 알림 패널이 열립니다</string>
     <string name="swipe_down_notifications_off">아래로 스와이프해도 아무 일도 일어나지 않습니다</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">탭 바 위치</string>
     <string name="drawer_tab_bar_top">위쪽</string>
     <string name="drawer_tab_bar_bottom">아래쪽</string>
+    <string name="display_horizontal_bar">가로 바 표시</string>
     <string name="display_vertical_bar">세로 바 표시</string>
     <string name="folder_follow_grid_on">폴더는 아이콘을 홈 화면의 행과 열에 맞춰 배치합니다</string>
     <string name="folder_follow_grid_off">폴더는 자체 격자를 사용합니다</string>

@@ -60,7 +60,8 @@ public final class WorkspaceGrids {
     /** What the horizontal bar takes of such a page. */
     public static HorizontalBarPlacement.Reserve reserve(SharedPreferences prefs, boolean firstPage) {
         return HorizontalBarPlacement.reserve(page(firstPage), prefs.getBoolean(Keys.HORIZONTAL_BAR_EVERY_PAGE, false),
-                prefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false), prefs.getBoolean(Keys.USER_LAYOUT, false));
+                prefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false), prefs.getBoolean(Keys.USER_LAYOUT, false),
+                com.android.launcher66.CreatorPrefs.of(prefs).getBoolean(Keys.DISPLAY_HORIZONTAL_BAR, true));
     }
 
     public static WorkspaceGrid.Cells cells(SharedPreferences prefs, boolean landscape, boolean firstPage) {

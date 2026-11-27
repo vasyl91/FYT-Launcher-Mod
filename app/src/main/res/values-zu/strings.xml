@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Swayipha uye phezulu ukuze uvule idrowa lezinhlelo zokusebenza</string>
     <string name="swipe_up_app_drawer_on">Ukuswayipha uye phezulu esikrinini sasekhaya kuvula idrowa lezinhlelo zokusebenza</string>
     <string name="swipe_up_app_drawer_off">Ukuswayipha uye phezulu akwenzi lutho</string>
+    <string name="swipe_up_app_drawer_required">Kuvuliwe: ngaphandle kwebha evundlile le yindlela eya kudilowa yezinhlelo</string>
     <string name="swipe_down_notifications">Swayipha uye phansi ukuze ubone izaziso</string>
     <string name="swipe_down_notifications_on">Ukuswayipha uye phansi esikrinini sasekhaya kuvula iphaneli yezaziso</string>
     <string name="swipe_down_notifications_off">Ukuswayipha uye phansi akwenzi lutho</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Indawo yebha yamathebhu</string>
     <string name="drawer_tab_bar_top">Phezulu</string>
     <string name="drawer_tab_bar_bottom">Phansi</string>
+    <string name="display_horizontal_bar">Bonisa ibha evundlile</string>
     <string name="display_vertical_bar">Bonisa ibha eqondile</string>
     <string name="folder_follow_grid_on">Amafolda ahlela izithonjana emigqeni nasemakholomu esikrini sasekhaya</string>
     <string name="folder_follow_grid_off">Amafolda asebenzisa igridi yawo</string>

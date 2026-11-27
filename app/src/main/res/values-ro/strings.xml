@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Glisați în sus pentru a deschide sertarul de aplicații</string>
     <string name="swipe_up_app_drawer_on">Glisarea în sus pe ecranul principal deschide sertarul de aplicații</string>
     <string name="swipe_up_app_drawer_off">Glisarea în sus nu face nimic</string>
+    <string name="swipe_up_app_drawer_required">Activat: fără bara orizontală, aceasta este calea spre sertarul de aplicații</string>
     <string name="swipe_down_notifications">Glisați în jos pentru notificări</string>
     <string name="swipe_down_notifications_on">Glisarea în jos pe ecranul principal deschide panoul de notificări</string>
     <string name="swipe_down_notifications_off">Glisarea în jos nu face nimic</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Poziția barei de file</string>
     <string name="drawer_tab_bar_top">Sus</string>
     <string name="drawer_tab_bar_bottom">Jos</string>
+    <string name="display_horizontal_bar">Afișează bara orizontală</string>
     <string name="display_vertical_bar">Afișează bara verticală</string>
     <string name="folder_follow_grid_on">Dosarele aranjează pictogramele în rândurile și coloanele ecranului principal</string>
     <string name="folder_follow_grid_off">Dosarele folosesc propria grilă</string>

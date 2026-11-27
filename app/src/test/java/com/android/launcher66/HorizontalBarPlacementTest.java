@@ -144,4 +144,23 @@ class HorizontalBarPlacementTest {
         // the horizontal bar is only on the first page: nothing on page 2, the vertical bar or not
         assertEquals(NONE, HorizontalBarPlacement.bar(2, false, true, true, true, false, true));
     }
+
+    @Test
+    void withoutTheHorizontalBarNoPageHasItAndNoCellIsKeptForIt() {
+        // "Display horizontal bar" off, the user layout on: nothing anywhere, whatever the other settings say
+        for (int page = 0; page < 3; page++) {
+            for (boolean everyPage : new boolean[] {false, true}) {
+                for (boolean autoHide : new boolean[] {false, true}) {
+                    assertEquals(NONE, HorizontalBarPlacement.bar(page, everyPage, autoHide, true, true, false, true, false));
+                    assertEquals(HorizontalBarPlacement.Reserve.NONE,
+                            HorizontalBarPlacement.reserve(page, everyPage, autoHide, true, false));
+                }
+            }
+        }
+        // the stock layout always has its bar on the first page
+        assertEquals(EMBEDDED, HorizontalBarPlacement.bar(0, false, false, true, true, false, false, false));
+        assertEquals(ROW, HorizontalBarPlacement.reserve(0, false, false, false, false));
+        // on, as before
+        assertEquals(PERSISTENT_OVERLAY, HorizontalBarPlacement.bar(1, true, false, true, true, false, true, true));
+    }
 }

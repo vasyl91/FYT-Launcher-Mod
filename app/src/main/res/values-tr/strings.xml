@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Uygulama çekmecesini açmak için yukarı kaydırın</string>
     <string name="swipe_up_app_drawer_on">Ana ekranda yukarı kaydırmak uygulama çekmecesini açar</string>
     <string name="swipe_up_app_drawer_off">Yukarı kaydırmak hiçbir şey yapmaz</string>
+    <string name="swipe_up_app_drawer_required">Açık: yatay çubuk yokken uygulama çekmecesine giden yol budur</string>
     <string name="swipe_down_notifications">Bildirimler için aşağı kaydırın</string>
     <string name="swipe_down_notifications_on">Ana ekranda aşağı kaydırmak bildirim panelini açar</string>
     <string name="swipe_down_notifications_off">Aşağı kaydırmak hiçbir şey yapmaz</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Sekme çubuğu konumu</string>
     <string name="drawer_tab_bar_top">Üstte</string>
     <string name="drawer_tab_bar_bottom">Altta</string>
+    <string name="display_horizontal_bar">Yatay çubuğu göster</string>
     <string name="display_vertical_bar">Dikey çubuğu göster</string>
     <string name="folder_follow_grid_on">Klasörler simgeleri ana ekranın satır ve sütunlarına göre düzenler</string>
     <string name="folder_follow_grid_off">Klasörler kendi ızgarasını kullanır</string>

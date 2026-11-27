@@ -581,6 +581,7 @@
     <string name="swipe_up_app_drawer">Swipe up to open the app drawer</string>
     <string name="swipe_up_app_drawer_on">Swiping up on the home screen opens the app drawer</string>
     <string name="swipe_up_app_drawer_off">Swiping up does nothing</string>
+    <string name="swipe_up_app_drawer_required">On: without the horizontal bar this is the way to the app drawer</string>
     <string name="swipe_down_notifications">Swipe down for notifications</string>
     <string name="swipe_down_notifications_on">Swiping down on the home screen opens the notification shade</string>
     <string name="swipe_down_notifications_off">Swiping down does nothing</string>
@@ -654,6 +655,7 @@
     <string name="drawer_tab_bar_position">Tab bar placement</string>
     <string name="drawer_tab_bar_top">Top</string>
     <string name="drawer_tab_bar_bottom">Bottom</string>
+    <string name="display_horizontal_bar">Display horizontal bar</string>
     <string name="display_vertical_bar">Display vertical bar</string>
     <string name="folder_follow_grid_on">Folders arrange icons in the home screen\'s rows and columns</string>
     <string name="folder_follow_grid_off">Folders use their own grid</string>

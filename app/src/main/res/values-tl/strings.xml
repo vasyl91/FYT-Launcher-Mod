@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Mag-swipe pataas para buksan ang app drawer</string>
     <string name="swipe_up_app_drawer_on">Ang pag-swipe pataas sa home screen ay magbubukas ng app drawer</string>
     <string name="swipe_up_app_drawer_off">Walang ginagawa ang pag-swipe pataas</string>
+    <string name="swipe_up_app_drawer_required">Naka-on: kung walang pahalang na bar, ito ang daan sa drawer ng mga app</string>
     <string name="swipe_down_notifications">Mag-swipe pababa para sa mga notification</string>
     <string name="swipe_down_notifications_on">Ang pag-swipe pababa sa home screen ay magbubukas ng panel ng notification</string>
     <string name="swipe_down_notifications_off">Walang ginagawa ang pag-swipe pababa</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Lokasyon ng tab bar</string>
     <string name="drawer_tab_bar_top">Itaas</string>
     <string name="drawer_tab_bar_bottom">Ibaba</string>
+    <string name="display_horizontal_bar">Ipakita ang pahalang na bar</string>
     <string name="display_vertical_bar">Ipakita ang patayong bar</string>
     <string name="folder_follow_grid_on">Inaayos ng mga folder ang mga icon sa mga row at column ng home screen</string>
     <string name="folder_follow_grid_off">Gumagamit ang mga folder ng sarili nilang grid</string>

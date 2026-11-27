@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Velciet uz augšu, lai atvērtu lietotņu atvilktni</string>
     <string name="swipe_up_app_drawer_on">Vilkšana uz augšu sākuma ekrānā atver lietotņu atvilktni</string>
     <string name="swipe_up_app_drawer_off">Vilkšana uz augšu neko nedara</string>
+    <string name="swipe_up_app_drawer_required">Ieslēgts: bez horizontālās joslas šis ir ceļš uz lietotņu atvilktni</string>
     <string name="swipe_down_notifications">Velciet uz leju, lai skatītu paziņojumus</string>
     <string name="swipe_down_notifications_on">Vilkšana uz leju sākuma ekrānā atver paziņojumu paneli</string>
     <string name="swipe_down_notifications_off">Vilkšana uz leju neko nedara</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Cilņu joslas novietojums</string>
     <string name="drawer_tab_bar_top">Augšā</string>
     <string name="drawer_tab_bar_bottom">Apakšā</string>
+    <string name="display_horizontal_bar">Rādīt horizontālo joslu</string>
     <string name="display_vertical_bar">Rādīt vertikālo joslu</string>
     <string name="folder_follow_grid_on">Mapes izkārto ikonas sākuma ekrāna rindās un kolonnās</string>
     <string name="folder_follow_grid_off">Mapes izmanto savu režģi</string>

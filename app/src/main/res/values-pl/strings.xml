@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Przesuń w górę, aby otworzyć szufladę aplikacji</string>
     <string name="swipe_up_app_drawer_on">Przesunięcie w górę na ekranie głównym otwiera szufladę aplikacji</string>
     <string name="swipe_up_app_drawer_off">Przesunięcie w górę nic nie robi</string>
+    <string name="swipe_up_app_drawer_required">Włączone: bez paska poziomego to jest droga do szuflady aplikacji</string>
     <string name="swipe_down_notifications">Przesuń w dół, aby zobaczyć powiadomienia</string>
     <string name="swipe_down_notifications_on">Przesunięcie w dół na ekranie głównym otwiera panel powiadomień</string>
     <string name="swipe_down_notifications_off">Przesunięcie w dół nic nie robi</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Położenie paska kart</string>
     <string name="drawer_tab_bar_top">Na górze</string>
     <string name="drawer_tab_bar_bottom">Na dole</string>
+    <string name="display_horizontal_bar">Wyświetlaj pasek poziomy</string>
     <string name="display_vertical_bar">Wyświetlaj pasek pionowy</string>
     <string name="folder_follow_grid_on">Foldery układają ikony w wierszach i kolumnach ekranu głównego</string>
     <string name="folder_follow_grid_off">Foldery używają własnej siatki</string>

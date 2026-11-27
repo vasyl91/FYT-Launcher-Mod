@@ -811,6 +811,11 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
             widgetBarButtonsBesidePreference.setOnPreferenceClickListener(this);
         }
         updateWidgetBarRows();
+        Preference displayHorizontal = findPreference(Keys.DISPLAY_HORIZONTAL_BAR);
+        if (displayHorizontal != null) {
+            displayHorizontal.setOnPreferenceClickListener(this);
+        }
+        updateHorizontalBarRows();
         if (margin != null) {
             margin.setOnPreferenceClickListener(this);
         }
@@ -998,6 +1003,11 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
                 break;
             case Keys.EDGE_HANDLE_RIGHT:
                 // The handle's window is placed again at the next update; no rebuild of the page
+                helpers.setBarSettingsChanged(true);
+                break;
+            case Keys.DISPLAY_HORIZONTAL_BAR:
+                // The bar's rows go and come with it; the launcher builds the first page again without it or with it
+                updateHorizontalBarRows();
                 helpers.setBarSettingsChanged(true);
                 break;
             case Keys.HORIZONTAL_BAR_TOP:
@@ -1580,6 +1590,60 @@ public class SettingsFragmentSecond extends PreferenceFragmentCompat implements 
      * "Buttons in one line" only while the buttons are beside. "Title and artist arrangement"
      * and "Large text" are always shown. Their order is the order in creator_preferences.xml.
      */
+    /** The rows of the horizontal bar and of the widget bar: hidden while "Display horizontal bar" is off. */
+    private static final String[] HORIZONTAL_BAR_ROWS = {
+            Keys.HORIZONTAL_BAR_TOP, Keys.HORIZONTAL_BAR_EVERY_PAGE, Keys.AUTO_HIDE_HORIZONTAL_BAR, "auto_hide_timeout",
+            Keys.EDGE_HANDLE_RIGHT, "resizable_bottom_bar", "bottom_bar_height", "horizontal_bar_icons_title",
+            "horizontal_bar_icons", "choose_bar_background", "choose_bar_tint", Keys.HORIZONTAL_BAR_ORDER,
+            "widget_bar_separator", Keys.WIDGET_BAR, Keys.WIDGET_BAR_NO_COVER, Keys.WIDGET_BAR_NO_DATE,
+            Keys.WIDGET_BAR_NO_WEATHER, Keys.WIDGET_BAR_NO_APPS, "widget_bar_fit_apps", Keys.WIDGET_BAR_BUTTONS_BESIDE,
+            "widget_bar_buttons_one_line", "widget_bar_line_mode", "widget_bar_large_text"};
+
+    /** How each bar row was shown before "Display horizontal bar" hid it; given back when the bar is shown again. */
+    private final java.util.Map<String, Boolean> barRowsBefore = new java.util.HashMap<>();
+    private CharSequence swipeUpSummaryOn;
+
+    /**
+     * "Display horizontal bar" (the owner, 2026-11-25; HorizontalBarPlacement): off, every row of the horizontal bar and
+     * of the widget bar is hidden; on, each comes back as it was. Without the bar the swipe up is the way to the drawer
+     * (DrawerAccess): its row is on and cannot be turned off, and says why.
+     */
+    private void updateHorizontalBarRows() {
+        boolean shown = sharedPrefs.getBoolean(Keys.DISPLAY_HORIZONTAL_BAR, true);
+        for (String key : HORIZONTAL_BAR_ROWS) {
+            Preference row = findPreference(key);
+            if (row == null) {
+                continue;
+            }
+            if (!shown) {
+                if (!barRowsBefore.containsKey(key)) {
+                    barRowsBefore.put(key, row.isVisible());
+                }
+                row.setVisible(false);
+            } else if (barRowsBefore.containsKey(key)) {
+                row.setVisible(Boolean.TRUE.equals(barRowsBefore.remove(key)));
+            }
+        }
+        if (shown) {
+            updateWidgetBarRows();
+        }
+        Preference swipe = findPreference(Keys.SWIPE_UP_APP_DRAWER);
+        if (swipe instanceof TwoStatePreference) {
+            TwoStatePreference row = (TwoStatePreference) swipe;
+            if (swipeUpSummaryOn == null) {
+                swipeUpSummaryOn = row.getSummaryOn();
+            }
+            if (com.android.launcher66.DrawerAccess.swipeUpRequired(shown, false)) {
+                row.setChecked(true);
+                row.setEnabled(false);
+                row.setSummaryOn(R.string.swipe_up_app_drawer_required);
+            } else {
+                row.setEnabled(true);
+                row.setSummaryOn(swipeUpSummaryOn);
+            }
+        }
+    }
+
     private void updateWidgetBarRows() {
         boolean widgetBar = sharedPrefs.getBoolean(Keys.WIDGET_BAR, false);
         boolean portrait = getResources().getConfiguration().orientation

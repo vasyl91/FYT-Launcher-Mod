@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Přejetím nahoru otevřít nabídku aplikací</string>
     <string name="swipe_up_app_drawer_on">Přejetí nahoru na domovské obrazovce otevře nabídku aplikací</string>
     <string name="swipe_up_app_drawer_off">Přejetí nahoru nic nedělá</string>
+    <string name="swipe_up_app_drawer_required">Zapnuto: bez vodorovného panelu je to cesta do šuplíku aplikací</string>
     <string name="swipe_down_notifications">Přejetím dolů zobrazit oznámení</string>
     <string name="swipe_down_notifications_on">Přejetí dolů na domovské obrazovce otevře panel oznámení</string>
     <string name="swipe_down_notifications_off">Přejetí dolů nic nedělá</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Umístění panelu karet</string>
     <string name="drawer_tab_bar_top">Nahoře</string>
     <string name="drawer_tab_bar_bottom">Dole</string>
+    <string name="display_horizontal_bar">Zobrazit vodorovný panel</string>
     <string name="display_vertical_bar">Zobrazit svislý panel</string>
     <string name="folder_follow_grid_on">Složky řadí ikony do řádků a sloupců domovské obrazovky</string>
     <string name="folder_follow_grid_off">Složky používají vlastní mřížku</string>

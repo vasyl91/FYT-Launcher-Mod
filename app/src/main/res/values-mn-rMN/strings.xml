@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Аппын шургуулгыг нээхийн тулд дээш шударна уу</string>
     <string name="swipe_up_app_drawer_on">Үндсэн дэлгэц дээр дээш шудрахад аппын шургуулга нээгдэнэ</string>
     <string name="swipe_up_app_drawer_off">Дээш шудрахад юу ч болохгүй</string>
+    <string name="swipe_up_app_drawer_required">Асаалттай: хэвтээ самбаргүй үед аппын жагсаалт руу орох зам энэ</string>
     <string name="swipe_down_notifications">Мэдэгдэл харахын тулд доош шударна уу</string>
     <string name="swipe_down_notifications_on">Үндсэн дэлгэц дээр доош шудрахад мэдэгдлийн самбар нээгдэнэ</string>
     <string name="swipe_down_notifications_off">Доош шудрахад юу ч болохгүй</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Табын самбарын байрлал</string>
     <string name="drawer_tab_bar_top">Дээд</string>
     <string name="drawer_tab_bar_bottom">Доод</string>
+    <string name="display_horizontal_bar">Хэвтээ самбар харуулах</string>
     <string name="display_vertical_bar">Босоо самбар харуулах</string>
     <string name="folder_follow_grid_on">Хавтсууд дүрсийг нүүр дэлгэцийн мөр, баганад зохион байгуулна</string>
     <string name="folder_follow_grid_off">Хавтсууд өөрийн торыг ашиглана</string>

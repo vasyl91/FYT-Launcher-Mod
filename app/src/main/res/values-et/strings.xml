@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Pühkige üles rakenduste sahtli avamiseks</string>
     <string name="swipe_up_app_drawer_on">Avakuval üles pühkimine avab rakenduste sahtli</string>
     <string name="swipe_up_app_drawer_off">Üles pühkimine ei tee midagi</string>
+    <string name="swipe_up_app_drawer_required">Sees: ilma horisontaalse ribata on see tee rakenduste sahtlisse</string>
     <string name="swipe_down_notifications">Pühkige alla teavituste jaoks</string>
     <string name="swipe_down_notifications_on">Avakuval alla pühkimine avab teavituste paneeli</string>
     <string name="swipe_down_notifications_off">Alla pühkimine ei tee midagi</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Vahelehtede riba asukoht</string>
     <string name="drawer_tab_bar_top">Ülal</string>
     <string name="drawer_tab_bar_bottom">All</string>
+    <string name="display_horizontal_bar">Kuva horisontaalne riba</string>
     <string name="display_vertical_bar">Kuva vertikaalne riba</string>
     <string name="folder_follow_grid_on">Kaustad paigutavad ikoonid avakuva ridadesse ja veergudesse</string>
     <string name="folder_follow_grid_off">Kaustad kasutavad oma ruudustikku</string>

@@ -358,6 +358,11 @@ public class Workspace extends SmoothPagedView
     /** "Horizontal bar text and button color": a colour, or ViewTint.NONE. */
     private int barTint = ViewTint.NONE;
     private boolean widgetBar = false;
+    /**
+     * "Display horizontal bar" (HorizontalBarPlacement): off, the user layout has no horizontal bar: the page takes the
+     * layout without the widget bar, the bar's own views are gone, and no window, handle or button is made for it.
+     */
+    private boolean mHorizontalShown = true;
     private boolean autoHideHorizontalBar = false;
     private boolean isOverlayShowing = false;
     private boolean isOverlayAnimating = false;
@@ -898,6 +903,10 @@ public class Workspace extends SmoothPagedView
         mCollapsedButton = sides.buttonShown();
         mVerticalEveryPage = verticalBar && BarLayouts.verticalEveryPage(mPrefs);
         widgetBar = mPrefs.getBoolean(Keys.WIDGET_BAR, false);
+        mHorizontalShown = CreatorPrefs.of(mPrefs).getBoolean(Keys.DISPLAY_HORIZONTAL_BAR, true);
+        if (!mHorizontalShown) {
+            widgetBar = false;   // no bar, so no widgets in it
+        }
         barTint = WidgetStyler.barTint(mPrefs);
         boolean userLayout = mPrefs.getBoolean(Keys.USER_LAYOUT, false);
         boolean userStats = mPrefs.getBoolean(Keys.USER_STATS, false);
@@ -976,6 +985,13 @@ public class Workspace extends SmoothPagedView
             // pages, if the bar is on every page, have the handle. With the vertical bar on the other side
             // than the handle, every page has the handle and the first one has no button.
             mEdgeHandleMode = autoHideHorizontalBar && (mEveryPage || !mCollapsedButton);
+            if (!mHorizontalShown) {
+                autoHideHorizontalBar = false;
+                mEveryPage = false;
+                mEdgeHandleMode = false;
+                hideHorizontalBarViews();
+                Log.i(TAG, "Display horizontal bar off: no horizontal bar on any page");
+            }
             if (autoHideHorizontalBar) {
                 toggleHorizontalBar();              
             }
@@ -1824,7 +1840,23 @@ public class Workspace extends SmoothPagedView
         bar.setBackground(BarBackground.vertical(getContext(), mPrefs, BarLayouts.sides(mPrefs, true).right));
     }
 
+    /** The first page's own horizontal bar, gone ("Display horizontal bar" off): its views take no room. */
+    private void hideHorizontalBarViews() {
+        if (workspaceView == null) {
+            return;
+        }
+        for (int id : new int[] {R.id.iv_list_bg, R.id.rl_allapps, R.id.show_bar, R.id.recycler_view}) {
+            View view = workspaceView.findViewById(id);
+            if (view != null) {
+                view.setVisibility(View.GONE);
+            }
+        }
+    }
+
     public void toggleHorizontalBar() {
+        if (!mHorizontalShown) {
+            return;   // no bar to show or hide
+        }
         synchronized (overlayLock) {
             // Prevent multiple simultaneous calls
             if (isOverlayAnimating) {
@@ -1957,6 +1989,9 @@ public class Workspace extends SmoothPagedView
     }
 
     private void showOverlayHorizontalBar() {
+        if (!mHorizontalShown) {
+            return;
+        }
         synchronized (overlayLock) {
             if (overlayHorizontalBar != null) {
                 if (isOverlayShowing) {
@@ -3038,7 +3073,7 @@ public class Workspace extends SmoothPagedView
                 && mLauncher.mState == Launcher.State.WORKSPACE
                 && mState == State.NORMAL
                 && HorizontalBarPlacement.bar(placementPage(), mEveryPage, true, verticalBarOnShownPage(), mBarSidesAgree, isPageMoving(),
-                        mPrefs.getBoolean(Keys.USER_LAYOUT, false))
+                        mPrefs.getBoolean(Keys.USER_LAYOUT, false), mHorizontalShown)
                         == HorizontalBarPlacement.Bar.HANDLE;
     }
 
@@ -3218,7 +3253,8 @@ public class Workspace extends SmoothPagedView
         boolean mode = mEveryPage && !autoHideHorizontalBar && workspaceView != null && mLauncher != null
                 && mPrefs != null && mPrefs.getBoolean(Keys.USER_LAYOUT, false);
         HorizontalBarPlacement.Bar bar = mode
-                ? HorizontalBarPlacement.bar(placementPage(), true, false, verticalBarOnShownPage(), mBarSidesAgree, isPageMoving(), true)
+                ? HorizontalBarPlacement.bar(placementPage(), true, false, verticalBarOnShownPage(), mBarSidesAgree, isPageMoving(), true,
+                        mHorizontalShown)
                 : HorizontalBarPlacement.Bar.NONE;   // the mode check above includes the user layout
         // A sub-window of the launcher's window needs that window, not the permission to draw over other
         // apps; it stays while an app is in front (PersistentBarWindow)
@@ -3619,10 +3655,11 @@ public class Workspace extends SmoothPagedView
         // With the horizontal bar on the first page only the window has the whole height on every page, and the
         // bar inside it leaves the corner to that bar where it lies across it (VerticalBarCorner)
         boolean horizontalOnPage = !verticalCornerApplies()
-                && HorizontalBarPlacement.reserve(page, mEveryPage, autoHide, true) != HorizontalBarPlacement.Reserve.NONE;
+                && HorizontalBarPlacement.reserve(page, mEveryPage, autoHide, true, mHorizontalShown)
+                != HorizontalBarPlacement.Reserve.NONE;
         // At rest: the button does not flicker while the pages move
-        withCorner[0] = HorizontalBarPlacement.bar(page, mEveryPage, autoHide, true, mBarSidesAgree, false, true)
-                == HorizontalBarPlacement.Bar.BUTTON;
+        withCorner[0] = HorizontalBarPlacement.bar(page, mEveryPage, autoHide, true, mBarSidesAgree, false, true,
+                mHorizontalShown) == HorizontalBarPlacement.Bar.BUTTON;
         int screenWidth = Launcher.screenWidth;
         int screenHeight = Launcher.screenHeight;
         int barHeight = getHorizontalBarHeight(screenWidth, screenHeight);
@@ -3727,7 +3764,8 @@ public class Workspace extends SmoothPagedView
         // as the first page's bar does
         boolean[] corner = new boolean[1];
         int[] frame = verticalWindowFrame(corner);
-        boolean autoHide = mPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false);
+        // Without the horizontal bar there is no collapsed button to keep a corner for
+        boolean autoHide = mHorizontalShown && mPrefs.getBoolean(Keys.AUTO_HIDE_HORIZONTAL_BAR, false);
         int cornerSize = autoHide && mBarSidesAgree ? getHorizontalBarHeight(Launcher.screenWidth, Launcher.screenHeight) : 0;
         BarLayout sides = BarLayouts.sides(mPrefs, true);
         if (mVerticalWindow == null) {

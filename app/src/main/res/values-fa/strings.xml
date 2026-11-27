@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">کشیدن به بالا برای باز کردن کشوی برنامه‌ها</string>
     <string name="swipe_up_app_drawer_on">کشیدن به بالا در صفحه اصلی کشوی برنامه‌ها را باز می‌کند</string>
     <string name="swipe_up_app_drawer_off">کشیدن به بالا کاری نمی‌کند</string>
+    <string name="swipe_up_app_drawer_required">روشن: بدون نوار افقی این راه رسیدن به کشوی برنامه‌ها است</string>
     <string name="swipe_down_notifications">کشیدن به پایین برای اعلان‌ها</string>
     <string name="swipe_down_notifications_on">کشیدن به پایین در صفحه اصلی پنل اعلان‌ها را باز می‌کند</string>
     <string name="swipe_down_notifications_off">کشیدن به پایین کاری نمی‌کند</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">جای نوار زبانه‌ها</string>
     <string name="drawer_tab_bar_top">بالا</string>
     <string name="drawer_tab_bar_bottom">پایین</string>
+    <string name="display_horizontal_bar">نمایش نوار افقی</string>
     <string name="display_vertical_bar">نمایش نوار عمودی</string>
     <string name="folder_follow_grid_on">پوشه‌ها نمادها را در ردیف‌ها و ستون‌های صفحهٔ اصلی می‌چینند</string>
     <string name="folder_follow_grid_off">پوشه‌ها از شبکهٔ خودشان استفاده می‌کنند</string>

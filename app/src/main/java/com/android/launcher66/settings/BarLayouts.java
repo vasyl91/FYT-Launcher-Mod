@@ -18,6 +18,11 @@ public final class BarLayouts {
     /** The switches the rules read; all of them are off by default. Lets the rules be tested without Android. */
     public interface BarPrefs {
         boolean bool(String key);
+
+        /** "Display horizontal bar", true by default (a test's lambda has the bar). */
+        default boolean horizontalDisplayed() {
+            return true;
+        }
     }
 
     private BarLayouts() {
@@ -27,7 +32,17 @@ public final class BarLayouts {
     public static BarPrefs prefs(SharedPreferences prefs) {
         // "Stock layout" gives every creator key its default: the bars on their usual sides (CreatorPrefs)
         CreatorPrefs creator = CreatorPrefs.of(prefs);
-        return key -> creator.getBoolean(key, false);
+        return new BarPrefs() {
+            @Override
+            public boolean bool(String key) {
+                return creator.getBoolean(key, false);
+            }
+
+            @Override
+            public boolean horizontalDisplayed() {
+                return creator.getBoolean(Keys.DISPLAY_HORIZONTAL_BAR, true);
+            }
+        };
     }
 
     /**
@@ -70,7 +85,7 @@ public final class BarLayouts {
     /** Whether the horizontal bar (or the place it keeps while collapsed) is on a page. */
     public static boolean horizontalOnPage(BarPrefs prefs, int page) {
         return HorizontalBarPlacement.reserve(page, prefs.bool(Keys.HORIZONTAL_BAR_EVERY_PAGE),
-                prefs.bool(Keys.AUTO_HIDE_HORIZONTAL_BAR), prefs.bool(Keys.USER_LAYOUT))
+                prefs.bool(Keys.AUTO_HIDE_HORIZONTAL_BAR), prefs.bool(Keys.USER_LAYOUT), prefs.horizontalDisplayed())
                 != HorizontalBarPlacement.Reserve.NONE;
     }
 

@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Правядзіце ўверх, каб адкрыць меню праграм</string>
     <string name="swipe_up_app_drawer_on">Правядзенне ўверх на галоўным экране адкрывае меню праграм</string>
     <string name="swipe_up_app_drawer_off">Правядзенне ўверх нічога не робіць</string>
+    <string name="swipe_up_app_drawer_required">Уключана: без гарызантальнай панэлі гэта шлях да спісу праграм</string>
     <string name="swipe_down_notifications">Правядзіце ўніз для апавяшчэнняў</string>
     <string name="swipe_down_notifications_on">Правядзенне ўніз на галоўным экране адкрывае шторку апавяшчэнняў</string>
     <string name="swipe_down_notifications_off">Правядзенне ўніз нічога не робіць</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Размяшчэнне панэлі ўкладак</string>
     <string name="drawer_tab_bar_top">Уверсе</string>
     <string name="drawer_tab_bar_bottom">Унізе</string>
+    <string name="display_horizontal_bar">Паказваць гарызантальную панэль</string>
     <string name="display_vertical_bar">Паказваць вертыкальную панэль</string>
     <string name="folder_follow_grid_on">Папкі размяшчаюць значкі ў радках і слупках галоўнага экрана</string>
     <string name="folder_follow_grid_off">Папкі выкарыстоўваюць сваю ўласную сетку</string>

@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Svep uppåt för att öppna applådan</string>
     <string name="swipe_up_app_drawer_on">Att svepa uppåt på startskärmen öppnar applådan</string>
     <string name="swipe_up_app_drawer_off">Att svepa uppåt gör ingenting</string>
+    <string name="swipe_up_app_drawer_required">På: utan det horisontella fältet är detta vägen till applådan</string>
     <string name="swipe_down_notifications">Svep nedåt för aviseringar</string>
     <string name="swipe_down_notifications_on">Att svepa nedåt på startskärmen öppnar aviseringspanelen</string>
     <string name="swipe_down_notifications_off">Att svepa nedåt gör ingenting</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Placering av flikfältet</string>
     <string name="drawer_tab_bar_top">Överst</string>
     <string name="drawer_tab_bar_bottom">Nederst</string>
+    <string name="display_horizontal_bar">Visa horisontellt fält</string>
     <string name="display_vertical_bar">Visa vertikalt fält</string>
     <string name="folder_follow_grid_on">Mappar ordnar ikoner i startskärmens rader och kolumner</string>
     <string name="folder_follow_grid_off">Mappar använder sitt eget rutnät</string>

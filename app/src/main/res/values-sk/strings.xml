@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Potiahnutím nahor otvoriť ponuku aplikácií</string>
     <string name="swipe_up_app_drawer_on">Potiahnutie nahor na domovskej obrazovke otvorí ponuku aplikácií</string>
     <string name="swipe_up_app_drawer_off">Potiahnutie nahor nič nerobí</string>
+    <string name="swipe_up_app_drawer_required">Zapnuté: bez vodorovného panela je to cesta do zásuvky aplikácií</string>
     <string name="swipe_down_notifications">Potiahnutím nadol zobraziť upozornenia</string>
     <string name="swipe_down_notifications_on">Potiahnutie nadol na domovskej obrazovke otvorí panel upozornení</string>
     <string name="swipe_down_notifications_off">Potiahnutie nadol nič nerobí</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Umiestnenie panela kariet</string>
     <string name="drawer_tab_bar_top">Hore</string>
     <string name="drawer_tab_bar_bottom">Dole</string>
+    <string name="display_horizontal_bar">Zobraziť vodorovný panel</string>
     <string name="display_vertical_bar">Zobraziť zvislý panel</string>
     <string name="folder_follow_grid_on">Priečinky usporadúvajú ikony do riadkov a stĺpcov domovskej obrazovky</string>
     <string name="folder_follow_grid_off">Priečinky používajú vlastnú mriežku</string>

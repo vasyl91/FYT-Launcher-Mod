@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">የመተግበሪያ መሳቢያውን ለመክፈት ወደ ላይ ያንሸራትቱ</string>
     <string name="swipe_up_app_drawer_on">በመነሻ ማያ ገጽ ላይ ወደ ላይ ማንሸራተት የመተግበሪያ መሳቢያውን ይከፍታል</string>
     <string name="swipe_up_app_drawer_off">ወደ ላይ ማንሸራተት ምንም አያደርግም</string>
+    <string name="swipe_up_app_drawer_required">በርቷል፦ ያለ አግድም አሞሌ ወደ መተግበሪያ መሳቢያው የሚወስደው ይህ ነው</string>
     <string name="swipe_down_notifications">ለማሳወቂያዎች ወደ ታች ያንሸራትቱ</string>
     <string name="swipe_down_notifications_on">በመነሻ ማያ ገጽ ላይ ወደ ታች ማንሸራተት የማሳወቂያ ጥላውን ይከፍታል</string>
     <string name="swipe_down_notifications_off">ወደ ታች ማንሸራተት ምንም አያደርግም</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">የትር አሞሌ አቀማመጥ</string>
     <string name="drawer_tab_bar_top">ላይ</string>
     <string name="drawer_tab_bar_bottom">ታች</string>
+    <string name="display_horizontal_bar">አግድም አሞሌን አሳይ</string>
     <string name="display_vertical_bar">ቀጥ ያለ አሞሌን አሳይ</string>
     <string name="folder_follow_grid_on">አቃፊዎች አዶዎችን በመነሻ ማያ ገጹ ረድፎች እና ዓምዶች ያደራጃሉ</string>
     <string name="folder_follow_grid_off">አቃፊዎች የራሳቸውን ፍርግርግ ይጠቀማሉ</string>

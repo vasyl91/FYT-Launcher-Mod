@@ -288,6 +288,8 @@ public final class Keys {
     public static final String VERTICAL_BAR_RIGHT = "vertical_bar_right";
     /** The vertical bar is on every page of the home screen, not only on the first (VerticalBarPlacement). */
     public static final String VERTICAL_BAR_EVERY_PAGE = "vertical_bar_every_page";
+    /** "Display horizontal bar" (a creator setting, true by default): off, the user layout has no horizontal bar. */
+    public static final String DISPLAY_HORIZONTAL_BAR = "display_horizontal_bar";
     public static final String HORIZONTAL_BAR_EVERY_PAGE = "bottom_bar_every_page";
     /** The box of the first page last measured, "WIDTHxHEIGHT", per orientation (HorizontalBarDimensions). */
     public static final String BAR_ROOT_BOX_PORTRAIT = "bar_root_box_portrait";

@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Swiep op om die toepassingslade oop te maak</string>
     <string name="swipe_up_app_drawer_on">Opswiep op die tuisskerm maak die toepassingslade oop</string>
     <string name="swipe_up_app_drawer_off">Opswiep doen niks nie</string>
+    <string name="swipe_up_app_drawer_required">Aan: sonder die horisontale balk is dit die weg na die programlaai</string>
     <string name="swipe_down_notifications">Swiep af vir kennisgewings</string>
     <string name="swipe_down_notifications_on">Afswiep op die tuisskerm maak die kennisgewingskerm oop</string>
     <string name="swipe_down_notifications_off">Afswiep doen niks nie</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Plasing van oortjiebalk</string>
     <string name="drawer_tab_bar_top">Bo</string>
     <string name="drawer_tab_bar_bottom">Onder</string>
+    <string name="display_horizontal_bar">Wys horisontale balk</string>
     <string name="display_vertical_bar">Wys vertikale balk</string>
     <string name="folder_follow_grid_on">Vouers rangskik ikone in die tuisskerm se rye en kolomme</string>
     <string name="folder_follow_grid_off">Vouers gebruik hul eie rooster</string>

@@ -23,6 +23,8 @@ package com.android.launcher66;
  *   <li>with auto-hide every page has the edge handle (the first one the button, with the left
  *       bar), and the bar that the handle reveals is the overlay with its timer, as today.</li>
  * </ul>
+ * With "Display horizontal bar" off (the owner, 2026-11-25, round 29) the user layout has no horizontal bar at all: no
+ * bar, no window, no handle and no button on any page, and no cell of any page is kept for one ({@code displayed}).
  */
 public final class HorizontalBarPlacement {
 
@@ -49,6 +51,15 @@ public final class HorizontalBarPlacement {
      */
     public static Bar bar(int page, boolean everyPage, boolean autoHide, boolean verticalBar, boolean buttonSide,
                    boolean pageMoving, boolean userLayout) {
+        return bar(page, everyPage, autoHide, verticalBar, buttonSide, pageMoving, userLayout, true);
+    }
+
+    /** As {@link #bar} above; {@code displayed}: "Display horizontal bar" (only the user layout can turn it off). */
+    public static Bar bar(int page, boolean everyPage, boolean autoHide, boolean verticalBar, boolean buttonSide,
+                   boolean pageMoving, boolean userLayout, boolean displayed) {
+        if (userLayout && !displayed) {
+            return Bar.NONE;
+        }
         everyPage &= userLayout;
         if (!everyPage && page != 0) {
             return Bar.NONE;
@@ -69,6 +80,14 @@ public final class HorizontalBarPlacement {
      * not lose their last row or cell to one that is never there.
      */
     public static Reserve reserve(int page, boolean everyPage, boolean autoHide, boolean userLayout) {
+        return reserve(page, everyPage, autoHide, userLayout, true);
+    }
+
+    /** As {@link #reserve} above; without the bar ("Display horizontal bar" off) nothing is kept for it. */
+    public static Reserve reserve(int page, boolean everyPage, boolean autoHide, boolean userLayout, boolean displayed) {
+        if (userLayout && !displayed) {
+            return Reserve.NONE;
+        }
         everyPage &= userLayout;
         if (!everyPage && page != 0) {
             return Reserve.NONE;

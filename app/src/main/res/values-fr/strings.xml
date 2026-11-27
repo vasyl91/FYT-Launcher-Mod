@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Balayer vers le haut pour ouvrir le tiroir d\'applications</string>
     <string name="swipe_up_app_drawer_on">Balayer vers le haut sur l\'écran d\'accueil ouvre le tiroir d\'applications</string>
     <string name="swipe_up_app_drawer_off">Balayer vers le haut ne fait rien</string>
+    <string name="swipe_up_app_drawer_required">Activé : sans la barre horizontale, c\'est le chemin vers le tiroir d\'applications</string>
     <string name="swipe_down_notifications">Balayer vers le bas pour les notifications</string>
     <string name="swipe_down_notifications_on">Balayer vers le bas sur l\'écran d\'accueil ouvre le volet des notifications</string>
     <string name="swipe_down_notifications_off">Balayer vers le bas ne fait rien</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Emplacement de la barre d\'onglets</string>
     <string name="drawer_tab_bar_top">En haut</string>
     <string name="drawer_tab_bar_bottom">En bas</string>
+    <string name="display_horizontal_bar">Afficher la barre horizontale</string>
     <string name="display_vertical_bar">Afficher la barre verticale</string>
     <string name="folder_follow_grid_on">Les dossiers rangent les icônes selon les lignes et colonnes de l\'écran d\'accueil</string>
     <string name="folder_follow_grid_off">Les dossiers utilisent leur propre grille</string>

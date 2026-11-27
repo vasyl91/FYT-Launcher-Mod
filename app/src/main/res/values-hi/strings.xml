@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">ऐप ड्रॉअर खोलने के लिए ऊपर स्वाइप करें</string>
     <string name="swipe_up_app_drawer_on">होम स्क्रीन पर ऊपर स्वाइप करने से ऐप ड्रॉअर खुलता है</string>
     <string name="swipe_up_app_drawer_off">ऊपर स्वाइप करने से कुछ नहीं होता</string>
+    <string name="swipe_up_app_drawer_required">चालू: क्षैतिज बार के बिना ऐप ड्रॉअर तक यही रास्ता है</string>
     <string name="swipe_down_notifications">सूचनाओं के लिए नीचे स्वाइप करें</string>
     <string name="swipe_down_notifications_on">होम स्क्रीन पर नीचे स्वाइप करने से सूचना पैनल खुलता है</string>
     <string name="swipe_down_notifications_off">नीचे स्वाइप करने से कुछ नहीं होता</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">टैब बार की स्थिति</string>
     <string name="drawer_tab_bar_top">ऊपर</string>
     <string name="drawer_tab_bar_bottom">नीचे</string>
+    <string name="display_horizontal_bar">क्षैतिज बार दिखाएं</string>
     <string name="display_vertical_bar">ऊर्ध्वाधर बार दिखाएं</string>
     <string name="folder_follow_grid_on">फ़ोल्डर आइकन को होम स्क्रीन की पंक्तियों और कॉलम में सजाते हैं</string>
     <string name="folder_follow_grid_off">फ़ोल्डर अपनी ग्रिड इस्तेमाल करते हैं</string>

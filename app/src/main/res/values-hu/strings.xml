@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Felfelé húzás az alkalmazásfiók megnyitásához</string>
     <string name="swipe_up_app_drawer_on">A kezdőképernyőn felfelé húzás megnyitja az alkalmazásfiókot</string>
     <string name="swipe_up_app_drawer_off">A felfelé húzás nem csinál semmit</string>
+    <string name="swipe_up_app_drawer_required">Be: vízszintes sáv nélkül ez az út az alkalmazásfiókhoz</string>
     <string name="swipe_down_notifications">Lefelé húzás az értesítésekhez</string>
     <string name="swipe_down_notifications_on">A kezdőképernyőn lefelé húzás megnyitja az értesítési panelt</string>
     <string name="swipe_down_notifications_off">A lefelé húzás nem csinál semmit</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Lapsáv elhelyezése</string>
     <string name="drawer_tab_bar_top">Fent</string>
     <string name="drawer_tab_bar_bottom">Lent</string>
+    <string name="display_horizontal_bar">Vízszintes sáv megjelenítése</string>
     <string name="display_vertical_bar">Függőleges sáv megjelenítése</string>
     <string name="folder_follow_grid_on">A mappák a kezdőképernyő sorai és oszlopai szerint rendezik az ikonokat</string>
     <string name="folder_follow_grid_off">A mappák saját rácsot használnak</string>

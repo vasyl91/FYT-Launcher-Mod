@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Llisca cap amunt per obrir el calaix d\'aplicacions</string>
     <string name="swipe_up_app_drawer_on">Lliscar cap amunt a la pantalla d\'inici obre el calaix d\'aplicacions</string>
     <string name="swipe_up_app_drawer_off">Lliscar cap amunt no fa res</string>
+    <string name="swipe_up_app_drawer_required">Activat: sense la barra horitzontal és el camí al calaix d\'aplicacions</string>
     <string name="swipe_down_notifications">Llisca cap avall per veure les notificacions</string>
     <string name="swipe_down_notifications_on">Lliscar cap avall a la pantalla d\'inici obre el tauler de notificacions</string>
     <string name="swipe_down_notifications_off">Lliscar cap avall no fa res</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Ubicació de la barra de pestanyes</string>
     <string name="drawer_tab_bar_top">A dalt</string>
     <string name="drawer_tab_bar_bottom">A baix</string>
+    <string name="display_horizontal_bar">Mostra la barra horitzontal</string>
     <string name="display_vertical_bar">Mostra la barra vertical</string>
     <string name="folder_follow_grid_on">Les carpetes ordenen les icones en les files i columnes de la pantalla d\'inici</string>
     <string name="folder_follow_grid_off">Les carpetes usen la seva pròpia quadrícula</string>

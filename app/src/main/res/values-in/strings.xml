@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Geser ke atas untuk membuka laci aplikasi</string>
     <string name="swipe_up_app_drawer_on">Menggeser ke atas di layar utama membuka laci aplikasi</string>
     <string name="swipe_up_app_drawer_off">Menggeser ke atas tidak melakukan apa pun</string>
+    <string name="swipe_up_app_drawer_required">Aktif: tanpa bilah horizontal inilah jalan ke laci aplikasi</string>
     <string name="swipe_down_notifications">Geser ke bawah untuk notifikasi</string>
     <string name="swipe_down_notifications_on">Menggeser ke bawah di layar utama membuka panel notifikasi</string>
     <string name="swipe_down_notifications_off">Menggeser ke bawah tidak melakukan apa pun</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Penempatan bilah tab</string>
     <string name="drawer_tab_bar_top">Atas</string>
     <string name="drawer_tab_bar_bottom">Bawah</string>
+    <string name="display_horizontal_bar">Tampilkan bilah horizontal</string>
     <string name="display_vertical_bar">Tampilkan bilah vertikal</string>
     <string name="folder_follow_grid_on">Folder menata ikon sesuai baris dan kolom layar utama</string>
     <string name="folder_follow_grid_off">Folder memakai kisinya sendiri</string>

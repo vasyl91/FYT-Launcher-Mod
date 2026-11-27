@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Проведіть угору, щоб відкрити список додатків</string>
     <string name="swipe_up_app_drawer_on">Проведення вгору на головному екрані відкриває список додатків</string>
     <string name="swipe_up_app_drawer_off">Проведення вгору нічого не робить</string>
+    <string name="swipe_up_app_drawer_required">Увімкнено: без горизонтальної панелі це шлях до списку програм</string>
     <string name="swipe_down_notifications">Проведіть униз для сповіщень</string>
     <string name="swipe_down_notifications_on">Проведення вниз на головному екрані відкриває панель сповіщень</string>
     <string name="swipe_down_notifications_off">Проведення вниз нічого не робить</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Розташування панелі вкладок</string>
     <string name="drawer_tab_bar_top">Угорі</string>
     <string name="drawer_tab_bar_bottom">Унизу</string>
+    <string name="display_horizontal_bar">Показувати горизонтальну панель</string>
     <string name="display_vertical_bar">Показувати вертикальну панель</string>
     <string name="folder_follow_grid_on">Папки розташовують значки за рядками й стовпцями головного екрана</string>
     <string name="folder_follow_grid_off">Папки використовують власну сітку</string>

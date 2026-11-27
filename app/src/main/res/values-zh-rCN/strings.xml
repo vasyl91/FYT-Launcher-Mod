@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">上滑打开应用抽屉</string>
     <string name="swipe_up_app_drawer_on">在主屏幕上上滑可打开应用抽屉</string>
     <string name="swipe_up_app_drawer_off">上滑不执行任何操作</string>
+    <string name="swipe_up_app_drawer_required">开启：没有横栏时，这是打开应用抽屉的方式</string>
     <string name="swipe_down_notifications">下滑查看通知</string>
     <string name="swipe_down_notifications_on">在主屏幕上下滑可打开通知栏</string>
     <string name="swipe_down_notifications_off">下滑不执行任何操作</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">标签栏位置</string>
     <string name="drawer_tab_bar_top">顶部</string>
     <string name="drawer_tab_bar_bottom">底部</string>
+    <string name="display_horizontal_bar">显示横栏</string>
     <string name="display_vertical_bar">显示纵栏</string>
     <string name="folder_follow_grid_on">文件夹按主屏幕的行和列排列图标</string>
     <string name="folder_follow_grid_off">文件夹使用自己的网格</string>

@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Σύρετε προς τα πάνω για άνοιγμα του συρταριού εφαρμογών</string>
     <string name="swipe_up_app_drawer_on">Η ολίσθηση προς τα πάνω στην αρχική οθόνη ανοίγει το συρτάρι εφαρμογών</string>
     <string name="swipe_up_app_drawer_off">Η ολίσθηση προς τα πάνω δεν κάνει τίποτα</string>
+    <string name="swipe_up_app_drawer_required">Ενεργό: χωρίς την οριζόντια γραμμή αυτός είναι ο δρόμος προς τις εφαρμογές</string>
     <string name="swipe_down_notifications">Σύρετε προς τα κάτω για ειδοποιήσεις</string>
     <string name="swipe_down_notifications_on">Η ολίσθηση προς τα κάτω στην αρχική οθόνη ανοίγει τον πίνακα ειδοποιήσεων</string>
     <string name="swipe_down_notifications_off">Η ολίσθηση προς τα κάτω δεν κάνει τίποτα</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Θέση γραμμής καρτελών</string>
     <string name="drawer_tab_bar_top">Επάνω</string>
     <string name="drawer_tab_bar_bottom">Κάτω</string>
+    <string name="display_horizontal_bar">Εμφάνιση οριζόντιας γραμμής</string>
     <string name="display_vertical_bar">Εμφάνιση κάθετης γραμμής</string>
     <string name="folder_follow_grid_on">Οι φάκελοι τακτοποιούν τα εικονίδια στις γραμμές και στήλες της αρχικής οθόνης</string>
     <string name="folder_follow_grid_off">Οι φάκελοι χρησιμοποιούν το δικό τους πλέγμα</string>

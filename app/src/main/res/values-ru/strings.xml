@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Провести вверх, чтобы открыть список приложений</string>
     <string name="swipe_up_app_drawer_on">Проведение вверх на главном экране открывает список приложений</string>
     <string name="swipe_up_app_drawer_off">Проведение вверх ничего не делает</string>
+    <string name="swipe_up_app_drawer_required">Включено: без горизонтальной панели это путь к списку приложений</string>
     <string name="swipe_down_notifications">Провести вниз для уведомлений</string>
     <string name="swipe_down_notifications_on">Проведение вниз на главном экране открывает шторку уведомлений</string>
     <string name="swipe_down_notifications_off">Проведение вниз ничего не делает</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Расположение панели вкладок</string>
     <string name="drawer_tab_bar_top">Сверху</string>
     <string name="drawer_tab_bar_bottom">Снизу</string>
+    <string name="display_horizontal_bar">Показывать горизонтальную панель</string>
     <string name="display_vertical_bar">Показывать вертикальную панель</string>
     <string name="folder_follow_grid_on">Папки располагают значки по строкам и столбцам главного экрана</string>
     <string name="folder_follow_grid_off">Папки используют собственную сетку</string>

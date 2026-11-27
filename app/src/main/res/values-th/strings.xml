@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">ปัดขึ้นเพื่อเปิดลิ้นชักแอป</string>
     <string name="swipe_up_app_drawer_on">การปัดขึ้นบนหน้าจอหลักจะเปิดลิ้นชักแอป</string>
     <string name="swipe_up_app_drawer_off">การปัดขึ้นไม่ทำอะไร</string>
+    <string name="swipe_up_app_drawer_required">เปิด: เมื่อไม่มีแถบแนวนอน นี่คือทางไปลิ้นชักแอป</string>
     <string name="swipe_down_notifications">ปัดลงเพื่อดูการแจ้งเตือน</string>
     <string name="swipe_down_notifications_on">การปัดลงบนหน้าจอหลักจะเปิดแผงการแจ้งเตือน</string>
     <string name="swipe_down_notifications_off">การปัดลงไม่ทำอะไร</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">ตำแหน่งแถบแท็บ</string>
     <string name="drawer_tab_bar_top">ด้านบน</string>
     <string name="drawer_tab_bar_bottom">ด้านล่าง</string>
+    <string name="display_horizontal_bar">แสดงแถบแนวนอน</string>
     <string name="display_vertical_bar">แสดงแถบแนวตั้ง</string>
     <string name="folder_follow_grid_on">โฟลเดอร์จัดไอคอนตามแถวและคอลัมน์ของหน้าจอหลัก</string>
     <string name="folder_follow_grid_off">โฟลเดอร์ใช้ตารางของตัวเอง</string>

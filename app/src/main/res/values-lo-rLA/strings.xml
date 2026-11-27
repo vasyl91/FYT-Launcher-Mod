@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">ປັດຂຶ້ນເພື່ອເປີດລິ້ນຊັກແອັບ</string>
     <string name="swipe_up_app_drawer_on">ການປັດຂຶ້ນໃນໜ້າຫຼັກຈະເປີດລິ້ນຊັກແອັບ</string>
     <string name="swipe_up_app_drawer_off">ການປັດຂຶ້ນບໍ່ເຮັດຫຍັງ</string>
+    <string name="swipe_up_app_drawer_required">ເປີດ: ຖ້າບໍ່ມີແຖບແນວນອນ ນີ້ແມ່ນທາງໄປຫາລາຍການແອັບ</string>
     <string name="swipe_down_notifications">ປັດລົງເພື່ອເບິ່ງການແຈ້ງເຕືອນ</string>
     <string name="swipe_down_notifications_on">ການປັດລົງໃນໜ້າຫຼັກຈະເປີດແຜງການແຈ້ງເຕືອນ</string>
     <string name="swipe_down_notifications_off">ການປັດລົງບໍ່ເຮັດຫຍັງ</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">ຕຳແໜ່ງແຖບແຖບ</string>
     <string name="drawer_tab_bar_top">ເທິງ</string>
     <string name="drawer_tab_bar_bottom">ລຸ່ມ</string>
+    <string name="display_horizontal_bar">ສະແດງແຖບແນວນອນ</string>
     <string name="display_vertical_bar">ສະແດງແຖບແນວຕັ້ງ</string>
     <string name="folder_follow_grid_on">ແຟ້ມຈັດໄອຄອນຕາມແຖວ ແລະ ຖັນຂອງໜ້າຈໍຫຼັກ</string>
     <string name="folder_follow_grid_off">ແຟ້ມໃຊ້ຕາຕະລາງຂອງຕົນເອງ</string>

@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Nach oben wischen, um die App-Übersicht zu öffnen</string>
     <string name="swipe_up_app_drawer_on">Wischen nach oben auf dem Startbildschirm öffnet die App-Übersicht</string>
     <string name="swipe_up_app_drawer_off">Wischen nach oben bewirkt nichts</string>
+    <string name="swipe_up_app_drawer_required">An: ohne die horizontale Leiste ist dies der Weg zur App-Übersicht</string>
     <string name="swipe_down_notifications">Nach unten wischen für Benachrichtigungen</string>
     <string name="swipe_down_notifications_on">Wischen nach unten auf dem Startbildschirm öffnet die Benachrichtigungen</string>
     <string name="swipe_down_notifications_off">Wischen nach unten bewirkt nichts</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Position der Tab-Leiste</string>
     <string name="drawer_tab_bar_top">Oben</string>
     <string name="drawer_tab_bar_bottom">Unten</string>
+    <string name="display_horizontal_bar">Horizontale Leiste anzeigen</string>
     <string name="display_vertical_bar">Vertikale Leiste anzeigen</string>
     <string name="folder_follow_grid_on">Ordner ordnen Symbole in den Zeilen und Spalten des Startbildschirms an</string>
     <string name="folder_follow_grid_off">Ordner verwenden ihr eigenes Raster</string>

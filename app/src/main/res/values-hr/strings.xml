@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Povucite prema gore za otvaranje ladice aplikacija</string>
     <string name="swipe_up_app_drawer_on">Povlačenje prema gore na početnom zaslonu otvara ladicu aplikacija</string>
     <string name="swipe_up_app_drawer_off">Povlačenje prema gore ne radi ništa</string>
+    <string name="swipe_up_app_drawer_required">Uključeno: bez vodoravne trake ovo je put do ladice aplikacija</string>
     <string name="swipe_down_notifications">Povucite prema dolje za obavijesti</string>
     <string name="swipe_down_notifications_on">Povlačenje prema dolje na početnom zaslonu otvara ploču s obavijestima</string>
     <string name="swipe_down_notifications_off">Povlačenje prema dolje ne radi ništa</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Položaj trake s karticama</string>
     <string name="drawer_tab_bar_top">Gore</string>
     <string name="drawer_tab_bar_bottom">Dolje</string>
+    <string name="display_horizontal_bar">Prikaži vodoravnu traku</string>
     <string name="display_vertical_bar">Prikaži okomitu traku</string>
     <string name="folder_follow_grid_on">Mape raspoređuju ikone u redcima i stupcima početnog zaslona</string>
     <string name="folder_follow_grid_off">Mape koriste vlastitu mrežu</string>

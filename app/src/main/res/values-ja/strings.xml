@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">上にスワイプしてアプリドロワーを開く</string>
     <string name="swipe_up_app_drawer_on">ホーム画面で上にスワイプするとアプリドロワーが開きます</string>
     <string name="swipe_up_app_drawer_off">上にスワイプしても何も起こりません</string>
+    <string name="swipe_up_app_drawer_required">オン：横バーがないとき、これがアプリ一覧を開く方法です</string>
     <string name="swipe_down_notifications">下にスワイプして通知を表示</string>
     <string name="swipe_down_notifications_on">ホーム画面で下にスワイプすると通知パネルが開きます</string>
     <string name="swipe_down_notifications_off">下にスワイプしても何も起こりません</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">タブバーの位置</string>
     <string name="drawer_tab_bar_top">上</string>
     <string name="drawer_tab_bar_bottom">下</string>
+    <string name="display_horizontal_bar">横バーを表示</string>
     <string name="display_vertical_bar">縦バーを表示</string>
     <string name="folder_follow_grid_on">フォルダはアイコンをホーム画面の行と列に合わせて並べます</string>
     <string name="folder_follow_grid_off">フォルダは独自のグリッドを使います</string>

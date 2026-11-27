@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Scuar si per avrir la tschaina d\'apps</string>
     <string name="swipe_up_app_drawer_on">Scuar si sin la pagina iniziala avra la tschaina d\'apps</string>
     <string name="swipe_up_app_drawer_off">Scuar si na fa nagut</string>
+    <string name="swipe_up_app_drawer_required">Activà: senza la bara orizontala è quai la via tar las applicaziuns</string>
     <string name="swipe_down_notifications">Scuar engiu per las communicaziuns</string>
     <string name="swipe_down_notifications_on">Scuar engiu sin la pagina iniziala avra il panel da communicaziuns</string>
     <string name="swipe_down_notifications_off">Scuar engiu na fa nagut</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Posiziun da la bara dals tabs</string>
     <string name="drawer_tab_bar_top">Sura</string>
     <string name="drawer_tab_bar_bottom">Sut</string>
+    <string name="display_horizontal_bar">Mussar la bara orizontala</string>
     <string name="display_vertical_bar">Mussar la bara verticala</string>
     <string name="folder_follow_grid_on">Las cartellas ordineschan ils simbols en las lingias e colonnas da la surfatscha da partenza</string>
     <string name="folder_follow_grid_off">Las cartellas utiliseschan lur agen rasté</string>

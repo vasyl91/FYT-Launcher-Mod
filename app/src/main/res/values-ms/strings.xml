@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Leret ke atas untuk membuka laci aplikasi</string>
     <string name="swipe_up_app_drawer_on">Meleret ke atas pada skrin utama membuka laci aplikasi</string>
     <string name="swipe_up_app_drawer_off">Meleret ke atas tidak melakukan apa-apa</string>
+    <string name="swipe_up_app_drawer_required">Hidup: tanpa bar mendatar inilah jalan ke laci apl</string>
     <string name="swipe_down_notifications">Leret ke bawah untuk pemberitahuan</string>
     <string name="swipe_down_notifications_on">Meleret ke bawah pada skrin utama membuka panel pemberitahuan</string>
     <string name="swipe_down_notifications_off">Meleret ke bawah tidak melakukan apa-apa</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Penempatan bar tab</string>
     <string name="drawer_tab_bar_top">Atas</string>
     <string name="drawer_tab_bar_bottom">Bawah</string>
+    <string name="display_horizontal_bar">Paparkan bar mendatar</string>
     <string name="display_vertical_bar">Paparkan bar menegak</string>
     <string name="folder_follow_grid_on">Folder menyusun ikon dalam baris dan lajur skrin utama</string>
     <string name="folder_follow_grid_off">Folder menggunakan grid sendiri</string>

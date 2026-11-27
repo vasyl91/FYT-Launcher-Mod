@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Perbraukite aukštyn, kad atidarytumėte programų stalčių</string>
     <string name="swipe_up_app_drawer_on">Perbraukimas aukštyn pagrindiniame ekrane atidaro programų stalčių</string>
     <string name="swipe_up_app_drawer_off">Perbraukimas aukštyn nieko nedaro</string>
+    <string name="swipe_up_app_drawer_required">Įjungta: be horizontaliosios juostos tai kelias į programų stalčių</string>
     <string name="swipe_down_notifications">Perbraukite žemyn, kad pamatytumėte pranešimus</string>
     <string name="swipe_down_notifications_on">Perbraukimas žemyn pagrindiniame ekrane atidaro pranešimų skydelį</string>
     <string name="swipe_down_notifications_off">Perbraukimas žemyn nieko nedaro</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Skirtukų juostos vieta</string>
     <string name="drawer_tab_bar_top">Viršuje</string>
     <string name="drawer_tab_bar_bottom">Apačioje</string>
+    <string name="display_horizontal_bar">Rodyti horizontaliąją juostą</string>
     <string name="display_vertical_bar">Rodyti vertikaliąją juostą</string>
     <string name="folder_follow_grid_on">Aplankai išdėsto piktogramas pagrindinio ekrano eilutėmis ir stulpeliais</string>
     <string name="folder_follow_grid_off">Aplankai naudoja savo tinklelį</string>

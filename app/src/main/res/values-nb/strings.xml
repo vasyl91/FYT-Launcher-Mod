@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Sveip opp for å åpne appskuffen</string>
     <string name="swipe_up_app_drawer_on">Å sveipe opp på startskjermen åpner appskuffen</string>
     <string name="swipe_up_app_drawer_off">Å sveipe opp gjør ingenting</string>
+    <string name="swipe_up_app_drawer_required">På: uten det horisontale feltet er dette veien til appskuffen</string>
     <string name="swipe_down_notifications">Sveip ned for varsler</string>
     <string name="swipe_down_notifications_on">Å sveipe ned på startskjermen åpner varselpanelet</string>
     <string name="swipe_down_notifications_off">Å sveipe ned gjør ingenting</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Plassering av fanelinjen</string>
     <string name="drawer_tab_bar_top">Øverst</string>
     <string name="drawer_tab_bar_bottom">Nederst</string>
+    <string name="display_horizontal_bar">Vis horisontalt felt</string>
     <string name="display_vertical_bar">Vis vertikalt felt</string>
     <string name="folder_follow_grid_on">Mapper ordner ikoner i startskjermens rader og kolonner</string>
     <string name="folder_follow_grid_off">Mapper bruker sitt eget rutenett</string>

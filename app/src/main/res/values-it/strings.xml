@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Scorri verso l\'alto per aprire il drawer delle app</string>
     <string name="swipe_up_app_drawer_on">Scorrere verso l\'alto nella schermata Home apre il drawer delle app</string>
     <string name="swipe_up_app_drawer_off">Scorrere verso l\'alto non fa nulla</string>
+    <string name="swipe_up_app_drawer_required">Attivo: senza la barra orizzontale è la via al cassetto delle app</string>
     <string name="swipe_down_notifications">Scorri verso il basso per le notifiche</string>
     <string name="swipe_down_notifications_on">Scorrere verso il basso nella schermata Home apre il pannello delle notifiche</string>
     <string name="swipe_down_notifications_off">Scorrere verso il basso non fa nulla</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Posizione della barra delle schede</string>
     <string name="drawer_tab_bar_top">In alto</string>
     <string name="drawer_tab_bar_bottom">In basso</string>
+    <string name="display_horizontal_bar">Mostra la barra orizzontale</string>
     <string name="display_vertical_bar">Mostra la barra verticale</string>
     <string name="folder_follow_grid_on">Le cartelle dispongono le icone nelle righe e colonne della schermata Home</string>
     <string name="folder_follow_grid_off">Le cartelle usano una griglia propria</string>

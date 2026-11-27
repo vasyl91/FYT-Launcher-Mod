@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Veeg omhoog om de app-lade te openen</string>
     <string name="swipe_up_app_drawer_on">Omhoog vegen op het startscherm opent de app-lade</string>
     <string name="swipe_up_app_drawer_off">Omhoog vegen doet niets</string>
+    <string name="swipe_up_app_drawer_required">Aan: zonder de horizontale balk is dit de weg naar de app-lade</string>
     <string name="swipe_down_notifications">Veeg omlaag voor meldingen</string>
     <string name="swipe_down_notifications_on">Omlaag vegen op het startscherm opent het meldingenpaneel</string>
     <string name="swipe_down_notifications_off">Omlaag vegen doet niets</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Plaatsing van de tabbalk</string>
     <string name="drawer_tab_bar_top">Boven</string>
     <string name="drawer_tab_bar_bottom">Onder</string>
+    <string name="display_horizontal_bar">Horizontale balk weergeven</string>
     <string name="display_vertical_bar">Verticale balk weergeven</string>
     <string name="folder_follow_grid_on">Mappen rangschikken pictogrammen in de rijen en kolommen van het startscherm</string>
     <string name="folder_follow_grid_off">Mappen gebruiken hun eigen raster</string>

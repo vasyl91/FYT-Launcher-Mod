@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">អូសឡើងលើដើម្បីបើកបន្ទះកម្មវិធី</string>
     <string name="swipe_up_app_drawer_on">ការអូសឡើងលើនៅអេក្រង់ដើមបើកបន្ទះកម្មវិធី</string>
     <string name="swipe_up_app_drawer_off">ការអូសឡើងលើមិនធ្វើអ្វីទេ</string>
+    <string name="swipe_up_app_drawer_required">បើក៖ បើគ្មានរបារផ្ដេក នេះជាផ្លូវទៅថតកម្មវិធី</string>
     <string name="swipe_down_notifications">អូសចុះក្រោមដើម្បីមើលការជូនដំណឹង</string>
     <string name="swipe_down_notifications_on">ការអូសចុះក្រោមនៅអេក្រង់ដើមបើកបន្ទះការជូនដំណឹង</string>
     <string name="swipe_down_notifications_off">ការអូសចុះក្រោមមិនធ្វើអ្វីទេ</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">ទីតាំងរបារផ្ទាំង</string>
     <string name="drawer_tab_bar_top">ខាងលើ</string>
     <string name="drawer_tab_bar_bottom">ខាងក្រោម</string>
+    <string name="display_horizontal_bar">បង្ហាញរបារផ្ដេក</string>
     <string name="display_vertical_bar">បង្ហាញរបារបញ្ឈរ</string>
     <string name="folder_follow_grid_on">ថតរៀបរូបតំណាងតាមជួរដេក និងជួរឈរនៃអេក្រង់ដើម</string>
     <string name="folder_follow_grid_off">ថតប្រើក្រឡាចត្រង្គផ្ទាល់ខ្លួន</string>

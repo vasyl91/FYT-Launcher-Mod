@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Telezesha juu ili kufungua droo ya programu</string>
     <string name="swipe_up_app_drawer_on">Kutelezesha juu kwenye skrini ya kwanza kunafungua droo ya programu</string>
     <string name="swipe_up_app_drawer_off">Kutelezesha juu hakufanyi chochote</string>
+    <string name="swipe_up_app_drawer_required">Imewashwa: bila upau mlalo hii ndiyo njia ya kwenda kwenye droo ya programu</string>
     <string name="swipe_down_notifications">Telezesha chini kwa arifa</string>
     <string name="swipe_down_notifications_on">Kutelezesha chini kwenye skrini ya kwanza kunafungua kidirisha cha arifa</string>
     <string name="swipe_down_notifications_off">Kutelezesha chini hakufanyi chochote</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Mahali pa upau wa vichupo</string>
     <string name="drawer_tab_bar_top">Juu</string>
     <string name="drawer_tab_bar_bottom">Chini</string>
+    <string name="display_horizontal_bar">Onyesha upau mlalo</string>
     <string name="display_vertical_bar">Onyesha upau wima</string>
     <string name="folder_follow_grid_on">Folda hupanga aikoni katika safu mlalo na safu wima za skrini ya kwanza</string>
     <string name="folder_follow_grid_off">Folda hutumia gridi yake yenyewe</string>

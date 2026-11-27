@@ -8,18 +8,18 @@ package com.android.launcher66;
  * ({@link #swipeUpRequired}); the setting's stored value is kept, the launcher uses the stored value or the
  * requirement. Pure Java, so that it has a test.
  */
-final class DrawerAccess {
+public final class DrawerAccess {
 
     private DrawerAccess() {
     }
 
     /** The swipe up is the only way to the drawer: no horizontal bar, or the bar without its button. */
-    static boolean swipeUpRequired(boolean displayHorizontalBar, boolean drawerButtonHidden) {
+    public static boolean swipeUpRequired(boolean displayHorizontalBar, boolean drawerButtonHidden) {
         return !displayHorizontalBar || drawerButtonHidden;
     }
 
     /** What the launcher does: the setting's value, or the requirement. */
-    static boolean swipeUpActive(boolean stored, boolean displayHorizontalBar, boolean drawerButtonHidden) {
+    public static boolean swipeUpActive(boolean stored, boolean displayHorizontalBar, boolean drawerButtonHidden) {
         return stored || swipeUpRequired(displayHorizontalBar, drawerButtonHidden);
     }
 }

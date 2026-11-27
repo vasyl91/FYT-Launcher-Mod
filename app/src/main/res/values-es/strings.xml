@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">Deslizar hacia arriba para abrir el cajón de aplicaciones</string>
     <string name="swipe_up_app_drawer_on">Deslizar hacia arriba en la pantalla de inicio abre el cajón de aplicaciones</string>
     <string name="swipe_up_app_drawer_off">Deslizar hacia arriba no hace nada</string>
+    <string name="swipe_up_app_drawer_required">Activado: sin la barra horizontal es el camino al cajón de aplicaciones</string>
     <string name="swipe_down_notifications">Deslizar hacia abajo para ver las notificaciones</string>
     <string name="swipe_down_notifications_on">Deslizar hacia abajo en la pantalla de inicio abre el panel de notificaciones</string>
     <string name="swipe_down_notifications_off">Deslizar hacia abajo no hace nada</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">Ubicación de la barra de pestañas</string>
     <string name="drawer_tab_bar_top">Arriba</string>
     <string name="drawer_tab_bar_bottom">Abajo</string>
+    <string name="display_horizontal_bar">Mostrar barra horizontal</string>
     <string name="display_vertical_bar">Mostrar barra vertical</string>
     <string name="folder_follow_grid_on">Las carpetas organizan los iconos en las filas y columnas de la pantalla de inicio</string>
     <string name="folder_follow_grid_off">Las carpetas usan su propia cuadrícula</string>

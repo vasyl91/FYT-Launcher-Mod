@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">向上滑動以開啟應用程式抽屜</string>
     <string name="swipe_up_app_drawer_on">在主畫面向上滑動會開啟應用程式抽屜</string>
     <string name="swipe_up_app_drawer_off">向上滑動不執行任何動作</string>
+    <string name="swipe_up_app_drawer_required">開啟：沒有橫欄時，這是開啟應用程式抽屜的方式</string>
     <string name="swipe_down_notifications">向下滑動以查看通知</string>
     <string name="swipe_down_notifications_on">在主畫面向下滑動會開啟通知面板</string>
     <string name="swipe_down_notifications_off">向下滑動不執行任何動作</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">分頁列位置</string>
     <string name="drawer_tab_bar_top">頂部</string>
     <string name="drawer_tab_bar_bottom">底部</string>
+    <string name="display_horizontal_bar">顯示橫欄</string>
     <string name="display_vertical_bar">顯示縱欄</string>
     <string name="folder_follow_grid_on">資料夾依主畫面的列與欄排列圖示</string>
     <string name="folder_follow_grid_off">資料夾使用自己的格線</string>

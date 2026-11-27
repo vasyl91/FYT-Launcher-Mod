@@ -569,6 +569,7 @@
     <string name="swipe_up_app_drawer">გადაუსვით ზემოთ აპლიკაციების უჯრის გასახსნელად</string>
     <string name="swipe_up_app_drawer_on">მთავარ ეკრანზე ზემოთ გადაწევა ხსნის აპლიკაციების უჯრას</string>
     <string name="swipe_up_app_drawer_off">ზემოთ გადაწევა არაფერს აკეთებს</string>
+    <string name="swipe_up_app_drawer_required">ჩართულია: ჰორიზონტალური ზოლის გარეშე ეს არის გზა აპების უჯრისკენ</string>
     <string name="swipe_down_notifications">გადაუსვით ქვემოთ შეტყობინებებისთვის</string>
     <string name="swipe_down_notifications_on">მთავარ ეკრანზე ქვემოთ გადაწევა ხსნის შეტყობინებების პანელს</string>
     <string name="swipe_down_notifications_off">ქვემოთ გადაწევა არაფერს აკეთებს</string>
@@ -642,6 +643,7 @@
     <string name="drawer_tab_bar_position">ჩანართების ზოლის განლაგება</string>
     <string name="drawer_tab_bar_top">ზემოთ</string>
     <string name="drawer_tab_bar_bottom">ქვემოთ</string>
+    <string name="display_horizontal_bar">ჰორიზონტალური ზოლის ჩვენება</string>
     <string name="display_vertical_bar">ვერტიკალური ზოლის ჩვენება</string>
     <string name="folder_follow_grid_on">საქაღალდეები ხატულებს მთავარი ეკრანის რიგებსა და სვეტებში აწყობს</string>
     <string name="folder_follow_grid_off">საქაღალდეები საკუთარ ბადეს იყენებს</string>
