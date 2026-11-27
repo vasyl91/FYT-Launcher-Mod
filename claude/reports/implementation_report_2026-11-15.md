@@ -897,7 +897,7 @@ the crash were to be fixed. The plan, in Polish: `../prompts/archive/plan-2026-1
 | Q2 | `bc63f2c50` Bars: the app drawer button hidden in the bar's window too; `91c8828a3` Bars: "Display horizontal bar" off leaves nothing of the bar | 634 green |
 | Q3 | `b9b3df2d7` Widgets: a freeform widget drawn exactly in its frame, dropped where it is let go; `824f1f167` Widgets: the resize frame of a freeform widget stays on it | 635 green |
 | Q4 | `096a78edd` Widgets: the list shows the widgets themselves, with the brief's texts; `cbf38e50a` App drawer: a gap above the apps at the top; `dc77d55e3` App drawer: the letter scroller as thick on every screen; `1435c468b` App drawer: the tabs of the horizontal drawer one after another, scrolled smoothly | 636 green |
-| Q5 | `0c748c6a5` Settings: the background, colour and app dialogs one size; `e42cbbd54` Settings: the dialogs' text as large as the settings' rows | 637 |
+| Q5 | `0c748c6a5` Settings: the background, colour and app dialogs one size; `e42cbbd54` Settings: the dialogs' text as large as the settings' rows | 637 green |
 
 Then the `Docs:` commits (README, this section and the library). At the end the suite had 1695 tests, all green (1660 at
 the start of the round).
