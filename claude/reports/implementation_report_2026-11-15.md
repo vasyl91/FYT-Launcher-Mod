@@ -815,7 +815,7 @@ and both debug builds ran at the end of every batch, and CI ran once per batch o
 | P5 | `76a4a7fbc` Settings: the text size of the settings, 70–150 % | 629 green |
 | P6 | `fe456f31f` Bars: "Display horizontal bar"; `a149a178c` Bars: the app drawer button and the music widget may be hidden, the room shared by one rule | 630 green |
 | P6 | `5c3c8bc19` Widgets: a list of apps with their widgets and shortcuts, with search | 631 green |
-| P7 | `7c1092873` Memory: wallpapers decoded at the screen's size; `9b6b4b000` Memory: widget previews in a cache counted in bytes, freed on trim; `e4889251e` Workspace: the settings of a touch read once, kept until they change; `77f440135` App drawer: the pages of the horizontal drawer made only when it is shown | 632 |
+| P7 | `7c1092873` Memory: wallpapers decoded at the screen's size; `9b6b4b000` Memory: widget previews in a cache counted in bytes, freed on trim; `e4889251e` Workspace: the settings of a touch read once, kept until they change; `77f440135` App drawer: the pages of the horizontal drawer made only when it is shown | 632 green |
 
 Then the `Docs:` commits (the README, the project library with this report), which start no run. At the end of P7 the
 suite had 1660 tests, all green (1557 at the start of the round).
