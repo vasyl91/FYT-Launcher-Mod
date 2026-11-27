@@ -23,6 +23,7 @@ import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+import android.util.LruCache;
 
 import androidx.core.content.ContextCompat;
 
@@ -30,9 +31,6 @@ import com.android.async.AsyncTask;
 
 import java.io.ByteArrayOutputStream;
 import java.lang.ref.SoftReference;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 
 abstract class SoftReferenceThreadLocal<T> {
@@ -131,8 +129,12 @@ public class WidgetPreviewLoader {
 
     private CacheDb mDb;
 
-    private HashMap<String, WeakReference<Bitmap>> mLoadedPreviews;
-    private ArrayList<SoftReference<Bitmap>> mUnusedBitmaps;
+    /**
+     * The previews made or read so far, counted in bytes and kept by PreviewCachePolicy's rules. A bitmap
+     * here is never drawn over again: it may be on the screen in the list and on a page at once, so a new
+     * preview always gets a bitmap of its own (the pool of reused bitmaps of old is gone).
+     */
+    private final LruCache<String, Bitmap> mLoadedPreviews;
     private static HashSet<String> sInvalidPackages;
 
     static {
@@ -151,8 +153,29 @@ public class WidgetPreviewLoader {
                 ? Launcher.workspaceIconAndFolderSize : grid.iconSizePx;
         mIconCache = app.getIconCache();
         mDb = app.getWidgetPreviewCacheDb();
-        mLoadedPreviews = new HashMap<String, WeakReference<Bitmap>>();
-        mUnusedBitmaps = new ArrayList<SoftReference<Bitmap>>();
+        mLoadedPreviews = new LruCache<String, Bitmap>(
+                PreviewCachePolicy.budgetBytes(Runtime.getRuntime().maxMemory())) {
+            @Override
+            protected int sizeOf(String key, Bitmap value) {
+                return value.getAllocationByteCount();
+            }
+        };
+    }
+
+    /** Gives back memory as onTrimMemory() asks (PreviewCachePolicy.keepAfterTrim). */
+    public void trimMemory(int level) {
+        int before = mLoadedPreviews.size();
+        int keep = PreviewCachePolicy.keepAfterTrim(level, before);
+        if (keep >= before) {
+            return;
+        }
+        if (keep == 0) {
+            mLoadedPreviews.evictAll();
+        } else {
+            mLoadedPreviews.trimToSize(keep);
+        }
+        Log.i(TAG, "Widget previews trimmed for level " + level + ": " + before / 1024 + " KB -> "
+                + mLoadedPreviews.size() / 1024 + " KB");
     }
 
     public void setPreviewSize(int previewWidth, int previewHeight,
@@ -174,36 +197,16 @@ public class WidgetPreviewLoader {
         if (!packageValid) {
             return null;
         }
-        if (packageValid) {
-            synchronized(mLoadedPreviews) {
-                // check if it exists in our existing cache
-                if (mLoadedPreviews.containsKey(name) && mLoadedPreviews.get(name).get() != null) {
-                    return mLoadedPreviews.get(name).get();
-                }
-            }
+        // The preview of this size, if it is still kept
+        final String key = PreviewCachePolicy.key(mSize, name);
+        Bitmap cached = mLoadedPreviews.get(key);
+        if (cached != null) {
+            return cached;
         }
 
-        Bitmap unusedBitmap = null;
-        synchronized(mUnusedBitmaps) {
-            // not in cache; we need to load it from the db
-            while ((unusedBitmap == null || !unusedBitmap.isMutable() ||
-                    unusedBitmap.getWidth() != mPreviewBitmapWidth ||
-                    unusedBitmap.getHeight() != mPreviewBitmapHeight)
-                    && mUnusedBitmaps.size() > 0) {
-                unusedBitmap = mUnusedBitmaps.remove(0).get();
-            }
-            if (unusedBitmap != null) {
-                final Canvas c = mCachedAppWidgetPreviewCanvas.get();
-                c.setBitmap(unusedBitmap);
-                c.drawColor(0, PorterDuff.Mode.CLEAR);
-                c.setBitmap(null);
-            }
-        }
-
-        if (unusedBitmap == null) {
-            unusedBitmap = Bitmap.createBitmap(mPreviewBitmapWidth, mPreviewBitmapHeight,
-                    Bitmap.Config.ARGB_8888);
-        }
+        // Not kept: read from the db or made, into a bitmap of its own
+        Bitmap unusedBitmap = Bitmap.createBitmap(mPreviewBitmapWidth, mPreviewBitmapHeight,
+                Bitmap.Config.ARGB_8888);
 
         Bitmap preview = null;
 
@@ -212,9 +215,7 @@ public class WidgetPreviewLoader {
         }
 
         if (preview != null) {
-            synchronized(mLoadedPreviews) {
-                mLoadedPreviews.put(name, new WeakReference<Bitmap>(preview));
-            }
+            mLoadedPreviews.put(key, preview);
             return preview;
         } else {
             // it's not in the db... we need to generate it
@@ -224,9 +225,7 @@ public class WidgetPreviewLoader {
                 throw new RuntimeException("generatePreview is not recycling the bitmap " + o);
             }
 
-            synchronized(mLoadedPreviews) {
-                mLoadedPreviews.put(name, new WeakReference<Bitmap>(preview));
-            }
+            mLoadedPreviews.put(key, preview);
 
             // write to db on a thread pool... this can be done lazily and improves the performance
             // of the first time widget previews are loaded
@@ -251,31 +250,11 @@ public class WidgetPreviewLoader {
         }
     }
 
+    /**
+     * Called for the previews of a page whose loading was cancelled. They are good previews, so they stay
+     * kept; the cache lets them go by its own rules, and a bitmap is no longer drawn over for another one.
+     */
     public void recycleBitmap(Object o, Bitmap bitmapToRecycle) {
-        String name = getObjectName(o);
-        synchronized (mLoadedPreviews) {
-            if (mLoadedPreviews.containsKey(name)) {
-                Bitmap b = mLoadedPreviews.get(name).get();
-                if (b == bitmapToRecycle) {
-                    mLoadedPreviews.remove(name);
-                    if (bitmapToRecycle.isMutable()) {
-                        synchronized (mUnusedBitmaps) {
-                            mUnusedBitmaps.add(new SoftReference<Bitmap>(b));
-                        }
-                    }
-                } else {
-                    Log.e(TAG, String.format("key name: %s, bitmap in cache: %s, bitmap passed in: %s",
-                            name, b, bitmapToRecycle));
-                    mLoadedPreviews.remove(name);
-                    if (b != null && b.isMutable()) {
-                        synchronized (mUnusedBitmaps) {
-                            mUnusedBitmaps.add(new SoftReference<Bitmap>(b));
-                        }
-                    }
-                    // throw new RuntimeException("Bitmap passed in doesn't match up");
-                }
-            }
-        }
     }
 
     static class CacheDb extends SQLiteOpenHelper {

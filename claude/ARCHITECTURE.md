@@ -235,6 +235,9 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   of apps (search, rows that open one at a time, the letter scroller) instead of the pager's widget pages;
   `L/WidgetGroups` (plain Java) groups, orders and filters; the cells are the pager's own `PagedViewWidget`s made by
   `AppsCustomizePagedView.mWidgetsListHost` (dragged through `beginListDrag`, previews on a single background thread).
+  Since round 29 `L/WidgetPreviewLoader` keeps the previews of both in an `LruCache` counted in bytes by
+  `L/PreviewCachePolicy` (plain Java: a sixteenth of the process's memory, keyed by size and name, given back from
+  "running low" on by `Launcher.onTrimMemory`); the old pool of reused bitmaps is gone.
 - **Tabs:** `L/DrawerTabs` (plain Java, tested: the rules of D-88), `L/DrawerTabsStore` (one string under `drawer_tabs`,
   read through `CreatorPrefs`), `L/DrawerTabGeometry` (plain Java: sizes and swipe decisions), `L/DrawerTabStrip` (the
   strip, in `apps_customize_pane.xml`, moved above or below the apps by `AppsCustomizePagedView.placeStrip`;

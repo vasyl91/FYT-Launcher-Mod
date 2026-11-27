@@ -7987,6 +7987,10 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
             return;
         }
         super.onTrimMemory(level);
+        // The widget previews the drawer keeps, by PreviewCachePolicy's levels
+        if (mAppsCustomizeContent != null) {
+            mAppsCustomizeContent.trimPreviews(level);
+        }
         if (level >= 60) {
             mAppsCustomizeTabHost.onTrimMemory();
         }

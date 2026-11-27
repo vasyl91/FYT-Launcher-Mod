@@ -1689,6 +1689,13 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         cancelAllTasks();
     }
 
+    /** Gives back the memory of the widget previews the drawer keeps, as onTrimMemory() asks. */
+    public void trimPreviews(int level) {
+        if (mWidgetPreviewLoader != null) {
+            mWidgetPreviewLoader.trimMemory(level);
+        }
+    }
+
     public void clearAllWidgetPages() {
         cancelAllTasks();
         int count = getChildCount();
