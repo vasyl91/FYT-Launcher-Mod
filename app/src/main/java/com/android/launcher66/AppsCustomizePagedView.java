@@ -371,7 +371,18 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     private void updatePageCounts() {
         mNumWidgetPages = (int) Math.ceil(mWidgets.size() /
                 (float) (mWidgetCountX * mWidgetCountY));
-        mNumAppsPages = (int) Math.ceil((float) mApps.size() / (mCellCountX * mCellCountY));
+        if (mTabLists != null) {
+            // Every tab's pages one after another (TabPages): a swipe to the next tab is a page's scroll
+            int[] counts = new int[mTabLists.size()];
+            for (int t = 0; t < counts.length; t++) {
+                counts[t] = mTabLists.get(t).size();
+            }
+            mTabPages = TabPages.of(counts, mCellCountX * mCellCountY);
+            mNumAppsPages = mTabPages.total();
+        } else {
+            mTabPages = null;
+            mNumAppsPages = (int) Math.ceil((float) mApps.size() / (mCellCountX * mCellCountY));
+        }
     }
 
     /**
@@ -415,8 +426,12 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         AppsCustomizeTabHost host = (AppsCustomizeTabHost) getTabHost();
         final boolean hostIsTransitioning = host.isTransitioning();
 
-        // Restore the page
+        // Restore the page: in its tab, when the tabs' pages follow one another
         int page = getPageForComponent(mSaveInstanceStateItemIndex);
+        if (mTabPages != null) {
+            int tab = currentTabIndex();
+            page = mTabPages.firstPage(tab) + Math.min(Math.max(0, page), mTabPages.pagesOf(tab) - 1);
+        }
         invalidatePageData(Math.max(0, page), hostIsTransitioning);
     }
 
@@ -650,8 +665,31 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         }
     }
 
+    /**
+     * The pager's apps, tab by tab in the strip's order, while the horizontal drawer shows every tab's pages one after
+     * another (TabPages); null otherwise: the vertical drawer, one tab, the widgets, or a search (which looks in the tab
+     * that is shown).
+     */
+    private List<List<AppInfo>> mTabLists;
+    private TabPages mTabPages;
+
+    private boolean continuousTabs() {
+        return mContentType == ContentType.Applications && !DISABLE_ALL_APPS && mStripShown && mTabs.count() >= 2
+                && (mQuery == null || mQuery.isEmpty()) && !verticalWanted();
+    }
+
+    /** The place of the tab shown now in the strip. */
+    private int currentTabIndex() {
+        return Math.max(0, mTabs.ids().indexOf(mTabId));
+    }
+
     /** The apps of the tab that is shown now: the hidden ones never, and in another tab only the tab's own. */
     private List<AppInfo> inCurrentTab(List<AppInfo> all) {
+        return inTab(mTabId, all);
+    }
+
+    /** The apps of a tab: the hidden ones never, and in another tab only the tab's own. */
+    private List<AppInfo> inTab(int tabId, List<AppInfo> all) {
         if (mTabs.hidden().isEmpty() && !mTabs.hasStrip()) {
             return all;
         }
@@ -659,7 +697,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         for (AppInfo info : all) {
             packages.add(info.getPackageName());
         }
-        Set<String> allowed = new HashSet<>(mTabs.appsOf(mTabId, packages));
+        Set<String> allowed = new HashSet<>(mTabs.appsOf(tabId, packages));
         List<AppInfo> shown = new ArrayList<>(all.size());
         for (AppInfo info : all) {
             if (allowed.contains(info.getPackageName())) {
@@ -718,10 +756,15 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         mStripShown = wanted;
         applySpacing();
         String key = tabsKey();
-        if (!key.equals(mTabsKey)) {
+        boolean continuous = continuousTabs();
+        if (!key.equals(mTabsKey) || continuous != (mTabLists != null)) {
             mTabsKey = key;
             applyFilter();
             updatePageCountsAndInvalidateData();
+        }
+        if (mTabPages != null && getPageCount() > 0 && mTabPages.tabOf(getCurrentPage()) != currentTabIndex()) {
+            // The drawer opens on the tab shown last, at its first page
+            setCurrentPage(Math.min(getPageCount() - 1, mTabPages.firstPage(currentTabIndex())));
         }
     }
 
@@ -796,6 +839,13 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         if (id == mTabId || !mTabs.ids().contains(id)) {
             return;
         }
+        if (mTabPages != null && mTabLists != null && getVisibility() == View.VISIBLE) {
+            // Every tab's pages are in the pager: the pages slide to the tab's first, as from page to page
+            int index = mTabs.ids().indexOf(id);
+            selectTab(index);
+            snapToPage(mTabPages.firstPage(index));
+            return;
+        }
         mTabId = id;
         mTabsKey = tabsKey();
         applyFilter();
@@ -813,6 +863,39 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         final boolean last = lastPage;
         showTabPage(DrawerTabGeometry.pageAfterTab(last, getPageCount()));
         post(() -> showTabPage(DrawerTabGeometry.pageAfterTab(last, getPageCount())));
+    }
+
+    /** The tab at this place of the strip is the one shown: the strip, the apps of the list and the key follow. */
+    private void selectTab(int index) {
+        if (index < 0 || index >= mTabs.count()) {
+            return;
+        }
+        mTabId = mTabs.ids().get(index);
+        if (mTabLists != null && index < mTabLists.size()) {
+            mApps = new ArrayList<>(mTabLists.get(index));
+        }
+        mTabsKey = tabsKey();
+        DrawerTabStrip strip = strip();
+        if (strip != null) {
+            strip.select(index, true);
+        }
+    }
+
+    /** The page shown, with the fraction of the way to the next one, from the scroll. */
+    private float pagePosition() {
+        int count = getChildCount();
+        if (count == 0) {
+            return 0f;
+        }
+        int x = getScrollX();
+        for (int i = 0; i < count - 1; i++) {
+            int a = getScrollForPage(i);
+            int b = getScrollForPage(i + 1);
+            if (x < b) {
+                return b > a ? i + (x - a) / (float) (b - a) : i;
+            }
+        }
+        return count - 1;
     }
 
     /** A page of the tab just shown: there at once, any page animation ended, it and its neighbours filled. */
@@ -891,7 +974,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
             mDownPage = getCurrentPage();
         }
         boolean handled = super.dispatchTouchEvent(ev);
-        if (action == android.view.MotionEvent.ACTION_UP && getVisibility() == View.VISIBLE
+        if (action == android.view.MotionEvent.ACTION_UP && getVisibility() == View.VISIBLE && mTabPages == null
                 && mStrip != null && mStrip.getVisibility() == View.VISIBLE && mStrip.count() >= 2) {
             float dx = ev.getX() - mDownX;
             long dt = Math.max(1L, ev.getEventTime() - mDownTime);
@@ -1841,7 +1924,13 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         final boolean isRtl = isLayoutRtl();
         int numCells = mCellCountX * mCellCountY;
         int startIndex = page * numCells;
-        int endIndex = Math.min(startIndex + numCells, mApps.size());
+        List<AppInfo> source = mApps;
+        if (mTabPages != null && mTabLists != null) {
+            // The page's tab and where its apps start in it (TabPages)
+            source = mTabLists.get(Math.min(mTabLists.size() - 1, mTabPages.tabOf(page)));
+            startIndex = mTabPages.offsetOf(page);
+        }
+        int endIndex = Math.min(startIndex + numCells, source.size());
         Log.d(TAG, String.format("page:%d startIndex:%d endIndex:%d", page, startIndex, endIndex));
         AppsCustomizeCellLayout layout = (AppsCustomizeCellLayout) getPageAt(page);
 
@@ -1849,7 +1938,7 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         ArrayList<Object> items = new ArrayList<Object>();
         ArrayList<Bitmap> images = new ArrayList<Bitmap>();
         for (int i = startIndex; i < endIndex; ++i) {
-            AppInfo info = mApps.get(i);
+            AppInfo info = source.get(i);
             PagedViewIcon icon = (PagedViewIcon) mLayoutInflater.inflate(
                     R.layout.apps_customize_application, layout, false);
             icon.applyFromApplicationInfo(info, true, this);
@@ -2202,6 +2291,10 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     protected void screenScrolled(int screenCenter) {
         final boolean isRtl = isLayoutRtl();
         super.screenScrolled(screenCenter);
+        if (mTabPages != null && mStrip != null && mStrip.getVisibility() == View.VISIBLE) {
+            // The strip goes with the pages between two tabs, and stands while they move within one (TabPages)
+            mStrip.followPosition(mTabPages.stripPosition(pagePosition()));
+        }
 
         for (int i = 0; i < getChildCount(); i++) {
             View v = getPageAt(i);
@@ -2338,6 +2431,15 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     @Override
     protected void onPageEndMoving() {
         super.onPageEndMoving();
+        if (mTabPages != null) {
+            // The pages came to rest on a page of another tab: that tab is the one shown now
+            int index = mTabPages.tabOf(getCurrentPage());
+            if (index != currentTabIndex()) {
+                selectTab(index);
+            } else if (mStrip != null) {
+                mStrip.select(index, true);
+            }
+        }
         mForceDrawAllChildrenNextFrame = true;
         // We reset the save index when we change pages so that it will be recalculated on next
         // rotation
@@ -2384,6 +2486,15 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
         List<AppInfo> inTab = inCurrentTab(mAllApps);
         List<AppInfo> shown = AppSearch.filter(inTab, info -> info.title == null ? "" : info.title.toString(), mQuery);
         mApps = shown == mAllApps ? mAllApps : new ArrayList<AppInfo>(shown);
+        if (continuousTabs()) {
+            List<List<AppInfo>> lists = new ArrayList<>();
+            for (int id : mTabs.ids()) {
+                lists.add(new ArrayList<>(inTab(id, mAllApps)));
+            }
+            mTabLists = lists;
+        } else {
+            mTabLists = null;
+        }
     }
 
     /** The search field changed: the list and the pages narrow to the apps that match (the pages start again). */

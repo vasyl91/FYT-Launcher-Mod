@@ -251,7 +251,10 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   strip, in `apps_customize_pane.xml`, moved above or below the apps by `AppsCustomizePagedView.placeStrip`;
   `L/DrawerSpacing`, plain Java since round 29, gives one 8 dp gap between the search bar, the strip and the apps).
   `AppsCustomizePagedView.syncTabs()` reads the tabs when the drawer opens and when `Launcher`'s preference listener
-  sees a key of the tabs.
+  sees a key of the tabs. Since round 30 the horizontal drawer with two tabs or more (and no search typed) holds every
+  tab's pages one after another (`L/TabPages`, plain Java): a swipe between tabs is a page's scroll, the strip follows
+  it (`screenScrolled`), the tab is set where the pages stop (`onPageEndMoving`), and a tap on a tab slides to its
+  first page.
 - **Settings:** "App drawer" is a category of the creator's second screen. "Tabs" opens `S/DrawerTabsFragment` (the tab
   creator, one `RecyclerView` with the categories "Tabs" and "Miscellaneous"; the dragging as `S/BarOrderDialog`'s);
   `S/DrawerTabDialogs` has the add / edit / delete dialogs and is used by the drawer too; `S/DrawerAppsFragment` is the
