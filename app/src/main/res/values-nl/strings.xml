@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">Toestaan in alle tabbladen</string>
     <string name="drawer_tabs_repeat_except_main">Toestaan in alle tabbladen behalve het hoofdtabblad</string>
     <string name="drawer_tabs_repeat_none">Niet toestaan</string>
-    <string name="drawer_tabs_keep_line">“%1$s” houdt zijn apps ook in het hoofdtabblad</string>
+    <string name="drawer_tab_quoted">“%1$s”</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s en %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">Niet toestaan, behalve voor %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">Toestaan in alle tabbladen behalve het hoofdtabblad.</string>
+    <string name="drawer_tabs_keep_one">%1$s houdt zijn apps nog steeds ook in het hoofdtabblad.</string>
+    <string name="drawer_tabs_keep_many">%1$s houden hun apps nog steeds ook in het hoofdtabblad.</string>
     <string name="drawer_tab_bar_position">Plaatsing van de tabbalk</string>
     <string name="drawer_tab_bar_top">Boven</string>
     <string name="drawer_tab_bar_bottom">Onder</string>

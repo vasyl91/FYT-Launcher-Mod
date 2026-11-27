@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">すべてのタブで許可</string>
     <string name="drawer_tabs_repeat_except_main">メインタブ以外のすべてのタブで許可</string>
     <string name="drawer_tabs_repeat_none">許可しない</string>
-    <string name="drawer_tabs_keep_line">「%1$s」はアプリをメインタブにも残します</string>
+    <string name="drawer_tab_quoted">「%1$s」</string>
+    <string name="list_separator">"、"</string>
+    <string name="list_last">%1$sと%2$s</string>
+    <string name="drawer_tabs_repeat_none_except">許可しない（%1$sを除く）。</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">メインタブ以外のすべてのタブで許可。</string>
+    <string name="drawer_tabs_keep_one">%1$sはアプリを引き続きメインタブにも残します。</string>
+    <string name="drawer_tabs_keep_many">%1$sはアプリを引き続きメインタブにも残します。</string>
     <string name="drawer_tab_bar_position">タブバーの位置</string>
     <string name="drawer_tab_bar_top">上</string>
     <string name="drawer_tab_bar_bottom">下</string>

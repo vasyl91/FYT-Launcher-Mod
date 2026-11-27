@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">Dovoli v vseh zavihkih</string>
     <string name="drawer_tabs_repeat_except_main">Dovoli v vseh zavihkih razen glavnega</string>
     <string name="drawer_tabs_repeat_none">Ne dovoli</string>
-    <string name="drawer_tabs_keep_line">»%1$s« obdrži svoje aplikacije tudi na glavnem zavihku</string>
+    <string name="drawer_tab_quoted">»%1$s«</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s in %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">Ne dovoli, razen za %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">Dovoli v vseh zavihkih razen glavnega.</string>
+    <string name="drawer_tabs_keep_one">%1$s še vedno obdrži svoje aplikacije na glavnem zavihku.</string>
+    <string name="drawer_tabs_keep_many">%1$s še vedno obdržijo svoje aplikacije na glavnem zavihku.</string>
     <string name="drawer_tab_bar_position">Mesto vrstice zavihkov</string>
     <string name="drawer_tab_bar_top">Zgoraj</string>
     <string name="drawer_tab_bar_bottom">Spodaj</string>

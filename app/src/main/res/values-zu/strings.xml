@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">Vumela emathebhini wonke</string>
     <string name="drawer_tabs_repeat_except_main">Vumela emathebhini wonke ngaphandle kwethebhu eyinhloko</string>
     <string name="drawer_tabs_repeat_none">Ungavumeli</string>
-    <string name="drawer_tabs_keep_line">“%1$s” igcina nezinhlelo zayo zokusebenza kuthebhu eyinhloko</string>
+    <string name="drawer_tab_quoted">“%1$s”</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s kanye %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">Ungavumeli, ngaphandle: %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">Vumela emathebhini wonke ngaphandle kwethebhu eyinhloko.</string>
+    <string name="drawer_tabs_keep_one">%1$s isagcina izinhlelo zayo zokusebenza kuthebhu eyinhloko.</string>
+    <string name="drawer_tabs_keep_many">%1$s asagcina izinhlelo zawo zokusebenza kuthebhu eyinhloko.</string>
     <string name="drawer_tab_bar_position">Indawo yebha yamathebhu</string>
     <string name="drawer_tab_bar_top">Phezulu</string>
     <string name="drawer_tab_bar_bottom">Phansi</string>

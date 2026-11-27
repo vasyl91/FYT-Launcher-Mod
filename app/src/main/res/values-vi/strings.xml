@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">Cho phép trong mọi tab</string>
     <string name="drawer_tabs_repeat_except_main">Cho phép trong mọi tab trừ tab chính</string>
     <string name="drawer_tabs_repeat_none">Không cho phép</string>
-    <string name="drawer_tabs_keep_line">“%1$s” cũng giữ ứng dụng của nó trong tab chính</string>
+    <string name="drawer_tab_quoted">“%1$s”</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s và %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">Không cho phép, trừ %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">Cho phép trong mọi tab trừ tab chính.</string>
+    <string name="drawer_tabs_keep_one">%1$s vẫn giữ ứng dụng của nó trong tab chính.</string>
+    <string name="drawer_tabs_keep_many">%1$s vẫn giữ ứng dụng của chúng trong tab chính.</string>
     <string name="drawer_tab_bar_position">Vị trí thanh tab</string>
     <string name="drawer_tab_bar_top">Trên cùng</string>
     <string name="drawer_tab_bar_bottom">Dưới cùng</string>

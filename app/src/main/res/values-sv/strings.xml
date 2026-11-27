@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">Tillåt i alla flikar</string>
     <string name="drawer_tabs_repeat_except_main">Tillåt i alla flikar utom huvudfliken</string>
     <string name="drawer_tabs_repeat_none">Tillåt inte</string>
-    <string name="drawer_tabs_keep_line">”%1$s” behåller även sina appar i huvudfliken</string>
+    <string name="drawer_tab_quoted">”%1$s”</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s och %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">Tillåt inte, utom för %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">Tillåt i alla flikar utom huvudfliken.</string>
+    <string name="drawer_tabs_keep_one">%1$s behåller fortfarande sina appar i huvudfliken.</string>
+    <string name="drawer_tabs_keep_many">%1$s behåller fortfarande sina appar i huvudfliken.</string>
     <string name="drawer_tab_bar_position">Placering av flikfältet</string>
     <string name="drawer_tab_bar_top">Överst</string>
     <string name="drawer_tab_bar_bottom">Nederst</string>

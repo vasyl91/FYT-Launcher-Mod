@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">អនុញ្ញាតក្នុងគ្រប់ផ្ទាំង</string>
     <string name="drawer_tabs_repeat_except_main">អនុញ្ញាតក្នុងគ្រប់ផ្ទាំង លើកលែងផ្ទាំងមេ</string>
     <string name="drawer_tabs_repeat_none">កុំអនុញ្ញាត</string>
-    <string name="drawer_tabs_keep_line">“%1$s” ក៏រក្សាកម្មវិធីរបស់វានៅក្នុងផ្ទាំងមេដែរ</string>
+    <string name="drawer_tab_quoted">“%1$s”</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s និង %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">កុំអនុញ្ញាត លើកលែងតែ %1$s។</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">អនុញ្ញាតក្នុងគ្រប់ផ្ទាំង លើកលែងផ្ទាំងមេ។</string>
+    <string name="drawer_tabs_keep_one">%1$s នៅតែរក្សាកម្មវិធីរបស់វានៅក្នុងផ្ទាំងមេ។</string>
+    <string name="drawer_tabs_keep_many">%1$s នៅតែរក្សាកម្មវិធីរបស់វានៅក្នុងផ្ទាំងមេ។</string>
     <string name="drawer_tab_bar_position">ទីតាំងរបារផ្ទាំង</string>
     <string name="drawer_tab_bar_top">ខាងលើ</string>
     <string name="drawer_tab_bar_bottom">ខាងក្រោម</string>

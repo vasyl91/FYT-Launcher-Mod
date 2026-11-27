@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">السماح في جميع علامات التبويب</string>
     <string name="drawer_tabs_repeat_except_main">السماح في جميع علامات التبويب باستثناء الرئيسية</string>
     <string name="drawer_tabs_repeat_none">عدم السماح</string>
-    <string name="drawer_tabs_keep_line">«%1$s» تُبقي تطبيقاتها أيضًا في علامة التبويب الرئيسية</string>
+    <string name="drawer_tab_quoted">«%1$s»</string>
+    <string name="list_separator">"، "</string>
+    <string name="list_last">%1$s و%2$s</string>
+    <string name="drawer_tabs_repeat_none_except">عدم السماح، باستثناء %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">السماح في جميع علامات التبويب باستثناء الرئيسية.</string>
+    <string name="drawer_tabs_keep_one">لا تزال %1$s تُبقي تطبيقاتها في علامة التبويب الرئيسية.</string>
+    <string name="drawer_tabs_keep_many">لا تزال %1$s تُبقي تطبيقاتها في علامة التبويب الرئيسية.</string>
     <string name="drawer_tab_bar_position">موضع شريط علامات التبويب</string>
     <string name="drawer_tab_bar_top">أعلى</string>
     <string name="drawer_tab_bar_bottom">أسفل</string>

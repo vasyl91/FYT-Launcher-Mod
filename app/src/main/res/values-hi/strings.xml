@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">सभी टैब में अनुमति दें</string>
     <string name="drawer_tabs_repeat_except_main">मुख्य टैब को छोड़कर सभी टैब में अनुमति दें</string>
     <string name="drawer_tabs_repeat_none">अनुमति न दें</string>
-    <string name="drawer_tabs_keep_line">“%1$s” अपने ऐप्स को मुख्य टैब में भी रखता है</string>
+    <string name="drawer_tab_quoted">“%1$s”</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s और %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">अनुमति न दें, %1$s को छोड़कर।</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">मुख्य टैब को छोड़कर सभी टैब में अनुमति दें।</string>
+    <string name="drawer_tabs_keep_one">%1$s अब भी अपने ऐप्स को मुख्य टैब में रखता है।</string>
+    <string name="drawer_tabs_keep_many">%1$s अब भी अपने ऐप्स को मुख्य टैब में रखते हैं।</string>
     <string name="drawer_tab_bar_position">टैब बार की स्थिति</string>
     <string name="drawer_tab_bar_top">ऊपर</string>
     <string name="drawer_tab_bar_bottom">नीचे</string>

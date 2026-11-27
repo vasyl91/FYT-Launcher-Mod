@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">Tillad i alle faner</string>
     <string name="drawer_tabs_repeat_except_main">Tillad i alle faner undtagen hovedfanen</string>
     <string name="drawer_tabs_repeat_none">Tillad ikke</string>
-    <string name="drawer_tabs_keep_line">“%1$s” beholder også sine apps på hovedfanen</string>
+    <string name="drawer_tab_quoted">“%1$s”</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s og %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">Tillad ikke, undtagen for %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">Tillad i alle faner undtagen hovedfanen.</string>
+    <string name="drawer_tabs_keep_one">%1$s beholder stadig sine apps på hovedfanen.</string>
+    <string name="drawer_tabs_keep_many">%1$s beholder stadig deres apps på hovedfanen.</string>
     <string name="drawer_tab_bar_position">Placering af fanelinjen</string>
     <string name="drawer_tab_bar_top">Øverst</string>
     <string name="drawer_tab_bar_bottom">Nederst</string>

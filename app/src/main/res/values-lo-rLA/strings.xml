@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">ອະນຸຍາດໃນທຸກແຖບ</string>
     <string name="drawer_tabs_repeat_except_main">ອະນຸຍາດໃນທຸກແຖບຍົກເວັ້ນແຖບຫຼັກ</string>
     <string name="drawer_tabs_repeat_none">ບໍ່ອະນຸຍາດ</string>
-    <string name="drawer_tabs_keep_line">“%1$s” ເກັບແອັບຂອງມັນໄວ້ໃນແຖບຫຼັກນຳ</string>
+    <string name="drawer_tab_quoted">“%1$s”</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s ແລະ %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">ບໍ່ອະນຸຍາດ, ຍົກເວັ້ນ %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">ອະນຸຍາດໃນທຸກແຖບຍົກເວັ້ນແຖບຫຼັກ.</string>
+    <string name="drawer_tabs_keep_one">%1$s ຍັງເກັບແອັບຂອງມັນໄວ້ໃນແຖບຫຼັກ.</string>
+    <string name="drawer_tabs_keep_many">%1$s ຍັງເກັບແອັບຂອງພວກມັນໄວ້ໃນແຖບຫຼັກ.</string>
     <string name="drawer_tab_bar_position">ຕຳແໜ່ງແຖບແຖບ</string>
     <string name="drawer_tab_bar_top">ເທິງ</string>
     <string name="drawer_tab_bar_bottom">ລຸ່ມ</string>

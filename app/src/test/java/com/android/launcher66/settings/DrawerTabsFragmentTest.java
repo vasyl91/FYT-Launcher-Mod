@@ -156,6 +156,7 @@ public class DrawerTabsFragmentTest {
 
     @Test
     public void theFlagIsAChoiceOfTheRowAndItsCheckboxAndStoredWithOk() {
+        row(3).performClick();   // the rule: "except the main tab", where the flag decides (with "all" it is off)
         row(0).findViewById(R.id.drawer_tabs_add).performClick();
         AlertDialog dialog = latestDialog();
         ((TextView) dialog.findViewById(R.id.drawer_tab_name)).setText("Tools");
@@ -182,6 +183,8 @@ public class DrawerTabsFragmentTest {
         DrawerTabs model = stored();
         int id = model.ids().get(1);
         model.setPackages(id, Arrays.asList("a"));
+        // with "all" every app is in the main tab anyway; with "except the main tab" a tab's apps leave it
+        model.setRepeat(DrawerTabs.Repeat.EXCEPT_MAIN);
         DrawerTabsStore.save(prefs, model);
         // the screen reads the model again when it is made, so a new screen shows it
         activity.getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new DrawerTabsFragment()).commitNow();
@@ -229,29 +232,50 @@ public class DrawerTabsFragmentTest {
     @Test
     public void theRuleNamesTheTabsThatKeepTheirAppsInTheMainTabWhereTheFlagApplies() {
         addTab("Tools");
+        addTab("Games");
         DrawerTabs model = stored();
         model.setKeepInMain(model.ids().get(1), true);
         DrawerTabsStore.save(prefs, model);
         activity.getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new DrawerTabsFragment()).commitNow();
         shadowOf(Looper.getMainLooper()).idle();
         list = activity.findViewById(R.id.drawer_tabs_list);
-        // the rows: the category, the main tab, "Tools", "Miscellaneous", the rule
-        String summary = ((TextView) row(4).findViewById(R.id.setting_summary)).getText().toString();
-        assertTrue(summary, summary.startsWith("Allow in all tabs\n"));
-        assertTrue(summary, summary.contains("“Tools” also keeps its apps in the main tab"));
-        row(4).performClick();   // "except the main tab": the flag does nothing, so no line
-        summary = ((TextView) row(4).findViewById(R.id.setting_summary)).getText().toString();
-        assertEquals("Allow in all tabs except the main tab", summary);
+        // the rows: the category, the main tab, "Tools", "Games", "Miscellaneous", the rule
+        // "all": every app is in the main tab, the flag does nothing, so no tab is named (the owner, 2026-11-27)
+        assertEquals("Allow in all tabs", summary(5));
+        row(5).performClick();
+        assertEquals("Allow in all tabs except the main tab.\n“Tools” still keeps its apps in the main tab.", summary(5));
+        row(5).performClick();
+        assertEquals("Do not allow, except for “Tools”.", summary(5));
+
+        model = stored();
+        model.setKeepInMain(model.ids().get(2), true);
+        model.setRepeat(DrawerTabs.Repeat.EXCEPT_MAIN);
+        DrawerTabsStore.save(prefs, model);
+        activity.getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new DrawerTabsFragment()).commitNow();
+        shadowOf(Looper.getMainLooper()).idle();
+        list = activity.findViewById(R.id.drawer_tabs_list);
+        assertEquals("Allow in all tabs except the main tab.\n“Tools” and “Games” still keep their apps in the main tab.",
+                summary(5));
+    }
+
+    private String summary(int row) {
+        return ((TextView) row(row).findViewById(R.id.setting_summary)).getText().toString();
     }
 
     @Test
     public void theFlagIsDimmedInTheDialogWhereTheRuleMakesItDoNothing() {
         addTab("Tools");
-        row(4).performClick();   // the rule: "except the main tab"
+        // "all", the first rule: every app is in the main tab anyway
         row(2).findViewById(R.id.tab_edit).performClick();
         AlertDialog dialog = latestDialog();
         assertEquals(View.VISIBLE, dialog.findViewById(R.id.drawer_tab_keep_note).getVisibility());
         assertFalse(dialog.findViewById(R.id.drawer_tab_keep_check).isEnabled());
+        dialog.dismiss();
+        shadowOf(Looper.getMainLooper()).idle();
+        row(4).performClick();   // the rule: "except the main tab", where the flag decides
+        row(2).findViewById(R.id.tab_edit).performClick();
+        dialog = latestDialog();
+        assertTrue(dialog.findViewById(R.id.drawer_tab_keep_check).isEnabled());
     }
 
     @Test

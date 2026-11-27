@@ -106,40 +106,51 @@ class DrawerTabsTest {
     // ---------------------------------------------------------------- the main tab
 
     @Test
-    void theMainTabShowsEveryAppThatIsInNoOtherTabAndNoHiddenOne() {
+    void withAllEveryAppThatIsNotHiddenIsInTheMainTabAndTheFlagDoesNothing() {
+        // the owner, 2026-11-27: "all" repeats every app everywhere, whatever the tabs keep
         DrawerTabs m = model();
         int t = m.add("T", false);
         m.setPackages(t, Arrays.asList("b", "c"));
         m.setHidden(Collections.singleton("e"));
-        assertEquals(Arrays.asList("a", "d"), m.appsOf(DrawerTabs.MAIN, ALL));
-        assertEquals(Arrays.asList("b", "c"), m.appsOf(t, ALL));
-    }
-
-    @Test
-    void keepInMainLeavesTheAppsOfThatTabInTheMainTabToo() {
-        DrawerTabs m = model();
-        int t = m.add("T", true);
-        m.setPackages(t, Arrays.asList("b", "c"));
-        assertEquals(Arrays.asList("a", "b", "c", "d", "e"), m.appsOf(DrawerTabs.MAIN, ALL));
-        assertEquals(Arrays.asList("b", "c"), m.appsOf(t, ALL));
-        assertEquals(Collections.singletonList(t), m.tabsKeepingInMain());
-    }
-
-    @Test
-    void theFlagDoesNothingWithTheRulesExceptMainAndNone() {
-        DrawerTabs m = model();
-        int t = m.add("T", true);
-        m.setPackages(t, Arrays.asList("b", "c"));
-        m.setRepeat(DrawerTabs.Repeat.EXCEPT_MAIN);
         assertFalse(m.keepApplies());
-        assertEquals(Arrays.asList("a", "d", "e"), m.appsOf(DrawerTabs.MAIN, ALL));
-        assertTrue(m.tabsKeepingInMain().isEmpty());
-        m.setRepeat(DrawerTabs.Repeat.NONE);
-        assertEquals(Arrays.asList("a", "d", "e"), m.appsOf(DrawerTabs.MAIN, ALL));
-        // and the flag is still set for when the rule comes back
-        assertTrue(m.keepInMain(t));
-        m.setRepeat(DrawerTabs.Repeat.ALL);
-        assertEquals(Arrays.asList("a", "b", "c", "d", "e"), m.appsOf(DrawerTabs.MAIN, ALL));
+        assertEquals(Arrays.asList("a", "b", "c", "d"), m.appsOf(DrawerTabs.MAIN, ALL));
+        assertEquals(Arrays.asList("b", "c"), m.appsOf(t, ALL));
+        m.setKeepInMain(t, true);
+        assertEquals(Arrays.asList("a", "b", "c", "d"), m.appsOf(DrawerTabs.MAIN, ALL));
+        assertTrue(m.tabsKeepingInMain().isEmpty(), "no line under the rule: the flag does nothing");
+    }
+
+    @Test
+    void withExceptMainAndNoneTheMainTabShowsTheAppsInNoOtherTab() {
+        for (DrawerTabs.Repeat rule : new DrawerTabs.Repeat[] {DrawerTabs.Repeat.EXCEPT_MAIN, DrawerTabs.Repeat.NONE}) {
+            DrawerTabs m = model();
+            m.setRepeat(rule);
+            int t = m.add("T", false);
+            m.setPackages(t, Arrays.asList("b", "c"));
+            m.setHidden(Collections.singleton("e"));
+            assertTrue(m.keepApplies(), rule.value());
+            assertEquals(Arrays.asList("a", "d"), m.appsOf(DrawerTabs.MAIN, ALL), rule.value());
+            assertEquals(Arrays.asList("b", "c"), m.appsOf(t, ALL), rule.value());
+        }
+    }
+
+    @Test
+    void withExceptMainAndNoneKeepInMainLeavesTheAppsOfThatTabInTheMainTabToo() {
+        for (DrawerTabs.Repeat rule : new DrawerTabs.Repeat[] {DrawerTabs.Repeat.EXCEPT_MAIN, DrawerTabs.Repeat.NONE}) {
+            DrawerTabs m = model();
+            m.setRepeat(rule);
+            int t = m.add("T", true);
+            int u = m.add("U", false);
+            m.setPackages(t, Arrays.asList("b", "c"));
+            m.setPackages(u, Collections.singletonList("d"));
+            assertEquals(Arrays.asList("a", "b", "c", "e"), m.appsOf(DrawerTabs.MAIN, ALL), rule.value());
+            assertEquals(Collections.singletonList(t), m.tabsKeepingInMain(), rule.value());
+            // and the flag is still set for when the rule changes to "all" and back
+            m.setRepeat(DrawerTabs.Repeat.ALL);
+            assertTrue(m.keepInMain(t));
+            m.setRepeat(rule);
+            assertEquals(Arrays.asList("a", "b", "c", "e"), m.appsOf(DrawerTabs.MAIN, ALL), rule.value());
+        }
     }
 
     @Test
@@ -150,11 +161,14 @@ class DrawerTabsTest {
         m.setHidden(Collections.singleton("b"));
         assertEquals(Collections.singletonList("c"), m.appsOf(t, ALL));
         assertEquals(Arrays.asList("a", "c", "d", "e"), m.appsOf(DrawerTabs.MAIN, ALL));
+        m.setRepeat(DrawerTabs.Repeat.EXCEPT_MAIN);
+        assertEquals(Arrays.asList("a", "c", "d", "e"), m.appsOf(DrawerTabs.MAIN, ALL));
     }
 
     @Test
     void deletingATabGivesItsAppsBackToTheMainTab() {
         DrawerTabs m = model();
+        m.setRepeat(DrawerTabs.Repeat.EXCEPT_MAIN);
         int t = m.add("T", false);
         int u = m.add("U", false);
         m.setPackages(t, Arrays.asList("a", "b"));

@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">Дазволіць ва ўсіх укладках</string>
     <string name="drawer_tabs_repeat_except_main">Дазволіць ва ўсіх укладках, акрамя асноўнай</string>
     <string name="drawer_tabs_repeat_none">Не дазваляць</string>
-    <string name="drawer_tabs_keep_line">«%1$s» таксама пакідае свае праграмы ў асноўнай укладцы</string>
+    <string name="drawer_tab_quoted">«%1$s»</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s і %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">Не дазваляць, акрамя %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">Дазволіць ва ўсіх укладках, акрамя асноўнай.</string>
+    <string name="drawer_tabs_keep_one">%1$s па-ранейшаму пакідае свае праграмы ў асноўнай укладцы.</string>
+    <string name="drawer_tabs_keep_many">%1$s па-ранейшаму пакідаюць свае праграмы ў асноўнай укладцы.</string>
     <string name="drawer_tab_bar_position">Размяшчэнне панэлі ўкладак</string>
     <string name="drawer_tab_bar_top">Уверсе</string>
     <string name="drawer_tab_bar_bottom">Унізе</string>

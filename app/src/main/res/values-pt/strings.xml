@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">Permitir em todos os separadores</string>
     <string name="drawer_tabs_repeat_except_main">Permitir em todos os separadores exceto o principal</string>
     <string name="drawer_tabs_repeat_none">Não permitir</string>
-    <string name="drawer_tabs_keep_line">«%1$s» também mantém as suas aplicações no separador principal</string>
+    <string name="drawer_tab_quoted">«%1$s»</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s e %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">Não permitir, exceto para %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">Permitir em todos os separadores exceto o principal.</string>
+    <string name="drawer_tabs_keep_one">%1$s continua a manter as suas aplicações no separador principal.</string>
+    <string name="drawer_tabs_keep_many">%1$s continuam a manter as suas aplicações no separador principal.</string>
     <string name="drawer_tab_bar_position">Posição da barra de separadores</string>
     <string name="drawer_tab_bar_top">Em cima</string>
     <string name="drawer_tab_bar_bottom">Em baixo</string>

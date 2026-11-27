@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">Թույլատրել բոլոր ներդիրներում</string>
     <string name="drawer_tabs_repeat_except_main">Թույլատրել բոլոր ներդիրներում, բացի հիմնականից</string>
     <string name="drawer_tabs_repeat_none">Չթույլատրել</string>
-    <string name="drawer_tabs_keep_line">«%1$s» ներդիրը իր հավելվածները թողնում է նաև հիմնական ներդիրում</string>
+    <string name="drawer_tab_quoted">«%1$s»</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s և %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">Չթույլատրել, բացառությամբ %1$s։</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">Թույլատրել բոլոր ներդիրներում, բացի հիմնականից։</string>
+    <string name="drawer_tabs_keep_one">%1$s ներդիրը դեռ իր հավելվածները թողնում է հիմնական ներդիրում։</string>
+    <string name="drawer_tabs_keep_many">%1$s ներդիրները դեռ իրենց հավելվածները թողնում են հիմնական ներդիրում։</string>
     <string name="drawer_tab_bar_position">Ներդիրների գոտու դիրքը</string>
     <string name="drawer_tab_bar_top">Վերևում</string>
     <string name="drawer_tab_bar_bottom">Ներքևում</string>

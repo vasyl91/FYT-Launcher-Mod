@@ -18,9 +18,10 @@ import java.util.Set;
  *       renamed. The other tabs have an order of their own, a name (blank means the default "Tab&lt;n&gt;", n being the
  *       tab's place in the list, the main tab being 1), a set of apps and the flag "keep apps in the main tab".</li>
  *   <li>A hidden app is in no tab of the drawer.</li>
- *   <li>The main tab shows every app that is not hidden and is in no other tab. With {@link Repeat#ALL} the apps
- *       of the tabs that keep their apps in the main tab are shown there as well; with {@link Repeat#EXCEPT_MAIN}
- *       and {@link Repeat#NONE} the flag does nothing ({@link #keepApplies}).</li>
+ *   <li>With {@link Repeat#ALL} the main tab shows every app that is not hidden, whatever other tabs have it: the apps
+ *       repeat everywhere, and "keep apps in the main tab" does nothing ({@link #keepApplies}). With
+ *       {@link Repeat#EXCEPT_MAIN} and {@link Repeat#NONE} the main tab shows the apps that are in no other tab, and
+ *       the apps of the tabs that keep their apps in the main tab (the owner, 2026-11-27).</li>
  *   <li>With {@code ALL} and {@code EXCEPT_MAIN} an app may be in several of the other tabs; with {@code NONE} in
  *       one at most, and the list an app is picked from leaves out the apps of the other tabs
  *       ({@link #candidates}). Switching to {@code NONE} keeps an app in the first tab that has it.</li>
@@ -263,9 +264,9 @@ public final class DrawerTabs {
         }
     }
 
-    /** Whether "keep apps in the main tab" does anything with the rule now. */
+    /** Whether "keep apps in the main tab" does anything with the rule now: not with ALL, where every app is there. */
     public boolean keepApplies() {
-        return repeat == Repeat.ALL;
+        return repeat != Repeat.ALL;
     }
 
     public Set<String> hidden() {
@@ -357,7 +358,7 @@ public final class DrawerTabs {
             }
             boolean show;
             if (id == MAIN) {
-                show = !inOthers.contains(pkg) || kept.contains(pkg);
+                show = repeat == Repeat.ALL || !inOthers.contains(pkg) || kept.contains(pkg);
             } else {
                 show = own.contains(pkg);
             }

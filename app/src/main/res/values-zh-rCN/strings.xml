@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">允许出现在所有标签页</string>
     <string name="drawer_tabs_repeat_except_main">允许出现在除主标签页外的所有标签页</string>
     <string name="drawer_tabs_repeat_none">不允许</string>
-    <string name="drawer_tabs_keep_line">“%1$s”的应用也保留在主标签页</string>
+    <string name="drawer_tab_quoted">“%1$s”</string>
+    <string name="list_separator">"、"</string>
+    <string name="list_last">%1$s和%2$s</string>
+    <string name="drawer_tabs_repeat_none_except">不允许，%1$s除外。</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">允许出现在除主标签页外的所有标签页。</string>
+    <string name="drawer_tabs_keep_one">%1$s的应用仍保留在主标签页。</string>
+    <string name="drawer_tabs_keep_many">%1$s的应用仍保留在主标签页。</string>
     <string name="drawer_tab_bar_position">标签栏位置</string>
     <string name="drawer_tab_bar_top">顶部</string>
     <string name="drawer_tab_bar_bottom">底部</string>

@@ -643,7 +643,13 @@
     <string name="drawer_tabs_repeat_all">Allow in all tabs</string>
     <string name="drawer_tabs_repeat_except_main">Allow in all tabs except the main tab</string>
     <string name="drawer_tabs_repeat_none">Do not allow</string>
-    <string name="drawer_tabs_keep_line">“%1$s” also keeps its apps in the main tab</string>
+    <string name="drawer_tab_quoted">“%1$s”</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s and %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">Do not allow, except for %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">Allow in all tabs except the main tab.</string>
+    <string name="drawer_tabs_keep_one">%1$s still keeps its apps in the main tab.</string>
+    <string name="drawer_tabs_keep_many">%1$s still keep their apps in the main tab.</string>
     <string name="drawer_tab_bar_position">Tab bar placement</string>
     <string name="drawer_tab_bar_top">Top</string>
     <string name="drawer_tab_bar_bottom">Bottom</string>

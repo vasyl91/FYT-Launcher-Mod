@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">Benarkan dalam semua tab</string>
     <string name="drawer_tabs_repeat_except_main">Benarkan dalam semua tab kecuali tab utama</string>
     <string name="drawer_tabs_repeat_none">Jangan benarkan</string>
-    <string name="drawer_tabs_keep_line">“%1$s” juga mengekalkan aplinya dalam tab utama</string>
+    <string name="drawer_tab_quoted">“%1$s”</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s dan %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">Jangan benarkan, kecuali untuk %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">Benarkan dalam semua tab kecuali tab utama.</string>
+    <string name="drawer_tabs_keep_one">%1$s masih mengekalkan aplinya dalam tab utama.</string>
+    <string name="drawer_tabs_keep_many">%1$s masih mengekalkan aplinya dalam tab utama.</string>
     <string name="drawer_tab_bar_position">Penempatan bar tab</string>
     <string name="drawer_tab_bar_top">Atas</string>
     <string name="drawer_tab_bar_bottom">Bawah</string>

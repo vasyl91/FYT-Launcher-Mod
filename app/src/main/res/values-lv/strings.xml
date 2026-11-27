@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">Atļaut visās cilnēs</string>
     <string name="drawer_tabs_repeat_except_main">Atļaut visās cilnēs, izņemot galveno</string>
     <string name="drawer_tabs_repeat_none">Neatļaut</string>
-    <string name="drawer_tabs_keep_line">“%1$s” savas lietotnes patur arī galvenajā cilnē</string>
+    <string name="drawer_tab_quoted">“%1$s”</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s un %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">Neatļaut, izņemot %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">Atļaut visās cilnēs, izņemot galveno.</string>
+    <string name="drawer_tabs_keep_one">%1$s joprojām patur savas lietotnes galvenajā cilnē.</string>
+    <string name="drawer_tabs_keep_many">%1$s joprojām patur savas lietotnes galvenajā cilnē.</string>
     <string name="drawer_tab_bar_position">Cilņu joslas novietojums</string>
     <string name="drawer_tab_bar_top">Augšā</string>
     <string name="drawer_tab_bar_bottom">Apakšā</string>

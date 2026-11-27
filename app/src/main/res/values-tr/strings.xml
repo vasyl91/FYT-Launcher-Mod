@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">Tüm sekmelerde izin ver</string>
     <string name="drawer_tabs_repeat_except_main">Ana sekme dışındaki tüm sekmelerde izin ver</string>
     <string name="drawer_tabs_repeat_none">İzin verme</string>
-    <string name="drawer_tabs_keep_line">“%1$s” uygulamalarını ana sekmede de tutar</string>
+    <string name="drawer_tab_quoted">“%1$s”</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s ve %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">İzin verme; şunlar hariç: %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">Ana sekme dışındaki tüm sekmelerde izin ver.</string>
+    <string name="drawer_tabs_keep_one">%1$s uygulamalarını hâlâ ana sekmede de tutar.</string>
+    <string name="drawer_tabs_keep_many">%1$s uygulamalarını hâlâ ana sekmede de tutar.</string>
     <string name="drawer_tab_bar_position">Sekme çubuğu konumu</string>
     <string name="drawer_tab_bar_top">Üstte</string>
     <string name="drawer_tab_bar_bottom">Altta</string>

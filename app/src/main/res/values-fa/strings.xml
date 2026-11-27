@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">مجاز در همه زبانه‌ها</string>
     <string name="drawer_tabs_repeat_except_main">مجاز در همه زبانه‌ها به جز زبانه اصلی</string>
     <string name="drawer_tabs_repeat_none">مجاز نیست</string>
-    <string name="drawer_tabs_keep_line">«%1$s» برنامه‌های خود را در زبانه اصلی هم نگه می‌دارد</string>
+    <string name="drawer_tab_quoted">«%1$s»</string>
+    <string name="list_separator">"، "</string>
+    <string name="list_last">%1$s و %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">مجاز نیست، به جز %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">مجاز در همه زبانه‌ها به جز زبانه اصلی.</string>
+    <string name="drawer_tabs_keep_one">%1$s همچنان برنامه‌های خود را در زبانه اصلی نگه می‌دارد.</string>
+    <string name="drawer_tabs_keep_many">%1$s همچنان برنامه‌های خود را در زبانه اصلی نگه می‌دارند.</string>
     <string name="drawer_tab_bar_position">جای نوار زبانه‌ها</string>
     <string name="drawer_tab_bar_top">بالا</string>
     <string name="drawer_tab_bar_bottom">پایین</string>

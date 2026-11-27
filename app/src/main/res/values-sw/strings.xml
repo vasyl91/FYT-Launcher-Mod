@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">Ruhusu katika vichupo vyote</string>
     <string name="drawer_tabs_repeat_except_main">Ruhusu katika vichupo vyote isipokuwa kichupo kikuu</string>
     <string name="drawer_tabs_repeat_none">Usiruhusu</string>
-    <string name="drawer_tabs_keep_line">“%1$s” pia huweka programu zake kwenye kichupo kikuu</string>
+    <string name="drawer_tab_quoted">“%1$s”</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s na %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">Usiruhusu, isipokuwa %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">Ruhusu katika vichupo vyote isipokuwa kichupo kikuu.</string>
+    <string name="drawer_tabs_keep_one">%1$s bado huweka programu zake kwenye kichupo kikuu.</string>
+    <string name="drawer_tabs_keep_many">%1$s bado huweka programu zake kwenye kichupo kikuu.</string>
     <string name="drawer_tab_bar_position">Mahali pa upau wa vichupo</string>
     <string name="drawer_tab_bar_top">Juu</string>
     <string name="drawer_tab_bar_bottom">Chini</string>

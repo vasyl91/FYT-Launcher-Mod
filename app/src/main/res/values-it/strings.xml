@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">Consenti in tutte le schede</string>
     <string name="drawer_tabs_repeat_except_main">Consenti in tutte le schede tranne la principale</string>
     <string name="drawer_tabs_repeat_none">Non consentire</string>
-    <string name="drawer_tabs_keep_line">«%1$s» mantiene le sue applicazioni anche nella scheda principale</string>
+    <string name="drawer_tab_quoted">«%1$s»</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s e %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">Non consentire, tranne per %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">Consenti in tutte le schede tranne la principale.</string>
+    <string name="drawer_tabs_keep_one">%1$s mantiene ancora le sue applicazioni nella scheda principale.</string>
+    <string name="drawer_tabs_keep_many">%1$s mantengono ancora le loro applicazioni nella scheda principale.</string>
     <string name="drawer_tab_bar_position">Posizione della barra delle schede</string>
     <string name="drawer_tab_bar_top">In alto</string>
     <string name="drawer_tab_bar_bottom">In basso</string>

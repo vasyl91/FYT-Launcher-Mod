@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">Permiteți în toate filele</string>
     <string name="drawer_tabs_repeat_except_main">Permiteți în toate filele, în afară de cea principală</string>
     <string name="drawer_tabs_repeat_none">Nu permiteți</string>
-    <string name="drawer_tabs_keep_line">„%1$s” își păstrează aplicațiile și în fila principală</string>
+    <string name="drawer_tab_quoted">„%1$s”</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s și %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">Nu permiteți, cu excepția %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">Permiteți în toate filele, în afară de cea principală.</string>
+    <string name="drawer_tabs_keep_one">%1$s își păstrează în continuare aplicațiile în fila principală.</string>
+    <string name="drawer_tabs_keep_many">%1$s își păstrează în continuare aplicațiile în fila principală.</string>
     <string name="drawer_tab_bar_position">Poziția barei de file</string>
     <string name="drawer_tab_bar_top">Sus</string>
     <string name="drawer_tab_bar_bottom">Jos</string>

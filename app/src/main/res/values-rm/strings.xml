@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">Permetter en tut ils tabs</string>
     <string name="drawer_tabs_repeat_except_main">Permetter en tut ils tabs ordaifer il tab principal</string>
     <string name="drawer_tabs_repeat_none">Betg permetter</string>
-    <string name="drawer_tabs_keep_line">«%1$s» mantegna er las atgnas applicaziuns en il tab principal</string>
+    <string name="drawer_tab_quoted">«%1$s»</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s e %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">Betg permetter, danor per %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">Permetter en tut ils tabs ordaifer il tab principal.</string>
+    <string name="drawer_tabs_keep_one">%1$s mantegna anc adina sias applicaziuns en il tab principal.</string>
+    <string name="drawer_tabs_keep_many">%1$s mantegnan anc adina lur applicaziuns en il tab principal.</string>
     <string name="drawer_tab_bar_position">Posiziun da la bara dals tabs</string>
     <string name="drawer_tab_bar_top">Sura</string>
     <string name="drawer_tab_bar_bottom">Sut</string>

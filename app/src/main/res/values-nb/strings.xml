@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">Tillat i alle faner</string>
     <string name="drawer_tabs_repeat_except_main">Tillat i alle faner unntatt hovedfanen</string>
     <string name="drawer_tabs_repeat_none">Ikke tillat</string>
-    <string name="drawer_tabs_keep_line">«%1$s» beholder også appene sine i hovedfanen</string>
+    <string name="drawer_tab_quoted">«%1$s»</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s og %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">Ikke tillat, unntatt for %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">Tillat i alle faner unntatt hovedfanen.</string>
+    <string name="drawer_tabs_keep_one">%1$s beholder fortsatt appene sine i hovedfanen.</string>
+    <string name="drawer_tabs_keep_many">%1$s beholder fortsatt appene sine i hovedfanen.</string>
     <string name="drawer_tab_bar_position">Plassering av fanelinjen</string>
     <string name="drawer_tab_bar_top">Øverst</string>
     <string name="drawer_tab_bar_bottom">Nederst</string>

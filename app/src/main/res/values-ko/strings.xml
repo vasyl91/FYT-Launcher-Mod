@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">모든 탭에서 허용</string>
     <string name="drawer_tabs_repeat_except_main">기본 탭을 제외한 모든 탭에서 허용</string>
     <string name="drawer_tabs_repeat_none">허용 안 함</string>
-    <string name="drawer_tabs_keep_line">“%1$s” 탭의 앱은 기본 탭에도 유지됩니다</string>
+    <string name="drawer_tab_quoted">“%1$s”</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s 및 %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">허용 안 함(%1$s 제외).</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">기본 탭을 제외한 모든 탭에서 허용.</string>
+    <string name="drawer_tabs_keep_one">%1$s 탭의 앱은 계속 기본 탭에도 유지됩니다.</string>
+    <string name="drawer_tabs_keep_many">%1$s 탭의 앱은 계속 기본 탭에도 유지됩니다.</string>
     <string name="drawer_tab_bar_position">탭 바 위치</string>
     <string name="drawer_tab_bar_top">위쪽</string>
     <string name="drawer_tab_bar_bottom">아래쪽</string>

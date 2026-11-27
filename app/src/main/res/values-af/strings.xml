@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">Laat toe in alle oortjies</string>
     <string name="drawer_tabs_repeat_except_main">Laat toe in alle oortjies behalwe die hoofoortjie</string>
     <string name="drawer_tabs_repeat_none">Moenie toelaat nie</string>
-    <string name="drawer_tabs_keep_line">“%1$s” hou sy programme ook in die hoofoortjie</string>
+    <string name="drawer_tab_quoted">“%1$s”</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s en %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">Moenie toelaat nie, behalwe vir %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">Laat toe in alle oortjies behalwe die hoofoortjie.</string>
+    <string name="drawer_tabs_keep_one">%1$s hou steeds sy programme in die hoofoortjie.</string>
+    <string name="drawer_tabs_keep_many">%1$s hou steeds hul programme in die hoofoortjie.</string>
     <string name="drawer_tab_bar_position">Plasing van oortjiebalk</string>
     <string name="drawer_tab_bar_top">Bo</string>
     <string name="drawer_tab_bar_bottom">Onder</string>

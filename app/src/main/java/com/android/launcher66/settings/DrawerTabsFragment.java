@@ -173,13 +173,30 @@ public class DrawerTabsFragment extends Fragment implements DrawerTabDialogs.Hos
         }
     }
 
-    /** The rule chosen and, under it, a line for every tab that keeps its apps in the main tab. */
+    /**
+     * The rule chosen, in a sentence with the tabs that keep their apps in the main tab where the rule lets them (the
+     * owner, 2026-11-27): "Do not allow, except for “Tab2”, “Tab5” and “Tab8”."; "Allow in all tabs except the main
+     * tab." with, on the next line, "“Tab2”, “Tab5” and “Tab8” still keep their apps in the main tab."; the rule's
+     * name alone when no tab keeps its apps there, and always with "Allow in all tabs" (every app is in the main tab).
+     * The names are quoted and joined as the language does (ListText).
+     */
     String repeatSummary() {
-        StringBuilder text = new StringBuilder(getString(repeatLabel(model.repeat())));
-        for (int id : model.tabsKeepingInMain()) {
-            text.append('\n').append(getString(R.string.drawer_tabs_keep_line, tabName(id)));
+        List<Integer> keeping = model.tabsKeepingInMain();
+        if (keeping.isEmpty()) {
+            return getString(repeatLabel(model.repeat()));
         }
-        return text.toString();
+        List<String> names = new ArrayList<>(keeping.size());
+        for (int id : keeping) {
+            names.add(tabName(id));
+        }
+        String list = com.android.launcher66.ListText.join(
+                com.android.launcher66.ListText.quoted(names, getString(R.string.drawer_tab_quoted)),
+                getString(R.string.list_separator), getString(R.string.list_last));
+        if (model.repeat() == DrawerTabs.Repeat.NONE) {
+            return getString(R.string.drawer_tabs_repeat_none_except, list);
+        }
+        return getString(R.string.drawer_tabs_repeat_except_main_sentence) + "\n"
+                + getString(keeping.size() == 1 ? R.string.drawer_tabs_keep_one : R.string.drawer_tabs_keep_many, list);
     }
 
     private final class RowsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

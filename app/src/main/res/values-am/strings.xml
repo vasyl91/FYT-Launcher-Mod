@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">በሁሉም ትሮች ፍቀድ</string>
     <string name="drawer_tabs_repeat_except_main">ከዋናው ትር በስተቀር በሁሉም ትሮች ፍቀድ</string>
     <string name="drawer_tabs_repeat_none">አትፍቀድ</string>
-    <string name="drawer_tabs_keep_line">“%1$s” መተግበሪያዎቹን በዋናው ትር ውስጥም ያቆያል</string>
+    <string name="drawer_tab_quoted">“%1$s”</string>
+    <string name="list_separator">"፣ "</string>
+    <string name="list_last">%1$s እና %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">አትፍቀድ፣ ከ%1$s በስተቀር።</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">ከዋናው ትር በስተቀር በሁሉም ትሮች ፍቀድ።</string>
+    <string name="drawer_tabs_keep_one">%1$s አሁንም መተግበሪያዎቹን በዋናው ትር ውስጥ ያቆያል።</string>
+    <string name="drawer_tabs_keep_many">%1$s አሁንም መተግበሪያዎቻቸውን በዋናው ትር ውስጥ ያቆያሉ።</string>
     <string name="drawer_tab_bar_position">የትር አሞሌ አቀማመጥ</string>
     <string name="drawer_tab_bar_top">ላይ</string>
     <string name="drawer_tab_bar_bottom">ታች</string>

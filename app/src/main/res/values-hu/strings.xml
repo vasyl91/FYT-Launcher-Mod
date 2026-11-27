@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">Engedélyezés minden lapon</string>
     <string name="drawer_tabs_repeat_except_main">Engedélyezés minden lapon a fő lap kivételével</string>
     <string name="drawer_tabs_repeat_none">Nem engedélyezett</string>
-    <string name="drawer_tabs_keep_line">A(z) „%1$s” az alkalmazásait a fő lapon is megtartja</string>
+    <string name="drawer_tab_quoted">„%1$s”</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s és %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">Nem engedélyezett, kivéve: %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">Engedélyezés minden lapon a fő lap kivételével.</string>
+    <string name="drawer_tabs_keep_one">%1$s továbbra is megtartja az alkalmazásait a fő lapon.</string>
+    <string name="drawer_tabs_keep_many">%1$s továbbra is megtartják az alkalmazásaikat a fő lapon.</string>
     <string name="drawer_tab_bar_position">Lapsáv elhelyezése</string>
     <string name="drawer_tab_bar_top">Fent</string>
     <string name="drawer_tab_bar_bottom">Lent</string>

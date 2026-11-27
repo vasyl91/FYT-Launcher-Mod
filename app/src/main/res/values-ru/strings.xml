@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">Разрешить во всех вкладках</string>
     <string name="drawer_tabs_repeat_except_main">Разрешить во всех вкладках, кроме основной</string>
     <string name="drawer_tabs_repeat_none">Не разрешать</string>
-    <string name="drawer_tabs_keep_line">«%1$s» оставляет свои приложения и на основной вкладке</string>
+    <string name="drawer_tab_quoted">«%1$s»</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s и %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">Не разрешать, кроме %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">Разрешить во всех вкладках, кроме основной.</string>
+    <string name="drawer_tabs_keep_one">%1$s по-прежнему оставляет свои приложения на основной вкладке.</string>
+    <string name="drawer_tabs_keep_many">%1$s по-прежнему оставляют свои приложения на основной вкладке.</string>
     <string name="drawer_tab_bar_position">Расположение панели вкладок</string>
     <string name="drawer_tab_bar_top">Сверху</string>
     <string name="drawer_tab_bar_bottom">Снизу</string>

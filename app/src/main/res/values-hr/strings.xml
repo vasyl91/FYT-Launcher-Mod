@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">Dopusti na svim karticama</string>
     <string name="drawer_tabs_repeat_except_main">Dopusti na svim karticama osim glavne</string>
     <string name="drawer_tabs_repeat_none">Ne dopusti</string>
-    <string name="drawer_tabs_keep_line">„%1$s” zadržava svoje aplikacije i na glavnoj kartici</string>
+    <string name="drawer_tab_quoted">„%1$s”</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s i %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">Ne dopusti, osim za %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">Dopusti na svim karticama osim glavne.</string>
+    <string name="drawer_tabs_keep_one">%1$s i dalje zadržava svoje aplikacije na glavnoj kartici.</string>
+    <string name="drawer_tabs_keep_many">%1$s i dalje zadržavaju svoje aplikacije na glavnoj kartici.</string>
     <string name="drawer_tab_bar_position">Položaj trake s karticama</string>
     <string name="drawer_tab_bar_top">Gore</string>
     <string name="drawer_tab_bar_bottom">Dolje</string>

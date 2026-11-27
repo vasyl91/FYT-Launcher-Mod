@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">允許出現在所有分頁</string>
     <string name="drawer_tabs_repeat_except_main">允許出現在除主分頁外的所有分頁</string>
     <string name="drawer_tabs_repeat_none">不允許</string>
-    <string name="drawer_tabs_keep_line">「%1$s」的應用程式也保留在主分頁</string>
+    <string name="drawer_tab_quoted">「%1$s」</string>
+    <string name="list_separator">"、"</string>
+    <string name="list_last">%1$s和%2$s</string>
+    <string name="drawer_tabs_repeat_none_except">不允許，%1$s除外。</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">允許出現在除主分頁外的所有分頁。</string>
+    <string name="drawer_tabs_keep_one">%1$s的應用程式仍保留在主分頁。</string>
+    <string name="drawer_tabs_keep_many">%1$s的應用程式仍保留在主分頁。</string>
     <string name="drawer_tab_bar_position">分頁列位置</string>
     <string name="drawer_tab_bar_top">頂部</string>
     <string name="drawer_tab_bar_bottom">底部</string>

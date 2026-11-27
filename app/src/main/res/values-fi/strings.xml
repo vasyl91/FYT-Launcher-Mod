@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">Salli kaikilla välilehdillä</string>
     <string name="drawer_tabs_repeat_except_main">Salli kaikilla välilehdillä paitsi päävälilehdellä</string>
     <string name="drawer_tabs_repeat_none">Älä salli</string>
-    <string name="drawer_tabs_keep_line">”%1$s” pitää sovelluksensa myös päävälilehdellä</string>
+    <string name="drawer_tab_quoted">”%1$s”</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s ja %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">Älä salli, paitsi %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">Salli kaikilla välilehdillä paitsi päävälilehdellä.</string>
+    <string name="drawer_tabs_keep_one">%1$s pitää edelleen sovelluksensa myös päävälilehdellä.</string>
+    <string name="drawer_tabs_keep_many">%1$s pitävät edelleen sovelluksensa myös päävälilehdellä.</string>
     <string name="drawer_tab_bar_position">Välilehtipalkin sijainti</string>
     <string name="drawer_tab_bar_top">Ylhäällä</string>
     <string name="drawer_tab_bar_bottom">Alhaalla</string>

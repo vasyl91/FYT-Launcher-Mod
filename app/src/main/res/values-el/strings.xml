@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">Επιτρέπεται σε όλες τις καρτέλες</string>
     <string name="drawer_tabs_repeat_except_main">Επιτρέπεται σε όλες τις καρτέλες εκτός της κύριας</string>
     <string name="drawer_tabs_repeat_none">Να μην επιτρέπεται</string>
-    <string name="drawer_tabs_keep_line">Η καρτέλα «%1$s» διατηρεί τις εφαρμογές της και στην κύρια καρτέλα</string>
+    <string name="drawer_tab_quoted">«%1$s»</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s και %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">Να μην επιτρέπεται, εκτός από %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">Επιτρέπεται σε όλες τις καρτέλες εκτός της κύριας.</string>
+    <string name="drawer_tabs_keep_one">Η καρτέλα %1$s διατηρεί ακόμη τις εφαρμογές της στην κύρια καρτέλα.</string>
+    <string name="drawer_tabs_keep_many">Οι καρτέλες %1$s διατηρούν ακόμη τις εφαρμογές τους στην κύρια καρτέλα.</string>
     <string name="drawer_tab_bar_position">Θέση γραμμής καρτελών</string>
     <string name="drawer_tab_bar_top">Επάνω</string>
     <string name="drawer_tab_bar_bottom">Κάτω</string>

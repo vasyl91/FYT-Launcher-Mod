@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">Zezwól na wszystkich kartach</string>
     <string name="drawer_tabs_repeat_except_main">Zezwól na wszystkich kartach oprócz głównej</string>
     <string name="drawer_tabs_repeat_none">Nie zezwalaj</string>
-    <string name="drawer_tabs_keep_line">Karta „%1$s” zachowuje swoje aplikacje także na karcie głównej</string>
+    <string name="drawer_tab_quoted">„%1$s”</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s i %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">Nie zezwalaj, z wyjątkiem %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">Zezwól na wszystkich kartach oprócz głównej.</string>
+    <string name="drawer_tabs_keep_one">Karta %1$s nadal zachowuje swoje aplikacje na karcie głównej.</string>
+    <string name="drawer_tabs_keep_many">Karty %1$s nadal zachowują swoje aplikacje na karcie głównej.</string>
     <string name="drawer_tab_bar_position">Położenie paska kart</string>
     <string name="drawer_tab_bar_top">Na górze</string>
     <string name="drawer_tab_bar_bottom">Na dole</string>

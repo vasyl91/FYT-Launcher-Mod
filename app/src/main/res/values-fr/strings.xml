@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">Autoriser dans tous les onglets</string>
     <string name="drawer_tabs_repeat_except_main">Autoriser dans tous les onglets sauf l\'onglet principal</string>
     <string name="drawer_tabs_repeat_none">Ne pas autoriser</string>
-    <string name="drawer_tabs_keep_line">« %1$s » garde aussi ses applications dans l\'onglet principal</string>
+    <string name="drawer_tab_quoted">« %1$s »</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s et %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">Ne pas autoriser, sauf pour %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">Autoriser dans tous les onglets sauf l\'onglet principal.</string>
+    <string name="drawer_tabs_keep_one">%1$s garde toujours ses applications dans l\'onglet principal.</string>
+    <string name="drawer_tabs_keep_many">%1$s gardent toujours leurs applications dans l\'onglet principal.</string>
     <string name="drawer_tab_bar_position">Emplacement de la barre d\'onglets</string>
     <string name="drawer_tab_bar_top">En haut</string>
     <string name="drawer_tab_bar_bottom">En bas</string>

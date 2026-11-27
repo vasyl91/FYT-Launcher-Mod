@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">Payagan sa lahat ng tab</string>
     <string name="drawer_tabs_repeat_except_main">Payagan sa lahat ng tab maliban sa pangunahing tab</string>
     <string name="drawer_tabs_repeat_none">Huwag payagan</string>
-    <string name="drawer_tabs_keep_line">Pinapanatili rin ng “%1$s” ang mga app nito sa pangunahing tab</string>
+    <string name="drawer_tab_quoted">“%1$s”</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s at %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">Huwag payagan, maliban sa %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">Payagan sa lahat ng tab maliban sa pangunahing tab.</string>
+    <string name="drawer_tabs_keep_one">Pinapanatili pa rin ng %1$s ang mga app nito sa pangunahing tab.</string>
+    <string name="drawer_tabs_keep_many">Pinapanatili pa rin ng %1$s ang kanilang mga app sa pangunahing tab.</string>
     <string name="drawer_tab_bar_position">Lokasyon ng tab bar</string>
     <string name="drawer_tab_bar_top">Itaas</string>
     <string name="drawer_tab_bar_bottom">Ibaba</string>

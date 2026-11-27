@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">Luba kõigil vahelehtedel</string>
     <string name="drawer_tabs_repeat_except_main">Luba kõigil vahelehtedel peale põhivahelehe</string>
     <string name="drawer_tabs_repeat_none">Ära luba</string>
-    <string name="drawer_tabs_keep_line">„%1$s“ hoiab oma rakendusi ka põhivahelehel</string>
+    <string name="drawer_tab_quoted">„%1$s“</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s ja %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">Ära luba, välja arvatud %1$s.</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">Luba kõigil vahelehtedel peale põhivahelehe.</string>
+    <string name="drawer_tabs_keep_one">%1$s hoiab oma rakendusi endiselt ka põhivahelehel.</string>
+    <string name="drawer_tabs_keep_many">%1$s hoiavad oma rakendusi endiselt ka põhivahelehel.</string>
     <string name="drawer_tab_bar_position">Vahelehtede riba asukoht</string>
     <string name="drawer_tab_bar_top">Ülal</string>
     <string name="drawer_tab_bar_bottom">All</string>

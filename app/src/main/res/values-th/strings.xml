@@ -631,7 +631,13 @@
     <string name="drawer_tabs_repeat_all">อนุญาตในทุกแท็บ</string>
     <string name="drawer_tabs_repeat_except_main">อนุญาตในทุกแท็บยกเว้นแท็บหลัก</string>
     <string name="drawer_tabs_repeat_none">ไม่อนุญาต</string>
-    <string name="drawer_tabs_keep_line">“%1$s” เก็บแอปของตนไว้ในแท็บหลักด้วย</string>
+    <string name="drawer_tab_quoted">“%1$s”</string>
+    <string name="list_separator">", "</string>
+    <string name="list_last">%1$s และ %2$s</string>
+    <string name="drawer_tabs_repeat_none_except">ไม่อนุญาต ยกเว้น %1$s</string>
+    <string name="drawer_tabs_repeat_except_main_sentence">อนุญาตในทุกแท็บยกเว้นแท็บหลัก</string>
+    <string name="drawer_tabs_keep_one">%1$s ยังคงเก็บแอปของตนไว้ในแท็บหลัก</string>
+    <string name="drawer_tabs_keep_many">%1$s ยังคงเก็บแอปของตนไว้ในแท็บหลัก</string>
     <string name="drawer_tab_bar_position">ตำแหน่งแถบแท็บ</string>
     <string name="drawer_tab_bar_top">ด้านบน</string>
     <string name="drawer_tab_bar_bottom">ด้านล่าง</string>
