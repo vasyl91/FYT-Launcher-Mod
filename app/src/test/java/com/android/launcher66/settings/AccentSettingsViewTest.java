@@ -2,18 +2,23 @@ package com.android.launcher66.settings;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.FragmentManager;
+import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.launcher66.R;
 import com.android.launcher66.TestLauncherApplication;
 import com.android.launcher66.ThemeAccent;
 
@@ -31,7 +36,9 @@ import java.util.List;
 
 /**
  * The accent of the settings reaches the creator's screen: every switch of its rows has it for the thumb when on, the
- * row "Set global theme color" is there, and with "Stock layout" the default blue is back.
+ * row "Set global theme color" is there, and with "Stock layout" the default blue is back. The buttons the PiP and
+ * widget rows draw for themselves ("Page", "Adjust", "Reset") take the colour when they are sized, after the painter
+ * has been over the row: they read it there too, or the default blue wins the race (the owner on the A55, 2026-11-27).
  */
 @RunWith(RobolectricTestRunner.class)
 @Config(application = TestLauncherApplication.class, qualifiers = "w1080dp-h2340dp-port-mdpi")
@@ -66,6 +73,31 @@ public class AccentSettingsViewTest {
                 switchesIn(group.getChildAt(i), found);
             }
         }
+    }
+
+    /** The view of the row of this key, brought onto the list and laid out, its posted sizing done. */
+    private static View row(SettingsFragmentSecond screen, String key) {
+        RecyclerView list = screen.getListView();
+        int position = ((PreferenceGroup.PreferencePositionCallback) list.getAdapter())
+                .getPreferenceAdapterPosition(key);
+        assertTrue("the row " + key + " is on the screen", position >= 0);
+        list.scrollToPosition(position);
+        list.measure(View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(2000, View.MeasureSpec.EXACTLY));
+        list.layout(0, 0, 1080, 2000);
+        ShadowLooper.idleMainLooper();
+        RecyclerView.ViewHolder holder = list.findViewHolderForAdapterPosition(position);
+        assertNotNull("the row " + key + " is shown", holder);
+        return holder.itemView;
+    }
+
+    /** The colour a button of a row is filled with. */
+    private static int fill(View row, int id) {
+        View button = row.findViewById(id);
+        assertNotNull(button);
+        Drawable background = button.getBackground();
+        assertTrue(background instanceof GradientDrawable);
+        return ((GradientDrawable) background).getColor().getDefaultColor();
     }
 
     private static int checkedThumb(SwitchCompat toggle) {
@@ -105,6 +137,21 @@ public class AccentSettingsViewTest {
         switches.clear();
         switchesIn(screen.getListView(), switches);
         assertEquals(ThemeAccent.DEFAULT, checkedThumb(switches.get(0)));
+        controller.pause().stop().destroy();
+    }
+
+    @Test
+    public void theButtonsOfThePipAndWidgetRowsHaveTheChosenColourAlsoAfterAChange() {
+        prefs().edit().clear().putBoolean(Keys.USER_LAYOUT, true).putInt(ThemeAccent.KEY, RED).commit();
+        ActivityController<SettingsActivity> controller = Robolectric.buildActivity(SettingsActivity.class).setup();
+        SettingsFragmentSecond screen = open(controller);
+        assertEquals("the PiP's page button", RED, fill(row(screen, Keys.PIP_FIRST), R.id.btnScreenContainer));
+        assertEquals("the music widget's page button", RED, fill(row(screen, Keys.USER_MUSIC), R.id.btnScreenContainer));
+
+        prefs().edit().putInt(ThemeAccent.KEY, 0xff2e7d32).commit();
+        ShadowLooper.idleMainLooper();
+        assertEquals(0xff2e7d32, fill(row(screen, Keys.PIP_FIRST), R.id.btnScreenContainer));
+        assertEquals(0xff2e7d32, fill(row(screen, Keys.USER_MUSIC), R.id.btnScreenContainer));
         controller.pause().stop().destroy();
     }
 }

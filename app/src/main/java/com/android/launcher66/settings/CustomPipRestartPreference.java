@@ -18,7 +18,6 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.SwitchCompat;
-import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceViewHolder;
@@ -203,7 +202,7 @@ public class CustomPipRestartPreference extends Preference {
         int btnW = Math.max(1, Math.round(containerW * 0.235f));
 
         // Colors
-        accent = ContextCompat.getColor(getContext(), R.color.colorAccent);
+        accent = com.android.launcher66.ThemeAccent.color(getContext());
 
         for (AppCompatButton button : mRestartButtons) {
             if (button != null) {

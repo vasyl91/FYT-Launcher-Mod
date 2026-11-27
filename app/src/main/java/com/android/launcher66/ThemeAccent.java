@@ -19,7 +19,9 @@ import androidx.preference.PreferenceManager;
  *       selection: the same hue and saturation, the lightness raised by a quarter and held to 1.</li>
  * </ul>
  * Code that needs the colour asks {@link #color(Context)} and never {@code R.color.colorAccent}, so that a colour
- * chosen by the user reaches it. The arithmetic is plain Java and tested; {@link #color} reads the preferences,
+ * chosen by the user reaches it. A row that draws its own accent after it is bound (the "Page", "Adjust" and "Reset"
+ * buttons of the PiP and widget rows, made when the row is sized) asks it there: AccentPainter has been over the row
+ * by then, and a default read later paints the blue over the user's colour (the owner on the A55, 2026-11-27). The arithmetic is plain Java and tested; {@link #color} reads the preferences,
  * which are in memory (they are loaded when the app starts).
  */
 public final class ThemeAccent {

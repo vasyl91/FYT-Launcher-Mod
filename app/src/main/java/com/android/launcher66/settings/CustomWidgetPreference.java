@@ -28,7 +28,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.SwitchCompat;
-import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
@@ -252,7 +251,7 @@ public class CustomWidgetPreference extends Preference {
         float txtPx= Math.max(1, btnH * TXT_PCT_OF_BTN_H);
 
         // Colors
-        int accent = ContextCompat.getColor(getContext(), R.color.colorAccent);
+        int accent = com.android.launcher66.ThemeAccent.color(getContext());
 
         // Screen container
         if (mScreenButtonContainer != null) {
