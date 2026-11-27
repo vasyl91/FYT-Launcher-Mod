@@ -1744,8 +1744,9 @@ public class Launcher extends AppCompatActivity implements View.OnClickListener,
                 // Whichever of this receiver and the application's comes first completes the start; once
                 LauncherApplication.completeStartAfterUnlock(Launcher.this);
                 unregisterLockedBootReceiver();
-                if (DirectBootPlan.recreateActivityOnUnlock(DirectBootPlan.Start.WALLPAPER_ONLY)) {
-                    recreate();
+                if (DirectBootPlan.finishActivityOnUnlock(DirectBootPlan.Start.WALLPAPER_ONLY)) {
+                    Log.i("Launcher", "Launcher: unlocked, the wallpaper-only home ends; the system starts the chosen home");
+                    finish();
                 }
             }
         };

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Looper;
 import android.os.UserManager;
 import android.view.ViewGroup;
@@ -55,6 +56,25 @@ public class LockedStartViewTest {
         assertTrue(content.getChildAt(0) instanceof FrameLayout);
         assertEquals(0, ((ViewGroup) content.getChildAt(0)).getChildCount());
 
+        controller.pause().stop().destroy();
+    }
+
+    @Test
+    public void theUnlockEndsTheWallpaperOnlyHomeInsteadOfMakingItAgain() {
+        shadowOf(users()).setUserUnlocked(false);
+        LockedTestApplication.sLocked = true;
+        ActivityController<Launcher> controller = Robolectric.buildActivity(Launcher.class);
+        controller.create().start().resume();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // The user unlocks: the storage is readable again, the broadcast comes
+        LockedTestApplication.sLocked = false;
+        shadowOf(users()).setUserUnlocked(true);
+        RuntimeEnvironment.getApplication().sendBroadcast(new Intent(Intent.ACTION_USER_UNLOCKED));
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // It ends, and the system starts the home the user chose; made again in place it crashed on the A55
+        assertTrue("the wallpaper-only home ends at the unlock", controller.get().isFinishing());
         controller.pause().stop().destroy();
     }
 }

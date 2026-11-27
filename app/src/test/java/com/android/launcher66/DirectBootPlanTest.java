@@ -28,8 +28,8 @@ class DirectBootPlanTest {
     }
 
     @Test
-    void onlyAnActivityShownForTheWallpaperIsMadeAgain() {
-        assertTrue(DirectBootPlan.recreateActivityOnUnlock(DirectBootPlan.Start.WALLPAPER_ONLY));
-        assertFalse(DirectBootPlan.recreateActivityOnUnlock(DirectBootPlan.Start.FULL));
+    void onlyAnActivityShownForTheWallpaperEndsAtTheUnlock() {
+        assertTrue(DirectBootPlan.finishActivityOnUnlock(DirectBootPlan.Start.WALLPAPER_ONLY));
+        assertFalse(DirectBootPlan.finishActivityOnUnlock(DirectBootPlan.Start.FULL));
     }
 }

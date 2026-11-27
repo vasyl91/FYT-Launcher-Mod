@@ -14,7 +14,9 @@ package com.android.launcher66;
  *       Android refuses those reads with an exception ("not available until the user is unlocked"). Only
  *       the crash handler and the statics that need no storage are set up.</li>
  *   <li>The unlock completes the start once, with the same steps an unlocked start takes at once, and then the
- *       activity is made again so that it loads the home screen.</li>
+ *       activity ends: the system starts the home the user chose (this launcher, fresh, or another one). Made again with
+ *       recreate() it crashed on the A55 (2026-11-27: the kept window attached the views before the drag controller was
+ *       there), and it kept this launcher in front where the user had chosen another home.</li>
  *   <li>On a unit whose user is unlocked from the start (the FYT units are not encrypted) the path is the
  *       old one, step for step.</li>
  *   <li><b>No class reads storage when it loads</b> (no static field or static block opens a preference file, a
@@ -49,8 +51,12 @@ final class DirectBootPlan {
         return started == Start.WALLPAPER_ONLY && !alreadyCompleted;
     }
 
-    /** Whether the activity is made again at the unlock: it was shown for the wallpaper only. */
-    static boolean recreateActivityOnUnlock(Start activityStartedAs) {
+    /**
+     * Whether the activity ends at the unlock: it was shown for the wallpaper only. It is not made again in place: the
+     * system then starts the home the user chose, a fresh instance of this launcher when it is that one (made again with
+     * recreate() it crashed on the A55, 2026-11-27, and it stayed in front where another home was the user's).
+     */
+    static boolean finishActivityOnUnlock(Start activityStartedAs) {
         return activityStartedAs == Start.WALLPAPER_ONLY;
     }
 }

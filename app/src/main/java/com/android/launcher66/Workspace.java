@@ -5867,7 +5867,11 @@ public class Workspace extends SmoothPagedView
         super.onAttachedToWindow();
         mWindowToken = getWindowToken();
         computeScroll();
-        mDragController.setWindowToken(mWindowToken);
+        // A relaunch that keeps its window attaches the views inside setContentView(), before setup() gives the drag
+        // controller (A55, 2026-11-27): setup() hands it the token then
+        if (mDragController != null) {
+            mDragController.setWindowToken(mWindowToken);
+        }
     }
 
     protected void onDetachedFromWindow() {
@@ -8529,6 +8533,10 @@ public class Workspace extends SmoothPagedView
     void setup(DragController dragController) {
         mSpringLoadedDragController = new SpringLoadedDragController(mLauncher);
         mDragController = dragController;
+        if (mWindowToken != null) {
+            // Already attached (a relaunch that kept its window): the token onAttachedToWindow() could not give
+            dragController.setWindowToken(mWindowToken);
+        }
 
         // hardware layers on children are enabled on startup, but should be disabled until
         // needed
