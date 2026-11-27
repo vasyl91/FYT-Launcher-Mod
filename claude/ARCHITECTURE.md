@@ -189,8 +189,10 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
 
 ### Round 28 additions to the home screen (2026-11-26)
 
-- **Gestures:** `L/HomeGesture` (plain Java: UP, DOWN or NONE from dx, dy, time and speed) and `L/HomeGestures`
-  follow a touch for `Workspace`; UP opens the drawer (`Launcher.showAllApps(..., fromSwipe)`), DOWN asks
+- **Gestures:** `L/HomeGesture` (plain Java: UP, DOWN or NONE from dx, dy, time and speed), `L/HomeSwipe` (plain
+  Java, since round 29: the course of one touch; it fires on the move that is long enough, a flick on the lift, and a
+  touch that rested for the long press timeout is no swipe) and `L/HomeGestures` follow a touch for `Workspace`; UP
+  opens the drawer (`Launcher.showAllApps(..., fromSwipe)`), DOWN asks
   `L/StatusBarPanel` for the notification shade (the accessibility service when the system service refuses).
   `L/DoubleTap` and `L/ScreenOffPlan` (plain Java) decide the double tap and what "Turn off screen" does on this unit;
   the accessibility service (`S/StateAccessibilityService.sInstance`) locks the screen, and `LauncherPermissionFlow`

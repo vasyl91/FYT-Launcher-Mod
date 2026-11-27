@@ -21,8 +21,8 @@ import com.android.launcher66.settings.Keys;
  *   <li>A touch is looked at only on the home screen at rest: not in the overview, the drawer or an open folder, not while
  *       an item is dragged, and not when it begins on an app's widget, on an element of the user's layout or on the
  *       music slider (the touches those own). The pages keep every other touch until it is a clearly vertical
- *       move: then this takes it (the pages do not scroll) and, when the finger is lifted, decides by the length or the
- *       speed of the swipe.</li>
+ *       move made before the long press timeout: then this takes it (the pages do not scroll). It fires as soon as the
+ *       swipe is long enough, and a short fast flick when the finger is lifted ({@link HomeSwipe}).</li>
  *   <li>The drawer comes up from the bottom with a slide (Launcher.showAllApps with {@code fromSwipe}); the shade is
  *       opened by {@link StatusBarPanel}.</li>
  * </ul>
@@ -39,10 +39,7 @@ final class HomeGestures {
     private final DoubleTap mDoubleTap = new DoubleTap();
     private long mLastTapEvent = -1L;
 
-    private boolean mArmed;
-    private boolean mTaking;
-    private float mDownX;
-    private float mDownY;
+    private final HomeSwipe mSwipe;
     private VelocityTracker mVelocity;
 
     HomeGestures(Workspace workspace) {
@@ -50,11 +47,12 @@ final class HomeGestures {
         Context context = workspace.getContext();
         mSlop = ViewConfiguration.get(context).getScaledTouchSlop();
         mDensity = context.getResources().getDisplayMetrics().density;
+        mSwipe = new HomeSwipe(mSlop, ViewConfiguration.getLongPressTimeout());
     }
 
     /** Whether this is a gesture of the home screen now: the pages and the touch's other users leave it alone. */
     boolean taking() {
-        return mTaking;
+        return mSwipe.taking();
     }
 
     private SharedPreferences prefs() {
@@ -99,16 +97,17 @@ final class HomeGestures {
      */
     boolean onIntercept(MotionEvent ev) {
         switch (ev.getActionMasked()) {
-            case MotionEvent.ACTION_DOWN:
-                reset();
-                mDownX = ev.getX();
-                mDownY = ev.getY();
-                mArmed = armedAt(ev);
-                if (mArmed) {
+            case MotionEvent.ACTION_DOWN: {
+                recycleVelocity();
+                boolean armed = armedAt(ev);
+                mSwipe.down(ev.getEventTime(), ev.getX(), ev.getY(), armed, armed && wantsUp(), armed && wantsDown(),
+                        Math.min(mWorkspace.getWidth(), mWorkspace.getHeight()));
+                if (mSwipe.armed()) {
                     mVelocity = VelocityTracker.obtain();
                     mVelocity.addMovement(ev);
                 }
                 return false;
+            }
             case MotionEvent.ACTION_MOVE:
                 return maybeTake(ev);
             case MotionEvent.ACTION_UP:
@@ -116,52 +115,77 @@ final class HomeGestures {
                 release();
                 return false;
             default:
-                return mTaking;
+                return mSwipe.taking();
         }
     }
 
     /**
-     * A move of a touch that was armed: whether it has become a gesture of the home screen, that is, moved past the touch
-     * slop and clearly vertical (steeper than 60 degrees). Asked from {@link #onIntercept} when an icon has the touch, and
-     * from {@link Workspace#onTouchEvent} when the workspace has it itself (a touch on empty space never passes the
-     * intercept again after its first event).
+     * A move of a touch that was armed: whether it has become a gesture of the home screen ({@link HomeSwipe}). Asked
+     * from {@link #onIntercept} when an icon has the touch, and from {@link Workspace#onTouchEvent} when the workspace
+     * has it itself (a touch on empty space never passes the intercept again after its first event). A drag that has
+     * begun disarms it.
      */
     boolean maybeTake(MotionEvent ev) {
-        if (mTaking) {
+        if (mSwipe.taking()) {
             return true;
         }
-        if (!mArmed || mVelocity == null) {
+        if (!mSwipe.armed()) {
             return false;
         }
-        mVelocity.addMovement(ev);
-        float dx = ev.getX() - mDownX;
-        float dy = ev.getY() - mDownY;
-        if (Math.abs(dy) > mSlop && HomeGesture.steep(dx, dy)) {
-            mTaking = true;
-            return true;
+        Launcher launcher = mWorkspace.homeLauncher();
+        DragController drag = launcher == null ? null : launcher.getDragController();
+        if (drag != null && drag.isDragging()) {
+            mSwipe.cancel();
+            recycleVelocity();
+            return false;
         }
-        return false;
+        if (mVelocity != null) {
+            mVelocity.addMovement(ev);
+        }
+        act(mSwipe.move(ev.getEventTime(), ev.getX(), ev.getY()), ev, 0f);
+        if (!mSwipe.armed() && !mSwipe.taking()) {
+            recycleVelocity();
+        }
+        return mSwipe.taking();
     }
 
     /** The touch ended without being a gesture of this class. */
     void release() {
-        if (!mTaking) {
-            reset();
+        if (!mSwipe.taking()) {
+            mSwipe.cancel();
+            recycleVelocity();
         }
     }
 
-    /** Workspace.onTouchEvent while {@link #taking()}: follows the finger and decides when it is lifted. */
+    /** Workspace.onTouchEvent while {@link #taking()}: follows the finger, fires when the swipe is long enough. */
     boolean onTouch(MotionEvent ev) {
         if (mVelocity != null) {
             mVelocity.addMovement(ev);
         }
         switch (ev.getActionMasked()) {
-            case MotionEvent.ACTION_UP:
-                finish(ev);
-                reset();
+            case MotionEvent.ACTION_MOVE:
+                act(mSwipe.move(ev.getEventTime(), ev.getX(), ev.getY()), ev, 0f);
                 break;
+            case MotionEvent.ACTION_UP: {
+                float speed = 0f;
+                if (mVelocity != null) {
+                    mVelocity.computeCurrentVelocity(1000);
+                    speed = mVelocity.getYVelocity() / mDensity;
+                }
+                boolean firedBefore = mSwipe.fired();
+                float dy = mSwipe.dy(ev.getY());
+                HomeSwipe.Step step = mSwipe.up(ev.getX(), ev.getY(), speed);
+                if (step == HomeSwipe.Step.NONE && !firedBefore) {
+                    Log.d(TAG, "Home swipe: nothing to do (dy " + Math.round(dy) + " px, " + Math.round(speed)
+                            + " dp/s)");
+                }
+                act(step, ev, speed);
+                recycleVelocity();
+                break;
+            }
             case MotionEvent.ACTION_CANCEL:
-                reset();
+                mSwipe.cancel();
+                recycleVelocity();
                 break;
             default:
                 break;
@@ -169,31 +193,23 @@ final class HomeGestures {
         return true;
     }
 
-    private void finish(MotionEvent up) {
-        float dx = up.getX() - mDownX;
-        float dy = up.getY() - mDownY;
-        float speed = 0f;
-        if (mVelocity != null) {
-            mVelocity.computeCurrentVelocity(1000);
-            speed = mVelocity.getYVelocity() / mDensity;
-        }
-        int shortSide = Math.min(mWorkspace.getWidth(), mWorkspace.getHeight());
-        HomeGesture.Result result = HomeGesture.classify(dx, dy, shortSide, speed);
-        if (!HomeGesture.wanted(result, wantsUp(), wantsDown())) {
-            Log.d(TAG, "Home swipe " + result + " (dy " + Math.round(dy) + " px, " + Math.round(speed)
-                    + " dp/s): nothing to do");
+    /** Opens what a swipe that fired asks for. */
+    private void act(HomeSwipe.Step step, MotionEvent ev, float speed) {
+        if (step != HomeSwipe.Step.UP && step != HomeSwipe.Step.DOWN) {
             return;
         }
         Launcher launcher = mWorkspace.homeLauncher();
         if (launcher == null) {
             return;
         }
-        if (result == HomeGesture.Result.UP) {
-            Log.i(TAG, "Home swipe up: the app drawer (dy " + Math.round(dy) + " px, " + Math.round(speed) + " dp/s)");
+        String how = "(dy " + Math.round(mSwipe.dy(ev.getY())) + " px"
+                + (ev.getActionMasked() == MotionEvent.ACTION_UP ? ", " + Math.round(speed) + " dp/s, lifted)"
+                : ", moving)");
+        if (step == HomeSwipe.Step.UP) {
+            Log.i(TAG, "Home swipe up: the app drawer " + how);
             launcher.showAllApps(true, AppsCustomizePagedView.ContentType.Applications, true, true);
         } else {
-            Log.i(TAG, "Home swipe down: the notification shade (dy " + Math.round(dy) + " px, "
-                    + Math.round(speed) + " dp/s)");
+            Log.i(TAG, "Home swipe down: the notification shade " + how);
             StatusBarPanel.expand(launcher);
         }
     }
@@ -227,9 +243,7 @@ final class HomeGestures {
         }
     }
 
-    private void reset() {
-        mArmed = false;
-        mTaking = false;
+    private void recycleVelocity() {
         if (mVelocity != null) {
             mVelocity.recycle();
             mVelocity = null;
