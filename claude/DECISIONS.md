@@ -4,7 +4,7 @@ Important technical and product decisions. Last consolidated on 2026-11-12 from 
 (`prompts/archive/`), the 15 chat reports (`chat_archive/CHAT_01.MD` … `CHAT_15.MD`) and the owner's answers
 of that day. D-52 … D-57 were added on 2026-11-13 with round 13, D-58 … D-63 on 2026-11-15 with round 14,
 D-64 and D-65 on 2026-11-16 with round 15, D-66 with round 16, D-67 with round 19, D-68 … D-74 with round 22
-(2026-11-18/19), D-75 and D-76 with round 23 (2026-11-20), D-93 … D-100 with round 29 (2026-11-27).
+(2026-11-18/19), D-75 and D-76 with round 23 (2026-11-20), D-93 … D-100 with round 29 (2026-11-27), D-101 … D-105 with round 30 (2026-11-27, evening).
 
 ## How to read this file
 
@@ -133,7 +133,12 @@ entry that replaces it.
 | D-97 | The fuel estimate below the car's threshold only when switched on | ACTIVE | Owner |
 | D-98 | The settings' text size, 70–150 % | ACTIVE | Owner |
 | D-99 | Direct boot in debug builds only; at the unlock the locked launcher ends | ACTIVE | Owner / Assistant |
-| D-100 | The 7862's keyboard of a PiP above the bars, by an anchor window | UNDER_REVIEW | Owner (the request) / Assistant |
+| D-100 | The 7862's keyboard of a PiP above the bars, by an anchor window | ACTIVE (the 7862, 2026-11-27) | Owner (the request) / Assistant |
+| D-101 | The background selector, the colour picker and the lists of apps one size | ACTIVE | Owner |
+| D-102 | The dialogs' text as large as the settings' rows | ACTIVE | Owner |
+| D-103 | The horizontal drawer's tabs as one row of pages | ACTIVE | Owner / Assistant |
+| D-104 | The list of widgets: the widgets themselves, the brief's texts, centred | ACTIVE | Owner |
+| D-105 | A widget's frame is the rectangle it is seen in | ACTIVE | Assistant (after the owner's test) |
 
 ---
 
@@ -1174,7 +1179,8 @@ The round had no brief; its result is in `reports/implementation_report_2026-11-
 - **Where:** `WidgetGroups` (pure, `WidgetGroupsTest`), `WidgetsListView` (the search, the rows that open one at a time,
   the letter scroller), `AppsCustomizePagedView.mWidgetsListHost` (the pager's own `PagedViewWidget` cells, previews on one
   background thread, dragged through `beginListDrag`). The counts read "Widgets: 1, Shortcuts: 3" without plural forms
-  (a count of none left out). `DrawerContent` decides which of the pager and the two lists shows the content.
+  (a count of none left out). `DrawerContent` decides which of the pager and the two lists shows the content. Its look and
+  texts are D-104's since round 30.
 
 ### D-90 Notification badges
 - **Status:** ACTIVE (not tried on a device). **By:** the owner, 2026-11-25 (point 15).
@@ -1252,7 +1258,8 @@ The round had no brief; its result is in `reports/implementation_report_2026-11-
   before the drop, and a widget let go over a PiP is moved edge to edge off it, the shortest way inside the page. A
   widget added from the list still lands on cells. The decisions are logged (`FreeformWidgets`).
 - **Where:** `FreePlace`, `ResizeGeometry`, `PipEdge` (pure, tested), `FreeformWidgets.placeOnDrop`, `resizeTo`,
-  `frameNew`, `AppWidgetResizeFrame.resizeFreeform`, `Workspace.onDragOver` and `onDrop`, `658a08b68`, `fe496ccba`.
+  `frameNew`, `AppWidgetResizeFrame.resizeFreeform`, `Workspace.onDragOver` and `onDrop`, `658a08b68`, `fe496ccba`. The
+  geometry of the frame is D-105's since round 30.
 
 ### D-97 The fuel estimate below the car's threshold only when switched on
 - **Status:** ACTIVE (not tried on a device). **By:** the owner, 2026-11-27 (the switch); off by default, as the approved
@@ -1280,10 +1287,12 @@ The round had no brief; its result is in `reports/implementation_report_2026-11-
   made again: the system starts the home the user chose, a fresh instance of this launcher when it is that one. A
   relaunch with a kept window had attached the views before the workspace had its drag controller and crashed.
 - **Where:** `DirectBootPlan.finishActivityOnUnlock`, `Launcher.onCreateLocked`, `Workspace.onAttachedToWindow`,
-  `LockedStartViewTest`, the placeholder `launcherDirectBoot`, `35366adbf`. KI-54.
+  `LockedStartViewTest`, the placeholder `launcherDirectBoot`, `35366adbf`. KI-54, closed 2026-11-27 evening: the owner's
+  restart of the debug build works.
 
 ### D-100 The 7862's keyboard of a PiP above the bars, by an anchor window
-- **Status:** UNDER_REVIEW [A]. **By:** the owner, 2026-11-27 (the request: the keyboard opened from a PiP must always be
+- **Status:** ACTIVE: the owner confirmed it on the 7862, 2026-11-27 evening (the dialogs get their keyboard on the 7862
+  and the A55 too); before that UNDER_REVIEW [A]. **By:** the owner, 2026-11-27 (the request: the keyboard opened from a PiP must always be
   above the bars); the mechanism by the assistant, from Android 10's window manager, with no log.
 - **Decision:** on Android 10 and lower the keyboard is layered just above its target, the topmost window that may take
   it; the panes of the PiPs may, and the bars' windows lie above them. After each bar's window (and the stats window)
@@ -1292,4 +1301,60 @@ The round had no brief; its result is in `reports/implementation_report_2026-11-
   later.
 - **Where:** `ImeAnchor` (`wanted(sdk)`, `raise`, `remove`), `BarWindows.addEveryPageBar`,
   `CanbusService.addHomeStatsWindow`, `ImeAnchorViewTest`, `f727fc0ed`. KI-56.
+
+---
+
+## Added on 2026-11-27, evening (round 30: the owner's test of round 29)
+
+### D-101 The background selector, the colour picker and the lists of apps one size
+- **Status:** ACTIVE (not tried on a device). **By:** the owner, 2026-11-27.
+- **Decision:** in landscape the three are as large as each other: 0.7 of the window's width (the colour picker's) and
+  0.9 of its height (the background selector made taller). In portrait all three are as wide as the background selector
+  (0.8 of the width) and keep their heights: 0.8, 0.6 and 0.9364. The lists of apps are those of the PiPs, of "Start on
+  boot" and "Start on wake", of the statistics and of the cache.
+- **Where:** `SettingsDialogSize` (pure, tested), `BackgroundSelectorDialog.onStart`, `ColorPicker.onStart`,
+  `DialogFrames.fitAppList`, `0c748c6a5`.
+
+### D-102 The dialogs' text as large as the settings' rows
+- **Status:** ACTIVE (not tried on a device). **By:** the owner, 2026-11-27 ("nie licuje z tym w ustawieniach").
+- **Decision:** a dialog's text is the size of a settings row's title (the theme's list item text in the dialog's
+  context, so with the settings' font scale and "Settings text size"); its title a quarter larger, as an AlertDialog's
+  title to its text. The size from the screen's width (`SettingsActivity.dialogTextView`, `dialogTitle`) is gone.
+- **Where:** `DialogText`, `SettingsFragmentSecond.setCalculatedSizes`, `BarOrderDialog`, `DrawerTabDialogs`, `ColorPicker`,
+  `e42cbbd54`.
+
+### D-103 The horizontal drawer's tabs as one row of pages
+- **Status:** ACTIVE (not tried on a device). **By:** the owner, 2026-11-27 (the change of tab slides as the change of
+  page does); the mechanism by the assistant.
+- **Decision:** with horizontal pages and two tabs or more, the pager holds every tab's pages one after another, each
+  tab at least one page, its apps from a page of their own. A swipe between tabs is a page's scroll; the strip follows the
+  scroll between the last page of a tab and the next tab and stands still within a tab; where the pages come to rest
+  decides the tab; a tap on a tab slides to its first page. A search looks in the tab shown, with its own pages, as
+  before. The vertical drawer is unchanged.
+- **Where:** `TabPages` (pure, tested), `AppsCustomizePagedView` (`mTabLists`, `syncAppsPageItems`, `screenScrolled`,
+  `onPageEndMoving`, `showTab`), `1435c468b`.
+
+### D-104 The list of widgets: the widgets themselves, the brief's texts, centred
+- **Status:** ACTIVE (not tried on a device). **By:** the owner, 2026-11-27, and G1's brief of round 28.
+- **Decision:** a widget of the list is its preview alone, as large as it is drawn (at most 70 % of the width and 40 % of
+  the height), with no card; under it, centred, each on its line: its name, its size in cells ("4 × 2") and its
+  description where it has one (Android 12+). A shortcut is its icon, its name and "Shortcut" in the accent colour. An
+  app's row says "1 widget, 3 shortcuts" with the language's plural forms, a count of none left out. The rows are 90 % as
+  wide as the search field's box and centred under it.
+- **Where:** `WidgetsListView`, `PagedViewWidget.useInList` / `applyListPreview`, `WidgetGroups.counts`, `fitIn`,
+  `sidePadding`, `VisibleBounds.pixels`, the plurals `widget_count`, `shortcut_count`, `widget_list_shortcut`,
+  `096a78edd`.
+
+### D-105 A widget's frame is the rectangle it is seen in
+- **Status:** ACTIVE (not tried on a device). **By:** the assistant, after the owner's test of 2026-11-27 (the frame ran
+  away, the widget went past it).
+- **Decision:** a freely placed widget's `WidgetFrame` is the rectangle the user sees it in. It is laid out at the frame's
+  size divided by its scale (`ScreenScale.widgetScale`) and drawn scaled back about its centre with the centring
+  translation, as a widget in its cells, so that it is drawn exactly in its frame. The drop counts with the size the
+  widget is seen at; the provider is told the laid-out size; the resize frame lies round the frame by its own padding
+  only, and a frame put away with no handle moved writes nothing; a resize is checked against the cells other items hold,
+  never the widget's own. Frames kept before round 30 were in the laid-out size.
+- **Where:** `FreeformLayout` (pure, tested), `ShortcutAndWidgetContainer.applyFreeform`, `FreeformWidgets.placeOnDrop`,
+  `updateSize`, `resizeTo`, `CellLayout.cellsVacantFor`, `AppWidgetResizeFrame.snapToWidget`, `resizeFreeform`,
+  `b9b3df2d7`, `824f1f167`.
 

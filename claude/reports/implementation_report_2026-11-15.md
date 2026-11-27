@@ -883,3 +883,64 @@ suite had 1660 tests, all green (1557 at the start of the round).
 **Not tested on a device:** all of it. The owner's lists are in `../PROJECT_STATE.md` ("Active tasks") and KI-55 to
 KI-57; the 7870's in `../checks/7870.md`.
 
+## Round 30 (2026-11-27, evening): the owner's test of round 29
+
+The owner's message of 2026-11-27 evening [H], with the logs of freeform and overlapping widgets, of a restart and a crash:
+the keyboard of a PiP on the 7862 and the restart work (KI-56, KI-54 closed); "Hide the app drawer button" with the bar on
+every page, its row's look, the category titles, "Display horizontal bar" off, the frame of freeform widgets, the list of
+widgets, the dialogs, the change of tab in the horizontal drawer, the letter bar on the 7862, the gap above the apps and
+the crash were to be fixed. The plan, in Polish: `../prompts/archive/plan-2026-11-27-round-30.md`.
+
+| Batch | Commits | CI run |
+|---|---|---|
+| Q1 | `ebe752b53` Widgets: each preview made at the size it was asked for; `7e4191d34` Settings: category titles in their own colour again; `12194c5ca` Settings: "Hide the app drawer button" as the bar's other switches; `63e556151` Start: the root check of the PiP log off the main thread | 633 green |
+| Q2 | `bc63f2c50` Bars: the app drawer button hidden in the bar's window too; `91c8828a3` Bars: "Display horizontal bar" off leaves nothing of the bar | 634 green |
+| Q3 | `b9b3df2d7` Widgets: a freeform widget drawn exactly in its frame, dropped where it is let go; `824f1f167` Widgets: the resize frame of a freeform widget stays on it | 635 green |
+| Q4 | `096a78edd` Widgets: the list shows the widgets themselves, with the brief's texts; `cbf38e50a` App drawer: a gap above the apps at the top; `dc77d55e3` App drawer: the letter scroller as thick on every screen; `1435c468b` App drawer: the tabs of the horizontal drawer one after another, scrolled smoothly | 636 green |
+| Q5 | `0c748c6a5` Settings: the background, colour and app dialogs one size; `e42cbbd54` Settings: the dialogs' text as large as the settings' rows | 637 |
+
+Then the `Docs:` commits (README, this section and the library). At the end the suite had 1695 tests, all green (1660 at
+the start of the round).
+
+**What was found and built [V: code, logs and tests; none of it tried on a device]:**
+- **The crash** ("Improperly sized bitmap passed as argument"): the list of widgets set the loader's preview size on the
+  main thread for each cell while a preview of another size was made in the background, which read the size three more
+  times. Each request carries its size now (`PreviewCachePolicy.size`, `fits`).
+- **The category titles:** androidx's `PreferenceCategory.isEnabled()` is always false, and round 29's dimming took it for
+  off (`SettingsRowDim.looksOn`).
+- **"Hide the app drawer button":** the bar on every page is a window, and `forceOriginalSizes` gave the button its width
+  back after the layout's rule, with its click listener (`BarWindowWidths`). The row is a `SwitchPreferenceCompat` like
+  the bar's others.
+- **"Display horizontal bar" off:** the bars' set-up and the recovery showed the apps list again
+  (`WidgetBarLayout.appsListVisibility`); the vertical bar kept a corner for the first page's bar
+  (`VerticalBarCorner.applies`); `BarLayouts.of` now gives no page the bar.
+- **Freeform and overlapping widgets (D-105):** a freely placed widget was laid out at its frame's full size with the scale
+  and translation of its cells left on it, the drop counted with the laid-out size (457x615 seen, 543x731 kept in the
+  owner's log), the resize frame was placed from the view's old place and committed its own rectangle when put away (the
+  log's "resized, frame 0,1347" without a resize), and a resize was checked against the widget's own cells.
+  `FreeformLayout` makes the frame the seen rectangle; the resize frame is placed from it and writes nothing without a
+  handle moved; the vacancy leaves the widget's own cells out.
+- **The list of widgets (D-104):** the previews without the pager's card, cropped to what can be seen, the brief's texts
+  under them, "1 widget, 3 shortcuts" from plurals in the 51 languages, the rows centred at 90 % of the search field.
+- **The drawer:** a gap above the apps always (`DrawerSpacing`), the letter bar's dp at least the A55's share of the
+  shorter side (`ScrollerSize`), and with horizontal pages every tab's pages in one pager (`TabPages`, D-103).
+- **The dialogs (D-101, D-102):** one size rule (`SettingsDialogSize`, `DialogFrames`) and the text of a settings row
+  (`DialogText`); `dialogTextView` and `dialogTitle` are gone.
+- **StrictMode in the restart log:** `isRooted()` off the main thread; the read inside Samsung Knox through
+  `resolveIntent` is the system's (KI-31).
+
+**Deviations from the plan:**
+- Commit 6 (KI-59): the Robolectric test checks the list's visibility and the vertical bar's geometry through
+  `WidgetBarLayout` and `BarLayouts`, not on a built page (the Launcher does not inflate in Robolectric); likewise commit 5
+  tests the window's widths in `BarWindowWidths`, not on the window.
+- Commit 8: no Robolectric test of `resizeTo` on the widget's own place (a `CellLayout` needs a `Launcher`); the geometry
+  has its test (`ResizeGeometryTest`) and the vacancy is `occupiedWithout`.
+- Commit 9: the cells stay the pager's `PagedViewWidget` (for the drag), restyled; the counts' Arabic one and two forms
+  are words without the number.
+- Commit 10 was undone locally once before it was pushed (`git reset --soft` of an unpushed commit: its test did not
+  compile, JUnit 5's message is the last argument) and committed again; nothing published was rewritten.
+- Commit 14: the colour picker's paddings stay as they were; only its texts take the rows' size.
+
+**Not tested on a device:** all of it. The lists are in `../PROJECT_STATE.md` ("Active tasks") and KI-59; the 7870's in
+`../checks/7870.md`.
+

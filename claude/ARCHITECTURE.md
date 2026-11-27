@@ -231,8 +231,8 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   (`L/AppSearch`, `L/AppSearchBar`); every change of the list goes through it.
 - **Vertical by default:** `L/AppsVerticalView` (a `RecyclerView` in a `FrameLayout`, with the swipe that changes the
   tab) and `L/LetterScroller` (the handle and the bubble, `L/LetterIndex`; since round 29 the handle is the list's
-  fraction of its way, `L/ScrollFraction`, and the scroller is hidden when the list does not scroll); the pager is the
-  horizontal choice.
+  fraction of its way, `L/ScrollFraction`, and the scroller is hidden when the list does not scroll; since round 30 its dp
+  are at least the A55's share of the shorter side, `L/ScrollerSize`); the pager is the horizontal choice.
   An icon of the list is dragged through `AppsCustomizePagedView.beginVerticalDrag` (round 29, `L/VerticalDrag`),
   not through the pager's long-press checks.
   The grid is `L/AppsGrid` (plain Java) through `DeviceProfile.updateAllAppsGrid` and the keys `all_apps_grid_*`.
@@ -243,6 +243,9 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   Which of the pager, the vertical list and the widgets' list shows the content is one rule, `L/DrawerContent` (plain
   Java), applied by `AppsCustomizePagedView.syncVertical`; a pager covered by a list keeps its pages as empty frames
   (`syncPageItems` fills nothing) and fills them when it is shown (round 29).
+  Since round 30 a cell of the list is its preview alone (`PagedViewWidget.useInList`, cropped by
+  `VisibleBounds.pixels`), with its texts under it, the rows centred under the search field; each preview request
+  carries its size (`WidgetPreviewLoader.getPreview(Object, w, h)`).
   Since round 29 `L/WidgetPreviewLoader` keeps the previews of both in an `LruCache` counted in bytes by
   `L/PreviewCachePolicy` (plain Java: a sixteenth of the process's memory, keyed by size and name, given back from
   "running low" on by `Launcher.onTrimMemory`); the old pool of reused bitmaps is gone.
@@ -573,7 +576,9 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
     in at the top while the list is scrolled up does not push it.
   - The dialogs (2026-11-20, D-78): `S/SettingsDialogs` gives every one of them the theme `SettingsDialog`, the
     settings' dark colours, and the fields their colours. The order of the horizontal bar's elements is
-    `S/BarOrderDialog` (a row in "Bars", a list dragged with `ItemTouchHelper`).
+    `S/BarOrderDialog` (a row in "Bars", a list dragged with `ItemTouchHelper`). Since round 30 the background selector,
+    the colour picker and the lists of apps are sized by `S/SettingsDialogSize` (plain Java; `S/DialogFrames` for the
+    lists' frames), and the dialogs' text by `S/DialogText` (a settings row's title size).
   - A turn of the screen (2026-11-21, D-82): on a phone `SettingsActivity` is created again for each orientation.
     `S/SettingsDialogMemory` (pure) and `S/DialogTurn` bring an open plain dialog back on the new screen with its
     fields' texts (each screen's `TURN_DIALOGS`); `S/HandedWork` (pure) hands a download, a wallpaper save or a

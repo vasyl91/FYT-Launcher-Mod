@@ -1,6 +1,6 @@
 # Known issues
 
-As of 2026-11-27 (`testBranch` after round 29, none of which was tried on a device; the owner's A55 results for rounds 27 and 28 are in KI-51; the 7870 tester's results are awaited, see `checks/7870.md`). KI-46 closed 2026-11-25 by the 7862's log; KI-22, KI-28, KI-37, KI-50 and KI-52 closed 2026-11-27 (the round 29 report). One list of what is open today,
+As of 2026-11-27, evening (`testBranch` after round 30, none of which was tried on a device; the owner's results for round 29 are in KI-55, for rounds 27 and 28 in KI-51; the 7870 tester's results are awaited, see `checks/7870.md`). KI-46 closed 2026-11-25 by the 7862's log; KI-22, KI-28, KI-37, KI-50 and KI-52 closed 2026-11-27 (the round 29 report); KI-54 and KI-56 closed the same evening by the owner's test (the round 30 report). One list of what is open today,
 rewritten on 2026-11-18 at the owner's request. What was fixed or closed has been taken out; it stays in git
 and in the reports (`reports/`, `chat_archive/`). Sources: the code, git, CI, the briefs, the chat reports and
 the owner's results.
@@ -42,13 +42,12 @@ file and named in the round's report.
 | KI-44 | The GPS of the fuel statistics only while something needs it | unverified | partial | a unit whose code check waits for a drive |
 | KI-48 | The 7870's covers and the position slider | unverified | watching | the tester's result and log (round 26) |
 | KI-49 | The canbus script's `--launcher .` needs the decompiled folders, now zips | limit | accepted (the owner, 2026-11-22) | — |
-| KI-51 | Round 28 on a device: what the A55 has not shown yet | unverified | watching | the owner's results for A3, A6, A7, D1 to D3, I1, I2 (the A55) and the 7862 |
+| KI-51 | Round 28 on a device: what the A55 has not shown yet | unverified | watching | the owner's results for A3, A6, D1 to D3, I1, I2 (the A55) and the 7862 |
 | KI-53 | The release build of the settings' preferences (A3) cannot be tried in a session | unverified | watching | a release build by the owner |
-| KI-54 | Direct boot hung the A55 at boot (round 28, A7), then a crash at the unlock | problem | watching | the owner's A55 test of round 29's debug build, with and without a PIN |
-| KI-55 | Round 29 on a device | unverified | watching | the owner's test on the A55 and the 7862 (the list below) |
-| KI-56 | The 7862's keyboard above the bars rests on an assumption about Android 10 | unverified | watching | the 7862: a keyboard from a PiP with the bars shown |
-| KI-57 | The drawer's changes of round 29 have no view test | unverified | watching | the owner's test of the drawer on the A55 and the 7862 |
+| KI-55 | Round 29 on a device: what the owner has not shown yet | unverified | watching | the owner's results for the points below that round 30 did not take up |
+| KI-57 | The drawer's changes of rounds 29 and 30 have no view test | unverified | watching | the owner's test of the drawer on the A55 and the 7862 |
 | KI-58 | R8 keeps every CAN bus callback in a release | limit | open (the owner's call) | — |
+| KI-59 | Round 30 on a device | unverified | watching | the owner's test on the A55 and the 7862 (the list below) |
 
 ## Problems
 
@@ -93,7 +92,10 @@ risk). No review is planned.
 From the A55 log of 2026-11-09 [H]: `WindowHostVdShizuku.maybeBind` is fixed (`0905bff8f`). Left as described
 [V]: `VdHostProtocol$Proxy.startActivity` (the start of a pane; it would need the way panes start rebuilt), and
 the reads under `LauncherAppWidgetHostView.onLayout` and in a toast, both inside Samsung's framework code. The A55's
-`start_full` log of 2026-11-27 [V] shows the toast's again: Samsung's `Toast.show` of the toast about a crash.
+`start_full` log of 2026-11-27 [V] shows the toast's again: Samsung's `Toast.show` of the toast about a crash. Its
+restart log of the same evening [V] has a read inside Samsung Knox in the system's `resolveIntent`, reported back
+through the binder to `CanbusService.isApp` (answered once per package and kept); the launcher's own
+`LauncherApplication.isRooted` reports there were fixed (`63e556151`).
 
 ### KI-33 Some settings of the home screen only with the user layout on
 The second settings screen opens only with "User layout" on [V]. Its "Home screen layout" holds the grid, the
@@ -109,8 +111,8 @@ The owner's test of round 28 on the A55, 2026-11-27 [H]:
 - **Partly:** C1 to C3 (the accent, the switches, "Stock layout"), D4 to D7 (folders, free widgets, overlap) and F (the
   drawer): what was wrong is fixed in round 29 (KI-55).
 - **Not built in round 28:** E1's horizontal half, E2, E3 and G1 (KI-52): built in round 29.
-- **No result yet:** A3 (a release build's settings, KI-53), A6 (the logcat stop after a restart), A7 (the black window
-  before and after the unlock, KI-54), D1 to D3 (the colour of the icons' names, the two swipes, the double tap: lock,
+- **No result yet:** A3 (a release build's settings, KI-53), A6 (the logcat stop after a restart); A7 (the start before
+  and after the unlock) works since round 29 (the owner, 2026-11-27 evening, KI-54 closed); D1 to D3 (the colour of the icons' names, the two swipes, the double tap: lock,
   turn off, turn on), I1 (BOOT_COMPLETED at a wake), I2 (the welcome texts); and KI-44, P-3, P-5.
 - On the 7862 nothing of round 28 has been reported: the double tap "Turn off screen" is the tile's command and the same
   double tap brings the screen back; the swipe down is the quick settings panel; the slider of com.syu.music has no knob.
@@ -119,30 +121,6 @@ The owner's test of round 28 on the A55, 2026-11-27 [H]:
 The second settings screen crashed in the A55's release build (standard release 1.2.1, Android 17, the owner's crash log of 2026-11-25): R8 removed the `(Context, AttributeSet)` constructor of a preference, which the inflater calls by reflection.
 A3 keeps them (`proguard-rules.pro`), but a release cannot be built in a session, so the fix is [V] only by reading the
 rules. The owner opens the settings of a release build to see.
-
-### KI-54 Direct boot hung the A55 at boot (round 28, A7)
-The owner, 2026-11-26 [H]: after installing the round 28 build the A55 stayed on "Powered by Android" at a restart;
-safe mode, which leaves the launcher out, booted. The cause, read in the code [V; no log of the hang]: the Launcher
-activity was direct boot aware (`baa2432fc`), so Android made it before the user's first unlock. Its field initializer
-`helpers = new Helpers()` runs before `onCreate()` and its lock check, and loading `Helpers` opened the credential
-encrypted file `HelpersPrefsSus` in a static field. Android refuses that before the unlock with an
-`IllegalStateException`, so the activity could not be made and the home was started again and again.
-- `e8fc35713`: the attribute taken off at once, so every build starts after the unlock as before round 28.
-- `b21482ef1`: `Helpers` opens the file at the first use; `StorageAtClassLoadTest` scans the sources so that no static
-  field or block reads storage (it catches the old line); `LockedStartViewTest` makes the activity with a locked storage
-  that throws. Direct boot comes from the placeholder `launcherDirectBoot`: **on in debug builds, off in release**, until
-  the owner confirms it.
-- To try on the A55 with a debug build (it installs over a release, the same key): a restart with a PIN and one without.
-  The wallpaper should show before the unlock, the home screen after it, with `Launcher: direct boot, waiting for the
-  user's unlock` and `LauncherApplication: unlocked, starting` in the log. If it hangs again: `adb logcat -b all` during
-  the boot (adb works before the unlock), then safe mode and One UI Home as the home app to get out.
-- **The owner's debug build, 2026-11-27** [H, crash log `2._crash_pid_27-11-2026_00-45-13`, V]: the boot no longer hangs,
-  but after the unlock the launcher came up where it was not the home app, slowly, and crashed: a
-  `NullPointerException` in `Workspace.onAttachedToWindow` (no drag controller yet) in `setContentView` of
-  `handleRelaunchActivity`. The locked activity's `recreate()` at the unlock relaunched it with its window kept.
-  `35366adbf` (round 29, D-99): at the unlock the activity ends (`finish()`) and the system starts the home the user chose;
-  `Workspace.onAttachedToWindow` no longer needs the drag controller. To try again as above, with the home app set to
-  another launcher once.
 
 ## Limits
 
@@ -290,32 +268,46 @@ Checked on 2026-11-22 [V]: unpacked that way, `--launcher .` and `--launcher . -
 for byte. The built-in assets are not affected: nothing rebuilds them by itself.
 
 ### KI-55 Round 29 on a device
-Round 29 (2026-11-27) is built, its tests are green and CI ran on every batch, but none of it was tried on a device [V:
-every commit says so]. What to look at, by the plan's points:
-- the start after a restart with a PIN and without (KI-54), the heart of a liked song, the theme colour of the PiP and
-  widget rows' buttons, the dimmed rows that are off, the two swipes (a long press and a move is no swipe; the drawer
-  opens while the finger moves);
-- folders with "Follow home screen grid", "Freeform widgets" (the drop, the frame of a resize, a new widget's frame) and
-  "Allow widgets to overlap" (nothing pushed, a widget off a PiP), with the log's `FreeformWidgets` lines;
-- the drawer (KI-57), the tab creator and its lists, the badges' slider, "Estimate below the car's threshold", the
-  settings' text size at 150 % on both screens;
-- "Display horizontal bar", "Hide the app drawer button" and "Hide the music widget", in both orientations and on the
-  7862's home screen (the page and the bar's window alike);
-- on the 7862, the keyboard of a PiP above the bars (KI-56).
+The owner's test of round 29 on the A55 and the 7862, 2026-11-27 evening [H]:
+- **Works:** the keyboard of a PiP above the bars on the 7862, and the launcher's dialogs get theirs on both (KI-56
+  closed); the restart of the debug build, the log with `direct boot, waiting for the user's unlock` and
+  `unlocked, starting` (KI-54 closed).
+- **Not right, taken up by round 30 (KI-59):** "Hide the app drawer button" with the bar on every page, and the row's
+  look; the titles of the categories dimmed; "Display horizontal bar" off left the apps list and the vertical bar's
+  corner; freeform and overlapping widgets (the frame ran away, the widget went past it); the list of widgets (a card,
+  the texts, off centre) and its crash; the dialogs' sizes and text; the change of tab in the horizontal drawer; the
+  letter bar on the 7862; no gap above the apps.
+- **No result yet:** the heart, the PiP and widget rows' buttons in the theme colour, the dimmed rows that are off, the
+  swipes, folders with "Follow home screen grid", the drag from the vertical list, the tab creator, the badges' slider,
+  "Estimate below the car's threshold", the settings' text size, "Hide the music widget".
 
-### KI-56 The 7862's keyboard above the bars rests on an assumption about Android 10
-The owner, 2026-11-27 [H]: on the 7862 a keyboard opened from a PiP comes up under the vertical and the horizontal bars.
-The cause is read from Android 10's window manager [A, no log]: the keyboard is layered just above its target, the
-topmost window that may take it, and the panes of the PiPs may while the bars' windows above them may not. `ImeAnchor`
-(`f727fc0ed`, D-100) adds a 1×1 window of the bars' type above them that is such a target and takes no touch or focus.
-To check on the 7862: the keyboard from a PiP's app with the bars shown; that the launcher's own dialogs with a text
-field still get their keyboard; nothing of it on the A55 (Android 11 and later have no anchor).
-
-### KI-57 The drawer's changes of round 29 have no view test
+### KI-57 The drawer's changes of rounds 29 and 30 have no view test
 The drawer's pane (`AppsCustomizeTabHost`) does not inflate in Robolectric, so the view tests stop at its parts
 (`AppsVerticalView`, `LetterScroller`, `WidgetsListView`, `DrawerTabsFragment`) [V]. Not tried as a whole: the drag from
 the vertical list (`27f51efc0`), the letter scroller following the list (`f921f41d6`), the spacing (`2d48449f4`), the
 apps of a new tab after a swipe (`25c25f633`), the widgets' list with its drag (`5c3c8bc19`), and the pager's pages left
 empty while a list covers it and filled when it is shown, with the fix of the pager showing under the widgets' list
-when the drawer opened on them (`77f440135`). To look at: a switch of "Scrolling" between vertical and horizontal while
-the launcher runs, the widgets' tab, and the drag of an app and of a widget to the home screen.
+when the drawer opened on them (`77f440135`). Round 30 adds: the list's cells cropped to their previews and their texts
+(`096a78edd`), the gap above the apps (`cbf38e50a`), the letter bar's size (`dc77d55e3`) and every tab's pages in one
+pager (`1435c468b`). To look at: a switch of "Scrolling" between vertical and horizontal while the launcher runs, the
+widgets' tab, the drag of an app and of a widget to the home screen, and the swipe and the tap between tabs with
+horizontal pages.
+
+### KI-59 Round 30 on a device
+Round 30 (2026-11-27, evening) is built, its tests are green and CI ran on every batch, but none of it was tried on a
+device [V: every commit says so]. What to look at:
+- the list of widgets: no crash while previews load (`ebe752b53`), the widgets without a card, their name, size and
+  description, the shortcuts' "Shortcut", "1 widget, 3 shortcuts" in the language, the rows centred under the search
+  field;
+- "Freeform widgets" and "Allow widgets to overlap": the widget drawn in its frame, dropped where it is let go, the resize
+  frame on it while it is dragged, a tap beside it changing nothing (`b9b3df2d7`, `824f1f167`; the `FreeformWidgets`
+  lines). A widget placed before may look larger or smaller once: its frame was kept in the laid-out size;
+- "Hide the app drawer button" with the bar on every page and with the auto-hide bar (`bc63f2c50`);
+- "Display horizontal bar" off with the vertical bar on every page: no apps list, the vertical bar at the whole height on
+  every page (`91c8828a3`);
+- the titles of the categories (`7e4191d34`), the row of "Hide the app drawer button" (`12194c5ca`);
+- the drawer: the gap at the top, the letter bar on the 7862, the swipe and the tap between tabs with horizontal pages
+  (KI-57);
+- the dialogs: the background selector, the colour picker and the lists of apps one size in landscape, as wide in
+  portrait (`0c748c6a5`); their text as the settings' (`e42cbbd54`), also at 150 %.
+

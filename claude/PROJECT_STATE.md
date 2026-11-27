@@ -1,6 +1,16 @@
 # Project state
 
-**Snapshot: 2026-11-27, `testBranch` after round 29 (planned and implemented in one session from the plan
+**Snapshot: 2026-11-27, evening, `testBranch` after round 30 (planned and implemented in one session from the plan
+`prompts/archive/plan-2026-11-27-round-30.md`; 14 code commits `ebe752b53` … `e42cbbd54` in five batches, CI runs 633 to
+637). After the owner's test of round 29: the crash of the widget list's previews (each request carries its size); the
+category titles in their colour; "Hide the app drawer button" in the bar's window too (`BarWindowWidths`) and styled as
+the bar's switches; "Display horizontal bar" off leaves no list and no corner for the vertical bar; a freely placed
+widget drawn exactly in its frame, with a resize frame that stays on it (D-105); the list of widgets as the widgets
+themselves with the brief's texts, centred (D-104); a gap above the drawer's apps; the letter bar as thick on every
+screen; the horizontal drawer's tabs as one row of pages (D-103); the dialogs one size and their text as the settings'
+(D-101, D-102); the root check off the main thread. The keyboard anchor (KI-56) and the restart (KI-54) work. None of
+round 30 was tried on a device (KI-59).
+Before it, round 29 (2026-11-27, `testBranch` after round 29 (planned and implemented in one session from the plan
 `prompts/archive/plan-2026-11-27-round-29.md`; 27 code commits `e13ee4080` … `77f440135` in nine batches, CI runs 624 to
 632, CI in batches since this round, D-93). Built: a faster CI; the start at the unlock without a relaunch (D-99, KI-54);
 the liked heart's red, the theme colour of the PiP and widget rows' buttons, dimmed rows, swipes only from a clear move
@@ -69,6 +79,7 @@ What the owner wants from it, as the briefs and chat reports show [H]:
 | Active brief | **None.** Round 28's brief is archived (`prompts/archive/sonnet-prompt-2026-11-25-round-28.md`); round 29 had a plan of the session, not a brief [V]. |
 | Last code change | **Round 22, 2026-11-18/19:** Robolectric for tests of views (D-68); the bar's music buttons, title and artist bound while its window stays (KI-35); the bar's title and artist sized the same with "Resizable horizontal bar" off; the guides below the app bar and the settings list keeping its place (D-73); "Transparent status bar" moved (D-72); the statistics window in landscape where the creator puts it, and on the home screen under the bars and over the panes (D-69); the vertical bar's width (D-70) and the number of icons on each bar (D-71) may be set; 10 code commits `62fc51126` … `5a6272396` [V]. **The owner, 2026-11-19 on the 7862 [H]: all work**, except a jump of the second settings screen scrolled up after a return; `16f256ee8` sizes the settings rows when they are bound. **The owner confirmed that fix too (2026-11-19).** Then `660b032e6`: a widget's configuration opened by the system (KI-41), waiting for the owner's test. Report: `reports/implementation_report_2026-11-15.md`, section "Round 22". |
 | Round 27 | **2026-11-22:** after the owner's A55 test of round 26 ("everything works"). The position slider on every unit (`PositionSlider.Mode` SEEK / SHOW / GREY), a session's own app moved where its session allows it (`MediaTransportController.canSeek`, `seekToPosition`); "Start on wake" (`WakeAutostartPlan`, `ColdStart.startForWake`, the dialog's list argument); `canbus_library/README.md` on unpacking the zips for `--launcher`. 4 code commits `7ec71e8dc` … `58b5c3365` [V]. **Waiting for the owner's test (A55, 7862).** Report: `reports/implementation_report_2026-11-15.md`, section "Round 27". |
+| Round 30 | **2026-11-27, evening:** after the owner's test of round 29 on the A55 and the 7862 (logs of freeform and overlap widgets, of a restart, a crash). 14 code commits in five batches, every batch green (runs 633 to 637); see `reports/implementation_report_2026-11-15.md`, section "Round 30". Decisions D-101 … D-105, D-89, D-96, D-99, D-100 changed; KI-59 new; KI-54, KI-56 closed. **Waiting for the owner's test (A55, 7862).** |
 | Round 29 | **2026-11-27:** after the owner's A55 test of rounds 27 and 28, a crash log of the debug build after a restart, the owner's fixes and requests, the 7862's keyboard under the bars. 27 code commits in nine batches, every batch green (runs 624 to 632); see `reports/implementation_report_2026-11-15.md`, section "Round 29", for the list, the deviations and what was not tested. Decisions D-93 … D-100, D-25, D-87 … D-92 changed; KI-55 … KI-58 new; KI-22, KI-28, KI-37, KI-50, KI-52 closed. **Waiting for the owner's test (A55, 7862).** |
 | Round 28 | **2026-11-26:** after the owner's 25 points, logs and 20 crash logs of 2026-11-25. 39 code commits, the last run green (four red runs on the way, each fixed): see `reports/implementation_report_2026-11-15.md`, section "Round 28", for the list, the deviations and what is not built. Decisions D-84 … D-92, D-81 and D-83 changed; KI-51 … KI-53, KI-33 accepted. **Waiting for the owner's test (A55, 7862).** |
 | Round 26 | **2026-11-21/22:** after the owner's A55 test of round 25 ("everything works but the dialogs after a turn") and the 7870 tester's report. A turn on a phone: the plain dialogs come back with their texts (`SettingsDialogMemory`, `DialogTurn`), a download, a wallpaper save and a canbus import go on with their dialogs (`HandedWork`), the colour picker stores its colour and the app lists come back (`ColorPickerTargets`), the background selector is sized from its window and draws the wallpaper center-crop (`CenterCropDrawable`); "App icons" without "Resizable" (D-71 changed); "Fit the apps to their icons" and "Hide the apps" under the widget bar (`WidgetBarPlan.shares`, D-80); the 7870's BT cover after a start or a title that comes back (`StockBtCover`), file covers read as com.syu.media reads them (`FileCover`), the cover in a pause and on a rebuilt widget (`PausedCover`), the position slider (`PositionSlider`, D-81). 12 code commits `edcee91a9` … `6c525ff3e` [V]. **Waiting for the owner's test (A55, 7862) and the tester's (7870).** Report: `reports/implementation_report_2026-11-15.md`, section "Round 26". |
@@ -167,36 +178,28 @@ JUnit 5 JVM tests: 110 files, 1011 tests, no instrumented tests. CI runs on GitH
 
 ## Active tasks
 
-**Round 29 (2026-11-27), waiting for the owner's test (KI-55):** nothing of it was tried on a device. The list to check:
+**Round 30 (2026-11-27, evening), waiting for the owner's test (KI-59):** nothing of it was tried on a device. The list:
 
-On the A55 (Android 17, standard flavor; [x] = the owner confirmed it on 2026-11-27, before round 29):
-- [x] round 27: the slider, "Start on wake", "Start on boot" (KI-50 closed); the wake after a long sleep (P-11)
-- [x] round 28: the vertical bar at a swipe (A4), the statistics window after a restart (A5), the slider's look and touch
-  (B1, B2); KI-22, KI-28, KI-37
-- [ ] a restart of the debug build with a PIN and without, with this launcher as the home app and with another one
-  (KI-54, D-99): the wallpaper before the unlock, then the chosen home, no crash
-- [ ] a release build's second settings screen (A3, KI-53); the logcat stop after a restart (A6)
-- [ ] the heart of a liked song (red), the PiP and widget rows' buttons in the theme colour after a change, rows that are
-  off look dimmed (the badges' screen too)
-- [ ] the swipes: a long press and a move is no swipe; the drawer opens while the finger moves; the double tap (D1 to D3)
-- [ ] folders with "Follow home screen grid": the icons, text size, colour and shadow of the home screen
-- [ ] "Freeform widgets": a widget lands where it is let go, the frame of a resize stays round it, a new widget has its
-  frame; "Allow widgets to overlap": nothing is pushed while dragging, a widget let go over a PiP moves off it (the log's
-  `FreeformWidgets` lines)
-- [ ] the drawer (KI-57): drag from the vertical list more than once, the letter scroller, the spacing with the tabs
-  above and below, a new tab's apps after a swipe, the widgets' list (search, rows, drag), a switch between vertical and
-  horizontal
-- [ ] the tab creator: sizes, the checkbox beside its text, the dialogs after a turn, "Select apps"/"Hide apps"/"Show
-  hidden apps"; the keep rule and its summary with each of the three rules (D-94)
-- [ ] the badges' slider (15 to 35 %), the number's size, a wide number (D-95)
-- [ ] "Estimate below the car's threshold" off and on (where a car is connected)
-- [ ] the settings' text size at 70 % and 150 % on both screens and in the dialogs; the creator's screens unchanged
-- [ ] "Display horizontal bar", "Hide the app drawer button", "Hide the music widget", in both orientations
-- [ ] the welcome texts (I2), BOOT_COMPLETED at a wake (I1)
+On the A55 ([x] = the owner confirmed it on 2026-11-27, evening, after round 29):
+- [x] the restart of the debug build (KI-54 closed); the launcher's dialogs get their keyboard
+- [ ] the list of widgets: no crash; the widgets without a card, name, size and description under each, "Shortcut" in the
+  accent, "1 widget, 3 shortcuts"; the rows centred under the search field
+- [ ] "Freeform widgets" and "Allow widgets to overlap": drawn in the frame, dropped where let go, the resize frame on the
+  widget, a tap beside it changes nothing (a widget placed before may need one resize)
+- [ ] "Hide the app drawer button" with the bar on every page and with auto-hide; the row looks like the bar's switches
+- [ ] "Display horizontal bar" off with the vertical bar on every page: no list, the vertical bar at the whole height
+- [ ] the titles of the categories in their colour
+- [ ] the drawer: the gap at the top; with horizontal pages, a swipe and a tap between tabs slide
+- [ ] the background selector, the colour picker and the lists of apps one size in landscape, as wide in portrait; the
+  dialogs' text as the settings', also at 150 %
+- [ ] still without a result from round 29 (KI-55): the heart, the PiP rows' buttons in the theme colour, the dimmed
+  rows, the swipes, folders with "Follow home screen grid", the drag from the vertical list, the tab creator, the
+  badges' slider, "Estimate below the car's threshold", the settings' text size, "Hide the music widget"
 
 On the 7862 (Android 10, system flavor):
-- [ ] the keyboard of a PiP's app above the vertical and the horizontal bars; the launcher's own dialogs still get a
-  keyboard (KI-56)
+- [x] the keyboard of a PiP's app above the vertical and the horizontal bars; the launcher's own dialogs still get a
+  keyboard (KI-56 closed)
+- [ ] the letter bar in the drawer and the list of widgets, thicker; the gap above the apps; the dialogs
 - [ ] the bars' three switches on the home screen (the page and the bar's window alike), the widgets' list, the swipes,
   the theme colour; that nothing else changed
 - [ ] round 28's points for the 7862 (KI-51): "Turn off screen" and its double tap back, the swipe down's quick settings,
@@ -243,7 +246,7 @@ The hardcoded OpenWeather key is **not** an open issue: the owner decided to kee
 |---|---|
 | [`CLAUDE.md`](CLAUDE.md) | Rules, commands, Opus/Sonnet workflow |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | What exists and where: modules, subsystems, data, services, privileges |
-| [`DECISIONS.md`](DECISIONS.md) | Why: 100 decisions with status, who decided and the source |
+| [`DECISIONS.md`](DECISIONS.md) | Why: 105 decisions with status, who decided and the source |
 | [`ROADMAP.md`](ROADMAP.md) | History in milestones, confirmed plans, recommendations |
 | [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md) | One current list: problems, accepted limits, unverified reports |
 | [`prompts/README.md`](prompts/README.md) | Catalogue of all briefs → commits → status |
