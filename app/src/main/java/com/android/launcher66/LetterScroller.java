@@ -15,8 +15,9 @@ import java.util.List;
 /**
  * The fast scroller of the app drawer's vertical list, on its right: a thin track and a handle in the settings' accent
  * ({@link ThemeAccent}). Touching the track shows a bubble beside the handle, in the accent with a white letter, and dragging
- * the handle scrolls the list to the place of that letter ({@link LetterIndex}); the bubble follows the handle up and
- * down and fades a moment after the finger is lifted.
+ * the handle scrolls the list smoothly to the same fraction of its way ({@link ScrollFraction}); the bubble shows the
+ * letter of the first app in view, follows the handle up and down and fades a moment after the finger is lifted. The
+ * list hides the scroller when it does not scroll.
  *
  * <p>The bubble is one shape, a circle and an isosceles triangle whose tip points at the handle, so that it is symmetrical in
  * its cross-section and never an irregular shape ({@code Path}). A touch outside the strip of the track is not taken (the
@@ -25,8 +26,8 @@ import java.util.List;
 final class LetterScroller extends View {
 
     interface Listener {
-        /** The finger is on this letter. */
-        void onLetter(String letter);
+        /** The finger puts the handle at this fraction of the track, 0 its top, 1 its bottom. */
+        void onFraction(float fraction);
     }
 
     private static final long FADE_DELAY_MS = 350L;
@@ -88,14 +89,36 @@ final class LetterScroller extends View {
         invalidate();
     }
 
-    /** The list scrolled by itself: the handle goes to the letter of its first item (not while the finger is on it). */
-    void setCurrent(String letter) {
-        if (mTouching || letter == null) {
+    /** The list scrolled: the handle goes to its place (not while the finger is on it, the finger puts it there). */
+    void setFraction(float fraction) {
+        if (mTouching) {
             return;
         }
-        mLetter = letter;
-        mFraction = LetterIndex.fractionOfLetter(mAlphabet, letter);
+        mFraction = Math.max(0f, Math.min(1f, fraction));
         invalidate();
+    }
+
+    /** The letter of the first app in view, for the bubble. */
+    void setBubbleLetter(String letter) {
+        if (letter != null && !letter.equals(mLetter)) {
+            mLetter = letter;
+            invalidate();
+        }
+    }
+
+    /** Whether the finger is on the handle. */
+    boolean isTouching() {
+        return mTouching;
+    }
+
+    /** The place of the handle, 0..1 (a test asks). */
+    float fraction() {
+        return mFraction;
+    }
+
+    /** The letter the bubble shows (a test asks). */
+    String bubbleLetter() {
+        return mLetter;
     }
 
     /** The width of the strip of the track that takes touches. */
@@ -139,13 +162,9 @@ final class LetterScroller extends View {
         float top = getPaddingTop();
         float height = Math.max(1f, getHeight() - top - getPaddingBottom());
         float fraction = Math.max(0f, Math.min(1f, (y - top) / height));
-        String letter = LetterIndex.letterAtFraction(mAlphabet, fraction);
         mFraction = fraction;
-        if (letter != null) {
-            mLetter = letter;
-            if (mListener != null) {
-                mListener.onLetter(letter);
-            }
+        if (mListener != null) {
+            mListener.onFraction(fraction);
         }
         invalidate();
     }

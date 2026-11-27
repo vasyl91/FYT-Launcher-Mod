@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The app drawer scrolling vertically (F2): every app is in the list, in the columns of the setting, and the scroller of the
- * letters puts the list at the first app of a letter. The icons are plain text views here (the pager's icon needs the
+ * The app drawer scrolling vertically (F2): every app is in the list, in the columns of the setting; the scroller of the
+ * letters moves the list by pixels to the fraction of the finger (ScrollFraction) and is there only when the list scrolls. The icons are plain text views here (the pager's icon needs the
  * launcher's grid), which is the point of {@link AppsVerticalView.IconBinder}.
  */
 @RunWith(RobolectricTestRunner.class)
@@ -105,20 +105,67 @@ public class AppsVerticalViewTest {
     }
 
     @Test
-    public void aTouchOnTheTrackGivesTheLetterOfThePlaceAndATouchBesideItNone() {
-        AppsVerticalView view = view(4, 7);
-        final List<String> letters = new ArrayList<>();
-        view.scroller().setListener(letters::add);
+    public void aTouchOnTheTrackGivesThePlaceOfTheFingerAndATouchBesideItNone() {
+        AppsVerticalView view = view(3, 2);
+        final List<Float> fractions = new ArrayList<>();
+        view.scroller().setListener(fractions::add);
         long now = System.currentTimeMillis();
         MotionEvent beside = MotionEvent.obtain(now, now, MotionEvent.ACTION_DOWN, 10f, 700f, 0);
         assertTrue("a touch away from the track is not taken", !view.scroller().onTouchEvent(beside));
-        MotionEvent top = MotionEvent.obtain(now, now, MotionEvent.ACTION_DOWN, 790f, 2f, 0);
+        MotionEvent top = MotionEvent.obtain(now, now, MotionEvent.ACTION_DOWN, 790f, 0f, 0);
         assertTrue(view.scroller().onTouchEvent(top));
-        MotionEvent bottom = MotionEvent.obtain(now, now + 10, MotionEvent.ACTION_MOVE, 790f, 1398f, 0);
+        MotionEvent bottom = MotionEvent.obtain(now, now + 10, MotionEvent.ACTION_MOVE, 790f, 1400f, 0);
         view.scroller().onTouchEvent(bottom);
-        assertEquals("A", letters.get(0));
-        assertEquals("W", letters.get(letters.size() - 1));
-        view.scroller().onTouchEvent(MotionEvent.obtain(now, now + 20, MotionEvent.ACTION_UP, 790f, 1398f, 0));
+        assertEquals(0f, fractions.get(0), 0.001f);
+        assertEquals(1f, fractions.get(fractions.size() - 1), 0.001f);
+        view.scroller().onTouchEvent(MotionEvent.obtain(now, now + 20, MotionEvent.ACTION_UP, 790f, 1400f, 0));
+    }
+
+    @Test
+    public void theHandleScrollsTheListSmoothlyByPixelsAndTheBubbleHasTheLetterInView() {
+        // six rows of 700 px, two in view: the list can scroll 2800 px
+        AppsVerticalView view = view(3, 2);
+        RecyclerView list = view.list();
+        int room = list.computeVerticalScrollRange() - list.computeVerticalScrollExtent();
+        assertTrue("the list scrolls, by " + room, room > 0);
+        // A quarter of the way: a place inside a row, not the start of a letter's row
+        view.scrollToFraction(0.25f);
+        relayout(view);
+        assertEquals("by pixels, to the same fraction", Math.round(0.25f * room), list.computeVerticalScrollOffset(), 2);
+        assertEquals("the handle follows", 0.25f, view.scroller().fraction(), 0.01f);
+        int first = view.firstVisible();
+        assertEquals(LetterIndex.letterAt(titles(), first), view.scroller().bubbleLetter());
+        view.scrollToFraction(1f);
+        relayout(view);
+        assertEquals(room, list.computeVerticalScrollOffset(), 2);
+        // the last two rows in view: the first app in view is "Music"
+        assertEquals(LetterIndex.letterAt(titles(), view.firstVisible()), view.scroller().bubbleLetter());
+        assertEquals("M", view.scroller().bubbleLetter());
+    }
+
+    @Test
+    public void aListThatDoesNotScrollHasNoScroller() {
+        // 18 apps in four columns are five rows, seven fit: nothing scrolls
+        AppsVerticalView view = view(4, 7);
+        assertEquals(View.GONE, view.scroller().getVisibility());
+        // fewer rows in view: it scrolls, the scroller comes
+        view.setGrid(4, 2);
+        relayout(view);
+        assertEquals(View.VISIBLE, view.scroller().getVisibility());
+    }
+
+    private static List<String> titles() {
+        List<String> titles = new ArrayList<>();
+        for (AppInfo info : apps()) {
+            titles.add(info.title.toString());
+        }
+        return titles;
+    }
+
+    private static void relayout(AppsVerticalView view) {
+        view.measure(View.MeasureSpec.makeMeasureSpec(800, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(1400, View.MeasureSpec.EXACTLY));
+        view.layout(0, 0, 800, 1400);
     }
 
     @Test

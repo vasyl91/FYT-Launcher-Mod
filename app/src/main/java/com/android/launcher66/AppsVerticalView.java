@@ -76,15 +76,14 @@ public final class AppsVerticalView extends FrameLayout {
         mList.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                int first = mManager.findFirstVisibleItemPosition();
-                if (first >= 0) {
-                    mScroller.setCurrent(LetterIndex.letterAt(mTitles, first));
-                }
+                followList();
             }
         });
+        // A change of the list's size or of its rows may make it scroll, or no longer
+        mList.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> followList());
         addView(mList, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         mScroller = new LetterScroller(context);
-        mScroller.setListener(this::scrollToLetter);
+        mScroller.setListener(this::scrollToFraction);
         addView(mScroller, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT, Gravity.END));
     }
 
@@ -291,10 +290,41 @@ public final class AppsVerticalView extends FrameLayout {
     /** The list back at its top (the drawer was closed). */
     void scrollToTop() {
         mList.scrollToPosition(0);
-        mScroller.setCurrent(LetterIndex.letterAt(mTitles, 0));
+        mScroller.setFraction(0f);
+        mScroller.setBubbleLetter(LetterIndex.letterAt(mTitles, 0));
     }
 
-    /** The finger on the scroller is on a letter: the list goes to the row of its first app. */
+    /**
+     * The scroller follows the list (ScrollFraction): shown only while the list can scroll, the handle at the list's place,
+     * the bubble with the letter of the first app in view.
+     */
+    private void followList() {
+        int range = mList.computeVerticalScrollRange();
+        int extent = mList.computeVerticalScrollExtent();
+        boolean scrolls = ScrollFraction.scrolls(range, extent) && !mApps.isEmpty();
+        int visibility = scrolls ? VISIBLE : GONE;
+        if (mScroller.getVisibility() != visibility && !mScroller.isTouching()) {
+            mScroller.setVisibility(visibility);
+        }
+        mScroller.setFraction(ScrollFraction.of(mList.computeVerticalScrollOffset(), range, extent));
+        int first = mManager.findFirstVisibleItemPosition();
+        if (first >= 0) {
+            mScroller.setBubbleLetter(LetterIndex.letterAt(mTitles, first));
+        }
+    }
+
+    /** The finger on the scroller puts the list at this fraction of its way, by pixels, so it moves smoothly. */
+    void scrollToFraction(float fraction) {
+        int range = mList.computeVerticalScrollRange();
+        int extent = mList.computeVerticalScrollExtent();
+        int target = ScrollFraction.offsetFor(fraction, range, extent);
+        int dy = target - mList.computeVerticalScrollOffset();
+        if (dy != 0) {
+            mList.scrollBy(0, dy);
+        }
+    }
+
+    /** The list goes to the row of the first app of a letter. */
     void scrollToLetter(String letter) {
         int position = LetterIndex.positionOf(mTitles, letter);
         if (position >= 0) {

@@ -222,7 +222,9 @@ imported; they were removed on 2026-11-12 (`KNOWN_ISSUES.md` KI-03). KSP remains
   widgets' pages. `applyFilter()` narrows `mAllApps` first by the tab (`DrawerTabs.appsOf`) and then by the search field
   (`L/AppSearch`, `L/AppSearchBar`); every change of the list goes through it.
 - **Vertical by default:** `L/AppsVerticalView` (a `RecyclerView` in a `FrameLayout`, with the swipe that changes the
-  tab) and `L/LetterScroller` (the letters and the bubble, `L/LetterIndex`); the pager is the horizontal choice.
+  tab) and `L/LetterScroller` (the handle and the bubble, `L/LetterIndex`; since round 29 the handle is the list's
+  fraction of its way, `L/ScrollFraction`, and the scroller is hidden when the list does not scroll); the pager is the
+  horizontal choice.
   An icon of the list is dragged through `AppsCustomizePagedView.beginVerticalDrag` (round 29, `L/VerticalDrag`),
   not through the pager's long-press checks.
   The grid is `L/AppsGrid` (plain Java) through `DeviceProfile.updateAllAppsGrid` and the keys `all_apps_grid_*`.
