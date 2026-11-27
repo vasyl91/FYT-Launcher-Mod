@@ -930,7 +930,7 @@ the start of the round).
   `resolveIntent` is the system's (KI-31).
 
 **Deviations from the plan:**
-- Commit 6 (KI-59): the Robolectric test checks the list's visibility and the vertical bar's geometry through
+- Commit 6: the Robolectric test checks the list's visibility and the vertical bar's geometry through
   `WidgetBarLayout` and `BarLayouts`, not on a built page (the Launcher does not inflate in Robolectric); likewise commit 5
   tests the window's widths in `BarWindowWidths`, not on the window.
 - Commit 8: no Robolectric test of `resizeTo` on the widget's own place (a `CellLayout` needs a `Launcher`); the geometry
