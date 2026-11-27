@@ -229,13 +229,14 @@
             android:key="display_horizontal_bar"
             android:defaultValue="true"
             android:title="@string/display_horizontal_bar" />
-        <!-- The bar without its app drawer button: the swipe up opens the drawer then (DrawerAccess) -->
-        <com.android.launcher66.settings.CustomSwitchPreference
+        <!-- The bar without its app drawer button: the swipe up opens the drawer then (DrawerAccess). A switch of the
+             bar like the rows around it (the owner's style of c79d4cb) -->
+        <SwitchPreferenceCompat
+            app:singleLineTitle="false"
             android:key="horizontal_bar_no_drawer"
             android:defaultValue="false"
             android:title="@string/horizontal_bar_no_drawer"
-            android:summaryOn="@string/horizontal_bar_no_drawer_on"
-            app:layout="@layout/nested_preference_category_switch" />
+            android:summaryOn="@string/horizontal_bar_no_drawer_on" />
         <com.android.launcher66.settings.CustomNoSwitchPreference
             android:key="horizontal_bar_top"
             android:defaultValue="false"
