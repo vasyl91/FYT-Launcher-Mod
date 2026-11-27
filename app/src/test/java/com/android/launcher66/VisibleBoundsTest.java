@@ -43,4 +43,22 @@ class VisibleBoundsTest {
                 VisibleBounds.in(100f, 200f, 200f, 300f, new float[] {0.2f, 0.2f, 0.8f, 0.8f}), 0.001f);
         assertArrayEquals(new float[] {100f, 200f, 200f, 300f}, VisibleBounds.in(100f, 200f, 200f, 300f, null), 0.001f);
     }
+
+    @Test
+    void theSeenPartBackOnThePixels() {
+        // A preview of 700x400 with a widget of 300x200 drawn at the top, in the middle
+        int[] argb = new int[700 * 400];
+        for (int y = 0; y < 200; y++) {
+            for (int x = 200; x < 500; x++) {
+                argb[y * 700 + x] = 0xff336699;
+            }
+        }
+        assertArrayEquals(new int[] {200, 0, 300, 200}, VisibleBounds.pixels(VisibleBounds.of(argb, 700, 400), 700, 400));
+    }
+
+    @Test
+    void aWholeOrEmptyPictureIsKeptWhole() {
+        assertArrayEquals(new int[] {0, 0, 64, 48}, VisibleBounds.pixels(VisibleBounds.WHOLE, 64, 48));
+        assertArrayEquals(new int[] {0, 0, 64, 48}, VisibleBounds.pixels(null, 64, 48));
+    }
 }

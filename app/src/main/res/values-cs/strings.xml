@@ -622,8 +622,19 @@
     <string name="icon_text_size">Nastavit velikost textu ikon</string>
     <string name="search_apps_hint">Hledat aplikace</string>
     <string name="search_widgets_hint">Hledat widgety</string>
-    <string name="widget_list_widgets">Widgety: %1$d</string>
-    <string name="widget_list_shortcuts">Zkratky: %1$d</string>
+    <plurals name="widget_count">
+        <item quantity="one">%d widget</item>
+        <item quantity="few">%d widgety</item>
+        <item quantity="many">%d widgetu</item>
+        <item quantity="other">%d widgetů</item>
+    </plurals>
+    <plurals name="shortcut_count">
+        <item quantity="one">%d zkratka</item>
+        <item quantity="few">%d zkratky</item>
+        <item quantity="many">%d zkratky</item>
+        <item quantity="other">%d zkratek</item>
+    </plurals>
+    <string name="widget_list_shortcut">Zkratka</string>
     <string name="hide_apps">Skrýt aplikace</string>
     <string name="show_hidden_apps">Zobrazit skryté aplikace</string>
     <string name="drawer_tab_main">Aplikace</string>

@@ -31,9 +31,14 @@ import java.util.Locale;
 
 /**
  * The drawer's "Widgets" as a list of apps (G1 of round 28, built in round 29): a search field on top, then one row for
- * each app that has widgets or shortcuts, with its icon, its name and "Widgets: 1, Shortcuts: 3"; a tap opens the row
+ * each app that has widgets or shortcuts, with its icon, its name and "1 widget, 3 shortcuts"; a tap opens the row
  * (one at a time: opening one closes the one open) and shows the app's widgets one under the other, centred, then its
  * shortcuts in rows. The letter scroller of the vertical drawer is at the right.
+ *
+ * <p>The look (the owner on the A55, 2026-11-27, and G1's brief): a widget is its preview alone, as large as it is drawn,
+ * with no card of the old pager round it; under it, centred, each on its line, its name, its size in cells and its
+ * description where it has one. A shortcut is its icon, its name and "Shortcut" in the accent colour. The rows are 90 %
+ * as wide as the search field and centred under it ({@link #LIST_SHARE}).
  *
  * <p>The widgets and shortcuts are the pager's own cells ({@link Host#makeCell}): a PagedViewWidget with its
  * PendingAddWidgetInfo or PendingAddShortcutInfo, its press and long press as on a page of the pager, so they are dragged
@@ -64,7 +69,16 @@ public final class WidgetsListView extends FrameLayout {
 
         /** Whether it is a shortcut (not a widget). */
         boolean isShortcut(Object rawInfo);
+
+        /** A widget's size in cells {columns, rows}, or null for a shortcut. */
+        int[] entrySpan(Object rawInfo);
+
+        /** A widget's description (Android 12 and later), or null. */
+        CharSequence entryDescription(Object rawInfo);
     }
+
+    /** The rows' width against the search field's (the owner, 2026-11-27). */
+    static final float LIST_SHARE = 0.9f;
 
     private static final int TYPE_APP = 0;
     private static final int TYPE_CONTENT = 1;
@@ -101,7 +115,8 @@ public final class WidgetsListView extends FrameLayout {
         mList.setAdapter(mAdapter);
         mList.setClipToPadding(false);
         int pad = Math.round(8 * mDensity);
-        mList.setPadding(pad * 2, pad, pad * 2 + Math.round(32 * mDensity), pad);
+        // The sides are set from the search field's width once it is laid out (alignToSearch)
+        mList.setPadding(pad * 2, pad, pad * 2, pad);
         mList.setOverScrollMode(OVER_SCROLL_NEVER);
         listFrame.addView(mList, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         mScroller = new LetterScroller(context);
@@ -116,6 +131,23 @@ public final class WidgetsListView extends FrameLayout {
         mList.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> followList());
         column.addView(listFrame, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, 0, 1f));
         addView(column, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        mSearch.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> alignToSearch());
+    }
+
+    /**
+     * The rows {@link #LIST_SHARE} as wide as the search field's box and centred under it: the same padding on both sides
+     * of the list (it was larger on the right, for the letter scroller, and the rows stood off the field's middle).
+     */
+    private void alignToSearch() {
+        int box = mSearch.getWidth() - mSearch.getPaddingLeft() - mSearch.getPaddingRight();
+        int width = mList.getWidth() > 0 ? mList.getWidth() : mSearch.getWidth();
+        if (box <= 0 || width <= 0) {
+            return;
+        }
+        int side = WidgetGroups.sidePadding(width, box, LIST_SHARE);
+        if (mList.getPaddingLeft() != side || mList.getPaddingRight() != side) {
+            mList.setPadding(side, mList.getPaddingTop(), side, mList.getPaddingBottom());
+        }
     }
 
     void setHost(Host host) {
@@ -220,6 +252,24 @@ public final class WidgetsListView extends FrameLayout {
         }
     }
 
+    /** A line of text centred under a preview. */
+    private void addLine(LinearLayout parent, CharSequence text, int color, float sp, boolean bold) {
+        if (text == null || text.length() == 0) {
+            return;
+        }
+        TextView line = new TextView(getContext());
+        line.setText(text);
+        line.setTextColor(color);
+        line.setTextSize(TypedValue.COMPLEX_UNIT_SP, sp);
+        line.setGravity(Gravity.CENTER_HORIZONTAL);
+        if (bold) {
+            line.setTypeface(line.getTypeface(), Typeface.BOLD);
+        }
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        lp.topMargin = dp(4);
+        parent.addView(line, lp);
+    }
+
     private int dp(float value) {
         return Math.round(value * mDensity);
     }
@@ -320,8 +370,11 @@ public final class WidgetsListView extends FrameLayout {
         TextView arrow = (TextView) row.getChildAt(2);
         icon.setImageDrawable(mHost == null ? null : mHost.appIcon(group.packageName));
         ((TextView) text.getChildAt(0)).setText(group.appLabel);
+        // "1 widget, 3 shortcuts": the plural form of each count in the language, a count of none left out (G1)
+        android.content.res.Resources res = getResources();
         ((TextView) text.getChildAt(1)).setText(WidgetGroups.counts(group.widgetCount(), group.shortcutCount(),
-                getContext().getString(R.string.widget_list_widgets), getContext().getString(R.string.widget_list_shortcuts),
+                res.getQuantityString(R.plurals.widget_count, group.widgetCount()),
+                res.getQuantityString(R.plurals.shortcut_count, group.shortcutCount()),
                 getContext().getString(R.string.list_separator)));
         boolean open = group.packageName.equals(mExpanded);
         arrow.setText(open ? "⌃" : "⌄");
@@ -343,12 +396,25 @@ public final class WidgetsListView extends FrameLayout {
         int width = Math.min(room, Math.round(dm.widthPixels * 0.7f));
         int height = Math.round(dm.heightPixels * 0.4f);
         for (WidgetGroups.Entry entry : group.widgets) {
+            // The preview alone (at most the box; the cell takes the preview's own size once it is loaded), then its name,
+            // its size in cells and its description, each centred on its line
             View cell = mHost.makeCell(entry.payload, content, width, height);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(width, height);
             lp.gravity = Gravity.CENTER_HORIZONTAL;
-            lp.bottomMargin = dp(8);
             content.addView(cell, lp);
             cell.post(() -> mHost.loadPreview(cell, entry.payload));
+            addLine(content, mHost.entryLabel(entry.payload), Color.WHITE, 16, true);
+            int[] span = mHost.entrySpan(entry.payload);
+            if (span != null) {
+                addLine(content, getContext().getString(R.string.widget_dims_format, span[0], span[1]),
+                        ContextCompat.getColor(getContext(), R.color.gray_medium), 14, false);
+            }
+            CharSequence description = mHost.entryDescription(entry.payload);
+            if (description != null && description.length() > 0) {
+                addLine(content, description, ContextCompat.getColor(getContext(), R.color.gray_medium), 14, false);
+            }
+            View gap = new View(getContext());
+            content.addView(gap, new LinearLayout.LayoutParams(1, dp(16)));
         }
         if (!group.shortcuts.isEmpty()) {
             FlexboxLayout shortcuts = new FlexboxLayout(getContext());
@@ -356,9 +422,23 @@ public final class WidgetsListView extends FrameLayout {
             shortcuts.setJustifyContent(JustifyContent.SPACE_EVENLY);
             int cellWidth = Math.max(1, room / 6);
             int cellHeight = Math.round(cellWidth * 1.3f);
+            int iconSize = Math.round(cellWidth * 0.7f);
             for (WidgetGroups.Entry entry : group.shortcuts) {
-                View cell = mHost.makeCell(entry.payload, shortcuts, cellWidth, cellHeight);
-                shortcuts.addView(cell, new FlexboxLayout.LayoutParams(cellWidth, cellHeight));
+                // Its icon, its name and "Shortcut" in the accent colour (G1)
+                LinearLayout item = new LinearLayout(getContext());
+                item.setOrientation(LinearLayout.VERTICAL);
+                item.setGravity(Gravity.CENTER_HORIZONTAL);
+                View cell = mHost.makeCell(entry.payload, item, iconSize, iconSize);
+                LinearLayout.LayoutParams cellLp = new LinearLayout.LayoutParams(iconSize, iconSize);
+                cellLp.gravity = Gravity.CENTER_HORIZONTAL;
+                item.addView(cell, cellLp);
+                addLine(item, mHost.entryLabel(entry.payload), Color.WHITE, 14, false);
+                addLine(item, getContext().getString(R.string.widget_list_shortcut), ThemeAccent.color(getContext()), 12,
+                        false);
+                FlexboxLayout.LayoutParams itemLp = new FlexboxLayout.LayoutParams(cellWidth,
+                        LayoutParams.WRAP_CONTENT);
+                itemLp.bottomMargin = dp(12);
+                shortcuts.addView(item, itemLp);
                 cell.post(() -> mHost.loadPreview(cell, entry.payload));
             }
             content.addView(shortcuts, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,

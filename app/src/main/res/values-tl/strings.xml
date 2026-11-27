@@ -622,8 +622,15 @@
     <string name="icon_text_size">Itakda ang laki ng text ng icon</string>
     <string name="search_apps_hint">Maghanap ng app</string>
     <string name="search_widgets_hint">Maghanap ng widget</string>
-    <string name="widget_list_widgets">Mga widget: %1$d</string>
-    <string name="widget_list_shortcuts">Mga shortcut: %1$d</string>
+    <plurals name="widget_count">
+        <item quantity="one">%d widget</item>
+        <item quantity="other">%d na widget</item>
+    </plurals>
+    <plurals name="shortcut_count">
+        <item quantity="one">%d shortcut</item>
+        <item quantity="other">%d na shortcut</item>
+    </plurals>
+    <string name="widget_list_shortcut">Shortcut</string>
     <string name="hide_apps">Itago ang mga app</string>
     <string name="show_hidden_apps">Ipakita ang mga nakatagong app</string>
     <string name="drawer_tab_main">Mga app</string>

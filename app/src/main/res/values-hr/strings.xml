@@ -622,8 +622,17 @@
     <string name="icon_text_size">Postavi veličinu teksta ikona</string>
     <string name="search_apps_hint">Pretraži aplikacije</string>
     <string name="search_widgets_hint">Traži widgete</string>
-    <string name="widget_list_widgets">Widgeti: %1$d</string>
-    <string name="widget_list_shortcuts">Prečaci: %1$d</string>
+    <plurals name="widget_count">
+        <item quantity="one">%d widget</item>
+        <item quantity="few">%d widgeta</item>
+        <item quantity="other">%d widgeta</item>
+    </plurals>
+    <plurals name="shortcut_count">
+        <item quantity="one">%d prečac</item>
+        <item quantity="few">%d prečaca</item>
+        <item quantity="other">%d prečaca</item>
+    </plurals>
+    <string name="widget_list_shortcut">Prečac</string>
     <string name="hide_apps">Sakrij aplikacije</string>
     <string name="show_hidden_apps">Prikaži skrivene aplikacije</string>
     <string name="drawer_tab_main">Aplikacije</string>

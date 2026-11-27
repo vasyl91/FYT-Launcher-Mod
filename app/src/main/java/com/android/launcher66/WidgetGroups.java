@@ -119,6 +119,23 @@ final class WidgetGroups {
         return text.toString();
     }
 
+    /** A picture's size {width, height} scaled down, never up, to lie within a box, its proportions kept. */
+    static int[] fitIn(int width, int height, int maxWidth, int maxHeight) {
+        if (width <= 0 || height <= 0) {
+            return new int[] {Math.max(1, maxWidth), Math.max(1, maxHeight)};
+        }
+        float scale = Math.min(1f, Math.min(maxWidth / (float) width, maxHeight / (float) height));
+        return new int[] {Math.max(1, Math.round(width * scale)), Math.max(1, Math.round(height * scale))};
+    }
+
+    /**
+     * The padding on each side of a list whose rows are {@code share} as wide as a box over it and centred under it, in a
+     * list as wide as the view the box is in.
+     */
+    static int sidePadding(int listWidth, int boxWidth, float share) {
+        return Math.max(0, Math.round((listWidth - boxWidth * share) / 2f));
+    }
+
     /** The names of the groups, for the letter scroller (LetterIndex). */
     static List<String> titles(List<Group> groups) {
         List<String> titles = new ArrayList<>(groups.size());

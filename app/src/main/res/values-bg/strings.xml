@@ -622,8 +622,15 @@
     <string name="icon_text_size">Задаване на размера на текста на иконите</string>
     <string name="search_apps_hint">Търсене на приложения</string>
     <string name="search_widgets_hint">Търсене на джаджи</string>
-    <string name="widget_list_widgets">Джаджи: %1$d</string>
-    <string name="widget_list_shortcuts">Преки пътища: %1$d</string>
+    <plurals name="widget_count">
+        <item quantity="one">%d джаджа</item>
+        <item quantity="other">%d джаджи</item>
+    </plurals>
+    <plurals name="shortcut_count">
+        <item quantity="one">%d пряк път</item>
+        <item quantity="other">%d преки пътя</item>
+    </plurals>
+    <string name="widget_list_shortcut">Пряк път</string>
     <string name="hide_apps">Скриване на приложения</string>
     <string name="show_hidden_apps">Показване на скритите приложения</string>
     <string name="drawer_tab_main">Приложения</string>

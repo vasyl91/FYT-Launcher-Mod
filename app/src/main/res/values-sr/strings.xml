@@ -622,8 +622,17 @@
     <string name="icon_text_size">Подеси величину текста икона</string>
     <string name="search_apps_hint">Претражи апликације</string>
     <string name="search_widgets_hint">Претражи виџете</string>
-    <string name="widget_list_widgets">Виџети: %1$d</string>
-    <string name="widget_list_shortcuts">Пречице: %1$d</string>
+    <plurals name="widget_count">
+        <item quantity="one">%d виџет</item>
+        <item quantity="few">%d виџета</item>
+        <item quantity="other">%d виџета</item>
+    </plurals>
+    <plurals name="shortcut_count">
+        <item quantity="one">%d пречица</item>
+        <item quantity="few">%d пречице</item>
+        <item quantity="other">%d пречица</item>
+    </plurals>
+    <string name="widget_list_shortcut">Пречица</string>
     <string name="hide_apps">Сакриј апликације</string>
     <string name="show_hidden_apps">Прикажи скривене апликације</string>
     <string name="drawer_tab_main">Апликације</string>

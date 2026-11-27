@@ -1,5 +1,6 @@
 package com.android.launcher66;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -85,5 +86,26 @@ class WidgetGroupsTest {
     void theTitlesForTheScrollerAreTheAppNamesInTheOrderOfTheGroups() {
         List<WidgetGroups.Group> groups = WidgetGroups.group(ENTRIES, Locale.ENGLISH, "");
         assertEquals(apps(groups), WidgetGroups.titles(groups));
+    }
+
+    @Test
+    void thePluralFormOfEachCountJoinedLeavingNoneOut() {
+        assertEquals("1 widget, 3 shortcuts", WidgetGroups.counts(1, 3, "%d widget", "%d shortcuts", ", "));
+        assertEquals("2 widgets", WidgetGroups.counts(2, 0, "%d widgets", "%d shortcuts", ", "));
+        assertEquals("1 shortcut", WidgetGroups.counts(0, 1, "%d widgets", "%d shortcut", ", "));
+    }
+
+    @Test
+    void aPreviewIsScaledDownToItsBoxNeverUp() {
+        assertArrayEquals(new int[] {300, 200}, WidgetGroups.fitIn(300, 200, 700, 900));
+        assertArrayEquals(new int[] {700, 350}, WidgetGroups.fitIn(1400, 700, 700, 900));
+        assertArrayEquals(new int[] {450, 900}, WidgetGroups.fitIn(500, 1000, 700, 900));
+    }
+
+    @Test
+    void theRowsAreNinetyPercentOfTheSearchFieldAndCentredUnderIt() {
+        // a list 1080 wide under a field whose box is 1016 wide: rows 914 wide, 83 on each side
+        assertEquals(83, WidgetGroups.sidePadding(1080, 1016, 0.9f));
+        assertEquals(0, WidgetGroups.sidePadding(100, 200, 0.9f));
     }
 }

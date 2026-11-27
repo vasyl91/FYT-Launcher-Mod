@@ -622,8 +622,15 @@
     <string name="icon_text_size">Ορισμός μεγέθους κειμένου εικονιδίων</string>
     <string name="search_apps_hint">Αναζήτηση εφαρμογών</string>
     <string name="search_widgets_hint">Αναζήτηση widget</string>
-    <string name="widget_list_widgets">Widget: %1$d</string>
-    <string name="widget_list_shortcuts">Συντομεύσεις: %1$d</string>
+    <plurals name="widget_count">
+        <item quantity="one">%d widget</item>
+        <item quantity="other">%d widget</item>
+    </plurals>
+    <plurals name="shortcut_count">
+        <item quantity="one">%d συντόμευση</item>
+        <item quantity="other">%d συντομεύσεις</item>
+    </plurals>
+    <string name="widget_list_shortcut">Συντόμευση</string>
     <string name="hide_apps">Απόκρυψη εφαρμογών</string>
     <string name="show_hidden_apps">Εμφάνιση κρυφών εφαρμογών</string>
     <string name="drawer_tab_main">Εφαρμογές</string>

@@ -622,8 +622,19 @@
     <string name="icon_text_size">Nastavi velikost besedila ikon</string>
     <string name="search_apps_hint">Išči aplikacije</string>
     <string name="search_widgets_hint">Iskanje pripomočkov</string>
-    <string name="widget_list_widgets">Pripomočki: %1$d</string>
-    <string name="widget_list_shortcuts">Bližnjice: %1$d</string>
+    <plurals name="widget_count">
+        <item quantity="one">%d pripomoček</item>
+        <item quantity="two">%d pripomočka</item>
+        <item quantity="few">%d pripomočki</item>
+        <item quantity="other">%d pripomočkov</item>
+    </plurals>
+    <plurals name="shortcut_count">
+        <item quantity="one">%d bližnjica</item>
+        <item quantity="two">%d bližnjici</item>
+        <item quantity="few">%d bližnjice</item>
+        <item quantity="other">%d bližnjic</item>
+    </plurals>
+    <string name="widget_list_shortcut">Bližnjica</string>
     <string name="hide_apps">Skrij aplikacije</string>
     <string name="show_hidden_apps">Pokaži skrite aplikacije</string>
     <string name="drawer_tab_main">Aplikacije</string>

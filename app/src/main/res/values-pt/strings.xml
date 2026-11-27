@@ -622,8 +622,17 @@
     <string name="icon_text_size">Definir o tamanho do texto dos ícones</string>
     <string name="search_apps_hint">Pesquisar aplicações</string>
     <string name="search_widgets_hint">Pesquisar widgets</string>
-    <string name="widget_list_widgets">Widgets: %1$d</string>
-    <string name="widget_list_shortcuts">Atalhos: %1$d</string>
+    <plurals name="widget_count">
+        <item quantity="one">%d widget</item>
+        <item quantity="many">%d widgets</item>
+        <item quantity="other">%d widgets</item>
+    </plurals>
+    <plurals name="shortcut_count">
+        <item quantity="one">%d atalho</item>
+        <item quantity="many">%d atalhos</item>
+        <item quantity="other">%d atalhos</item>
+    </plurals>
+    <string name="widget_list_shortcut">Atalho</string>
     <string name="hide_apps">Ocultar aplicações</string>
     <string name="show_hidden_apps">Mostrar aplicações ocultas</string>
     <string name="drawer_tab_main">Aplicações</string>

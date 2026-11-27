@@ -622,8 +622,15 @@
     <string name="icon_text_size">Symboltextgröße festlegen</string>
     <string name="search_apps_hint">Apps durchsuchen</string>
     <string name="search_widgets_hint">Widgets suchen</string>
-    <string name="widget_list_widgets">Widgets: %1$d</string>
-    <string name="widget_list_shortcuts">Verknüpfungen: %1$d</string>
+    <plurals name="widget_count">
+        <item quantity="one">%d Widget</item>
+        <item quantity="other">%d Widgets</item>
+    </plurals>
+    <plurals name="shortcut_count">
+        <item quantity="one">%d Verknüpfung</item>
+        <item quantity="other">%d Verknüpfungen</item>
+    </plurals>
+    <string name="widget_list_shortcut">Verknüpfung</string>
     <string name="hide_apps">Apps ausblenden</string>
     <string name="show_hidden_apps">Ausgeblendete Apps anzeigen</string>
     <string name="drawer_tab_main">Apps</string>

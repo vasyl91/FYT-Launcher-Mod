@@ -622,8 +622,15 @@
     <string name="icon_text_size">Angi størrelse på ikontekst</string>
     <string name="search_apps_hint">Søk i apper</string>
     <string name="search_widgets_hint">Søk etter moduler</string>
-    <string name="widget_list_widgets">Moduler: %1$d</string>
-    <string name="widget_list_shortcuts">Snarveier: %1$d</string>
+    <plurals name="widget_count">
+        <item quantity="one">%d modul</item>
+        <item quantity="other">%d moduler</item>
+    </plurals>
+    <plurals name="shortcut_count">
+        <item quantity="one">%d snarvei</item>
+        <item quantity="other">%d snarveier</item>
+    </plurals>
+    <string name="widget_list_shortcut">Snarvei</string>
     <string name="hide_apps">Skjul apper</string>
     <string name="show_hidden_apps">Vis skjulte apper</string>
     <string name="drawer_tab_main">Apper</string>

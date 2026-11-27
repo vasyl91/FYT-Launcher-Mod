@@ -622,8 +622,15 @@
     <string name="icon_text_size">Simge metni boyutunu ayarla</string>
     <string name="search_apps_hint">Uygulama ara</string>
     <string name="search_widgets_hint">Widget ara</string>
-    <string name="widget_list_widgets">Widget’lar: %1$d</string>
-    <string name="widget_list_shortcuts">Kısayollar: %1$d</string>
+    <plurals name="widget_count">
+        <item quantity="one">%d widget</item>
+        <item quantity="other">%d widget</item>
+    </plurals>
+    <plurals name="shortcut_count">
+        <item quantity="one">%d kısayol</item>
+        <item quantity="other">%d kısayol</item>
+    </plurals>
+    <string name="widget_list_shortcut">Kısayol</string>
     <string name="hide_apps">Uygulamaları gizle</string>
     <string name="show_hidden_apps">Gizli uygulamaları göster</string>
     <string name="drawer_tab_main">Uygulamalar</string>

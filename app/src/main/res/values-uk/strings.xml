@@ -622,8 +622,19 @@
     <string name="icon_text_size">Задати розмір тексту значків</string>
     <string name="search_apps_hint">Пошук програм</string>
     <string name="search_widgets_hint">Пошук віджетів</string>
-    <string name="widget_list_widgets">Віджети: %1$d</string>
-    <string name="widget_list_shortcuts">Ярлики: %1$d</string>
+    <plurals name="widget_count">
+        <item quantity="one">%d віджет</item>
+        <item quantity="few">%d віджети</item>
+        <item quantity="many">%d віджетів</item>
+        <item quantity="other">%d віджета</item>
+    </plurals>
+    <plurals name="shortcut_count">
+        <item quantity="one">%d ярлик</item>
+        <item quantity="few">%d ярлики</item>
+        <item quantity="many">%d ярликів</item>
+        <item quantity="other">%d ярлика</item>
+    </plurals>
+    <string name="widget_list_shortcut">Ярлик</string>
     <string name="hide_apps">Приховати програми</string>
     <string name="show_hidden_apps">Показати приховані програми</string>
     <string name="drawer_tab_main">Програми</string>

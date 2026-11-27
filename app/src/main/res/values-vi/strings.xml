@@ -622,8 +622,13 @@
     <string name="icon_text_size">Đặt cỡ chữ của biểu tượng</string>
     <string name="search_apps_hint">Tìm ứng dụng</string>
     <string name="search_widgets_hint">Tìm tiện ích</string>
-    <string name="widget_list_widgets">Tiện ích: %1$d</string>
-    <string name="widget_list_shortcuts">Lối tắt: %1$d</string>
+    <plurals name="widget_count">
+        <item quantity="other">%d tiện ích</item>
+    </plurals>
+    <plurals name="shortcut_count">
+        <item quantity="other">%d lối tắt</item>
+    </plurals>
+    <string name="widget_list_shortcut">Lối tắt</string>
     <string name="hide_apps">Ẩn ứng dụng</string>
     <string name="show_hidden_apps">Hiện ứng dụng đã ẩn</string>
     <string name="drawer_tab_main">Ứng dụng</string>

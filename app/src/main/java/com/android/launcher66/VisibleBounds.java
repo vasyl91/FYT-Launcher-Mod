@@ -52,6 +52,19 @@ final class VisibleBounds {
                 (bottom + 1) / (float) height};
     }
 
+    /**
+     * The seen part as pixels {x, y, width, height} of a picture of this size: the fractions of {@link #of} back on its
+     * pixels, never empty and never past the picture (the list of widgets crops its previews with it).
+     */
+    static int[] pixels(float[] fractions, int width, int height) {
+        float[] f = fractions == null ? WHOLE : fractions;
+        int left = Math.max(0, Math.min(width - 1, Math.round(f[0] * width)));
+        int top = Math.max(0, Math.min(height - 1, Math.round(f[1] * height)));
+        int right = Math.max(left + 1, Math.min(width, Math.round(f[2] * width)));
+        int bottom = Math.max(top + 1, Math.min(height, Math.round(f[3] * height)));
+        return new int[] {left, top, right - left, bottom - top};
+    }
+
     /** The seen part of a picture drawn in the rectangle {left, top, right, bottom}: that rectangle, cut by the fractions. */
     static float[] in(float left, float top, float right, float bottom, float[] fractions) {
         float[] f = fractions == null ? WHOLE : fractions;

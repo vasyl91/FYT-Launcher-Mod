@@ -622,8 +622,15 @@
     <string name="icon_text_size">Setha usayizi wombhalo wesithonjana</string>
     <string name="search_apps_hint">Sesha izinhlelo zokusebenza</string>
     <string name="search_widgets_hint">Sesha amawijethi</string>
-    <string name="widget_list_widgets">Amawijethi: %1$d</string>
-    <string name="widget_list_shortcuts">Izinqamuleli: %1$d</string>
+    <plurals name="widget_count">
+        <item quantity="one">%d iwijethi</item>
+        <item quantity="other">%d amawijethi</item>
+    </plurals>
+    <plurals name="shortcut_count">
+        <item quantity="one">%d isinqamuleli</item>
+        <item quantity="other">%d izinqamuleli</item>
+    </plurals>
+    <string name="widget_list_shortcut">Isinqamuleli</string>
     <string name="hide_apps">Fihla izinhlelo zokusebenza</string>
     <string name="show_hidden_apps">Bonisa izinhlelo zokusebenza ezifihliwe</string>
     <string name="drawer_tab_main">Izinhlelo zokusebenza</string>

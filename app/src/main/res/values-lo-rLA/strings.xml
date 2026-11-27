@@ -622,8 +622,13 @@
     <string name="icon_text_size">ຕັ້ງຂະໜາດຕົວອັກສອນໄອຄອນ</string>
     <string name="search_apps_hint">ຄົ້ນຫາແອັບ</string>
     <string name="search_widgets_hint">ຊອກຫາວິດເຈັດ</string>
-    <string name="widget_list_widgets">ວິດເຈັດ: %1$d</string>
-    <string name="widget_list_shortcuts">ທາງລັດ: %1$d</string>
+    <plurals name="widget_count">
+        <item quantity="other">%d ວິດເຈັດ</item>
+    </plurals>
+    <plurals name="shortcut_count">
+        <item quantity="other">%d ທາງລັດ</item>
+    </plurals>
+    <string name="widget_list_shortcut">ທາງລັດ</string>
     <string name="hide_apps">ເຊື່ອງແອັບ</string>
     <string name="show_hidden_apps">ສະແດງແອັບທີ່ເຊື່ອງໄວ້</string>
     <string name="drawer_tab_main">ແອັບ</string>

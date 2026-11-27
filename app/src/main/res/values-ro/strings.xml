@@ -622,8 +622,17 @@
     <string name="icon_text_size">Setați dimensiunea textului pictogramelor</string>
     <string name="search_apps_hint">Căutați aplicații</string>
     <string name="search_widgets_hint">Caută widgeturi</string>
-    <string name="widget_list_widgets">Widgeturi: %1$d</string>
-    <string name="widget_list_shortcuts">Comenzi rapide: %1$d</string>
+    <plurals name="widget_count">
+        <item quantity="one">%d widget</item>
+        <item quantity="few">%d widgeturi</item>
+        <item quantity="other">%d de widgeturi</item>
+    </plurals>
+    <plurals name="shortcut_count">
+        <item quantity="one">%d comandă rapidă</item>
+        <item quantity="few">%d comenzi rapide</item>
+        <item quantity="other">%d de comenzi rapide</item>
+    </plurals>
+    <string name="widget_list_shortcut">Comandă rapidă</string>
     <string name="hide_apps">Ascundeți aplicațiile</string>
     <string name="show_hidden_apps">Afișați aplicațiile ascunse</string>
     <string name="drawer_tab_main">Aplicații</string>

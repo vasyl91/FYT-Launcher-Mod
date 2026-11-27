@@ -622,8 +622,15 @@
     <string name="icon_text_size">تنظیم اندازهٔ نوشتهٔ نمادها</string>
     <string name="search_apps_hint">جستجوی برنامه‌ها</string>
     <string name="search_widgets_hint">جستجوی ویجت‌ها</string>
-    <string name="widget_list_widgets">ویجت‌ها: %1$d</string>
-    <string name="widget_list_shortcuts">میان‌برها: %1$d</string>
+    <plurals name="widget_count">
+        <item quantity="one">%d ابزارک</item>
+        <item quantity="other">%d ابزارک</item>
+    </plurals>
+    <plurals name="shortcut_count">
+        <item quantity="one">%d میان‌بر</item>
+        <item quantity="other">%d میان‌بر</item>
+    </plurals>
+    <string name="widget_list_shortcut">میان‌بر</string>
     <string name="hide_apps">پنهان کردن برنامه‌ها</string>
     <string name="show_hidden_apps">نمایش برنامه‌های پنهان</string>
     <string name="drawer_tab_main">برنامه‌ها</string>

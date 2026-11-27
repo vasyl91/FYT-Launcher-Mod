@@ -622,8 +622,13 @@
     <string name="icon_text_size">Tetapkan saiz teks ikon</string>
     <string name="search_apps_hint">Cari aplikasi</string>
     <string name="search_widgets_hint">Cari widget</string>
-    <string name="widget_list_widgets">Widget: %1$d</string>
-    <string name="widget_list_shortcuts">Pintasan: %1$d</string>
+    <plurals name="widget_count">
+        <item quantity="other">%d widget</item>
+    </plurals>
+    <plurals name="shortcut_count">
+        <item quantity="other">%d pintasan</item>
+    </plurals>
+    <string name="widget_list_shortcut">Pintasan</string>
     <string name="hide_apps">Sembunyikan apl</string>
     <string name="show_hidden_apps">Tunjukkan apl tersembunyi</string>
     <string name="drawer_tab_main">Apl</string>

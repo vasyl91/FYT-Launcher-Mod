@@ -622,8 +622,15 @@
     <string name="icon_text_size">Tekstgrootte van pictogrammen instellen</string>
     <string name="search_apps_hint">Apps zoeken</string>
     <string name="search_widgets_hint">Widgets zoeken</string>
-    <string name="widget_list_widgets">Widgets: %1$d</string>
-    <string name="widget_list_shortcuts">Snelkoppelingen: %1$d</string>
+    <plurals name="widget_count">
+        <item quantity="one">%d widget</item>
+        <item quantity="other">%d widgets</item>
+    </plurals>
+    <plurals name="shortcut_count">
+        <item quantity="one">%d snelkoppeling</item>
+        <item quantity="other">%d snelkoppelingen</item>
+    </plurals>
+    <string name="widget_list_shortcut">Snelkoppeling</string>
     <string name="hide_apps">Apps verbergen</string>
     <string name="show_hidden_apps">Verborgen apps tonen</string>
     <string name="drawer_tab_main">Apps</string>

@@ -928,6 +928,22 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
     }
 
     /** The widgets show as the list, the pager stays for the apps (the pager's widget pages are not shown then). */
+    /**
+     * The part of a preview that can be seen (VisibleBounds): the bitmap of a preview is as large as the box it was made
+     * for, the widget's picture drawn in it at the top, in the middle. Off the main thread; the cached bitmap is untouched.
+     */
+    private static Bitmap visiblePart(Bitmap preview) {
+        int w = preview.getWidth();
+        int h = preview.getHeight();
+        int[] pixels = new int[w * h];
+        preview.getPixels(pixels, 0, w, 0, 0, w, h);
+        int[] crop = VisibleBounds.pixels(VisibleBounds.of(pixels, w, h), w, h);
+        if (crop[0] == 0 && crop[1] == 0 && crop[2] == w && crop[3] == h) {
+            return preview;
+        }
+        return Bitmap.createBitmap(preview, crop[0], crop[1], crop[2], crop[3]);
+    }
+
     /** A long press of a widget or a shortcut of the list: dragged as from a page, without the pager's checks. */
     private boolean beginListDrag(View v) {
         DragController drag = mLauncher.getDragController();
@@ -971,6 +987,8 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
             widget.setOnLongClickListener(v -> beginListDrag(v));
             widget.setOnTouchListener(AppsCustomizePagedView.this);
             widget.setOnKeyListener(AppsCustomizePagedView.this);
+            // The preview alone, without the pager's card and labels (WidgetsListView writes its own lines)
+            widget.useInList();
             return widget;
         }
 
@@ -999,9 +1017,12 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
                 if (preview == null) {
                     return;
                 }
+                // The preview is drawn into a bitmap as large as the box: only the part that can be seen is shown, so
+                // the cell is as large as the widget looks (the owner, 2026-11-27: a card much larger than the widget)
+                final Bitmap seen = visiblePart(preview);
                 widget.post(() -> {
                     if (widget.getTag() == tag && widget.isAttachedToWindow()) {
-                        widget.applyPreview(new FastBitmapDrawable(preview), 0);
+                        widget.applyListPreview(new FastBitmapDrawable(seen), width, height);
                     }
                 });
             });
@@ -1052,6 +1073,25 @@ public class AppsCustomizePagedView extends PagedViewWithDraggableItems implemen
                 return ((ResolveInfo) rawInfo).activityInfo.packageName;
             }
             return null;
+        }
+
+        @Override
+        public int[] entrySpan(Object rawInfo) {
+            return rawInfo instanceof AppWidgetProviderInfo
+                    ? Launcher.getSpanForWidget(mLauncher, (AppWidgetProviderInfo) rawInfo) : null;
+        }
+
+        @Override
+        public CharSequence entryDescription(Object rawInfo) {
+            if (!(rawInfo instanceof AppWidgetProviderInfo)
+                    || android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S) {
+                return null;
+            }
+            try {
+                return ((AppWidgetProviderInfo) rawInfo).loadDescription(getContext());
+            } catch (RuntimeException e) {
+                return null;   // a provider whose description cannot be read has none to show
+            }
         }
 
         @Override

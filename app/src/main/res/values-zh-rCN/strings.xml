@@ -622,8 +622,13 @@
     <string name="icon_text_size">设置图标文字大小</string>
     <string name="search_apps_hint">搜索应用</string>
     <string name="search_widgets_hint">搜索小部件</string>
-    <string name="widget_list_widgets">小部件：%1$d</string>
-    <string name="widget_list_shortcuts">快捷方式：%1$d</string>
+    <plurals name="widget_count">
+        <item quantity="other">%d 个小部件</item>
+    </plurals>
+    <plurals name="shortcut_count">
+        <item quantity="other">%d 个快捷方式</item>
+    </plurals>
+    <string name="widget_list_shortcut">快捷方式</string>
     <string name="hide_apps">隐藏应用</string>
     <string name="show_hidden_apps">显示隐藏的应用</string>
     <string name="drawer_tab_main">应用</string>

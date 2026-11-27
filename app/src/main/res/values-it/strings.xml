@@ -622,8 +622,17 @@
     <string name="icon_text_size">Imposta la dimensione del testo delle icone</string>
     <string name="search_apps_hint">Cerca applicazioni</string>
     <string name="search_widgets_hint">Cerca widget</string>
-    <string name="widget_list_widgets">Widget: %1$d</string>
-    <string name="widget_list_shortcuts">Scorciatoie: %1$d</string>
+    <plurals name="widget_count">
+        <item quantity="one">%d widget</item>
+        <item quantity="many">%d widget</item>
+        <item quantity="other">%d widget</item>
+    </plurals>
+    <plurals name="shortcut_count">
+        <item quantity="one">%d scorciatoia</item>
+        <item quantity="many">%d scorciatoie</item>
+        <item quantity="other">%d scorciatoie</item>
+    </plurals>
+    <string name="widget_list_shortcut">Scorciatoia</string>
     <string name="hide_apps">Nascondi applicazioni</string>
     <string name="show_hidden_apps">Mostra applicazioni nascoste</string>
     <string name="drawer_tab_main">Applicazioni</string>

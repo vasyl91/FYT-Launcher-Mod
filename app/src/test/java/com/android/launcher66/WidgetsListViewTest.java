@@ -1,7 +1,9 @@
 package com.android.launcher66;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -17,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,6 +70,16 @@ public class WidgetsListViewTest {
         public boolean isShortcut(Object rawInfo) {
             return rawInfo.toString().endsWith("/s");
         }
+
+        @Override
+        public int[] entrySpan(Object rawInfo) {
+            return isShortcut(rawInfo) ? null : new int[] {4, 2};
+        }
+
+        @Override
+        public CharSequence entryDescription(Object rawInfo) {
+            return rawInfo.toString().startsWith("p.clock") ? "The time, large" : null;
+        }
     }
 
     private static WidgetsListView list() {
@@ -102,11 +115,11 @@ public class WidgetsListViewTest {
         WidgetsListView view = list();
         assertEquals(3, view.groups().size());
         assertEquals("Clock", row(view, 0)[0]);
-        assertEquals("Widgets: 2, Shortcuts: 1", row(view, 0)[1]);
+        assertEquals("2 widgets, 1 shortcut", row(view, 0)[1]);
         assertEquals("Music", row(view, 1)[0]);
-        assertEquals("Widgets: 1, Shortcuts: 3", row(view, 1)[1]);
+        assertEquals("1 widget, 3 shortcuts", row(view, 1)[1]);
         assertEquals("Weather", row(view, 2)[0]);
-        assertEquals("a count of none is left out", "Widgets: 1", row(view, 2)[1]);
+        assertEquals("a count of none is left out", "1 widget", row(view, 2)[1]);
     }
 
     @Test
@@ -137,5 +150,54 @@ public class WidgetsListViewTest {
                 view.groups().get(0).widgetCount() + view.groups().get(0).shortcutCount());
         view.setQuery("");
         assertEquals(3, view.groups().size());
+    }
+
+    private static void texts(View view, List<TextView> found) {
+        if (view instanceof TextView) {
+            found.add((TextView) view);
+        }
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                texts(((ViewGroup) view).getChildAt(i), found);
+            }
+        }
+    }
+
+    @Test
+    public void anOpenRowShowsEachWidgetsNameSizeAndDescriptionAndEachShortcutsLabel() {
+        WidgetsListView view = list();
+        view.toggle("p.clock");
+        view.measure(View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(4000, View.MeasureSpec.EXACTLY));
+        view.layout(0, 0, 1080, 4000);
+        ShadowLooper.idleMainLooper();
+        RecyclerView.ViewHolder content = view.list().findViewHolderForAdapterPosition(1);
+        assertNotNull(content);
+        List<TextView> found = new ArrayList<>();
+        texts(content.itemView, found);
+        List<String> lines = new ArrayList<>();
+        for (TextView text : found) {
+            lines.add(text.getText().toString());
+        }
+        assertTrue(lines.toString(), lines.contains("4 × 2"));
+        assertTrue(lines.toString(), lines.contains("The time, large"));
+        assertTrue(lines.toString(), lines.contains("Shortcut"));
+        for (TextView text : found) {
+            if (text.getText().toString().equals("Shortcut")) {
+                assertEquals("in the accent colour", ThemeAccent.color(view.getContext()), text.getCurrentTextColor());
+            }
+        }
+    }
+
+    @Test
+    public void theRowsAreCentredUnderTheSearchField() {
+        WidgetsListView view = list();
+        view.measure(View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(2000, View.MeasureSpec.EXACTLY));
+        view.layout(0, 0, 1080, 2000);
+        ShadowLooper.idleMainLooper();
+        RecyclerView list = view.list();
+        assertEquals("the same room on both sides", list.getPaddingLeft(), list.getPaddingRight());
+        assertTrue("narrower than the field", list.getPaddingLeft() > 0);
     }
 }

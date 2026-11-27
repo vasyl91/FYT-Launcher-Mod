@@ -622,8 +622,15 @@
     <string name="icon_text_size">Ikonszöveg méretének beállítása</string>
     <string name="search_apps_hint">Alkalmazások keresése</string>
     <string name="search_widgets_hint">Widgetek keresése</string>
-    <string name="widget_list_widgets">Widgetek: %1$d</string>
-    <string name="widget_list_shortcuts">Parancsikonok: %1$d</string>
+    <plurals name="widget_count">
+        <item quantity="one">%d widget</item>
+        <item quantity="other">%d widget</item>
+    </plurals>
+    <plurals name="shortcut_count">
+        <item quantity="one">%d parancsikon</item>
+        <item quantity="other">%d parancsikon</item>
+    </plurals>
+    <string name="widget_list_shortcut">Parancsikon</string>
     <string name="hide_apps">Alkalmazások elrejtése</string>
     <string name="show_hidden_apps">Rejtett alkalmazások megjelenítése</string>
     <string name="drawer_tab_main">Alkalmazások</string>

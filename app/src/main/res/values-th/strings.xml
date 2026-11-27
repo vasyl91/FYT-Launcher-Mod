@@ -622,8 +622,13 @@
     <string name="icon_text_size">ตั้งขนาดข้อความไอคอน</string>
     <string name="search_apps_hint">ค้นหาแอป</string>
     <string name="search_widgets_hint">ค้นหาวิดเจ็ต</string>
-    <string name="widget_list_widgets">วิดเจ็ต: %1$d</string>
-    <string name="widget_list_shortcuts">ทางลัด: %1$d</string>
+    <plurals name="widget_count">
+        <item quantity="other">%d วิดเจ็ต</item>
+    </plurals>
+    <plurals name="shortcut_count">
+        <item quantity="other">%d ทางลัด</item>
+    </plurals>
+    <string name="widget_list_shortcut">ทางลัด</string>
     <string name="hide_apps">ซ่อนแอป</string>
     <string name="show_hidden_apps">แสดงแอปที่ซ่อน</string>
     <string name="drawer_tab_main">แอป</string>

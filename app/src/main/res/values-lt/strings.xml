@@ -622,8 +622,19 @@
     <string name="icon_text_size">Nustatyti piktogramų teksto dydį</string>
     <string name="search_apps_hint">Ieškoti programų</string>
     <string name="search_widgets_hint">Ieškoti valdiklių</string>
-    <string name="widget_list_widgets">Valdikliai: %1$d</string>
-    <string name="widget_list_shortcuts">Nuorodos: %1$d</string>
+    <plurals name="widget_count">
+        <item quantity="one">%d valdiklis</item>
+        <item quantity="few">%d valdikliai</item>
+        <item quantity="many">%d valdiklio</item>
+        <item quantity="other">%d valdiklių</item>
+    </plurals>
+    <plurals name="shortcut_count">
+        <item quantity="one">%d nuoroda</item>
+        <item quantity="few">%d nuorodos</item>
+        <item quantity="many">%d nuorodos</item>
+        <item quantity="other">%d nuorodų</item>
+    </plurals>
+    <string name="widget_list_shortcut">Nuoroda</string>
     <string name="hide_apps">Slėpti programas</string>
     <string name="show_hidden_apps">Rodyti paslėptas programas</string>
     <string name="drawer_tab_main">Programos</string>

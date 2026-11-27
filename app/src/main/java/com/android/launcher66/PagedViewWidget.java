@@ -143,6 +143,45 @@ public class PagedViewWidget extends LinearLayout {
         return maxSize;
     }
 
+    /**
+     * A cell of the list of widgets (WidgetsListView): no card and no frame of the pager round the preview, and none of the
+     * pager's own labels (the list writes its lines under the cell). The cell stays this class, so that it is pressed and
+     * dragged to the home screen as a cell of a page.
+     */
+    void useInList() {
+        setBackground(null);
+        ImageView image = (ImageView) findViewById(R.id.widget_preview);
+        image.setBackground(null);
+        image.setPadding(0, 0, 0, 0);
+        mOriginalImagePadding.set(0, 0, 0, 0);
+        View name = findViewById(R.id.widget_name);
+        if (name != null && name.getParent() instanceof View) {
+            ((View) name.getParent()).setVisibility(View.GONE);
+        }
+    }
+
+    /**
+     * The list's preview: the part of the picture that can be seen, as large as it is drawn and no larger than the cell
+     * was made (maxWidth x maxHeight); the cell takes that size, so no empty card is left round a small widget.
+     */
+    void applyListPreview(FastBitmapDrawable preview, int maxWidth, int maxHeight) {
+        if (preview == null || preview.getIntrinsicWidth() <= 0 || preview.getIntrinsicHeight() <= 0) {
+            return;
+        }
+        int[] size = WidgetGroups.fitIn(preview.getIntrinsicWidth(), preview.getIntrinsicHeight(), maxWidth, maxHeight);
+        PagedViewWidgetImageView image = (PagedViewWidgetImageView) findViewById(R.id.widget_preview);
+        image.mAllowRequestLayout = true;
+        image.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        image.setImageDrawable(preview);
+        image.setAlpha(1f);
+        android.view.ViewGroup.LayoutParams lp = getLayoutParams();
+        if (lp != null && (lp.width != size[0] || lp.height != size[1])) {
+            lp.width = size[0];
+            lp.height = size[1];
+            setLayoutParams(lp);
+        }
+    }
+
     void applyPreview(FastBitmapDrawable preview, int index) {
         final PagedViewWidgetImageView image =
             (PagedViewWidgetImageView) findViewById(R.id.widget_preview);
